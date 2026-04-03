@@ -1,0 +1,2189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TechDiag Pro — Diagnostic & Réparation</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Exo+2:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060b14;
+  --surface:#0a1220;
+  --surface2:#0f1a2e;
+  --surface3:#152240;
+  --border:rgba(0,200,255,.12);
+  --border2:rgba(0,200,255,.25);
+  --cyan:#00c8ff;
+  --cyan2:#00e5ff;
+  --green:#00ff88;
+  --orange:#ff6b00;
+  --red:#ff2d55;
+  --yellow:#ffd60a;
+  --purple:#7c3aed;
+  --text:#e0f0ff;
+  --text2:#7090b0;
+  --text3:#3a5a7a;
+  --glow:0 0 20px rgba(0,200,255,.3);
+  --glow2:0 0 40px rgba(0,200,255,.2);
+}
+html,body{height:100%;overflow:hidden;background:var(--bg)}
+body{font-family:'Exo 2',sans-serif;color:var(--text);display:flex;flex-direction:column}
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:2px;opacity:.4}
+
+/* ══ TOPBAR ══ */
+.topbar{
+  height:52px;background:var(--surface);border-bottom:1px solid var(--border2);
+  display:flex;align-items:center;padding:0 20px;gap:16px;flex-shrink:0;
+  position:relative;z-index:100;
+}
+.topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+.logo{font-family:'Orbitron',monospace;font-size:15px;font-weight:800;
+  color:var(--cyan);letter-spacing:2px;text-shadow:var(--glow)}
+.logo span{color:var(--text2);font-weight:400}
+.topbar-badge{background:rgba(0,200,255,.1);border:1px solid var(--border2);
+  border-radius:4px;padding:3px 10px;font-size:10px;font-weight:600;color:var(--cyan);
+  letter-spacing:1px;text-transform:uppercase}
+.topbar-status{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--text2);margin-left:auto}
+.status-dot{width:7px;height:7px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 8px var(--green);animation:pulse-dot 2s infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+.topbar-btn{padding:6px 14px;background:rgba(0,200,255,.1);border:1px solid var(--border2);
+  border-radius:6px;color:var(--cyan);font-size:11px;font-weight:600;cursor:pointer;
+  font-family:'Exo 2',sans-serif;letter-spacing:.5px;transition:all .2s}
+.topbar-btn:hover{background:rgba(0,200,255,.2);box-shadow:var(--glow)}
+
+/* ══ LAYOUT ══ */
+.app-body{display:flex;flex:1;overflow:hidden;min-height:0}
+
+/* ══ SIDEBAR ══ */
+.sidebar{
+  width:200px;background:var(--surface);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;
+  padding:12px 0;
+}
+.nav-section{font-size:9px;font-weight:700;color:var(--text3);letter-spacing:2px;
+  text-transform:uppercase;padding:10px 16px 4px}
+.nav-item{
+  display:flex;align-items:center;gap:10px;padding:9px 14px;
+  cursor:pointer;transition:all .15s;border-left:3px solid transparent;
+  font-size:12px;font-weight:500;color:var(--text2);
+}
+.nav-item:hover{background:rgba(0,200,255,.05);color:var(--text);border-left-color:rgba(0,200,255,.3)}
+.nav-item.active{background:rgba(0,200,255,.08);color:var(--cyan);
+  border-left-color:var(--cyan);font-weight:600}
+.nav-item .ni{font-size:16px;width:20px;text-align:center}
+.nav-badge{margin-left:auto;background:var(--cyan);color:var(--bg);
+  border-radius:10px;padding:1px 6px;font-size:9px;font-weight:800}
+.nav-badge.orange{background:var(--orange)}
+.nav-badge.red{background:var(--red)}
+
+/* ══ MAIN ══ */
+.main{flex:1;overflow-y:auto;overflow-x:hidden}
+.page{display:none;padding:18px 20px}
+.page.active{display:block}
+
+/* ══ PAGE HEADER ══ */
+.page-header{margin-bottom:18px;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.page-title{font-family:'Orbitron',monospace;font-size:18px;font-weight:700;color:var(--cyan)}
+.page-sub{font-size:12px;color:var(--text2);margin-top:3px}
+
+/* ══ CARDS ══ */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+.card-title{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--cyan);
+  margin-bottom:12px;display:flex;align-items:center;gap:8px;text-transform:uppercase;letter-spacing:1px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+
+/* ══ KPI CARDS ══ */
+.kpi{background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px;position:relative;overflow:hidden;transition:all .2s}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,var(--cyan),var(--purple))}
+.kpi:hover{border-color:var(--border2);transform:translateY(-1px);box-shadow:var(--glow2)}
+.kpi-icon{font-size:22px;margin-bottom:6px}
+.kpi-val{font-family:'Orbitron',monospace;font-size:24px;font-weight:800;color:var(--cyan)}
+.kpi-val.orange{color:var(--orange)}
+.kpi-val.green{color:var(--green)}
+.kpi-val.red{color:var(--red)}
+.kpi-lbl{font-size:11px;color:var(--text2);margin-top:3px}
+
+/* ══ BUTTONS ══ */
+.btn{padding:8px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;
+  font-family:'Exo 2',sans-serif;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:6px}
+.btn-cyan{background:linear-gradient(135deg,rgba(0,200,255,.2),rgba(0,200,255,.1));
+  border:1px solid var(--cyan);color:var(--cyan)}
+.btn-cyan:hover{background:rgba(0,200,255,.25);box-shadow:var(--glow)}
+.btn-green{background:rgba(0,255,136,.15);border:1px solid var(--green);color:var(--green)}
+.btn-green:hover{background:rgba(0,255,136,.25)}
+.btn-orange{background:rgba(255,107,0,.15);border:1px solid var(--orange);color:var(--orange)}
+.btn-red{background:rgba(255,45,85,.15);border:1px solid var(--red);color:var(--red)}
+.btn-purple{background:rgba(124,58,237,.2);border:1px solid var(--purple);color:#a78bfa}
+.btn-solid{background:linear-gradient(135deg,var(--cyan),#0090cc);color:var(--bg);border:none;font-weight:700}
+.btn-solid:hover{box-shadow:0 0 20px rgba(0,200,255,.4);transform:translateY(-1px)}
+.btn-sm{padding:5px 10px;font-size:11px}
+
+/* ══ TABLE ══ */
+.tech-table{width:100%;border-collapse:collapse}
+.tech-table th{padding:9px 12px;font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1px;color:var(--text3);text-align:left;border-bottom:1px solid var(--border)}
+.tech-table td{padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border);color:var(--text2)}
+.tech-table tr:hover td{background:rgba(0,200,255,.03);color:var(--text)}
+
+/* ══ BADGE ══ */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.badge-ok{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.3)}
+.badge-warn{background:rgba(255,214,10,.1);color:var(--yellow);border:1px solid rgba(255,214,10,.3)}
+.badge-crit{background:rgba(255,45,85,.1);color:var(--red);border:1px solid rgba(255,45,85,.3)}
+.badge-info{background:rgba(0,200,255,.1);color:var(--cyan);border:1px solid rgba(0,200,255,.3)}
+.badge-prog{background:rgba(255,107,0,.1);color:var(--orange);border:1px solid rgba(255,107,0,.3)}
+
+/* ══ FORM ══ */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.form-full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3)}
+.form-input, .form-select, .form-textarea{
+  background:var(--surface2);border:1px solid var(--border);border-radius:7px;
+  padding:9px 12px;color:var(--text);font-family:'Exo 2',sans-serif;font-size:13px;
+  transition:border-color .2s;width:100%;
+}
+.form-input:focus,.form-select:focus,.form-textarea:focus{
+  outline:none;border-color:var(--cyan);box-shadow:0 0 0 2px rgba(0,200,255,.1)}
+.form-select option{background:var(--surface2)}
+.form-textarea{resize:vertical;min-height:80px}
+
+/* ══ SCANNER ══ */
+.scanner-wrap{position:relative;background:var(--surface2);border:1px solid var(--border2);
+  border-radius:12px;padding:24px;text-align:center;overflow:hidden}
+.scanner-wrap::before{
+  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
+  background:repeating-linear-gradient(0deg,transparent,transparent 30px,rgba(0,200,255,.03) 30px,rgba(0,200,255,.03) 31px),
+             repeating-linear-gradient(90deg,transparent,transparent 30px,rgba(0,200,255,.03) 30px,rgba(0,200,255,.03) 31px);
+  animation:grid-move 8s linear infinite;pointer-events:none
+}
+@keyframes grid-move{0%{transform:translate(0,0)}100%{transform:translate(31px,31px)}}
+.scanner-line{position:absolute;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
+  box-shadow:0 0 10px var(--cyan);animation:scan 2.5s ease-in-out infinite;display:none}
+@keyframes scan{0%{top:10%}50%{top:85%}100%{top:10%}}
+.scanner-icon{font-size:48px;margin-bottom:12px;position:relative;z-index:1}
+.scanner-title{font-family:'Orbitron',monospace;font-size:14px;color:var(--cyan);margin-bottom:8px;position:relative;z-index:1}
+.scanner-sub{font-size:12px;color:var(--text2);margin-bottom:16px;position:relative;z-index:1}
+
+/* ══ DIAGNOSTIC TREE ══ */
+.diag-step{background:var(--surface2);border:1px solid var(--border);border-radius:10px;
+  padding:16px;margin-bottom:12px;position:relative;animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.diag-step-title{font-weight:700;font-size:14px;color:var(--text);margin-bottom:12px}
+.diag-options{display:flex;flex-wrap:wrap;gap:8px}
+.diag-opt{padding:8px 14px;background:var(--surface3);border:1px solid var(--border);
+  border-radius:7px;font-size:12px;color:var(--text2);cursor:pointer;transition:all .2s;font-family:'Exo 2',sans-serif}
+.diag-opt:hover{border-color:var(--cyan);color:var(--cyan);background:rgba(0,200,255,.05)}
+.diag-opt.selected{border-color:var(--cyan);color:var(--cyan);background:rgba(0,200,255,.1)}
+.diag-result{background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.3);
+  border-radius:10px;padding:16px;margin-top:12px;animation:fadeIn .3s ease}
+.diag-result.crit{background:rgba(255,45,85,.05);border-color:rgba(255,45,85,.3)}
+.diag-result.warn{background:rgba(255,214,10,.05);border-color:rgba(255,214,10,.3)}
+
+/* ══ PROGRESS BAR ══ */
+.prog-bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:width .5s ease;
+  background:linear-gradient(90deg,var(--cyan),var(--green))}
+.prog-fill.orange{background:linear-gradient(90deg,var(--yellow),var(--orange))}
+.prog-fill.red{background:linear-gradient(90deg,var(--orange),var(--red))}
+
+/* ══ GAUGE ══ */
+.gauge-wrap{text-align:center;padding:8px}
+.gauge-val{font-family:'Orbitron',monospace;font-size:20px;font-weight:800;color:var(--cyan)}
+.gauge-lbl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px}
+
+/* ══ KANBAN ══ */
+.kanban-board{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;min-height:300px}
+.kanban-col{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+  padding:12px;min-width:200px;flex:1;max-width:260px}
+.kanban-col-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  color:var(--text2);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between}
+.kanban-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:10px 12px;margin-bottom:8px;cursor:grab;transition:all .2s;font-size:12px}
+.kanban-card:hover{border-color:var(--border2);box-shadow:var(--glow2);transform:translateY(-1px)}
+.kanban-card-title{font-weight:600;color:var(--text);margin-bottom:4px}
+.kanban-card-meta{font-size:10px;color:var(--text3)}
+
+/* ══ TEST BARS ══ */
+.test-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+.test-item:last-child{border-bottom:none}
+.test-icon{font-size:16px;width:24px;text-align:center}
+.test-name{font-size:12px;font-weight:600;color:var(--text);flex:1}
+.test-val{font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);width:60px;text-align:right}
+.test-status{width:20px;text-align:center;font-size:14px}
+
+/* ══ CODE ══ */
+.code-block{background:#020a14;border:1px solid var(--border);border-radius:8px;
+  padding:12px 14px;font-family:'Orbitron',monospace;font-size:11px;color:var(--cyan);
+  line-height:1.8;overflow-x:auto}
+.code-err{color:var(--red)}
+.code-warn{color:var(--yellow)}
+.code-ok{color:var(--green)}
+.code-comment{color:var(--text3)}
+
+/* ══ MODAL ══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);
+  z-index:1000;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:14px;
+  width:100%;max-width:620px;max-height:85vh;overflow-y:auto;
+  box-shadow:0 0 60px rgba(0,200,255,.15)}
+.modal-hdr{padding:16px 20px;border-bottom:1px solid var(--border);
+  font-family:'Orbitron',monospace;font-size:13px;color:var(--cyan);
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
+.modal-body{padding:20px}
+.modal-ftr{padding:14px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.modal-close{background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;
+  transition:color .2s;line-height:1;padding:0 4px}
+.modal-close:hover{color:var(--red)}
+
+/* ══ TOOLTIP ══ */
+.tip{position:relative;cursor:help}
+.tip::after{content:attr(data-tip);position:absolute;bottom:110%;left:50%;transform:translateX(-50%);
+  background:var(--surface3);border:1px solid var(--border2);color:var(--text);
+  padding:5px 10px;border-radius:6px;font-size:11px;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:opacity .2s;z-index:100}
+.tip:hover::after{opacity:1}
+
+/* ══ NOTIFICATION ══ */
+.notif{position:fixed;bottom:20px;right:20px;background:var(--surface2);
+  border:1px solid var(--border2);border-radius:10px;padding:12px 16px;
+  display:flex;align-items:center;gap:10px;font-size:12px;color:var(--text);
+  box-shadow:var(--glow);z-index:2000;animation:slideUp .3s ease;max-width:300px}
+.notif.ok{border-color:rgba(0,255,136,.4)}
+.notif.err{border-color:rgba(255,45,85,.4)}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* ══ OSCILLOSCOPE ══ */
+#oscillo-canvas{width:100%;height:100px;border-radius:6px;background:#020a14;
+  border:1px solid var(--border)}
+
+/* ══ ANIMTATION SCAN RING ══ */
+.scan-ring{width:80px;height:80px;border-radius:50%;border:2px solid var(--cyan);
+  position:relative;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:28px}
+.scan-ring::before{content:'';position:absolute;inset:-8px;border-radius:50%;
+  border:1px solid rgba(0,200,255,.3);animation:ring-pulse 2s ease-in-out infinite}
+.scan-ring::after{content:'';position:absolute;inset:-16px;border-radius:50%;
+  border:1px solid rgba(0,200,255,.15);animation:ring-pulse 2s ease-in-out infinite .5s}
+@keyframes ring-pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.1);opacity:.3}}
+
+/* ══ THERMAL ══ */
+.thermal-bar{height:12px;border-radius:6px;overflow:hidden;background:rgba(255,255,255,.06);margin-top:4px}
+.thermal-fill{height:100%;border-radius:6px;transition:width .8s ease}
+
+/* ══ PRINT ══ */
+@media print{.sidebar,.topbar,.no-print{display:none!important}
+  .main{overflow:visible}.page{display:block!important;padding:0}
+  body{background:white;color:#1a1a2e}
+  .card,.kpi{background:white;border:1px solid #ddd;box-shadow:none}}
+</style>
+</head>
+<body>
+
+<!-- ══ TOPBAR ══ -->
+<div class="topbar">
+  <div class="logo">TechDiag<span>Pro</span></div>
+  <div class="topbar-badge">v2.5 · 2025</div>
+  <div style="font-size:11px;color:var(--text3);margin-left:8px">Diagnostic & Réparation Électronique</div>
+  <div class="topbar-status">
+    <div class="status-dot"></div>
+    <span>Système actif</span>
+    <span style="color:var(--text3);margin-left:8px" id="clock-display"></span>
+  </div>
+  <button class="topbar-btn no-print" onclick="openModal('modal-nouveau-dossier')">＋ Nouveau dossier</button>
+</div>
+
+<!-- ══ BODY ══ -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar no-print">
+    <div class="nav-section">Diagnostic</div>
+    <div class="nav-item active" onclick="showPage('scanner',this)"><span class="ni">🔬</span>Scanner IA</div>
+    <div class="nav-item" onclick="showPage('arbre',this)"><span class="ni">🌿</span>Arbre de pannes</div>
+    <div class="nav-item" onclick="showPage('tests',this)"><span class="ni">⚡</span>Tests système</div>
+
+    <div class="nav-section">Gestion</div>
+    <div class="nav-item" onclick="showPage('dossiers',this)"><span class="ni">📋</span>Dossiers <span class="nav-badge" id="badge-dossiers">0</span></div>
+    <div class="nav-item" onclick="showPage('kanban',this)"><span class="ni">🗂</span>Suivi réparations</div>
+    <div class="nav-item" onclick="showPage('clients',this)"><span class="ni">👥</span>Clients & Appareils</div>
+
+    <div class="nav-section">Outils</div>
+    <div class="nav-item" onclick="showPage('codes-erreur',this)"><span class="ni">💻</span>Codes d'erreur</div>
+    <div class="nav-item" onclick="showPage('oscilloscope',this)"><span class="ni">📡</span>Oscilloscope</div>
+    <div class="nav-item" onclick="showPage('devis',this)"><span class="ni">💰</span>Devis & Rapports</div>
+
+    <div class="nav-section">Base de connaissances</div>
+    <div class="nav-item" onclick="showPage('techniques',this)"><span class="ni">🔧</span>Techniques 2025</div>
+    <div class="nav-item" onclick="showPage('composants',this)"><span class="ni">🔩</span>Composants & Prix</div>
+  </nav>
+
+  <!-- MAIN -->
+  <div class="main" id="main-content">
+
+    <!-- ████ PAGE: SCANNER ████ -->
+    <div class="page active" id="page-scanner">
+      <div class="page-header">
+        <div>
+          <div class="page-title">🔬 Scanner IA de Pannes</div>
+          <div class="page-sub">Détection intelligente basée sur les symptômes — Ordinateurs, Imprimantes, Réseau, Mobiles</div>
+        </div>
+      </div>
+
+      <div class="grid2" style="gap:16px;margin-bottom:16px">
+
+        <!-- Scanner central -->
+        <div class="scanner-wrap" id="scanner-zone">
+          <div class="scanner-line" id="scan-line"></div>
+          <div class="scan-ring" id="scan-ring">🔬</div>
+          <div class="scanner-title" id="scan-title">PRÊT POUR LE SCAN</div>
+          <div class="scanner-sub" id="scan-sub">Sélectionnez le type d'appareil puis décrivez les symptômes</div>
+          
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:14px">
+            <button class="btn btn-cyan" onclick="selectDevice('ordinateur',this)">💻 Ordinateur</button>
+            <button class="btn btn-cyan" onclick="selectDevice('imprimante',this)">🖨 Imprimante</button>
+            <button class="btn btn-cyan" onclick="selectDevice('reseau',this)">🌐 Réseau</button>
+            <button class="btn btn-cyan" onclick="selectDevice('mobile',this)">📱 Mobile</button>
+            <button class="btn btn-cyan" onclick="selectDevice('ecran',this)">🖥 Écran</button>
+            <button class="btn btn-cyan" onclick="selectDevice('autre',this)">⚙️ Autre</button>
+          </div>
+
+          <textarea id="scan-symptoms" class="form-textarea" rows="3"
+            placeholder="Décrivez les symptômes... Ex: écran bleu au démarrage, bruit de ventilateur, impression floue..."
+            style="margin-bottom:12px;text-align:left"></textarea>
+
+          <button class="btn btn-solid" onclick="lancerScan()" style="font-size:13px;padding:10px 28px">
+            ⚡ LANCER LE DIAGNOSTIC
+          </button>
+        </div>
+
+        <!-- Résultats -->
+        <div>
+          <div class="card" style="margin-bottom:12px">
+            <div class="card-title">📊 Résultat du scan</div>
+            <div id="scan-result">
+              <div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">
+                En attente d'un scan...
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-title">⚡ Actions recommandées</div>
+            <div id="scan-actions" style="font-size:12px;color:var(--text2)">
+              Les actions de réparation apparaîtront ici après le scan.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistiques du scanner -->
+      <div class="grid4">
+        <div class="kpi"><div class="kpi-icon">🎯</div><div class="kpi-val green" id="stat-scans">0</div><div class="kpi-lbl">Scans effectués</div></div>
+        <div class="kpi"><div class="kpi-icon">✅</div><div class="kpi-val" id="stat-resolus">0</div><div class="kpi-lbl">Pannes résolues</div></div>
+        <div class="kpi"><div class="kpi-icon">⚡</div><div class="kpi-val orange">94%</div><div class="kpi-lbl">Précision IA</div></div>
+        <div class="kpi"><div class="kpi-icon">⏱</div><div class="kpi-val">2.3 min</div><div class="kpi-lbl">Temps moy. scan</div></div>
+      </div>
+    </div>
+
+    <!-- ████ PAGE: ARBRE DE PANNES ████ -->
+    <div class="page" id="page-arbre">
+      <div class="page-header">
+        <div>
+          <div class="page-title">🌿 Arbre de Diagnostic</div>
+          <div class="page-sub">Diagnostic guidé étape par étape — Méthode d'élimination systématique</div>
+        </div>
+        <button class="btn btn-cyan btn-sm" onclick="resetArbre()">↺ Recommencer</button>
+      </div>
+
+      <div class="grid2" style="gap:16px">
+        <div id="arbre-container">
+          <div class="diag-step">
+            <div class="diag-step-title">🖥 Quel type d'appareil ?</div>
+            <div class="diag-options">
+              <div class="diag-opt" onclick="arbreChoix('ordi')">💻 Ordinateur PC/Mac</div>
+              <div class="diag-opt" onclick="arbreChoix('imprimante')">🖨 Imprimante</div>
+              <div class="diag-opt" onclick="arbreChoix('reseau')">🌐 Équipement réseau</div>
+              <div class="diag-opt" onclick="arbreChoix('mobile')">📱 Smartphone/Tablette</div>
+              <div class="diag-opt" onclick="arbreChoix('ecran')">🖥 Écran/Moniteur</div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:12px">
+            <div class="card-title">📋 Chemin de diagnostic</div>
+            <div id="arbre-chemin" style="font-size:12px;color:var(--text2);line-height:2">
+              <span style="color:var(--text3)">Commencez le diagnostic à gauche...</span>
+            </div>
+          </div>
+          <div id="arbre-solution" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ PAGE: TESTS SYSTÈME ████ -->
+    <div class="page" id="page-tests">
+      <div class="page-header">
+        <div>
+          <div class="page-title">⚡ Tests Système Avancés</div>
+          <div class="page-sub">Benchmarks & diagnostics automatisés — CPU, RAM, Stockage, Réseau, Thermique</div>
+        </div>
+        <button class="btn btn-solid" onclick="lancerTousTests()">▶ Lancer tous les tests</button>
+      </div>
+
+      <div class="grid2" style="gap:16px;margin-bottom:16px">
+
+        <!-- Tests PC -->
+        <div class="card">
+          <div class="card-title">💻 Composants PC</div>
+          <div id="tests-pc">
+            <div class="test-item">
+              <div class="test-icon">🧠</div>
+              <div>
+                <div class="test-name">Processeur (CPU)</div>
+                <div class="prog-bar" style="margin-top:4px"><div class="prog-fill" id="bar-cpu" style="width:0%"></div></div>
+              </div>
+              <div class="test-val" id="val-cpu">--</div>
+              <div class="test-status" id="st-cpu">⚪</div>
+            </div>
+            <div class="test-item">
+              <div class="test-icon">💾</div>
+              <div>
+                <div class="test-name">Mémoire RAM (DDR4/DDR5)</div>
+                <div class="prog-bar" style="margin-top:4px"><div class="prog-fill" id="bar-ram" style="width:0%"></div></div>
+              </div>
+              <div class="test-val" id="val-ram">--</div>
+              <div class="test-status" id="st-ram">⚪</div>
+            </div>
+            <div class="test-item">
+              <div class="test-icon">💿</div>
+              <div>
+                <div class="test-name">Stockage SSD/NVMe</div>
+                <div class="prog-bar" style="margin-top:4px"><div class="prog-fill" id="bar-disk" style="width:0%"></div></div>
+              </div>
+              <div class="test-val" id="val-disk">--</div>
+              <div class="test-status" id="st-disk">⚪</div>
+            </div>
+            <div class="test-item">
+              <div class="test-icon">🎮</div>
+              <div>
+                <div class="test-name">Carte graphique (GPU)</div>
+                <div class="prog-bar" style="margin-top:4px"><div class="prog-fill orange" id="bar-gpu" style="width:0%"></div></div>
+              </div>
+              <div class="test-val" id="val-gpu">--</div>
+              <div class="test-status" id="st-gpu">⚪</div>
+            </div>
+            <div class="test-item">
+              <div class="test-icon">🌐</div>
+              <div>
+                <div class="test-name">Réseau (WiFi 6E / Ethernet)</div>
+                <div class="prog-bar" style="margin-top:4px"><div class="prog-fill" id="bar-net" style="width:0%"></div></div>
+              </div>
+              <div class="test-val" id="val-net">--</div>
+              <div class="test-status" id="st-net">⚪</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thermique -->
+        <div class="card">
+          <div class="card-title">🌡 Surveillance Thermique</div>
+          <div id="tests-therm">
+            <div style="margin-bottom:14px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px">CPU Temperature</span>
+                <span class="tip" data-tip="Critique >90°C" style="font-family:'Orbitron',monospace;font-size:12px;color:var(--cyan)" id="t-cpu">--</span>
+              </div>
+              <div class="thermal-bar"><div class="thermal-fill" id="th-cpu" style="width:0%;background:linear-gradient(90deg,#00ff88,#ffd60a,#ff2d55)"></div></div>
+            </div>
+            <div style="margin-bottom:14px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px">GPU Temperature</span>
+                <span style="font-family:'Orbitron',monospace;font-size:12px;color:var(--orange)" id="t-gpu">--</span>
+              </div>
+              <div class="thermal-bar"><div class="thermal-fill" id="th-gpu" style="width:0%;background:linear-gradient(90deg,#ffd60a,#ff6b00)"></div></div>
+            </div>
+            <div style="margin-bottom:14px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px">Disque dur / SSD</span>
+                <span style="font-family:'Orbitron',monospace;font-size:12px;color:var(--green)" id="t-disk">--</span>
+              </div>
+              <div class="thermal-bar"><div class="thermal-fill" id="th-disk" style="width:0%;background:var(--green)"></div></div>
+            </div>
+            <div style="margin-bottom:14px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                <span style="font-size:12px">Alimentation (PSU)</span>
+                <span style="font-family:'Orbitron',monospace;font-size:12px;color:var(--cyan)" id="t-psu">--</span>
+              </div>
+              <div class="thermal-bar"><div class="thermal-fill" id="th-psu" style="width:0%;background:var(--cyan)"></div></div>
+            </div>
+            <div id="therm-alert" style="margin-top:12px;font-size:11px;color:var(--text3)">
+              Lancez les tests pour afficher la surveillance thermique
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tests imprimante -->
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-title">🖨 Tests Imprimante</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+          <button class="btn btn-cyan btn-sm" onclick="testImprimante('connexion')">🔌 Test connexion</button>
+          <button class="btn btn-cyan btn-sm" onclick="testImprimante('encre')">🎨 Niveaux d'encre</button>
+          <button class="btn btn-cyan btn-sm" onclick="testImprimante('buse')">💧 Test buses</button>
+          <button class="btn btn-cyan btn-sm" onclick="testImprimante('alignement')">📐 Alignement têtes</button>
+          <button class="btn btn-cyan btn-sm" onclick="testImprimante('bourrage')">📄 Vérif. bourrage</button>
+          <button class="btn btn-cyan btn-sm" onclick="testImprimante('rouleau')">⚙️ Rouleaux</button>
+          <div id="impr-result" style="font-size:12px;color:var(--text2);margin-left:auto"></div>
+        </div>
+      </div>
+
+      <!-- Rapport tests -->
+      <div class="card">
+        <div class="card-title">📊 Rapport de Tests</div>
+        <div id="tests-rapport" style="font-size:12px;color:var(--text2)">
+          <div style="text-align:center;padding:16px;color:var(--text3)">Aucun test effectué — Lancez les tests ci-dessus</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ PAGE: DOSSIERS ████ -->
+    <div class="page" id="page-dossiers">
+      <div class="page-header">
+        <div>
+          <div class="page-title">📋 Dossiers de Réparation</div>
+          <div class="page-sub">Historique et suivi de toutes les interventions</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <input class="form-input" style="width:180px;padding:7px 12px;font-size:12px" 
+            placeholder="🔍 Rechercher..." oninput="filtrerDossiers(this.value)">
+          <select class="form-select" style="width:130px;padding:7px 10px;font-size:12px" onchange="filtrerDossiersStatut(this.value)">
+            <option value="">Tous statuts</option>
+            <option value="attente">En attente</option>
+            <option value="diagnostic">En diagnostic</option>
+            <option value="reparation">En réparation</option>
+            <option value="termine">Terminé</option>
+          </select>
+          <button class="btn btn-solid btn-sm" onclick="openModal('modal-nouveau-dossier')">＋ Nouveau</button>
+        </div>
+      </div>
+
+      <div class="grid4" style="margin-bottom:16px">
+        <div class="kpi"><div class="kpi-icon">📋</div><div class="kpi-val" id="kpi-total">0</div><div class="kpi-lbl">Total dossiers</div></div>
+        <div class="kpi"><div class="kpi-icon">⚙️</div><div class="kpi-val orange" id="kpi-en-cours">0</div><div class="kpi-lbl">En cours</div></div>
+        <div class="kpi"><div class="kpi-icon">✅</div><div class="kpi-val green" id="kpi-termines">0</div><div class="kpi-lbl">Terminés ce mois</div></div>
+        <div class="kpi"><div class="kpi-icon">💰</div><div class="kpi-val" id="kpi-ca">0</div><div class="kpi-lbl">CA (F CFA)</div></div>
+      </div>
+
+      <div class="card">
+        <table class="tech-table">
+          <thead>
+            <tr>
+              <th>N° Dossier</th><th>Client</th><th>Appareil</th><th>Panne déclarée</th>
+              <th>Priorité</th><th>Statut</th><th>Devis</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="dossiers-tbody">
+            <tr><td colspan="8" style="text-align:center;padding:30px;color:var(--text3)">Aucun dossier — Créez votre premier dossier</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ████ PAGE: KANBAN ████ -->
+    <div class="page" id="page-kanban">
+      <div class="page-header">
+        <div>
+          <div class="page-title">🗂 Suivi des Réparations</div>
+          <div class="page-sub">Tableau de bord visuel — Glissez-déposez pour changer le statut</div>
+        </div>
+      </div>
+      <div class="kanban-board" id="kanban-board">
+        <div class="kanban-col">
+          <div class="kanban-col-title"><span>📥 En attente</span><span class="nav-badge" id="kb-attente">0</span></div>
+          <div id="kb-col-attente"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-title"><span>🔬 Diagnostic</span><span class="nav-badge orange" id="kb-diag">0</span></div>
+          <div id="kb-col-diagnostic"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-title"><span>🔧 Réparation</span><span class="nav-badge orange" id="kb-rep">0</span></div>
+          <div id="kb-col-reparation"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-title"><span>🧪 Test final</span><span class="nav-badge" id="kb-test">0</span></div>
+          <div id="kb-col-test"></div>
+        </div>
+        <div class="kanban-col">
+          <div class="kanban-col-title"><span>✅ Terminé</span><span class="nav-badge" style="background:var(--green)" id="kb-ok">0</span></div>
+          <div id="kb-col-termine"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ PAGE: CLIENTS ████ -->
+    <div class="page" id="page-clients">
+      <div class="page-header">
+        <div><div class="page-title">👥 Clients & Appareils</div>
+        <div class="page-sub">Fiches clients et historique des appareils enregistrés</div></div>
+        <button class="btn btn-solid btn-sm" onclick="openModal('modal-client')">＋ Nouveau client</button>
+      </div>
+      <div class="grid2" style="gap:16px">
+        <div class="card">
+          <div class="card-title">👥 Liste des clients</div>
+          <div id="clients-list" style="font-size:12px">
+            <div style="text-align:center;padding:20px;color:var(--text3)">Aucun client enregistré</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📱 Appareils enregistrés</div>
+          <div id="appareils-list" style="font-size:12px">
+            <div style="text-align:center;padding:20px;color:var(--text3)">Sélectionnez un client</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ PAGE: CODES ERREUR ████ -->
+    <div class="page" id="page-codes-erreur">
+      <div class="page-header">
+        <div><div class="page-title">💻 Base de Codes d'Erreur</div>
+        <div class="page-sub">BSOD Windows, POST Codes, Codes imprimante, Erreurs réseau</div></div>
+        <input class="form-input" style="width:220px;font-size:12px;padding:8px 12px"
+          placeholder="🔍 Code ou description..." oninput="rechercherCode(this.value)">
+      </div>
+      <div class="grid2" style="gap:16px">
+        <div>
+          <div class="card" style="margin-bottom:12px">
+            <div class="card-title">🪟 Codes BSOD Windows</div>
+            <div id="bsod-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">🖨 Codes Imprimante</div>
+            <div id="impr-codes-list"></div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:12px">
+            <div class="card-title">⚡ Codes POST BIOS</div>
+            <div id="post-codes-list"></div>
+          </div>
+          <div class="card">
+            <div class="card-title">🌐 Erreurs Réseau</div>
+            <div id="net-codes-list"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ PAGE: OSCILLOSCOPE ████ -->
+    <div class="page" id="page-oscilloscope">
+      <div class="page-header">
+        <div><div class="page-title">📡 Oscilloscope Virtuel</div>
+        <div class="page-sub">Visualisation de signaux électroniques — Outil de diagnostic avancé</div></div>
+      </div>
+      <div class="grid2" style="gap:16px">
+        <div class="card">
+          <div class="card-title">📊 Visualisation signal</div>
+          <canvas id="oscillo-canvas" height="120"></canvas>
+          <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+            <button class="btn btn-cyan btn-sm" onclick="setSignal('sine')">≈ Sinusoïdal</button>
+            <button class="btn btn-cyan btn-sm" onclick="setSignal('square')">⊓ Carré</button>
+            <button class="btn btn-cyan btn-sm" onclick="setSignal('sawtooth')">⟋ Dents de scie</button>
+            <button class="btn btn-cyan btn-sm" onclick="setSignal('noise')">≋ Bruit (panne)</button>
+            <button class="btn btn-purple btn-sm" onclick="setSignal('short')">⚡ Court-circuit</button>
+            <button class="btn btn-red btn-sm" onclick="setSignal('flat')">— Ligne morte</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">⚙️ Paramètres mesure</div>
+          <div class="form-row" style="margin-bottom:10px">
+            <div class="form-group">
+              <div class="form-label">Fréquence (Hz)</div>
+              <input type="range" min="10" max="1000" value="50" id="osc-freq" 
+                oninput="updateOscillo()" style="width:100%;accent-color:var(--cyan)">
+              <div style="font-size:11px;color:var(--cyan);text-align:center" id="osc-freq-val">50 Hz</div>
+            </div>
+            <div class="form-group">
+              <div class="form-label">Amplitude (V)</div>
+              <input type="range" min="1" max="24" value="5" id="osc-amp"
+                oninput="updateOscillo()" style="width:100%;accent-color:var(--green)">
+              <div style="font-size:11px;color:var(--green);text-align:center" id="osc-amp-val">5 V</div>
+            </div>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px">
+            <div class="card-title" style="margin-bottom:8px">📏 Mesures en temps réel</div>
+            <div class="test-item"><div class="test-name">Tension crête-crête</div><div class="test-val" id="m-vpp">0.0 V</div></div>
+            <div class="test-item"><div class="test-name">Fréquence mesurée</div><div class="test-val" id="m-freq">0 Hz</div></div>
+            <div class="test-item"><div class="test-name">Période</div><div class="test-val" id="m-period">0 ms</div></div>
+            <div class="test-item"><div class="test-name">État circuit</div><div class="test-val" id="m-state" style="color:var(--green)">OK</div></div>
+          </div>
+          <div style="margin-top:12px">
+            <div class="form-label" style="margin-bottom:6px">Interprétation du signal</div>
+            <div id="oscillo-interp" class="code-block" style="min-height:60px;font-size:10px">
+              <span class="code-ok">// Signal sinusoïdal normal</span><br>
+              <span class="code-comment">// Tension: stable</span><br>
+              <span class="code-comment">// Fréquence: correcte</span><br>
+              <span class="code-ok">// STATUS: CIRCUIT OK ✓</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ PAGE: DEVIS ████ -->
+    <div class="page" id="page-devis">
+      <div class="page-header">
+        <div><div class="page-title">💰 Devis & Rapports</div>
+        <div class="page-sub">Génération automatique de devis et rapports de réparation</div></div>
+        <button class="btn btn-solid btn-sm" onclick="genererDevis()">📄 Générer devis</button>
+      </div>
+      <div class="grid2" style="gap:16px">
+        <div class="card">
+          <div class="card-title">🔩 Pièces & Main d'oeuvre</div>
+          <div style="margin-bottom:12px">
+            <div class="form-row">
+              <div class="form-group">
+                <div class="form-label">Pièce / Service</div>
+                <input id="devis-piece" class="form-input" placeholder="Ex: Disque SSD 256 Go">
+              </div>
+              <div class="form-group">
+                <div class="form-label">Quantité</div>
+                <input id="devis-qte" type="number" class="form-input" value="1" min="1">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <div class="form-label">Prix unitaire (F CFA)</div>
+                <input id="devis-prix" type="number" class="form-input" placeholder="0">
+              </div>
+              <div class="form-group">
+                <div class="form-label">Type</div>
+                <select id="devis-type" class="form-select">
+                  <option value="piece">Pièce matériel</option>
+                  <option value="main">Main d'oeuvre</option>
+                  <option value="logiciel">Logiciel</option>
+                  <option value="deplacement">Déplacement</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-cyan" onclick="ajouterLigneDevis()" style="width:100%">＋ Ajouter ligne</button>
+          </div>
+          <table class="tech-table">
+            <thead><tr><th>Description</th><th>Qté</th><th>P.U.</th><th>Total</th><th></th></tr></thead>
+            <tbody id="devis-lignes"><tr><td colspan="5" style="text-align:center;color:var(--text3);padding:16px">Aucune ligne</td></tr></tbody>
+          </table>
+          <div style="margin-top:12px;border-top:1px solid var(--border);padding-top:12px">
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
+              <span style="color:var(--text2)">Sous-total pièces</span>
+              <span id="total-pieces" style="font-weight:600">0 F</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
+              <span style="color:var(--text2)">Main d'oeuvre</span>
+              <span id="total-mo" style="font-weight:600">0 F</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:800;color:var(--cyan);margin-top:8px">
+              <span>TOTAL TTC</span>
+              <span id="total-ttc">0 F CFA</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📄 Aperçu Rapport</div>
+          <div id="rapport-preview" style="font-size:12px;color:var(--text2)">
+            <div style="text-align:center;border:1px dashed var(--border);border-radius:8px;padding:24px;margin-bottom:12px">
+              <div style="font-size:24px;margin-bottom:8px">📄</div>
+              <div>Rapport de réparation</div>
+              <div style="font-size:10px;color:var(--text3);margin-top:4px">Créez un dossier et ajoutez des lignes pour générer le rapport</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-cyan btn-sm" onclick="genererDevis()">📄 PDF Devis</button>
+              <button class="btn btn-green btn-sm" onclick="genererRapport()">📋 Rapport complet</button>
+              <button class="btn btn-purple btn-sm" onclick="envoyerWhatsApp()">🟢 WhatsApp</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ PAGE: TECHNIQUES 2025 ████ -->
+    <div class="page" id="page-techniques">
+      <div class="page-header">
+        <div><div class="page-title">🔧 Techniques Électronique 2025</div>
+        <div class="page-sub">Dernières technologies — DDR5, NVMe Gen5, PCIe 5.0, WiFi 6E, AI PC</div></div>
+      </div>
+      <div id="techniques-content"></div>
+    </div>
+
+    <!-- ████ PAGE: COMPOSANTS ████ -->
+    <div class="page" id="page-composants">
+      <div class="page-header">
+        <div><div class="page-title">🔩 Composants & Prix</div>
+        <div class="page-sub">Base de référence pièces — Estimation coûts réparation Bénin/Afrique</div></div>
+        <input class="form-input" style="width:200px;font-size:12px;padding:8px 12px"
+          placeholder="🔍 Rechercher composant..." oninput="rechercherComposant(this.value)">
+      </div>
+      <div id="composants-grid"></div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app-body -->
+
+<!-- ══ MODALS ══ -->
+
+<!-- Modal Nouveau Dossier -->
+<div class="modal-overlay" id="modal-nouveau-dossier">
+  <div class="modal">
+    <div class="modal-hdr">📋 Nouveau Dossier de Réparation
+      <button class="modal-close" onclick="closeModal('modal-nouveau-dossier')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <div class="form-label">Nom client *</div>
+          <input id="d-client" class="form-input" placeholder="Nom complet">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Téléphone</div>
+          <input id="d-tel" class="form-input" placeholder="0197...">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="form-label">Type d'appareil *</div>
+          <select id="d-type" class="form-select">
+            <option value="">-- Sélectionner --</option>
+            <option>💻 Ordinateur portable</option>
+            <option>🖥 PC de bureau</option>
+            <option>🖨 Imprimante laser</option>
+            <option>🖨 Imprimante jet d'encre</option>
+            <option>🖨 Imprimante 3D</option>
+            <option>📺 Écran / Moniteur</option>
+            <option>📱 Smartphone</option>
+            <option>📱 Tablette</option>
+            <option>🌐 Routeur / Switch</option>
+            <option>⚡ Alimentation</option>
+            <option>⌨️ Clavier / Souris</option>
+            <option>🔊 Enceinte / Son</option>
+            <option>⚙️ Autre électronique</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <div class="form-label">Marque / Modèle</div>
+          <input id="d-modele" class="form-input" placeholder="Ex: HP Pavilion 15, Epson L3150">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="form-label">N° de série</div>
+          <input id="d-serie" class="form-input" placeholder="SN / Numéro série">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Priorité</div>
+          <select id="d-priorite" class="form-select">
+            <option value="normale">🟡 Normale</option>
+            <option value="urgente">🔴 Urgente</option>
+            <option value="basse">🟢 Basse</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group form-full" style="margin-bottom:12px">
+        <div class="form-label">Panne déclarée par le client *</div>
+        <textarea id="d-panne" class="form-textarea" placeholder="Décrivez le problème tel que rapporté par le client..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <div class="form-label">Devis estimatif (F CFA)</div>
+          <input id="d-devis" type="number" class="form-input" placeholder="0">
+        </div>
+        <div class="form-group">
+          <div class="form-label">Accessoires reçus</div>
+          <input id="d-accessoires" class="form-input" placeholder="Chargeur, souris, câble...">
+        </div>
+      </div>
+      <div class="form-group form-full">
+        <div class="form-label">Notes technicien</div>
+        <input id="d-notes" class="form-input" placeholder="Observations supplémentaires...">
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-cyan" onclick="closeModal('modal-nouveau-dossier')">Annuler</button>
+      <button class="btn btn-solid" onclick="creerDossier()">✅ Créer le dossier</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Client -->
+<div class="modal-overlay" id="modal-client">
+  <div class="modal">
+    <div class="modal-hdr">👤 Nouveau Client <button class="modal-close" onclick="closeModal('modal-client')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><div class="form-label">Nom *</div><input id="c-nom" class="form-input" placeholder="Nom complet"></div>
+        <div class="form-group"><div class="form-label">Téléphone *</div><input id="c-tel" class="form-input" placeholder="0197..."></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><div class="form-label">Email</div><input id="c-email" class="form-input" placeholder="email@..."></div>
+        <div class="form-group"><div class="form-label">Quartier / Ville</div><input id="c-ville" class="form-input" placeholder="Cotonou..."></div>
+      </div>
+      <div class="form-group form-full"><div class="form-label">Notes</div><input id="c-notes" class="form-input" placeholder="Observations..."></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-cyan" onclick="closeModal('modal-client')">Annuler</button>
+      <button class="btn btn-solid" onclick="creerClient()">✅ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Détail Dossier -->
+<div class="modal-overlay" id="modal-detail-dossier">
+  <div class="modal">
+    <div class="modal-hdr"><span id="detail-title">Dossier</span><button class="modal-close" onclick="closeModal('modal-detail-dossier')">✕</button></div>
+    <div class="modal-body" id="detail-body"></div>
+    <div class="modal-ftr">
+      <button class="btn btn-purple btn-sm" onclick="imprimerFiche()">🖨 Imprimer fiche</button>
+      <button class="btn btn-cyan" onclick="closeModal('modal-detail-dossier')">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif" style="display:none"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// TECHDIAG PRO — Core Application
+// ═══════════════════════════════════════════════════════
+
+var DB = {
+  dossiers   : [],
+  clients    : [],
+  devisLignes: [],
+  scanCount  : 0,
+  resoluCount: 0,
+};
+
+var _selectedDevice = '';
+var _oscSignal = 'sine';
+var _oscCtx, _oscAnim;
+
+// ══ HORLOGE ══
+setInterval(function(){
+  var d = new Date();
+  var el = document.getElementById('clock-display');
+  if(el) el.textContent = d.toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}, 1000);
+
+// ══ NAVIGATION ══
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var el = document.getElementById('page-'+id);
+  if(el) el.classList.add('active');
+  if(btn) btn.classList.add('active');
+  // Init page
+  if(id==='codes-erreur') renderCodes();
+  if(id==='techniques')   renderTechniques();
+  if(id==='composants')   renderComposants();
+  if(id==='oscilloscope') initOscillo();
+  if(id==='kanban')       renderKanban();
+}
+
+// ══ MODALS ══
+function openModal(id){ var el=document.getElementById(id); if(el) el.classList.add('open'); }
+function closeModal(id){ var el=document.getElementById(id); if(el) el.classList.remove('open'); }
+
+// ══ TOAST ══
+function toast(msg, type) {
+  var el = document.getElementById('notif');
+  el.textContent = msg;
+  el.className = 'notif' + (type==='err'?' err':type==='ok'?' ok':'');
+  el.style.display = 'flex';
+  clearTimeout(el._t);
+  el._t = setTimeout(function(){ el.style.display='none'; }, 3500);
+}
+
+function fmtNum(n){ return Number(n||0).toLocaleString('fr-FR'); }
+function genId(){ return 'TD-' + String(Date.now()).slice(-6); }
+
+// ═══════════════════════════════════════════════════════
+// SCANNER IA
+// ═══════════════════════════════════════════════════════
+
+var PANNES_DB = {
+  ordinateur: {
+    'écran bleu|bsod|blue screen': {
+      titre: 'BSOD — Écran Bleu de la Mort',
+      severite: 'critique',
+      causes: ['RAM défectueuse (test MemTest86)', 'Driver corrompu', 'Disque dur défaillant', 'Surchauffe CPU', 'Virus/Malware'],
+      solutions: ['Analyser le code erreur STOP (0x...)', 'Lancer chkdsk /f /r', 'Mettre à jour ou désinstaller drivers récents', 'Tester la RAM avec MemTest86', 'Vérifier les températures CPU/GPU'],
+      outils: ['MemTest86', 'WhoCrashed', 'HWiNFO64', 'CrystalDiskInfo'],
+      duree: '2-4 heures', prix: '15 000 - 50 000'
+    },
+    'ne démarre pas|ne s\'allume pas|power': {
+      titre: 'Ordinateur ne démarre pas',
+      severite: 'critique',
+      causes: ['Alimentation défectueuse (PSU)', 'Condensateurs gonflés sur carte mère', 'RAM mal insérée', 'Court-circuit', 'BIOS corrompu'],
+      solutions: ['Tester avec une autre alimentation', 'Inspecter visuellement les condensateurs', 'Ré-insérer la RAM', 'Test POST sans périphériques', 'Flash BIOS si accessible'],
+      outils: ['Multimètre', 'Alimentation de test ATX', 'Tournevis', 'Loupe'],
+      duree: '1-3 heures', prix: '5 000 - 80 000'
+    },
+    'lent|lenteur|freeze|gèle': {
+      titre: 'Performances dégradées / Système lent',
+      severite: 'modere',
+      causes: ['Disque dur HDD saturé ou défaillant', 'Manque de RAM', 'Virus/Malware', 'Surchauffe', 'Démarrage trop chargé'],
+      solutions: ['CrystalDiskInfo — vérifier santé disque', 'Nettoyer les démarrages (MSConfig)', 'Antivirus complet (Malwarebytes)', 'Nettoyage pâte thermique + ventilateur', 'Upgrade vers SSD NVMe'],
+      outils: ['CrystalDiskInfo', 'Malwarebytes', 'CCleaner', 'HWMonitor'],
+      duree: '1-2 heures', prix: '10 000 - 45 000'
+    },
+    'surchauffe|chaud|ventilateur|bruit': {
+      titre: 'Surchauffe — Problème thermique',
+      severite: 'urgent',
+      causes: ['Pâte thermique séchée (>3 ans)', 'Ventilateur bloqué ou défaillant', 'Entrées d\'air obstruées', 'Accumulation de poussière'],
+      solutions: ['Démontage et nettoyage complet', 'Remplacement pâte thermique (Arctic MX-4)', 'Vérification vitesse ventilateur', 'Ajout de ventilation si nécessaire', 'Contrôle températures HWMonitor'],
+      outils: ['Compresseur air', 'Pâte thermique Arctic', 'HWMonitor', 'Ventilateur de remplacement'],
+      duree: '1-2 heures', prix: '8 000 - 25 000'
+    },
+    'wifi|réseau|internet|connexion': {
+      titre: 'Problème réseau / WiFi',
+      severite: 'modere',
+      causes: ['Driver WiFi corrompu', 'Carte WiFi défaillante', 'Conflit IP', 'Paramètres DNS incorrects'],
+      solutions: ['Réinstaller drivers réseau', 'Réinitialiser TCP/IP (netsh winsock reset)', 'Changer DNS vers 8.8.8.8', 'Tester avec dongle USB WiFi', 'Vérifier routeur'],
+      outils: ['Device Manager', 'CMD (admin)', 'WiFi Analyzer', 'Dongle WiFi USB'],
+      duree: '30min - 2h', prix: '5 000 - 20 000'
+    },
+    'écran|affichage|noir|pixelisé': {
+      titre: 'Problème d\'écran / Affichage',
+      severite: 'urgent',
+      causes: ['Câble LCD/LVDS endommagé', 'Rétroéclairage défaillant', 'GPU surchauffé', 'Connexion nappe défectueuse', 'Écran fissuré'],
+      solutions: ['Tester avec écran externe (HDMI/VGA)', 'Vérifier câble LVDS interne', 'Tester rétroéclairage (lampe UV)', 'Reballing GPU si artefacts', 'Remplacement dalle LCD'],
+      outils: ['Écran externe', 'Câble HDMI', 'Multimètre', 'Station reballing'],
+      duree: '2-6 heures', prix: '15 000 - 150 000'
+    },
+  },
+  imprimante: {
+    'bourrage|bloqué|papier': {
+      titre: 'Bourrage papier',
+      severite: 'modere',
+      causes: ['Papier froissé ou humide', 'Rouleaux d\'entraînement usés', 'Débris dans le chemin papier', 'Format papier incorrect'],
+      solutions: ['Ouvrir tous les capots et retirer doucement le papier', 'Nettoyer les rouleaux avec alcool isopropylique', 'Vérifier le format/grammage papier', 'Remplacer les rouleaux si usés', 'Effectuer test d\'alimentation'],
+      outils: ['Chiffon doux', 'Alcool isopropylique 90°', 'Rouleaux de remplacement'],
+      duree: '30min - 2h', prix: '5 000 - 30 000'
+    },
+    'impression floue|mauvaise qualité|ligne|bande': {
+      titre: 'Qualité impression dégradée',
+      severite: 'modere',
+      causes: ['Buses encrassées (jet d\'encre)', 'Cartouche vide ou séchée', 'Tambour usé (laser)', 'Alignement incorrect des têtes'],
+      solutions: ['Nettoyage buses depuis le menu imprimante', 'Imprimer page test alignement', 'Remplacer cartouches vides', 'Nettoyer tambour OPC (laser)', 'Recalibrer l\'imprimante'],
+      outils: ['Utilitaire imprimante', 'Feuille test', 'Kit nettoyage', 'Cartouches/toner'],
+      duree: '30min - 1h', prix: '3 000 - 50 000'
+    },
+    'n\'imprime pas|hors ligne|offline': {
+      titre: 'Imprimante hors ligne / N\'imprime pas',
+      severite: 'urgent',
+      causes: ['Spouleur impression bloqué', 'Driver corrompu', 'Connexion USB/WiFi perdue', 'File attente bloquée'],
+      solutions: ['Redémarrer le service Spouleur (services.msc)', 'Vider la file d\'impression', 'Réinstaller le driver', 'Vérifier câble USB ou reconnexion WiFi', 'Mettre par défaut'],
+      outils: ['Gestionnaire de services', 'Driver officiel constructeur', 'Câble USB'],
+      duree: '30min - 1h', prix: '5 000 - 15 000'
+    },
+  },
+  reseau: {
+    'pas internet|no internet|dns': {
+      titre: 'Pas de connexion Internet',
+      severite: 'urgent',
+      causes: ['DNS mal configuré', 'DHCP non attribué', 'Câble RJ45 défaillant', 'Routeur planté'],
+      solutions: ['ping 8.8.8.8 (tester connectivité)', 'ipconfig /release /renew', 'Changer DNS: 8.8.8.8 / 1.1.1.1', 'Redémarrer routeur/modem', 'Tester câble avec testeur RJ45'],
+      outils: ['CMD ping', 'Testeur de câble RJ45', 'Wireshark', 'nslookup'],
+      duree: '30min - 2h', prix: '5 000 - 25 000'
+    },
+    'wifi lent|signal faible|coupure': {
+      titre: 'WiFi lent ou instable',
+      severite: 'modere',
+      causes: ['Interférences canal WiFi', 'Distance trop grande du routeur', 'Routeur surchargé', 'Firmware obsolète', 'Fréquence 2.4GHz saturée'],
+      solutions: ['Scanner canaux WiFi (NetSpot/WiFi Analyzer)', 'Basculer sur 5 GHz ou WiFi 6E', 'Mise à jour firmware routeur', 'Installer répéteur WiFi 6', 'Configurer QoS'],
+      outils: ['WiFi Analyzer', 'NetSpot', 'Répéteur WiFi 6E', 'Câble ethernet'],
+      duree: '1-3 heures', prix: '10 000 - 60 000'
+    },
+  },
+  mobile: {
+    'batterie|charge|ne charge pas': {
+      titre: 'Problème batterie / Charge',
+      severite: 'urgent',
+      causes: ['Port de charge endommagé', 'Batterie gonflée/usée', 'Câble USB-C défaillant', 'IC de charge défectueux'],
+      solutions: ['Tester avec câble et chargeur différents', 'Nettoyer port charge (soufflette)', 'Mesurer tension avec multimètre', 'Remplacer batterie si <80% santé', 'Reballing IC charge si nécessaire'],
+      outils: ['Multimètre', 'Station BGA', 'Batterie compatible', 'Tournevis pentalobe'],
+      duree: '30min - 3h', prix: '8 000 - 40 000'
+    },
+    'écran cassé|vitre|tactile': {
+      titre: 'Écran cassé / Tactile défaillant',
+      severite: 'urgent',
+      causes: ['Choc physique', 'Pression excessive', 'Défaut fabrication', 'Humidité sous l\'écran'],
+      solutions: ['Remplacement assemblage écran complet', 'Tester tactile avec app diagnostic', 'Vérifier connecteurs nappe', 'Préparer outils démontage (ventouse, pics)'],
+      outils: ['Ventouse démontage', 'Pics plastique', 'Écran de remplacement', 'Chaleur douce'],
+      duree: '1-2 heures', prix: '20 000 - 100 000'
+    },
+  },
+};
+
+function selectDevice(type, btn) {
+  _selectedDevice = type;
+  document.querySelectorAll('.scanner-wrap .btn').forEach(function(b){ b.style.background=''; b.style.color=''; });
+  if(btn){ btn.style.background='rgba(0,200,255,.25)'; btn.style.color='var(--cyan)'; }
+  document.getElementById('scan-sub').textContent = 'Appareil: '+type.toUpperCase()+' — Décrivez les symptômes';
+}
+
+function lancerScan() {
+  var symptoms = (document.getElementById('scan-symptoms').value||'').toLowerCase().trim();
+  if(!symptoms && !_selectedDevice) { toast('Sélectionnez un appareil et décrivez les symptômes', 'err'); return; }
+
+  // Animation scan
+  var line = document.getElementById('scan-line');
+  var ring = document.getElementById('scan-ring');
+  var title = document.getElementById('scan-title');
+  var sub   = document.getElementById('scan-sub');
+  line.style.display = 'block';
+  ring.textContent = '⚡';
+  title.textContent = 'ANALYSE EN COURS...';
+  sub.textContent = 'Comparaison avec la base de 50 000+ pannes...';
+
+  var steps = ['Analyse des symptômes...', 'Recherche dans la base de pannes...', 'Calcul probabilités...', 'Génération recommandations...'];
+  var si = 0;
+  var stepInt = setInterval(function(){
+    if(si < steps.length){ sub.textContent = steps[si++]; }
+  }, 400);
+
+  setTimeout(function(){
+    clearInterval(stepInt);
+    line.style.display = 'none';
+    ring.textContent = '🔬';
+    title.textContent = 'DIAGNOSTIC TERMINÉ';
+
+    // Recherche dans la base
+    var device = _selectedDevice || 'ordinateur';
+    var db = PANNES_DB[device] || PANNES_DB.ordinateur;
+    var found = null;
+
+    Object.entries(db).forEach(function(entry){
+      var keywords = entry[0].split('|');
+      keywords.forEach(function(kw){
+        if(symptoms.includes(kw) || !symptoms) found = found || { key: entry[0], data: entry[1] };
+      });
+    });
+
+    // Si pas trouvé → premier résultat de la catégorie
+    if(!found) {
+      var firstEntry = Object.entries(db)[0];
+      found = { key: firstEntry[0], data: firstEntry[1] };
+    }
+
+    var result = found.data;
+    var sevColor = result.severite==='critique'?'var(--red)':result.severite==='urgent'?'var(--orange)':'var(--yellow)';
+    var sevIcon  = result.severite==='critique'?'🔴':result.severite==='urgent'?'🟠':'🟡';
+
+    document.getElementById('scan-result').innerHTML =
+      '<div style="background:rgba(0,0,0,.3);border-radius:8px;padding:14px">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'
+        +'<span style="font-size:18px">'+sevIcon+'</span>'
+        +'<strong style="color:var(--text);font-size:13px">'+result.titre+'</strong>'
+        +'<span style="background:'+sevColor+'22;color:'+sevColor+';border:1px solid '+sevColor+'44;'
+        +'padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;text-transform:uppercase;margin-left:auto">'+result.severite+'</span>'
+      +'</div>'
+      +'<div style="font-size:11px;color:var(--text2);margin-bottom:8px">🎯 Causes probables :</div>'
+      +result.causes.map(function(c,i){
+        return '<div style="display:flex;gap:6px;font-size:11px;color:var(--text2);margin-bottom:4px">'
+          +'<span style="color:var(--cyan);font-weight:700">'+(i+1)+'.</span>'+c+'</div>';
+      }).join('')
+      +'<div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid var(--border)">'
+        +'<span style="font-size:11px;color:var(--text3)">⏱ '+result.duree+'</span>'
+        +'<span style="font-size:11px;color:var(--green);font-weight:700">💰 '+result.prix+' F CFA</span>'
+      +'</div>'
+    +'</div>';
+
+    document.getElementById('scan-actions').innerHTML =
+      '<div style="margin-bottom:8px;font-size:11px;font-weight:700;color:var(--text2)">🔧 ÉTAPES DE RÉPARATION :</div>'
+      +result.solutions.map(function(s,i){
+        return '<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">'
+          +'<span style="background:var(--cyan);color:var(--bg);width:18px;height:18px;border-radius:50%;'
+          +'display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;flex-shrink:0">'+(i+1)+'</span>'
+          +'<span style="color:var(--text)">'+s+'</span>'
+        +'</div>';
+      }).join('')
+      +'<div style="margin-top:10px;padding:8px;background:var(--surface3);border-radius:6px">'
+        +'<div style="font-size:10px;font-weight:700;color:var(--text3);margin-bottom:6px">🛠 OUTILS REQUIS</div>'
+        +'<div style="display:flex;flex-wrap:wrap;gap:4px">'
+        +result.outils.map(function(o){
+          return '<span style="background:rgba(0,200,255,.1);border:1px solid var(--border2);'
+          +'color:var(--cyan);padding:2px 8px;border-radius:4px;font-size:10px">'+o+'</span>';
+        }).join('')
+        +'</div>'
+      +'</div>'
+      +'<button class="btn btn-solid btn-sm" style="margin-top:10px;width:100%" onclick="ouvrirDossierDepuisScan(\''+result.titre+'\')">📋 Créer dossier de réparation</button>';
+
+    DB.scanCount++;
+    document.getElementById('stat-scans').textContent = DB.scanCount;
+    sub.textContent = 'Diagnostic terminé — ' + result.causes.length + ' causes identifiées';
+    toast('✅ Diagnostic terminé: ' + result.titre);
+  }, 2000);
+}
+
+function ouvrirDossierDepuisScan(titre) {
+  document.getElementById('d-panne').value = titre;
+  openModal('modal-nouveau-dossier');
+}
+
+// ═══════════════════════════════════════════════════════
+// ARBRE DE DIAGNOSTIC
+// ═══════════════════════════════════════════════════════
+
+var ARBRE = {
+  ordi: {
+    q: '💻 L\'ordinateur s\'allume-t-il ?',
+    opts: {
+      'Oui, il s\'allume': {
+        q: 'Y a-t-il un affichage à l\'écran ?',
+        opts: {
+          'Écran noir uniquement': { result: { titre:'Problème affichage/GPU', icon:'🖥', color:'var(--orange)', causes:['Câble LCD défaillant','GPU surchauffé','Driver corrompu'], action:'Tester avec écran externe, vérifier nappe LCD' }},
+          'Écran bleu (BSOD)':    { result: { titre:'Blue Screen of Death', icon:'💙', color:'var(--red)', causes:['RAM défectueuse','Driver corrompu','Virus'], action:'Analyser code STOP, tester RAM avec MemTest86' }},
+          'Démarre mais très lent':{ result: { titre:'Performances dégradées', icon:'🐌', color:'var(--yellow)', causes:['Disque dur défaillant','Manque RAM','Malware'], action:'CrystalDiskInfo, analyse malware, upgrade SSD' }},
+          'Fonctionne normalement':{ result: { titre:'Système opérationnel', icon:'✅', color:'var(--green)', causes:[], action:'Vérifier régulièrement avec les outils de monitoring' }},
+        }
+      },
+      'Non, ne s\'allume pas': {
+        q: 'Le voyant power s\'allume-t-il ?',
+        opts: {
+          'Oui, voyant allumé': { result: { titre:'POST/Démarrage échoué', icon:'⚡', color:'var(--orange)', causes:['RAM défaillante','BIOS corrompu','CPU overclocked'], action:'Tester 1 barrette RAM, reset CMOS, écouter bips POST' }},
+          'Non, aucun voyant':  { result: { titre:'Problème alimentation', icon:'🔌', color:'var(--red)', causes:['PSU défaillant','Condensateurs grillés','Court-circuit'], action:'Tester alimentation au multimètre, inspecter carte mère' }},
+          'Voyant clignote':    { result: { titre:'Mode veille / Hibernation', icon:'😴', color:'var(--cyan)', causes:['Veille profonde Windows','BIOS sleep bug'], action:'Maintenir bouton power 10s, désactiver veille prolongée' }},
+        }
+      },
+    }
+  },
+  imprimante: {
+    q: '🖨 L\'imprimante est-elle reconnue par l\'ordinateur ?',
+    opts: {
+      'Oui, reconnue': {
+        q: 'Quel est le problème d\'impression ?',
+        opts: {
+          'Qualité mauvaise (flou, lignes)': { result: { titre:'Problème qualité impression', icon:'📄', color:'var(--orange)', causes:['Buses encrassées','Cartouches vides','Tête mal alignée'], action:'Nettoyage buses, alignement têtes, remplacer cartouches' }},
+          'Bourrage papier fréquent':        { result: { titre:'Bourrage papier récurrent', icon:'🗞', color:'var(--orange)', causes:['Rouleaux usés','Papier inadapté','Débris internes'], action:'Nettoyer rouleaux IPA 90°, vérifier type papier, inspection interne' }},
+          'N\'imprime pas (file bloquée)':   { result: { titre:'Spouleur d\'impression bloqué', icon:'🚫', color:'var(--red)', causes:['Service Windows bloqué','File corrompue','Driver planté'], action:'Redémarrer Spouleur (services.msc), vider file impression' }},
+        }
+      },
+      'Non, non reconnue': { result: { titre:'Imprimante non détectée', icon:'🔌', color:'var(--red)', causes:['Driver manquant','Câble USB défaillant','Conflit USB'], action:'Réinstaller driver officiel, changer câble, tester autre port USB' }},
+    }
+  },
+  reseau: {
+    q: '🌐 Internet fonctionne-t-il sur d\'autres appareils ?',
+    opts: {
+      'Oui, autres appareils OK': {
+        q: 'Problème WiFi ou câble ?',
+        opts: {
+          'WiFi uniquement':       { result: { titre:'Problème carte WiFi', icon:'📡', color:'var(--orange)', causes:['Driver WiFi corrompu','Interférences','Canal saturé'], action:'Réinstaller driver, changer canal WiFi, basculer sur 5GHz' }},
+          'Câble ethernet aussi':  { result: { titre:'Problème logiciel réseau', icon:'🌐', color:'var(--yellow)', causes:['TCP/IP corrompu','DNS incorrect','Conflit IP'], action:'netsh winsock reset, changer DNS vers 8.8.8.8, ipconfig /renew' }},
+        }
+      },
+      'Non, tous appareils KO': { result: { titre:'Problème routeur/FAI', icon:'📡', color:'var(--red)', causes:['Routeur en panne','Panne opérateur','Câble modem défaillant'], action:'Redémarrer routeur, contacter opérateur, tester avec autre câble' }},
+    }
+  },
+  ecran: {
+    q: '🖥 L\'écran affiche-t-il quelque chose ?',
+    opts: {
+      'Rien du tout (noir total)': { result: { titre:'Rétroéclairage défaillant', icon:'💡', color:'var(--red)', causes:['Ballast inverter grillé (ancien LCD)','LED rétro défaillante','Câble alimentation écran'], action:'Tester avec lampe UV pour vérifier rétro, mesurer tension alimentation' }},
+      'Image dégradée/artefacts':  { result: { titre:'Dalle LCD endommagée / GPU', icon:'🖼', color:'var(--orange)', causes:['Dalle LCD fissurée internement','GPU overheating','Câble LVDS endommagé'], action:'Tester GPU avec autre écran, inspecter câble LVDS, remplacement dalle' }},
+      'Ligne/Colonne morte':       { result: { titre:'Pixels morts / Dalle défaillante', icon:'📺', color:'var(--yellow)', causes:['Pixels morts physiques','Câble nappe desserré','Contrôleur T-Con défaillant'], action:'Tester JScreenFix pour pixels coincés, vérifier nappe, remplacement dalle' }},
+    }
+  },
+  mobile: {
+    q: '📱 Quel est le problème principal ?',
+    opts: {
+      'Écran cassé': { result: { titre:'Remplacement écran', icon:'💔', color:'var(--red)', causes:['Choc physique'], action:'Commander écran compatible, démontage avec ventouse+chaleur, remplacement' }},
+      'Batterie / Charge': {
+        q: 'La batterie charge-t-elle ?',
+        opts: {
+          'Ne charge plus du tout': { result: { titre:'Port charge ou IC charge défaillant', icon:'🔋', color:'var(--red)', causes:['Port USB-C endommagé','IC de charge grillé','Câble défaillant'], action:'Nettoyer port, tester câble, mesurer tension port, reballing IC charge' }},
+          'Charge lentement':       { result: { titre:'Dégradation batterie', icon:'🔋', color:'var(--yellow)', causes:['Batterie dégradée (< 80%)','Chargeur inadapté','Câble faible qualité'], action:'Vérifier santé batterie (AccuBattery), remplacement batterie si <80%' }},
+        }
+      },
+      'Surchauffe':    { result: { titre:'Surchauffe mobile', icon:'🌡', color:'var(--orange)', causes:['App en arrière-plan','Processeur throttling','Batterie gonflée'], action:'Analyser apps gourmandes, vérifier si batterie gonflée, nettoyer cache' }},
+    }
+  }
+};
+
+var _cheminArbre = [];
+
+function arbreChoix(key) {
+  _cheminArbre.push(key);
+  var node = ARBRE;
+  _cheminArbre.forEach(function(k){
+    if(node && node[k]) node = node[k];
+    else if(node && node.opts && node.opts[k]) node = node.opts[k];
+  });
+  renderArbreNode(node);
+}
+
+function renderArbreNode(node) {
+  var container = document.getElementById('arbre-container');
+  var cheminEl  = document.getElementById('arbre-chemin');
+
+  if(!node) return;
+
+  if(node.result) {
+    // Résultat final
+    var r = node.result;
+    document.getElementById('arbre-solution').style.display = 'block';
+    document.getElementById('arbre-solution').innerHTML =
+      '<div class="diag-result '+(r.color.includes('red')?'crit':r.color.includes('yellow')?'warn':'')+'">'
+      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'
+        +'<span style="font-size:24px">'+r.icon+'</span>'
+        +'<strong style="font-size:14px;color:var(--text)">'+r.titre+'</strong>'
+      +'</div>'
+      +(r.causes.length?'<div style="font-size:11px;color:var(--text2);margin-bottom:6px">Causes identifiées :</div>'
+        +r.causes.map(function(c){ return '<div style="font-size:11px;padding:3px 0;color:var(--text)">• '+c+'</div>'; }).join(''):'')
+      +'<div style="margin-top:10px;padding:10px;background:rgba(0,0,0,.2);border-radius:6px;font-size:12px;color:var(--text)">'
+        +'<strong style="color:var(--cyan)">Action :</strong> '+r.action
+      +'</div>'
+      +'<button class="btn btn-solid btn-sm" style="margin-top:10px;width:100%" onclick="ouvrirDossierDepuisScan(\''+r.titre+'\')">📋 Créer dossier</button>'
+    +'</div>';
+
+    // Chemin
+    cheminEl.innerHTML = _cheminArbre.map(function(k,i){
+      return '<span style="color:var(--cyan)">'+k+'</span>'+(i<_cheminArbre.length-1?' → ':'');
+    }).join('') + ' → <span style="color:var(--green)">'+r.titre+'</span>';
+    return;
+  }
+
+  if(node.q && node.opts) {
+    var step = document.createElement('div');
+    step.className = 'diag-step';
+    step.innerHTML = '<div class="diag-step-title">'+node.q+'</div>'
+      +'<div class="diag-options">'
+      +Object.keys(node.opts).map(function(k){
+        return '<div class="diag-opt" onclick="arbreChoix(\''+k.replace(/'/g,"\\'")+'\')" data-key="'+k+'">'+k+'</div>';
+      }).join('')
+      +'</div>';
+    container.appendChild(step);
+
+    // Marquer sélection précédente
+    var lastKey = _cheminArbre[_cheminArbre.length-1];
+    container.querySelectorAll('.diag-opt').forEach(function(opt){
+      if(opt.dataset.key === lastKey) opt.classList.add('selected');
+    });
+  }
+}
+
+function resetArbre() {
+  _cheminArbre = [];
+  var container = document.getElementById('arbre-container');
+  container.innerHTML = '<div class="diag-step"><div class="diag-step-title">🖥 Quel type d\'appareil ?</div>'
+    +'<div class="diag-options">'
+    +'<div class="diag-opt" onclick="arbreChoix(\'ordi\')">💻 Ordinateur PC/Mac</div>'
+    +'<div class="diag-opt" onclick="arbreChoix(\'imprimante\')">🖨 Imprimante</div>'
+    +'<div class="diag-opt" onclick="arbreChoix(\'reseau\')">🌐 Équipement réseau</div>'
+    +'<div class="diag-opt" onclick="arbreChoix(\'mobile\')">📱 Smartphone/Tablette</div>'
+    +'<div class="diag-opt" onclick="arbreChoix(\'ecran\')">🖥 Écran/Moniteur</div>'
+    +'</div></div>';
+  document.getElementById('arbre-chemin').innerHTML = '<span style="color:var(--text3)">Commencez le diagnostic à gauche...</span>';
+  document.getElementById('arbre-solution').style.display = 'none';
+  document.getElementById('arbre-solution').innerHTML = '';
+}
+
+// ═══════════════════════════════════════════════════════
+// TESTS SYSTÈME
+// ═══════════════════════════════════════════════════════
+
+var _testsRunning = false;
+
+function lancerTousTests() {
+  if(_testsRunning) return;
+  _testsRunning = true;
+  var rapport = [];
+
+  var tests = [
+    { id:'cpu', name:'CPU', max:100, unit:'%', seuil:85, bar:'bar-cpu', val:'val-cpu', st:'st-cpu' },
+    { id:'ram', name:'RAM', max:100, unit:'%', seuil:80, bar:'bar-ram', val:'val-ram', st:'st-ram' },
+    { id:'disk', name:'SSD/NVMe', max:100, unit:'%', seuil:90, bar:'bar-disk', val:'val-disk', st:'st-disk' },
+    { id:'gpu', name:'GPU', max:100, unit:'%', seuil:88, bar:'bar-gpu', val:'val-gpu', st:'st-gpu' },
+    { id:'net', name:'Réseau', max:100, unit:'%', seuil:70, bar:'bar-net', val:'val-net', st:'st-net' },
+  ];
+
+  tests.forEach(function(t, idx) {
+    setTimeout(function(){
+      var score = Math.floor(Math.random() * 35) + 60; // 60-95
+      var bar = document.getElementById(t.bar);
+      var val = document.getElementById(t.val);
+      var st  = document.getElementById(t.st);
+      if(bar) bar.style.width = score + '%';
+      if(bar && score > t.seuil) { bar.className = 'prog-fill red'; }
+      else if(bar && score > t.seuil-15) { bar.className = 'prog-fill orange'; }
+      var etat = score < t.seuil-15 ? '✅' : score < t.seuil ? '⚠️' : '❌';
+      if(val) val.textContent = score + t.unit;
+      if(st)  st.textContent  = etat;
+      rapport.push({ name: t.name, score, etat });
+
+      // Thermique
+      var temps = { cpu:55+Math.random()*35, gpu:50+Math.random()*40, disk:35+Math.random()*20, psu:40+Math.random()*25 };
+      Object.entries(temps).forEach(function(e){
+        var el = document.getElementById('t-'+e[0]);
+        var bar2 = document.getElementById('th-'+e[0]);
+        if(el) el.textContent = Math.round(e[1]) + '°C';
+        if(bar2) bar2.style.width = (e[1]/100*100) + '%';
+      });
+      var maxTemp = Math.max(...Object.values(temps));
+      var alert = document.getElementById('therm-alert');
+      if(alert) {
+        if(maxTemp > 85) { alert.innerHTML = '<span style="color:var(--red)">🔥 SURCHAUFFE CRITIQUE — Nettoyage immédiat requis!</span>'; }
+        else if(maxTemp > 70) { alert.innerHTML = '<span style="color:var(--orange)">⚠️ Températures élevées — Vérifier ventilation</span>'; }
+        else { alert.innerHTML = '<span style="color:var(--green)">✅ Températures normales</span>'; }
+      }
+
+      // Rapport final
+      if(idx === tests.length-1) {
+        setTimeout(function(){
+          var rapportEl = document.getElementById('tests-rapport');
+          var nbOk  = rapport.filter(function(r){ return r.etat==='✅'; }).length;
+          var nbWarn= rapport.filter(function(r){ return r.etat==='⚠️'; }).length;
+          var nbCrit= rapport.filter(function(r){ return r.etat==='❌'; }).length;
+          rapportEl.innerHTML =
+            '<div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap">'
+            +'<span class="badge badge-ok">✅ OK: '+nbOk+'</span>'
+            +'<span class="badge badge-warn">⚠️ Avertissements: '+nbWarn+'</span>'
+            +'<span class="badge badge-crit">❌ Critiques: '+nbCrit+'</span>'
+            +'</div>'
+            +rapport.map(function(r){
+              var col = r.etat==='✅'?'var(--green)':r.etat==='⚠️'?'var(--yellow)':'var(--red)';
+              return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px">'
+                +'<span>'+r.name+'</span>'
+                +'<span style="font-family:Orbitron,monospace;color:var(--cyan)">'+r.score+'%</span>'
+                +'<span style="color:'+col+'">'+r.etat+'</span>'
+              +'</div>';
+            }).join('')
+            +(nbCrit>0?'<div style="margin-top:10px;padding:10px;background:rgba(255,45,85,.08);border:1px solid rgba(255,45,85,.3);border-radius:6px;font-size:11px;color:var(--red)">🔴 Composants critiques détectés — Maintenance urgente recommandée</div>':'')
+            +'<button class="btn btn-cyan btn-sm" style="margin-top:10px" onclick="genererRapport()">📋 Générer rapport complet</button>';
+          _testsRunning = false;
+          toast('✅ Tests terminés — '+nbCrit+' problème(s) critique(s) détecté(s)', nbCrit>0?'err':'ok');
+        }, 500);
+      }
+    }, idx * 600);
+  });
+}
+
+function testImprimante(type) {
+  var messages = {
+    connexion:   '🔌 Connexion: Imprimante en ligne (USB 2.0)',
+    encre:       '🎨 Encre: Noir 45% — Cyan 78% — Magenta 62% — Jaune 88%',
+    buse:        '💧 Buses: 8/8 buses OK — Débit nominal',
+    alignement:  '📐 Alignement: Désaxage de +0.3mm détecté — Recalibrage conseillé',
+    bourrage:    '📄 Chemin papier: Dégagé — Aucun bourrage détecté',
+    rouleau:     '⚙️ Rouleaux: Usure modérée — Nettoyage IPA recommandé',
+  };
+  document.getElementById('impr-result').textContent = messages[type] || '';
+  toast('Test ' + type + ' effectué');
+}
+
+// ═══════════════════════════════════════════════════════
+// DOSSIERS
+// ═══════════════════════════════════════════════════════
+
+function creerDossier() {
+  var client = document.getElementById('d-client').value.trim();
+  var type   = document.getElementById('d-type').value;
+  var panne  = document.getElementById('d-panne').value.trim();
+  if(!client || !type || !panne) { toast('Remplissez les champs obligatoires *', 'err'); return; }
+
+  var dossier = {
+    id         : genId(),
+    num        : 'TD-' + String(Date.now()).slice(-5),
+    client,
+    tel        : document.getElementById('d-tel').value,
+    type,
+    modele     : document.getElementById('d-modele').value,
+    serie      : document.getElementById('d-serie').value,
+    panne,
+    priorite   : document.getElementById('d-priorite').value,
+    devis      : Number(document.getElementById('d-devis').value)||0,
+    accessoires: document.getElementById('d-accessoires').value,
+    notes      : document.getElementById('d-notes').value,
+    statut     : 'attente',
+    date       : new Date().toLocaleDateString('fr-FR'),
+    dateISO    : new Date().toISOString(),
+  };
+
+  DB.dossiers.unshift(dossier);
+  closeModal('modal-nouveau-dossier');
+  renderDossiers();
+  renderKanban();
+  updateBadges();
+  toast('✅ Dossier ' + dossier.num + ' créé — ' + client);
+  // Reset form
+  ['d-client','d-tel','d-type','d-modele','d-serie','d-panne','d-devis','d-accessoires','d-notes'].forEach(function(id){
+    var el = document.getElementById(id); if(el) el.value='';
+  });
+}
+
+function renderDossiers(filter, statutFilter) {
+  var tbody = document.getElementById('dossiers-tbody');
+  if(!tbody) return;
+  var data = DB.dossiers.filter(function(d){
+    var f = filter ? (d.client.toLowerCase().includes(filter.toLowerCase()) || d.panne.toLowerCase().includes(filter.toLowerCase()) || d.num.includes(filter)) : true;
+    var s = statutFilter ? d.statut===statutFilter : true;
+    return f && s;
+  });
+
+  var statutMap = {
+    attente    : '<span class="badge badge-info">📥 En attente</span>',
+    diagnostic : '<span class="badge badge-warn">🔬 Diagnostic</span>',
+    reparation : '<span class="badge badge-prog">🔧 Réparation</span>',
+    test       : '<span class="badge badge-warn">🧪 Test</span>',
+    termine    : '<span class="badge badge-ok">✅ Terminé</span>',
+  };
+  var prioMap = {
+    urgente: '<span style="color:var(--red);font-weight:800">🔴 Urgente</span>',
+    normale : '<span style="color:var(--yellow)">🟡 Normale</span>',
+    basse   : '<span style="color:var(--green)">🟢 Basse</span>',
+  };
+
+  tbody.innerHTML = data.length ? data.map(function(d){
+    return '<tr>'
+      +'<td><strong style="font-family:Orbitron,monospace;font-size:10px;color:var(--cyan)">'+d.num+'</strong><br><span style="font-size:10px;color:var(--text3)">'+d.date+'</span></td>'
+      +'<td><strong>'+d.client+'</strong><br><span style="font-size:10px;color:var(--text3)">'+d.tel+'</span></td>'
+      +'<td>'+d.type+'<br><span style="font-size:10px;color:var(--text3)">'+d.modele+'</span></td>'
+      +'<td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+d.panne+'">'+d.panne+'</td>'
+      +'<td>'+(prioMap[d.priorite]||d.priorite)+'</td>'
+      +'<td>'+( statutMap[d.statut]||d.statut)+'</td>'
+      +'<td style="font-weight:700;color:var(--green);font-family:Orbitron,monospace;font-size:11px">'+(d.devis?fmtNum(d.devis)+' F':'—')+'</td>'
+      +'<td style="display:flex;gap:4px">'
+        +'<button class="btn btn-cyan btn-sm" onclick="voirDossier(\''+d.id+'\')">👁</button>'
+        +'<button class="btn btn-orange btn-sm" onclick="changerStatut(\''+d.id+'\')">▶</button>'
+        +'<button class="btn btn-red btn-sm" onclick="supprimerDossier(\''+d.id+'\')">🗑</button>'
+      +'</td>'
+    +'</tr>';
+  }).join('') : '<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text3)">Aucun dossier</td></tr>';
+
+  // KPIs
+  var total   = DB.dossiers.length;
+  var enCours = DB.dossiers.filter(function(d){ return d.statut!=='termine'; }).length;
+  var termines= DB.dossiers.filter(function(d){ return d.statut==='termine'; }).length;
+  var ca      = DB.dossiers.filter(function(d){ return d.statut==='termine'; }).reduce(function(s,d){ return s+d.devis; },0);
+  var el1=document.getElementById('kpi-total'); if(el1) el1.textContent=total;
+  var el2=document.getElementById('kpi-en-cours'); if(el2) el2.textContent=enCours;
+  var el3=document.getElementById('kpi-termines'); if(el3) el3.textContent=termines;
+  var el4=document.getElementById('kpi-ca'); if(el4) el4.textContent=fmtNum(ca);
+}
+
+function filtrerDossiers(v) { renderDossiers(v); }
+function filtrerDossiersStatut(v) { renderDossiers('', v); }
+
+function voirDossier(id) {
+  var d = DB.dossiers.find(function(x){ return x.id===id; });
+  if(!d) return;
+  document.getElementById('detail-title').textContent = '📋 Dossier ' + d.num + ' — ' + d.client;
+  document.getElementById('detail-body').innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
+    +'<div class="card"><div class="card-title">👤 Client</div>'
+      +'<div class="test-item"><div class="test-name">Nom</div><div style="font-size:12px;color:var(--text)">'+d.client+'</div></div>'
+      +'<div class="test-item"><div class="test-name">Téléphone</div><div style="font-size:12px;color:var(--cyan)">'+d.tel+'</div></div>'
+    +'</div>'
+    +'<div class="card"><div class="card-title">💻 Appareil</div>'
+      +'<div class="test-item"><div class="test-name">Type</div><div style="font-size:12px;color:var(--text)">'+d.type+'</div></div>'
+      +'<div class="test-item"><div class="test-name">Modèle</div><div style="font-size:12px;color:var(--text)">'+d.modele+'</div></div>'
+      +(d.serie?'<div class="test-item"><div class="test-name">N° Série</div><div style="font-size:12px;font-family:Orbitron,monospace;color:var(--cyan)">'+d.serie+'</div></div>':'')
+    +'</div>'
+    +'</div>'
+    +'<div class="card" style="margin-top:12px"><div class="card-title">🔬 Panne & Intervention</div>'
+      +'<div style="font-size:13px;color:var(--text);line-height:1.7;padding:8px;background:var(--surface2);border-radius:6px">'+d.panne+'</div>'
+      +(d.notes?'<div style="font-size:11px;color:var(--text2);margin-top:8px"><strong>Notes :</strong> '+d.notes+'</div>':'')
+      +(d.accessoires?'<div style="font-size:11px;color:var(--text2);margin-top:6px"><strong>Accessoires reçus :</strong> '+d.accessoires+'</div>':'')
+    +'</div>'
+    +'<div style="display:flex;gap:10px;margin-top:12px;align-items:center">'
+      +'<select id="statut-select-'+d.id+'" class="form-select" style="flex:1" onchange="changerStatutDirect(\''+d.id+'\',this.value)">'
+        +'<option value="attente" '+(d.statut==='attente'?'selected':'')+'>📥 En attente</option>'
+        +'<option value="diagnostic" '+(d.statut==='diagnostic'?'selected':'')+'>🔬 Diagnostic</option>'
+        +'<option value="reparation" '+(d.statut==='reparation'?'selected':'')+'>🔧 Réparation</option>'
+        +'<option value="test" '+(d.statut==='test'?'selected':'')+'>🧪 Test final</option>'
+        +'<option value="termine" '+(d.statut==='termine'?'selected':'')+'>✅ Terminé</option>'
+      +'</select>'
+      +'<div style="font-family:Orbitron,monospace;font-size:13px;font-weight:800;color:var(--green)">'+(d.devis?fmtNum(d.devis)+' F CFA':'Devis non défini')+'</div>'
+    +'</div>';
+  openModal('modal-detail-dossier');
+}
+
+function changerStatutDirect(id, newStatut) {
+  var d = DB.dossiers.find(function(x){ return x.id===id; });
+  if(d) {
+    d.statut = newStatut;
+    renderDossiers(); renderKanban(); updateBadges();
+    if(newStatut==='termine') {
+      DB.resoluCount++;
+      document.getElementById('stat-resolus').textContent = DB.resoluCount;
+    }
+    toast('✅ Statut mis à jour: ' + newStatut);
+  }
+}
+
+function changerStatut(id) {
+  var ordre = ['attente','diagnostic','reparation','test','termine'];
+  var d = DB.dossiers.find(function(x){ return x.id===id; });
+  if(d) {
+    var idx = ordre.indexOf(d.statut);
+    if(idx < ordre.length-1) {
+      d.statut = ordre[idx+1];
+      renderDossiers(); renderKanban(); updateBadges();
+      toast('→ ' + d.num + ' : ' + d.statut);
+    }
+  }
+}
+
+function supprimerDossier(id) {
+  if(!confirm('Supprimer ce dossier ?')) return;
+  DB.dossiers = DB.dossiers.filter(function(d){ return d.id!==id; });
+  renderDossiers(); renderKanban(); updateBadges();
+  toast('🗑 Dossier supprimé');
+}
+
+function updateBadges() {
+  var n = DB.dossiers.filter(function(d){ return d.statut!=='termine'; }).length;
+  var el = document.getElementById('badge-dossiers');
+  if(el) el.textContent = n || '';
+}
+
+// ═══════════════════════════════════════════════════════
+// KANBAN
+// ═══════════════════════════════════════════════════════
+
+function renderKanban() {
+  var colonnes = ['attente','diagnostic','reparation','test','termine'];
+  colonnes.forEach(function(col){
+    var el = document.getElementById('kb-col-'+col);
+    var cnt = document.getElementById('kb-'+(col==='attente'?'attente':col==='diagnostic'?'diag':col==='reparation'?'rep':col==='test'?'test':'ok'));
+    var dossiers = DB.dossiers.filter(function(d){ return d.statut===col; });
+    if(cnt) cnt.textContent = dossiers.length;
+    if(!el) return;
+    var prioColor = { urgente:'var(--red)', normale:'var(--yellow)', basse:'var(--green)' };
+    el.innerHTML = dossiers.length ? dossiers.map(function(d){
+      return '<div class="kanban-card" onclick="voirDossier(\''+d.id+'\')">'
+        +'<div style="display:flex;justify-content:space-between;align-items:flex-start">'
+          +'<div class="kanban-card-title">'+d.client+'</div>'
+          +'<span style="width:8px;height:8px;border-radius:50%;background:'+(prioColor[d.priorite]||'var(--text3)')+';flex-shrink:0;margin-top:3px"></span>'
+        +'</div>'
+        +'<div class="kanban-card-meta">'+d.type+'</div>'
+        +'<div class="kanban-card-meta" style="margin-top:4px">'+d.panne.substring(0,40)+(d.panne.length>40?'...':'')+'</div>'
+        +'<div style="display:flex;justify-content:space-between;margin-top:6px">'
+          +'<span style="font-size:9px;font-family:Orbitron,monospace;color:var(--cyan)">'+d.num+'</span>'
+          +'<span style="font-size:10px;color:var(--green)">'+(d.devis?fmtNum(d.devis)+' F':'')+'</span>'
+        +'</div>'
+      +'</div>';
+    }).join('') : '<div style="font-size:11px;color:var(--text3);text-align:center;padding:12px;border:1px dashed var(--border);border-radius:6px">Vide</div>';
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// CLIENTS
+// ═══════════════════════════════════════════════════════
+
+function creerClient() {
+  var nom = document.getElementById('c-nom').value.trim();
+  var tel = document.getElementById('c-tel').value.trim();
+  if(!nom||!tel){ toast('Nom et téléphone obligatoires', 'err'); return; }
+  DB.clients.push({ id:genId(), nom, tel,
+    email: document.getElementById('c-email').value,
+    ville: document.getElementById('c-ville').value,
+    notes: document.getElementById('c-notes').value,
+    date: new Date().toLocaleDateString('fr-FR')
+  });
+  closeModal('modal-client');
+  renderClients();
+  toast('✅ Client enregistré: ' + nom);
+}
+
+function renderClients() {
+  var el = document.getElementById('clients-list');
+  if(!el) return;
+  el.innerHTML = DB.clients.length ? DB.clients.map(function(c){
+    var nbDossiers = DB.dossiers.filter(function(d){ return d.client===c.nom; }).length;
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="voirClientDossiers(\''+c.nom+'\')">'
+      +'<div style="width:32px;height:32px;border-radius:50%;background:rgba(0,200,255,.15);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--cyan);flex-shrink:0">'+c.nom[0].toUpperCase()+'</div>'
+      +'<div style="flex:1">'
+        +'<div style="font-size:13px;font-weight:600;color:var(--text)">'+c.nom+'</div>'
+        +'<div style="font-size:10px;color:var(--text3)">'+c.tel+'</div>'
+      +'</div>'
+      +'<div class="badge badge-info">'+nbDossiers+' dossier(s)</div>'
+    +'</div>';
+  }).join('') : '<div style="text-align:center;padding:20px;color:var(--text3)">Aucun client</div>';
+}
+
+function voirClientDossiers(nom) {
+  var el = document.getElementById('appareils-list');
+  if(!el) return;
+  var dossiers = DB.dossiers.filter(function(d){ return d.client===nom; });
+  el.innerHTML = dossiers.length
+    ? '<div style="font-size:11px;font-weight:700;color:var(--cyan);margin-bottom:8px">Dossiers de '+nom+' :</div>'
+      + dossiers.map(function(d){
+        return '<div style="padding:8px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;margin-bottom:6px;cursor:pointer" onclick="voirDossier(\''+d.id+'\')">'
+          +'<div style="font-size:11px;font-family:Orbitron,monospace;color:var(--cyan)">'+d.num+'</div>'
+          +'<div style="font-size:12px;color:var(--text)">'+d.type+'</div>'
+          +'<div style="font-size:10px;color:var(--text3)">'+d.panne.substring(0,50)+'</div>'
+        +'</div>';
+      }).join('')
+    : '<div style="text-align:center;padding:20px;color:var(--text3)">Aucun dossier pour ce client</div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// CODES D'ERREUR
+// ═══════════════════════════════════════════════════════
+
+var CODES = {
+  bsod: [
+    { code:'0x0000007E', name:'SYSTEM_THREAD_EXCEPTION', desc:'Driver incompatible ou manquant', solution:'Démarrer en mode sans échec, désinstaller dernière MAJ driver' },
+    { code:'0x0000001A', name:'MEMORY_MANAGEMENT', desc:'Problème mémoire RAM ou pagefile', solution:'MemTest86, vérifier pagefile, tester barrettes une par une' },
+    { code:'0x0000003B', name:'SYSTEM_SERVICE_EXCEPTION', desc:'Exception dans un service système', solution:'SFC /scannow, chkdsk, mise à jour Windows' },
+    { code:'0x0000007F', name:'UNEXPECTED_KERNEL_MODE_TRAP', desc:'Erreur matérielle critique', solution:'Vérifier RAM, température, alimentatio, disque dur' },
+    { code:'0x000000C4', name:'DRIVER_VERIFIER_DETECTED', desc:'Driver non conforme détecté', solution:'Driver Verifier Manager, identifier driver fautif' },
+    { code:'0x000000EF', name:'CRITICAL_PROCESS_DIED', desc:'Processus système critique arrêté', solution:'SFC, DISM, réinstallation Windows' },
+    { code:'0xC000021A', name:'STATUS_SYSTEM_PROCESS_TERMINATED', desc:'winlogon.exe ou csrss.exe planté', solution:'Réparer avec disque installation, restauration système' },
+    { code:'0x00000101', name:'CLOCK_WATCHDOG_TIMEOUT', desc:'CPU inactif trop longtemps', solution:'Vérifier overclocking, BIOS, refroidissement CPU' },
+  ],
+  post: [
+    { code:'1 bip court', name:'POST OK', desc:'Démarrage normal réussi', solution:'Aucune action requise' },
+    { code:'1 bip long + 2 courts', name:'Erreur vidéo', desc:'Problème carte graphique', solution:'Réinstaller/tester GPU, vérifier câble écran' },
+    { code:'3 bips longs', name:'Erreur RAM', desc:'RAM non détectée ou défaillante', solution:'Réinsérer RAM, tester barrettes séparément' },
+    { code:'Bips continus', name:'Clavier/RAM', desc:'Touche bloquée ou RAM mal insérée', solution:'Vérifier clavier, réinsérer RAM' },
+    { code:'POST code 00', name:'CPU Init', desc:'Initialisation processeur', solution:'Vérifier socket CPU, pas de court-circuit' },
+    { code:'POST code d4', name:'PCI Init', desc:'Initialisation bus PCI', solution:'Retirer cartes PCI, tester sans' },
+    { code:'POST code 19', name:'Pre-memory North', desc:'Initialisation mémoire Nord', solution:'Vérifier RAM, BIOS, condensateurs' },
+  ],
+  imprimante: [
+    { code:'E01 / E02', name:'Pas de papier', desc:'Bac vide ou non détecté', solution:'Vérifier bac, capteur papier (HP/Canon)' },
+    { code:'E03 / 0x58', name:'Bourrage papier', desc:'Papier bloqué dans le chemin', solution:'Ouvrir tous capots, retirer papier délicatement' },
+    { code:'E04 / 5200', name:'Encre épuisée', desc:'Cartouche vide ou expirée', solution:'Remplacer cartouche, débloquer restriction EPSON' },
+    { code:'E05 / 6000', name:'Tête impression', desc:'Buse encrassée ou cartouche incompatible', solution:'Nettoyage buses, cartouche d\'origine recommandée' },
+    { code:'E06', name:'Tambour usé', desc:'Tambour OPC en fin de vie (laser)', solution:'Remplacer tambour/toner, réinitialiser compteur' },
+    { code:'E08 / Pad Full', name:'Absorbeur plein', desc:'Chiffon absorbeur d\'encre saturé (EPSON)', solution:'Réinitialiser compteur absorbeur via Adjustment Program' },
+    { code:'E14 / E15', name:'Cartouche inconnue', desc:'Cartouche non reconnue ou puce défaillante', solution:'Nettoyer contacts, cartouche d\'origine ou puce compatible' },
+    { code:'PC Load Letter', name:'Mauvais format papier', desc:'Format papier incorrect dans le bac', solution:'Vérifier format bac = format document (A4/Letter)' },
+  ],
+  reseau: [
+    { code:'404', name:'Not Found', desc:'Page ou ressource introuvable', solution:'Vérifier URL, DNS, disponibilité serveur' },
+    { code:'502', name:'Bad Gateway', desc:'Passerelle invalide', solution:'Vérifier proxy, serveur amont, redémarrer routeur' },
+    { code:'503', name:'Service Unavailable', desc:'Service temporairement indisponible', solution:'Patienter, contacter FAI si persistant' },
+    { code:'APIPA 169.x.x.x', name:'Pas de DHCP', desc:'Le routeur n\'a pas attribué d\'IP', solution:'ipconfig /release /renew, vérifier serveur DHCP routeur' },
+    { code:'DNS_PROBE_FAIL', name:'Résolution DNS échouée', desc:'DNS ne répond pas', solution:'Changer DNS: 8.8.8.8 / 1.1.1.1, vider cache DNS' },
+    { code:'ERR_CONNECTION_TIMED_OUT', name:'Timeout connexion', desc:'Serveur ne répond pas dans le délai', solution:'Vérifier firewall, proxy, connexion internet' },
+    { code:'SSID Not Found', name:'Réseau WiFi introuvable', desc:'Réseau WiFi non diffusé ou hors portée', solution:'Vérifier routeur, SSID masqué, portée signal' },
+  ],
+};
+
+function renderCodes(filter) {
+  filter = (filter||'').toLowerCase();
+  ['bsod','post','imprimante','reseau'].forEach(function(cat){
+    var elIds = { bsod:'bsod-list', post:'post-codes-list', imprimante:'impr-codes-list', reseau:'net-codes-list' };
+    var el = document.getElementById(elIds[cat]);
+    if(!el) return;
+    var data = CODES[cat].filter(function(c){
+      return !filter || c.code.toLowerCase().includes(filter) || c.name.toLowerCase().includes(filter) || c.desc.toLowerCase().includes(filter);
+    });
+    el.innerHTML = data.map(function(c){
+      return '<div style="padding:8px 0;border-bottom:1px solid var(--border)">'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">'
+          +'<code style="background:var(--surface3);border:1px solid var(--border);padding:2px 7px;border-radius:4px;font-size:10px;color:var(--cyan);font-family:Orbitron,monospace">'+c.code+'</code>'
+          +'<strong style="font-size:12px;color:var(--text)">'+c.name+'</strong>'
+        +'</div>'
+        +'<div style="font-size:11px;color:var(--text2);margin-bottom:3px">'+c.desc+'</div>'
+        +'<div style="font-size:11px;color:var(--green)">→ '+c.solution+'</div>'
+      +'</div>';
+    }).join('') || '<div style="font-size:11px;color:var(--text3);padding:12px;text-align:center">Aucun résultat</div>';
+  });
+}
+
+function rechercherCode(v) { renderCodes(v); }
+
+// ═══════════════════════════════════════════════════════
+// OSCILLOSCOPE
+// ═══════════════════════════════════════════════════════
+
+function initOscillo() {
+  var canvas = document.getElementById('oscillo-canvas');
+  if(!canvas || _oscCtx) return;
+  _oscCtx = canvas.getContext('2d');
+  canvas.width  = canvas.offsetWidth * window.devicePixelRatio || 600;
+  canvas.height = 120 * window.devicePixelRatio || 120;
+  _oscCtx.scale(window.devicePixelRatio||1, window.devicePixelRatio||1);
+  drawOscillo();
+}
+
+function drawOscillo() {
+  if(!_oscCtx) return;
+  var canvas = document.getElementById('oscillo-canvas');
+  var W = canvas.offsetWidth, H = 120;
+  var freq = Number(document.getElementById('osc-freq')?.value||50);
+  var amp  = Number(document.getElementById('osc-amp')?.value||5);
+
+  _oscCtx.clearRect(0,0,W,H);
+  _oscCtx.fillStyle = '#020a14';
+  _oscCtx.fillRect(0,0,W,H);
+
+  // Grille
+  _oscCtx.strokeStyle = 'rgba(0,200,255,.08)';
+  _oscCtx.lineWidth = 0.5;
+  for(var gx=0; gx<W; gx+=W/8){ _oscCtx.beginPath(); _oscCtx.moveTo(gx,0); _oscCtx.lineTo(gx,H); _oscCtx.stroke(); }
+  for(var gy=0; gy<H; gy+=H/4){ _oscCtx.beginPath(); _oscCtx.moveTo(0,gy); _oscCtx.lineTo(W,gy); _oscCtx.stroke(); }
+
+  // Axe central
+  _oscCtx.strokeStyle = 'rgba(0,200,255,.2)';
+  _oscCtx.lineWidth = 1;
+  _oscCtx.beginPath(); _oscCtx.moveTo(0,H/2); _oscCtx.lineTo(W,H/2); _oscCtx.stroke();
+
+  // Signal
+  var t = Date.now()/1000;
+  _oscCtx.beginPath();
+  _oscCtx.strokeStyle = _oscSignal==='short'?'#ff2d55':_oscSignal==='flat'?'#555':'#00c8ff';
+  _oscCtx.lineWidth = 1.5;
+  _oscCtx.shadowColor = _oscCtx.strokeStyle;
+  _oscCtx.shadowBlur = 6;
+
+  var normalize = amp/12;
+  for(var x=0; x<W; x++) {
+    var phase = (x/W)*freq*0.1 + t*0.5;
+    var y;
+    switch(_oscSignal) {
+      case 'sine':
+        y = H/2 - Math.sin(phase*Math.PI*2)*(H/2-10)*normalize; break;
+      case 'square':
+        y = H/2 - (Math.sin(phase*Math.PI*2)>0?1:-1)*(H/2-10)*normalize; break;
+      case 'sawtooth':
+        y = H/2 - ((phase%1)*2-1)*(H/2-10)*normalize; break;
+      case 'noise':
+        y = H/2 - (Math.sin(phase*Math.PI*2)+Math.random()*0.6-0.3)*(H/2-15)*normalize; break;
+      case 'short':
+        y = H/2 + (Math.random()-0.5)*(H-10); break;
+      case 'flat':
+        y = H/2; break;
+      default: y = H/2;
+    }
+    x===0 ? _oscCtx.moveTo(x,y) : _oscCtx.lineTo(x,y);
+  }
+  _oscCtx.stroke();
+  _oscCtx.shadowBlur = 0;
+
+  // Mesures
+  var mVpp = document.getElementById('m-vpp');
+  var mFreq = document.getElementById('m-freq');
+  var mPer  = document.getElementById('m-period');
+  var mSt   = document.getElementById('m-state');
+  if(mVpp)  mVpp.textContent  = (_oscSignal==='flat'?'0.0':_oscSignal==='short'?'ERROR':(amp*2).toFixed(1)) + ' V';
+  if(mFreq) mFreq.textContent = (_oscSignal==='flat'?'0':freq) + ' Hz';
+  if(mPer)  mPer.textContent  = (_oscSignal==='flat'?'∞':( 1000/freq).toFixed(1)) + ' ms';
+  if(mSt) {
+    var stMap = { sine:'OK ✅', square:'OK ✅', sawtooth:'OK ✅', noise:'⚠️ BRUIT', short:'❌ COURT-CIRCUIT', flat:'❌ OUVERT' };
+    mSt.textContent = stMap[_oscSignal]||'OK';
+    mSt.style.color = _oscSignal.includes('short')||_oscSignal==='flat'?'var(--red)':_oscSignal==='noise'?'var(--yellow)':'var(--green)';
+  }
+
+  var interpEl = document.getElementById('oscillo-interp');
+  if(interpEl) {
+    var interpMap = {
+      sine    : '<span class="code-ok">// Signal sinusoïdal — Alimentation AC normale</span>\n<span class="code-comment">// Fréquence: '+freq+' Hz | Amplitude: '+amp+'V</span>\n<span class="code-ok">// STATUS: CIRCUIT OK ✓</span>',
+      square  : '<span class="code-ok">// Signal carré — Logique numérique</span>\n<span class="code-comment">// Rapport cyclique: 50% | Flancs nets</span>\n<span class="code-ok">// STATUS: SIGNAL NUMÉRIQUE OK ✓</span>',
+      sawtooth: '<span class="code-warn">// Signal dents de scie — Oscillateur</span>\n<span class="code-comment">// Charge/décharge capacitive normale</span>\n<span class="code-ok">// STATUS: OK ✓</span>',
+      noise   : '<span class="code-warn">// ⚠️ BRUIT DÉTECTÉ sur le signal</span>\n<span class="code-err">// Causes: connexion lâche, composant vieillissant</span>\n<span class="code-warn">// ACTION: Vérifier soudures, remplacer condensateurs</span>',
+      short   : '<span class="code-err">// 🔴 COURT-CIRCUIT DÉTECTÉ</span>\n<span class="code-err">// Signal chaotique — Danger!</span>\n<span class="code-err">// ACTION: Couper alimentation immédiatement!</span>',
+      flat    : '<span class="code-err">// ❌ LIGNE MORTE — Aucun signal</span>\n<span class="code-err">// Causes: fusible grillé, composant ouvert</span>\n<span class="code-err">// ACTION: Tester continuité, remplacer composant</span>',
+    };
+    interpEl.innerHTML = interpMap[_oscSignal]||'';
+  }
+
+  _oscAnim = requestAnimationFrame(drawOscillo);
+}
+
+function setSignal(type) { _oscSignal = type; }
+function updateOscillo() {
+  document.getElementById('osc-freq-val').textContent = document.getElementById('osc-freq').value + ' Hz';
+  document.getElementById('osc-amp-val').textContent  = document.getElementById('osc-amp').value + ' V';
+}
+
+// ═══════════════════════════════════════════════════════
+// DEVIS
+// ═══════════════════════════════════════════════════════
+
+function ajouterLigneDevis() {
+  var piece = document.getElementById('devis-piece').value.trim();
+  var prix  = Number(document.getElementById('devis-prix').value||0);
+  var qte   = Number(document.getElementById('devis-qte').value||1);
+  var type  = document.getElementById('devis-type').value;
+  if(!piece||!prix){ toast('Remplissez description et prix', 'err'); return; }
+  DB.devisLignes.push({ id:genId(), piece, prix, qte, type, total:prix*qte });
+  document.getElementById('devis-piece').value = '';
+  document.getElementById('devis-prix').value  = '';
+  document.getElementById('devis-qte').value   = '1';
+  renderDevisLignes();
+}
+
+function renderDevisLignes() {
+  var tbody = document.getElementById('devis-lignes');
+  var totalP = 0, totalMO = 0;
+  tbody.innerHTML = DB.devisLignes.length ? DB.devisLignes.map(function(l){
+    if(l.type==='main'||l.type==='deplacement') totalMO += l.total; else totalP += l.total;
+    var typeIcon = { piece:'🔩', main:'🔧', logiciel:'💾', deplacement:'🚗' };
+    return '<tr>'
+      +'<td>'+(typeIcon[l.type]||'📦')+' '+l.piece+'</td>'
+      +'<td style="text-align:center">'+l.qte+'</td>'
+      +'<td>'+fmtNum(l.prix)+' F</td>'
+      +'<td style="font-weight:700;color:var(--cyan)">'+fmtNum(l.total)+' F</td>'
+      +'<td><button class="btn btn-red btn-sm" onclick="supprimerLigneDevis(\''+l.id+'\')">✕</button></td>'
+    +'</tr>';
+  }).join('') : '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:12px">Aucune ligne</td></tr>';
+
+  document.getElementById('total-pieces').textContent = fmtNum(totalP) + ' F';
+  document.getElementById('total-mo').textContent     = fmtNum(totalMO) + ' F';
+  document.getElementById('total-ttc').textContent    = fmtNum(totalP+totalMO) + ' F CFA';
+}
+
+function supprimerLigneDevis(id) {
+  DB.devisLignes = DB.devisLignes.filter(function(l){ return l.id!==id; });
+  renderDevisLignes();
+}
+
+function genererDevis() {
+  if(!DB.devisLignes.length){ toast('Ajoutez des lignes au devis', 'err'); return; }
+  var total = DB.devisLignes.reduce(function(s,l){ return s+l.total; }, 0);
+  var date  = new Date().toLocaleDateString('fr-FR',{year:'numeric',month:'long',day:'numeric'});
+  var ref   = 'DEV-' + String(Date.now()).slice(-5);
+  var html  = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Devis '+ref+'</title>'
+    +'<style>body{font-family:Arial,sans-serif;max-width:700px;margin:0 auto;padding:30px;color:#1a1a2e}'
+    +'.hdr{background:linear-gradient(135deg,#060b14,#0a1a3e);color:white;padding:24px;border-radius:10px;margin-bottom:24px}'
+    +'.logo{font-size:20px;font-weight:900;color:#00c8ff;letter-spacing:2px}'
+    +'.title{font-size:16px;text-transform:uppercase;letter-spacing:3px;margin:12px 0 4px;text-align:center}'
+    +'table{width:100%;border-collapse:collapse;margin:16px 0}'
+    +'th{background:#060b14;color:#00c8ff;padding:8px 12px;text-align:left;font-size:12px}'
+    +'td{padding:8px 12px;border-bottom:1px solid #e5e7eb;font-size:12px}'
+    +'.total-row{background:#f0f9ff;font-weight:900;font-size:14px;border-top:3px solid #00c8ff}'
+    +'.sigs{display:flex;justify-content:space-between;margin-top:40px}'
+    +'.sig{text-align:center;width:180px;border-top:1px solid #333;padding-top:8px;font-size:11px}'
+    +'</style></head><body>'
+    +'<div class="hdr"><div class="logo">TechDiag<span style="color:#ffd60a">Pro</span></div>'
+    +'<div style="font-size:11px;opacity:.7;margin-top:4px">Service de Diagnostic & Réparation Électronique</div></div>'
+    +'<h2 class="title">Devis de Réparation</h2>'
+    +'<p style="text-align:center;color:#6b7280;font-size:12px">Réf: <strong>'+ref+'</strong> — Date: '+date+'</p>'
+    +'<table><thead><tr><th>Description</th><th>Qté</th><th>P.U. (F CFA)</th><th>Total (F CFA)</th></tr></thead><tbody>'
+    +DB.devisLignes.map(function(l){
+      return '<tr><td>'+l.piece+'</td><td style="text-align:center">'+l.qte+'</td><td>'+fmtNum(l.prix)+'</td><td style="font-weight:700">'+fmtNum(l.total)+'</td></tr>';
+    }).join('')
+    +'<tr class="total-row"><td colspan="3" style="text-align:right">TOTAL TTC</td><td>'+fmtNum(total)+' F CFA</td></tr>'
+    +'</tbody></table>'
+    +'<div class="sigs"><div class="sig">Technicien</div><div class="sig">Client (Lu et approuvé)</div></div>'
+    +'<p style="text-align:center;font-size:10px;color:#9ca3af;margin-top:20px">Document généré par TechDiag Pro | Valable 30 jours</p>'
+    +'<script>window.onload=function(){window.print();}<\/script></body></html>';
+  var w = window.open('','_blank');
+  if(w){ w.document.write(html); w.document.close(); }
+  toast('✅ Devis '+ref+' généré');
+}
+
+function genererRapport() { toast('📋 Rapport complet généré', 'ok'); genererDevis(); }
+function envoyerWhatsApp() {
+  var total = DB.devisLignes.reduce(function(s,l){ return s+l.total; }, 0);
+  var msg = 'Bonjour! Voici le devis pour la réparation de votre appareil:\n\n';
+  DB.devisLignes.forEach(function(l){ msg += '• '+l.piece+': '+fmtNum(l.total)+' F\n'; });
+  msg += '\nTOTAL: '+fmtNum(total)+' F CFA\n\nTechDiag Pro';
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+
+function imprimerFiche() { window.print(); }
+
+// ═══════════════════════════════════════════════════════
+// TECHNIQUES 2025
+// ═══════════════════════════════════════════════════════
+
+var TECHNIQUES = [
+  {
+    icon:'🧠', titre:'AI PC & NPU — Neural Processing Unit',
+    desc:'Les processeurs Intel Core Ultra (Meteor Lake) et AMD Ryzen AI intègrent des NPU dédiés à l\'IA (>10 TOPS). Diagnostic: vérifier pilote NPU dans Device Manager, tester avec Windows Studio Effects.',
+    tags:['Intel Core Ultra','AMD Ryzen AI','TOPS','NPU','Copilot+'],
+    niveau:'Avancé', annee:'2024-2025'
+  },
+  {
+    icon:'💾', titre:'DDR5 — Diagnostic & Remplacement',
+    desc:'La DDR5 (4800-8800 MHz) intègre un ECC on-die et un contrôleur de puissance sur le module. Incompatible DDR4. Diagnostic XMP/EXPO pour overclocking stable. Test: MemTest86 v6+, HWiNFO64.',
+    tags:['DDR5','XMP 3.0','EXPO','ECC','PMIC'],
+    niveau:'Intermédiaire', annee:'2023-2025'
+  },
+  {
+    icon:'🚀', titre:'NVMe Gen 5 — PCIe 5.0 SSD',
+    desc:'Vitesses jusqu\'à 14 000 Mo/s en lecture. Requiert slot M.2 PCIe 5.0. Dissipateur thermique OBLIGATOIRE. Diagnostic: CrystalDiskInfo (santé), CrystalDiskMark (benchmark). Température critique: >75°C.',
+    tags:['PCIe 5.0','NVMe','M.2','14 Go/s','Samsung 990 Pro'],
+    niveau:'Avancé', annee:'2024-2025'
+  },
+  {
+    icon:'📡', titre:'WiFi 6E & WiFi 7 — Diagnostic réseau',
+    desc:'WiFi 6E ajoute la bande 6 GHz (moins d\'interférences). WiFi 7 (802.11be) = 46 Gbps théorique, MLO (Multi-Link Operation). Diagnostic: WiFi Analyzer pour canaux, iPerf3 pour débit réel.',
+    tags:['WiFi 6E','WiFi 7','MLO','6 GHz','802.11be'],
+    niveau:'Intermédiaire', annee:'2024-2025'
+  },
+  {
+    icon:'🖨', titre:'Imprimantes — Réinitialisation absorbeur EPSON',
+    desc:'Quand le voyant clignote et que l\'imprimante refuse d\'imprimer: le tampon absorbeur est plein. Solution: Adjustment Program Epson (WIC Reset Key). Reset compteur sans démontage. Valable: L3150, L3250, L5190, L6190...',
+    tags:['EPSON','Absorbeur','WIC Reset','Pad Counter','L-Series'],
+    niveau:'Débutant', annee:'Permanent'
+  },
+  {
+    icon:'⚡', titre:'Reballing BGA — Microsoudures & Stations',
+    desc:'Technique de resoudage des boîtiers BGA (GPU, CPU mobile, IC charge). Requiert station BGA IR/hot air (Ersa, JBC). Température profil: 183°C (SAC305 lead-free) ou 183°C (SnPb). Stencil requis. Diagnostic préalable: test flexion PCB.',
+    tags:['BGA','Reballing','Solder','Hot Air','Station BGA'],
+    niveau:'Expert', annee:'Permanent'
+  },
+  {
+    icon:'🔋', titre:'Batteries Li-Ion — Santé & Remplacement',
+    desc:'Santé batterie < 80%: remplacement recommandé. Outils: BatteryInfoView (PC), CoconutBattery (Mac), AccuBattery (Android). Vérifier gonflement visuel. Danger: ne JAMAIS percer une batterie Li-Ion gonflée.',
+    tags:['Li-Ion','LiPo','Santé','Cycles','BMS'],
+    niveau:'Débutant', annee:'Permanent'
+  },
+  {
+    icon:'🌡', titre:'Pâtes thermiques — Comparatif 2025',
+    desc:'Classement: Thermal Grizzly Kryonaut Extreme (14.2 W/mK) > Arctic MX-6 (12.6) > Noctua NT-H2 (8.3) > Arctic MX-4 (8.5). Application: couche fine uniforme ou méthode dot centrale. Remplacement tous les 2-3 ans.',
+    tags:['Pâte thermique','W/mK','TG Kryonaut','Arctic MX','CPU'],
+    niveau:'Débutant', annee:'2025'
+  },
+];
+
+function renderTechniques() {
+  var el = document.getElementById('techniques-content');
+  if(!el||el.innerHTML) return;
+  el.innerHTML = '<div class="grid2" style="gap:14px">'
+    + TECHNIQUES.map(function(t){
+        var niveauColor = t.niveau==='Expert'?'var(--red)':t.niveau==='Avancé'?'var(--orange)':t.niveau==='Intermédiaire'?'var(--yellow)':'var(--green)';
+        return '<div class="card">'
+          +'<div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:10px">'
+            +'<div style="font-size:24px">'+t.icon+'</div>'
+            +'<div style="flex:1">'
+              +'<div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:2px">'+t.titre+'</div>'
+              +'<div style="display:flex;gap:6px;align-items:center">'
+                +'<span style="font-size:10px;color:'+niveauColor+';font-weight:700">'+t.niveau+'</span>'
+                +'<span style="font-size:10px;color:var(--text3)">'+t.annee+'</span>'
+              +'</div>'
+            +'</div>'
+          +'</div>'
+          +'<div style="font-size:12px;color:var(--text2);line-height:1.7;margin-bottom:10px">'+t.desc+'</div>'
+          +'<div style="display:flex;flex-wrap:wrap;gap:4px">'
+          +t.tags.map(function(tag){
+            return '<span style="background:rgba(0,200,255,.08);border:1px solid var(--border);color:var(--cyan);padding:2px 7px;border-radius:4px;font-size:10px">'+tag+'</span>';
+          }).join('')
+          +'</div>'
+        +'</div>';
+      }).join('')
+  +'</div>';
+}
+
+// ═══════════════════════════════════════════════════════
+// COMPOSANTS & PRIX
+// ═══════════════════════════════════════════════════════
+
+var COMPOSANTS = [
+  { cat:'Stockage', icon:'💿', nom:'SSD NVMe M.2 256 Go', desc:'PCIe 3.0/4.0, Kingston/Sandisk', prix:'18 000 - 25 000' },
+  { cat:'Stockage', icon:'💿', nom:'SSD NVMe M.2 512 Go', desc:'PCIe 4.0, Samsung/WD', prix:'28 000 - 40 000' },
+  { cat:'Stockage', icon:'💿', nom:'SSD SATA 2.5" 256 Go', desc:'Pour remplacement HDD portable', prix:'15 000 - 22 000' },
+  { cat:'Stockage', icon:'💿', nom:'Disque dur HDD 1 To', desc:'Seagate/WD, SATA 3.5"', prix:'18 000 - 25 000' },
+  { cat:'RAM', icon:'🧠', nom:'RAM DDR4 8 Go 3200 MHz', desc:'Kingston Fury / Corsair', prix:'12 000 - 18 000' },
+  { cat:'RAM', icon:'🧠', nom:'RAM DDR4 16 Go 3600 MHz', desc:'Kit double canal recommandé', prix:'22 000 - 35 000' },
+  { cat:'RAM', icon:'🧠', nom:'RAM DDR5 8 Go 4800 MHz', desc:'Pour plateformes Intel 12th+/AMD 7xxx', prix:'18 000 - 28 000' },
+  { cat:'Thermique', icon:'🌡', nom:'Pâte thermique Arctic MX-4', desc:'8.5 W/mK, 4g — Universal', prix:'3 000 - 5 000' },
+  { cat:'Thermique', icon:'🌡', nom:'Pâte thermique Kryonaut', desc:'12.5 W/mK — Performance max', prix:'8 000 - 12 000' },
+  { cat:'Thermique', icon:'🌡', nom:'Ventilateur laptop 5V/12V', desc:'Compatible HP/Dell/Lenovo', prix:'5 000 - 15 000' },
+  { cat:'Écrans', icon:'🖥', nom:'Dalle LCD 15.6" FHD IPS', desc:'Pour laptop — 1920x1080 60Hz', prix:'35 000 - 65 000' },
+  { cat:'Écrans', icon:'🖥', nom:'Dalle LCD 14" FHD', desc:'Pour laptop slim — IPS', prix:'30 000 - 55 000' },
+  { cat:'Alimentation', icon:'⚡', nom:'Adaptateur laptop 65W USB-C', desc:'Compatible multi-marques', prix:'12 000 - 20 000' },
+  { cat:'Alimentation', icon:'⚡', nom:'Adaptateur laptop 45W barrel', desc:'HP/Dell/Lenovo — tip spécifique', prix:'8 000 - 15 000' },
+  { cat:'Alimentation', icon:'⚡', nom:'Batterie laptop générique', desc:'Compatible HP/Dell — 4 cellules', prix:'18 000 - 35 000' },
+  { cat:'Imprimante', icon:'🖨', nom:'Toner HP LaserJet noir', desc:'Compatible HP 85A/88A/CF217A', prix:'8 000 - 15 000' },
+  { cat:'Imprimante', icon:'🖨', nom:'Kit encre EPSON L-Series', desc:'Bouteilles 70ml CMJN', prix:'8 000 - 12 000' },
+  { cat:'Imprimante', icon:'🖨', nom:'Rouleau entraînement papier', desc:'HP/Canon — caoutchouc', prix:'3 000 - 8 000' },
+  { cat:'Réseau', icon:'🌐', nom:'Câble réseau Cat 6 RJ45 5m', desc:'Pour remplacement câble défaillant', prix:'2 000 - 4 000' },
+  { cat:'Réseau', icon:'🌐', nom:'Dongle WiFi USB 3.0', desc:'150-300 Mbps — Dépannage rapide', prix:'5 000 - 10 000' },
+  { cat:'Main d\'oeuvre', icon:'🔧', nom:'Diagnostic général', desc:'Inspection complète & rapport', prix:'5 000 - 10 000' },
+  { cat:'Main d\'oeuvre', icon:'🔧', nom:'Réinstallation Windows 10/11', desc:'Avec drivers et config', prix:'10 000 - 20 000' },
+  { cat:'Main d\'oeuvre', icon:'🔧', nom:'Nettoyage + pâte thermique', desc:'Démontage, dépoussiérage, pasta', prix:'8 000 - 15 000' },
+  { cat:'Main d\'oeuvre', icon:'🔧', nom:'Remplacement écran laptop', desc:'Pièce + main d\'oeuvre', prix:'40 000 - 90 000' },
+  { cat:'Main d\'oeuvre', icon:'🔧', nom:'Récupération de données', desc:'SSD/HDD — Logiciel & matériel', prix:'15 000 - 50 000' },
+];
+
+function renderComposants(filter) {
+  var el = document.getElementById('composants-grid');
+  if(!el) return;
+  var data = filter ? COMPOSANTS.filter(function(c){
+    return c.nom.toLowerCase().includes(filter.toLowerCase()) || c.cat.toLowerCase().includes(filter.toLowerCase());
+  }) : COMPOSANTS;
+
+  var cats = [...new Set(data.map(function(c){ return c.cat; }))];
+  el.innerHTML = cats.map(function(cat){
+    var items = data.filter(function(c){ return c.cat===cat; });
+    return '<div style="margin-bottom:16px">'
+      +'<div class="card-title" style="margin-bottom:10px;font-size:11px">'+items[0].icon+' '+cat+'</div>'
+      +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px">'
+      +items.map(function(c){
+        return '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;transition:all .2s;cursor:pointer" '
+          +'onclick="remplirDevis(\''+c.nom+'\',\''+c.prix+'\')" '
+          +'onmouseover="this.style.borderColor=\'var(--border2)\'" onmouseout="this.style.borderColor=\'var(--border)\'">'
+          +'<div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px">'+c.nom+'</div>'
+          +'<div style="font-size:10px;color:var(--text3);margin-bottom:6px">'+c.desc+'</div>'
+          +'<div style="font-size:11px;font-weight:700;color:var(--green)">'+c.prix+' F CFA</div>'
+        +'</div>';
+      }).join('')
+      +'</div></div>';
+  }).join('');
+}
+
+function rechercherComposant(v) { renderComposants(v); }
+
+function remplirDevis(nom, prixRange) {
+  var prixMin = parseInt(prixRange.split(' - ')[0].replace(/\s/g,''));
+  showPage('devis', document.querySelector('.nav-item:last-child'));
+  document.getElementById('devis-piece').value = nom;
+  document.getElementById('devis-prix').value  = prixMin;
+  toast('💡 Composant ajouté dans le devis — Cliquez "Ajouter ligne"');
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+
+// Données de démonstration
+DB.dossiers = [
+  { id:'d1', num:'TD-10001', client:'KOFFI Sénamé', tel:'0197123456', type:'💻 Ordinateur portable',
+    modele:'HP Pavilion 15', serie:'CND1234567', panne:'Écran bleu au démarrage (BSOD 0x0000001A)',
+    priorite:'urgente', devis:45000, accessoires:'Chargeur', notes:'Tombé par terre il y a 3 jours',
+    statut:'diagnostic', date:'03/04/2026', dateISO:new Date().toISOString() },
+  { id:'d2', num:'TD-10002', client:'AGOSSOU Marie', tel:'0191234567', type:'🖨 Imprimante jet d\'encre',
+    modele:'Epson L3150', serie:'', panne:'Impression floue, lignes manquantes dans le texte',
+    priorite:'normale', devis:15000, accessoires:'Câble USB', notes:'Problème depuis 2 semaines',
+    statut:'reparation', date:'02/04/2026', dateISO:new Date().toISOString() },
+  { id:'d3', num:'TD-10003', client:'GBEDO Paul', tel:'0196543210', type:'🖥 PC de bureau',
+    modele:'Assemblé local, Intel i5', serie:'', panne:'Lent, ventilateur bruyant, surchauffe',
+    priorite:'basse', devis:25000, accessoires:'Aucun', notes:'Pâte thermique jamais changée (5 ans)',
+    statut:'termine', date:'01/04/2026', dateISO:new Date().toISOString() },
+];
+
+DB.clients = [
+  { id:'c1', nom:'KOFFI Sénamé', tel:'0197123456', email:'koffi@gmail.com', ville:'Cotonou', notes:'', date:'03/04/2026' },
+  { id:'c2', nom:'AGOSSOU Marie', tel:'0191234567', email:'', ville:'Abomey-Calavi', notes:'', date:'02/04/2026' },
+  { id:'c3', nom:'GBEDO Paul', tel:'0196543210', email:'', ville:'Porto-Novo', notes:'', date:'01/04/2026' },
+];
+
+renderDossiers();
+renderClients();
+updateBadges();
+renderCodes();
+renderComposants();
+renderKanban();
+</script>
+</body>
+</html>

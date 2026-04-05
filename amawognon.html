@@ -1,0 +1,2392 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Santé Globale Amawognon — Soins Naturels & Formation</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080e07;
+  --surface:#0e1a0c;
+  --surface2:#152213;
+  --surface3:#1d2e1a;
+  --border:rgba(201,168,76,.12);
+  --border2:rgba(201,168,76,.3);
+  --gold:#c9a84c;
+  --gold2:#e8c86a;
+  --emerald:#2d9e6b;
+  --emerald2:#3dbf82;
+  --sage:#7aaa6e;
+  --cream:#f5f0e8;
+  --cream2:#e8dcc8;
+  --terracotta:#c4704a;
+  --text:#f0ebe0;
+  --text2:#9aaa8a;
+  --text3:#4a5a3a;
+  --shadow:0 30px 80px rgba(0,0,0,.8);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Lora',Georgia,serif;color:var(--text);background:var(--bg);overflow-x:hidden}
+
+/* ══ SCROLLBAR ══ */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:3px}
+
+/* ══ NAV ══ */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  display:flex;align-items:center;padding:0 40px;height:68px;
+  background:rgba(8,14,7,.92);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);transition:all .3s;
+}
+.nav-logo{
+  font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;
+  color:var(--gold);letter-spacing:.5px;cursor:pointer;
+  display:flex;align-items:center;gap:10px;
+}
+.nav-logo-sub{font-size:11px;color:var(--text2);letter-spacing:2px;text-transform:uppercase;font-weight:400}
+.nav-links{display:flex;gap:28px;margin:0 auto}
+.nav-link{font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;
+  transition:color .2s;letter-spacing:.5px;font-family:'Lora',serif}
+.nav-link:hover,.nav-link.active{color:var(--gold)}
+.nav-actions{display:flex;gap:10px;align-items:center}
+
+/* ══ BOUTONS ══ */
+.btn{
+  padding:11px 22px;border-radius:6px;font-size:13px;font-weight:600;
+  cursor:pointer;font-family:'Lora',serif;transition:all .25s;border:none;
+  display:inline-flex;align-items:center;gap:8px;letter-spacing:.3px;
+}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#a8892a);color:#0e1a0c;font-weight:700}
+.btn-gold:hover{box-shadow:0 6px 24px rgba(201,168,76,.4);transform:translateY(-1px)}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--gold)}
+.btn-outline:hover{background:rgba(201,168,76,.08)}
+.btn-emerald{background:linear-gradient(135deg,var(--emerald),#1a6b47);color:#fff}
+.btn-emerald:hover{box-shadow:0 6px 24px rgba(45,158,107,.4);transform:translateY(-1px)}
+.btn-sm{padding:7px 14px;font-size:12px}
+.btn-danger{background:rgba(196,112,74,.15);border:1px solid rgba(196,112,74,.3);color:var(--terracotta)}
+
+/* ══ SECTIONS ══ */
+.section{padding:90px 60px;max-width:1200px;margin:0 auto}
+.section-badge{
+  display:inline-flex;align-items:center;gap:8px;background:rgba(201,168,76,.08);
+  border:1px solid var(--border2);border-radius:30px;padding:7px 18px;
+  font-size:11px;font-weight:600;color:var(--gold);letter-spacing:1.5px;
+  text-transform:uppercase;margin-bottom:20px;
+}
+.section-title{
+  font-family:'Cormorant Garamond',serif;font-size:clamp(32px,4vw,52px);
+  font-weight:600;line-height:1.15;margin-bottom:14px;color:var(--cream);
+}
+.section-title .gold{color:var(--gold)}
+.section-title .italic{font-style:italic;color:var(--emerald2)}
+.section-sub{font-size:16px;color:var(--text2);line-height:1.8;max-width:580px;font-weight:400}
+.divider{width:60px;height:2px;background:linear-gradient(90deg,var(--gold),var(--emerald));margin:20px 0;border-radius:1px}
+
+/* ══ HERO ══ */
+.hero{
+  min-height:100vh;display:flex;align-items:center;
+  padding:100px 60px 60px;position:relative;overflow:hidden;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 70% 60% at 20% 50%,rgba(45,158,107,.08),transparent),
+    radial-gradient(ellipse 50% 70% at 80% 30%,rgba(201,168,76,.06),transparent),
+    radial-gradient(ellipse 100% 100% at 50% 100%,rgba(14,26,12,.9),transparent);
+}
+.hero-pattern{
+  position:absolute;inset:0;opacity:.04;
+  background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 C15 5 5 15 5 30 S15 55 30 55 S55 45 55 30 S45 5 30 5Z M30 10 C42 10 50 18 50 30 S42 50 30 50 S10 42 10 30 S18 10 30 10Z' fill='%23c9a84c'/%3E%3C/svg%3E");
+}
+.hero-content{position:relative;z-index:1;max-width:680px}
+.hero-eyebrow{
+  display:flex;align-items:center;gap:10px;margin-bottom:24px;
+  font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);font-weight:600;
+}
+.hero-eyebrow::before{content:'';width:30px;height:1px;background:var(--gold)}
+.hero-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(42px,5.5vw,72px);font-weight:700;
+  line-height:1.05;margin-bottom:20px;color:var(--cream);
+}
+.hero-title .italic{font-style:italic;color:var(--gold)}
+.hero-title .emerald{color:var(--emerald2)}
+.hero-sub{
+  font-size:17px;color:var(--text2);line-height:1.85;
+  margin-bottom:36px;font-weight:400;
+}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:48px}
+.hero-stats{display:flex;gap:36px;flex-wrap:wrap}
+.hero-stat-val{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--gold)}
+.hero-stat-lbl{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+
+/* ══ CARDS ══ */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:14px;padding:22px;transition:all .3s;
+}
+.card:hover{border-color:var(--border2);box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.card-title{
+  font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;
+  color:var(--cream);margin-bottom:12px;display:flex;align-items:center;gap:8px;
+}
+
+/* ══ MODULES FORMATION ══ */
+.modules-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+.module-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:18px;
+  overflow:hidden;transition:all .3s;cursor:pointer;position:relative;
+}
+.module-card:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:var(--border2)}
+.module-card-thumb{
+  height:160px;display:flex;align-items:center;justify-content:center;
+  font-size:64px;position:relative;overflow:hidden;
+}
+.module-card-body{padding:20px}
+.module-num{
+  position:absolute;top:14px;left:14px;
+  background:rgba(8,14,7,.7);border:1px solid var(--border2);
+  border-radius:20px;padding:3px 10px;font-size:10px;font-weight:700;
+  color:var(--gold);letter-spacing:1px;text-transform:uppercase;
+}
+.module-title{
+  font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;
+  color:var(--cream);margin-bottom:8px;
+}
+.module-desc{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:14px}
+.module-meta{display:flex;gap:14px;font-size:11px;color:var(--text3)}
+.module-prix{
+  font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;
+  color:var(--gold);margin-top:12px;
+}
+
+/* ══ MEDIA PAGE ══ */
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.media-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:12px;
+  overflow:hidden;transition:all .2s;
+}
+.media-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.media-thumb{
+  height:160px;background:var(--surface3);display:flex;align-items:center;
+  justify-content:center;font-size:48px;position:relative;overflow:hidden;
+}
+.media-play{
+  position:absolute;inset:0;background:rgba(0,0,0,.4);display:flex;
+  align-items:center;justify-content:center;opacity:0;transition:opacity .2s;
+}
+.media-card:hover .media-play{opacity:1}
+.media-body{padding:14px}
+.media-type{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:700}
+.media-name{font-size:13px;font-weight:600;color:var(--cream);margin-bottom:6px}
+.media-meta{font-size:11px;color:var(--text3)}
+
+/* ══ BIBLIOTHÈQUE ══ */
+.biblio-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.biblio-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:12px;
+  padding:20px;text-align:center;transition:all .2s;position:relative;
+}
+.biblio-card:hover{border-color:var(--border2);transform:translateY(-3px);box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.biblio-cover{font-size:52px;margin-bottom:12px}
+.biblio-title{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:600;color:var(--cream);margin-bottom:6px;line-height:1.3}
+.biblio-desc{font-size:11px;color:var(--text2);margin-bottom:12px;line-height:1.6}
+.biblio-prix{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--gold);margin-bottom:12px}
+.biblio-badge{
+  position:absolute;top:12px;right:12px;
+  background:rgba(201,168,76,.15);border:1px solid var(--border2);
+  border-radius:10px;padding:2px 8px;font-size:9px;font-weight:700;color:var(--gold);letter-spacing:.5px;
+}
+
+/* ══ TÉMOIGNAGES ══ */
+.temo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.temo-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:14px;
+  padding:24px;position:relative;overflow:hidden;
+}
+.temo-card::before{content:'❝';position:absolute;top:16px;right:20px;
+  font-size:48px;color:rgba(201,168,76,.15);font-family:'Cormorant Garamond',serif;line-height:1}
+.temo-stars{color:var(--gold);font-size:14px;margin-bottom:12px}
+.temo-text{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:16px;font-style:italic}
+.temo-author{display:flex;align-items:center;gap:12px}
+.temo-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;
+  justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0}
+.temo-name{font-size:14px;font-weight:600;color:var(--cream)}
+.temo-role{font-size:11px;color:var(--text3)}
+
+/* ══ CLINIQUE VIRTUELLE ══ */
+.consultation-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.patient-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:12px;
+  padding:16px;display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:all .2s;
+}
+.patient-card:hover{border-color:var(--border2)}
+.patient-avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--emerald),var(--emerald2));
+  display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0}
+.patient-info .name{font-size:14px;font-weight:600;color:var(--cream)}
+.patient-info .detail{font-size:11px;color:var(--text3);margin-top:2px}
+.suivi-timeline{position:relative;padding-left:20px}
+.suivi-timeline::before{content:'';position:absolute;left:6px;top:0;bottom:0;width:1px;background:var(--border)}
+.suivi-item{position:relative;padding:12px 0 12px 20px;border-bottom:1px solid var(--border)}
+.suivi-item::before{content:'';position:absolute;left:-14px;top:18px;width:10px;height:10px;
+  border-radius:50%;background:var(--emerald);border:2px solid var(--bg)}
+.suivi-date{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;font-weight:700}
+.suivi-content{font-size:13px;color:var(--text2);line-height:1.6}
+
+/* ══ BOUTIQUE ══ */
+.produits-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:18px}
+.produit-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  overflow:hidden;transition:all .3s;position:relative;
+}
+.produit-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--border2)}
+.produit-img{height:200px;background:var(--surface2);display:flex;align-items:center;
+  justify-content:center;font-size:72px;position:relative;overflow:hidden}
+.produit-img img{width:100%;height:100%;object-fit:cover}
+.produit-badge{position:absolute;top:12px;left:12px;background:var(--emerald);
+  color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:.5px}
+.produit-badge.promo{background:var(--terracotta)}
+.produit-body{padding:16px}
+.produit-cat{font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;font-weight:700}
+.produit-title{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;
+  color:var(--cream);margin-bottom:6px;line-height:1.3}
+.produit-desc{font-size:12px;color:var(--text2);line-height:1.6;margin-bottom:12px}
+.produit-footer{display:flex;align-items:center;justify-content:space-between}
+.produit-prix{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold)}
+.produit-prix-old{font-size:12px;color:var(--text3);text-decoration:line-through;margin-right:6px}
+.btn-add-cart{padding:8px 16px;background:linear-gradient(135deg,var(--emerald),#1a6b47);
+  border:none;border-radius:8px;color:#fff;font-size:12px;font-weight:600;cursor:pointer;
+  font-family:'Lora',serif;transition:all .2s}
+.btn-add-cart:hover{box-shadow:0 4px 16px rgba(45,158,107,.4);transform:translateY(-1px)}
+
+/* ══ PANIER ══ */
+.cart-panel{
+  position:fixed;top:0;right:-420px;width:420px;height:100vh;
+  background:var(--surface);border-left:1px solid var(--border2);z-index:800;
+  transition:right .35s ease;display:flex;flex-direction:column;overflow:hidden;
+}
+.cart-panel.open{right:0;box-shadow:-20px 0 60px rgba(0,0,0,.7)}
+.cart-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.cart-body{flex:1;overflow-y:auto;padding:20px 24px}
+.cart-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--border)}
+.cart-item-img{width:56px;height:56px;border-radius:10px;background:var(--surface3);
+  display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.cart-item-info{flex:1}
+.cart-item-name{font-size:13px;font-weight:600;color:var(--cream);margin-bottom:4px}
+.cart-item-prix{font-size:13px;font-weight:700;color:var(--gold)}
+.cart-footer{padding:20px 24px;border-top:1px solid var(--border)}
+.cart-total{display:flex;justify-content:space-between;font-family:'Cormorant Garamond',serif;
+  font-size:20px;font-weight:700;color:var(--cream);margin-bottom:16px}
+
+/* ══ CHAT ══ */
+.chat-wrap{
+  position:fixed;bottom:24px;right:24px;z-index:600;
+}
+.chat-fab{
+  width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--emerald),#1a6b47);
+  border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:24px;box-shadow:0 6px 24px rgba(45,158,107,.5);transition:all .3s;
+}
+.chat-fab:hover{transform:scale(1.1);box-shadow:0 10px 32px rgba(45,158,107,.6)}
+.chat-badge{
+  position:absolute;top:-4px;right:-4px;width:18px;height:18px;
+  background:var(--terracotta);border-radius:50%;font-size:10px;font-weight:800;
+  color:#fff;display:flex;align-items:center;justify-content:center;
+}
+.chat-box{
+  position:absolute;bottom:70px;right:0;width:360px;
+  background:var(--surface);border:1px solid var(--border2);border-radius:18px;
+  overflow:hidden;box-shadow:var(--shadow);display:none;flex-direction:column;
+}
+.chat-box.open{display:flex}
+.chat-hdr{
+  padding:14px 16px;background:linear-gradient(135deg,var(--surface2),var(--surface3));
+  border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;
+}
+.chat-hdr-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--emerald),var(--emerald2));
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff}
+.chat-hdr-name{font-size:13px;font-weight:700;color:var(--cream)}
+.chat-hdr-status{font-size:10px;color:var(--emerald2)}
+.chat-messages{height:260px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.msg{max-width:80%;padding:10px 14px;border-radius:12px;font-size:13px;line-height:1.6}
+.msg-in{background:var(--surface2);color:var(--text2);align-self:flex-start;border-bottom-left-radius:4px}
+.msg-out{background:linear-gradient(135deg,var(--emerald),#1a6b47);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.msg-time{font-size:9px;opacity:.6;margin-top:3px}
+.chat-input-wrap{padding:12px;border-top:1px solid var(--border);display:flex;gap:8px}
+.chat-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:9px 12px;color:var(--text);font-family:'Lora',serif;font-size:13px;resize:none}
+.chat-input:focus{outline:none;border-color:var(--border2)}
+.chat-send{width:36px;height:36px;border-radius:8px;background:var(--emerald);border:none;
+  color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* ══ MODAL ══ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(8px);
+  z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:20px;
+  width:100%;max-width:640px;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow)}
+.modal-hdr{padding:20px 24px;border-bottom:1px solid var(--border);
+  font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--cream);
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surface);z-index:1}
+.modal-body{padding:24px}
+.modal-ftr{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+.modal-close{background:none;border:none;color:var(--text2);font-size:22px;cursor:pointer;
+  width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:rgba(196,112,74,.15);color:var(--terracotta)}
+
+/* ══ FORM ══ */
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text3)}
+.form-input,.form-select,.form-textarea{
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;
+  padding:10px 13px;color:var(--text);font-family:'Lora',serif;font-size:13px;
+  transition:border-color .2s;width:100%}
+.form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--border2)}
+.form-select option{background:var(--surface2)}
+.form-textarea{resize:vertical;min-height:90px}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text3)}
+
+/* ══ ABONNEMENT ══ */
+.social-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.social-card{
+  background:var(--surface2);border:1px solid var(--border);border-radius:14px;
+  padding:20px;text-align:center;cursor:pointer;transition:all .2s;
+}
+.social-card:hover{transform:translateY(-3px);border-color:var(--border2)}
+.social-icon{font-size:36px;margin-bottom:10px}
+.social-name{font-size:13px;font-weight:700;color:var(--cream);margin-bottom:4px}
+.social-subs{font-size:11px;color:var(--text3)}
+
+/* ══ ADMIN ══ */
+#screen-admin-med{display:flex;flex-direction:column;height:100vh;overflow:hidden;background:var(--bg)}
+.admin-nav{height:54px;background:var(--surface);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;padding:0 20px;gap:14px}
+.admin-body{display:flex;flex:1;overflow:hidden}
+.admin-sidebar{width:230px;background:var(--surface);border-right:1px solid var(--border);
+  overflow-y:auto;padding:14px 0;flex-shrink:0}
+.admin-main{flex:1;overflow-y:auto}
+.admin-page{display:none;padding:24px}
+.admin-page.active{display:block}
+.adm-nav-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;
+  transition:all .15s;border-left:2px solid transparent;font-size:13px;color:var(--text2)}
+.adm-nav-item:hover{background:rgba(201,168,76,.05);color:var(--text)}
+.adm-nav-item.active{background:rgba(201,168,76,.08);color:var(--gold);border-left-color:var(--gold)}
+.adm-nav-section{font-size:9px;font-weight:700;color:var(--text3);letter-spacing:1.5px;
+  text-transform:uppercase;padding:10px 16px 4px}
+.adm-nav-item .ni{width:20px;text-align:center;font-size:15px}
+
+/* ══ BADGE / TOAST ══ */
+.badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-ok{background:rgba(45,158,107,.12);color:var(--emerald2);border:1px solid rgba(45,158,107,.25)}
+.badge-warn{background:rgba(201,168,76,.12);color:var(--gold);border:1px solid rgba(201,168,76,.25)}
+.badge-err{background:rgba(196,112,74,.12);color:var(--terracotta);border:1px solid rgba(196,112,74,.25)}
+.badge-info{background:rgba(122,170,110,.12);color:var(--sage);border:1px solid rgba(122,170,110,.25)}
+
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{padding:10px 14px;font-size:10px;font-weight:700;text-transform:uppercase;
+  letter-spacing:1px;color:var(--text3);text-align:left;border-bottom:1px solid var(--border)}
+.data-table td{padding:11px 14px;font-size:13px;border-bottom:1px solid var(--border);color:var(--text2)}
+.data-table tr:hover td{background:rgba(201,168,76,.02)}
+
+.prog{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--emerald),var(--gold));transition:width .5s}
+
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+  background:var(--surface);border:1px solid var(--border2);border-radius:12px;
+  padding:12px 20px;font-size:13px;color:var(--text);box-shadow:var(--shadow);
+  z-index:9999;animation:slideUp .3s ease;display:none;font-family:'Lora',serif}
+.toast.ok{border-color:rgba(45,158,107,.4)}.toast.err{border-color:rgba(196,112,74,.4)}
+@keyframes slideUp{from{transform:translateX(-50%) translateY(14px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+
+/* ══ CART OVERLAY ══ */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:799;display:none}
+.cart-overlay.open{display:block}
+
+/* ══ UPLOAD ZONE ══ */
+.upload-zone{border:2px dashed var(--border2);border-radius:12px;padding:30px;
+  text-align:center;cursor:pointer;transition:all .2s}
+.upload-zone:hover{border-color:var(--gold);background:rgba(201,168,76,.04)}
+.upload-zone input{display:none}
+
+/* ══ SECTION SÉPARATEUR ══ */
+.section-sep{height:1px;background:linear-gradient(90deg,transparent,var(--border2),transparent);margin:0 60px}
+
+/* ══ ABONNÉS HERO ══ */
+.subscribe-section{
+  background:linear-gradient(135deg,var(--surface2),var(--surface3));
+  border:1px solid var(--border);border-radius:20px;padding:40px;
+  text-align:center;position:relative;overflow:hidden;
+}
+.subscribe-section::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(201,168,76,.06),transparent 60%);
+}
+
+/* ══ ANIMATIONS ══ */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.animate{animation:fadeInUp .5s ease both}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.2s}.delay-3{animation-delay:.3s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.float{animation:float 4s ease-in-out infinite}
+
+/* ══ RESPONSIVE ══ */
+@media(max-width:768px){
+  .hero{padding:90px 24px 40px}
+  .section{padding:60px 24px}
+  .nav{padding:0 20px}
+  .nav-links{display:none}
+  .form-row{grid-template-columns:1fr}
+  .consultation-grid{grid-template-columns:1fr}
+  .chat-box{width:320px;right:-10px}
+}
+@media print{.nav,.chat-wrap,.cart-panel,.cart-overlay{display:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ══ NAVIGATION ══ -->
+<nav class="nav" id="main-nav">
+  <div class="nav-logo" onclick="showView('home')">
+    <span style="font-size:24px">🌿</span>
+    <div>
+      <div>Santé Globale <span style="color:var(--emerald2)">Amawognon</span></div>
+      <div class="nav-logo-sub">Soins Naturels · Formation · Bien-être</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <div class="nav-link active" onclick="showView('home',this)">Accueil</div>
+    <div class="nav-link" onclick="showView('formation',this)">Formation</div>
+    <div class="nav-link" onclick="showView('medias',this)">Médias</div>
+    <div class="nav-link" onclick="showView('bibliotheque',this)">Bibliothèque</div>
+    <div class="nav-link" onclick="showView('temoignages',this)">Témoignages</div>
+    <div class="nav-link" onclick="showView('clinique',this)">Clinique</div>
+    <div class="nav-link" onclick="showView('boutique',this)">Boutique</div>
+  </div>
+  <div class="nav-actions">
+    <div id="cart-nav-btn" onclick="toggleCart()" style="cursor:pointer;position:relative;padding:8px 14px;border:1px solid var(--border);border-radius:8px;font-size:13px;color:var(--text2);display:flex;align-items:center;gap:6px;transition:all .2s" onmouseover="this.style.borderColor='var(--border2)'" onmouseout="this.style.borderColor='var(--border)'">
+      🛒 <span id="cart-count" style="color:var(--gold);font-weight:700">0</span>
+    </div>
+    <button class="btn btn-gold btn-sm" onclick="showView('clinique',null)">Consultation →</button>
+    <button class="btn btn-outline btn-sm" onclick="showAdminLogin()">Admin</button>
+  </div>
+</nav>
+
+<!-- ══ CART OVERLAY ══ -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+
+<!-- ══ PANIER ══ -->
+<div class="cart-panel" id="cart-panel">
+  <div class="cart-header">
+    <div style="font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--cream)">🛒 Mon panier</div>
+    <button class="modal-close" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-body" id="cart-items-list">
+    <div style="text-align:center;padding:40px;color:var(--text3)">
+      <div style="font-size:40px;margin-bottom:10px">🛒</div>
+      <div>Votre panier est vide</div>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total"><span>Total</span><span id="cart-total">0 F CFA</span></div>
+    <button class="btn btn-emerald" style="width:100%;justify-content:center" onclick="passerCommande()">Passer commande →</button>
+    <button class="btn btn-outline btn-sm" style="width:100%;justify-content:center;margin-top:8px" onclick="toggleCart()">Continuer mes achats</button>
+  </div>
+</div>
+
+<!-- ══ VUES PRINCIPALES ══ -->
+<div id="app-views">
+
+  <!-- ████ ACCUEIL ████ -->
+  <div class="view" id="view-home" style="padding-top:68px">
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-pattern"></div>
+      <div class="hero-content animate delay-1">
+        <div class="hero-eyebrow">🌿 Médecine Naturelle · Azové, Bénin</div>
+        <h1 class="hero-title">
+          La nature au service<br>de votre <span class="italic">santé globale</span>
+        </h1>
+        <p class="hero-sub">
+          Découvrez les vertus thérapeutiques des plantes, la réflexologie plantaire,
+          la physiothérapie naturelle et nos formations certifiantes pour prendre soin
+          de vous et de vos proches.
+        </p>
+        <div class="hero-actions">
+          <button class="btn btn-gold" onclick="showView('formation',null)">🎓 Nos formations</button>
+          <button class="btn btn-emerald" onclick="showView('clinique',null)">🏥 Consultation</button>
+          <button class="btn btn-outline" onclick="showView('boutique',null)">🛒 Boutique</button>
+        </div>
+        <div class="hero-stats">
+          <div><div class="hero-stat-val">500+</div><div class="hero-stat-lbl">Patients suivis</div></div>
+          <div><div class="hero-stat-val">5</div><div class="hero-stat-lbl">Modules de formation</div></div>
+          <div><div class="hero-stat-val">98%</div><div class="hero-stat-lbl">Satisfaction</div></div>
+          <div><div class="hero-stat-val">10 ans</div><div class="hero-stat-lbl">D'expérience</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SERVICES -->
+    <div class="section">
+      <div class="section-badge">🌱 Nos services</div>
+      <h2 class="section-title">Ce que nous <span class="gold">offrons</span></h2>
+      <div class="divider"></div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-top:32px">
+        <div class="card animate" onclick="showView('formation',null)" style="cursor:pointer">
+          <div style="font-size:36px;margin-bottom:12px">🎓</div>
+          <div class="card-title">Formation Professionnelle</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7">Réflexologie, physiothérapie, fabrication de remèdes naturels — 5 modules certifiants.</div>
+        </div>
+        <div class="card animate delay-1" onclick="showView('clinique',null)" style="cursor:pointer">
+          <div style="font-size:36px;margin-bottom:12px">🏥</div>
+          <div class="card-title">Clinique Virtuelle</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7">Consultations à distance et en présentiel à Azové. Suivi personnalisé par Tohoun Achille.</div>
+        </div>
+        <div class="card animate delay-2" onclick="showView('boutique',null)" style="cursor:pointer">
+          <div style="font-size:36px;margin-bottom:12px">🧴</div>
+          <div class="card-title">Produits Naturels</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7">Thés médicinaux, huiles, savons et pommades 100% naturels fabriqués artisanalement.</div>
+        </div>
+        <div class="card animate delay-3" onclick="showView('bibliotheque',null)" style="cursor:pointer">
+          <div style="font-size:36px;margin-bottom:12px">📚</div>
+          <div class="card-title">Bibliothèque Digitale</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.7">Guides, manuels et ressources PDF sur la santé naturelle disponibles à l'achat.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-sep"></div>
+
+    <!-- ABONNEMENT RÉSEAUX -->
+    <div class="section">
+      <div class="subscribe-section">
+        <div style="position:relative;z-index:1">
+          <div class="section-badge" style="margin:0 auto 16px">📲 Suivez-nous</div>
+          <h2 class="section-title" style="text-align:center">Rejoignez notre <span class="gold">communauté</span></h2>
+          <p class="section-sub" style="text-align:center;margin:0 auto 32px">
+            Abonnez-vous à nos réseaux sociaux pour recevoir conseils, formations gratuites et actualités santé naturelle.
+          </p>
+          <div class="social-grid" style="max-width:700px;margin:0 auto 28px">
+            <div class="social-card" onclick="abonnerReseau('youtube','https://youtube.com/@amawognon')">
+              <div class="social-icon">▶️</div>
+              <div class="social-name">YouTube</div>
+              <div class="social-subs">Vidéos & Formations</div>
+              <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%;justify-content:center">S'abonner</button>
+            </div>
+            <div class="social-card" onclick="abonnerReseau('facebook','https://facebook.com/amawognon')">
+              <div class="social-icon">📘</div>
+              <div class="social-name">Facebook</div>
+              <div class="social-subs">Page officielle</div>
+              <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%;justify-content:center">Suivre</button>
+            </div>
+            <div class="social-card" onclick="abonnerReseau('whatsapp','https://wa.me/2290140602126')">
+              <div class="social-icon">💚</div>
+              <div class="social-name">WhatsApp</div>
+              <div class="social-subs">Canal & contact direct</div>
+              <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%;justify-content:center">Rejoindre</button>
+            </div>
+            <div class="social-card" onclick="abonnerReseau('tiktok','https://tiktok.com/@amawognon')">
+              <div class="social-icon">🎵</div>
+              <div class="social-name">TikTok</div>
+              <div class="social-subs">Conseils santé</div>
+              <button class="btn btn-outline btn-sm" style="margin-top:10px;width:100%;justify-content:center">Suivre</button>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:center">
+            <input id="sub-email" class="form-input" placeholder="Votre email pour la newsletter" style="max-width:280px">
+            <button class="btn btn-gold" onclick="sAbonnerNewsletter()">📧 S'abonner</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TÉMOIGNAGE RAPIDE -->
+    <div class="section">
+      <div class="section-badge">💬 Témoignages</div>
+      <h2 class="section-title">Ce qu'ils disent de <span class="italic">nous</span></h2>
+      <div class="divider"></div>
+      <div class="temo-grid" style="margin-top:28px" id="home-temo"></div>
+      <div style="text-align:center;margin-top:24px">
+        <button class="btn btn-outline" onclick="showView('temoignages',null)">Voir tous les témoignages →</button>
+      </div>
+    </div>
+
+    <!-- TRAITANT -->
+    <div class="section">
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px;display:flex;gap:32px;align-items:center;flex-wrap:wrap">
+        <div style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,var(--emerald),var(--gold));display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:800;color:var(--bg);flex-shrink:0">TA</div>
+        <div style="flex:1">
+          <div style="font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;font-weight:700">Notre thérapeute</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:600;color:var(--cream);margin-bottom:8px">Tohoun Achille</div>
+          <div style="font-size:14px;color:var(--text2);line-height:1.8;max-width:480px;margin-bottom:16px">
+            Thérapeute spécialisé en médecine naturelle, réflexologie plantaire et physiothérapie. Plus de 10 ans d'expérience au service de la santé globale de ses patients à Azové et à distance.
+          </div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--text2)">
+            <span>📍 Azové, Bénin</span>
+            <span>📞 +229 01 40 60 21 26</span>
+            <span>📧 amawognon@gmail.com</span>
+          </div>
+        </div>
+        <button class="btn btn-gold" onclick="openChat()">💬 Prendre contact</button>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer style="background:var(--surface);border-top:1px solid var(--border);padding:40px 60px;text-align:center">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--gold);margin-bottom:8px">🌿 Santé Globale Amawognon</div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:16px">Azové, Bénin · amawognon@gmail.com · +229 01 40 60 21 26</div>
+      <div style="font-size:12px;color:var(--text3)">© 2026 Santé Globale Amawognon — Tous droits réservés · DPTIF Pro</div>
+    </footer>
+  </div><!-- /view-home -->
+
+  <!-- ████ FORMATION ████ -->
+  <div class="view" id="view-formation" style="display:none;padding-top:68px">
+    <div class="section">
+      <div class="section-badge">🎓 Phase 1 — Formation</div>
+      <h2 class="section-title">Nos <span class="gold">formations</span> certifiantes</h2>
+      <div class="divider"></div>
+      <p class="section-sub" style="margin-bottom:40px">5 modules de formation professionnelle en médecine naturelle. Apprenez à votre rythme, en ligne ou en présentiel à Azové.</p>
+      <div class="modules-grid" id="modules-grid"></div>
+    </div>
+  </div>
+
+  <!-- ████ MÉDIAS ████ -->
+  <div class="view" id="view-medias" style="display:none;padding-top:68px">
+    <div class="section">
+      <div class="section-badge">🎬 Médias</div>
+      <h2 class="section-title">Vidéos & <span class="gold">Documents</span></h2>
+      <div class="divider"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;flex-wrap:wrap;gap:10px">
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline btn-sm" onclick="filtrerMedia('tout',this)" style="border-color:var(--border2)">Tout</button>
+          <button class="btn btn-outline btn-sm" onclick="filtrerMedia('video',this)">🎬 Vidéos</button>
+          <button class="btn btn-outline btn-sm" onclick="filtrerMedia('pdf',this)">📄 PDF</button>
+        </div>
+        <div id="admin-upload-btn" style="display:none">
+          <button class="btn btn-gold btn-sm" onclick="openModal('modal-upload')">⬆️ Téléverser</button>
+        </div>
+      </div>
+      <div class="media-grid" id="medias-grid"></div>
+    </div>
+  </div>
+
+  <!-- ████ BIBLIOTHÈQUE ████ -->
+  <div class="view" id="view-bibliotheque" style="display:none;padding-top:68px">
+    <div class="section">
+      <div class="section-badge">📚 Bibliothèque</div>
+      <h2 class="section-title">Ressources <span class="gold">digitales</span></h2>
+      <div class="divider"></div>
+      <p class="section-sub" style="margin-bottom:36px">Guides pratiques, manuels de formation et livres de référence sur la santé naturelle et la médecine ancestrale.</p>
+      <div class="biblio-grid" id="biblio-grid"></div>
+    </div>
+  </div>
+
+  <!-- ████ TÉMOIGNAGES ████ -->
+  <div class="view" id="view-temoignages" style="display:none;padding-top:68px">
+    <div class="section">
+      <div class="section-badge">💬 Témoignages</div>
+      <h2 class="section-title">Ce que disent nos <span class="italic">patients</span></h2>
+      <div class="divider"></div>
+      <div style="text-align:right;margin-bottom:20px">
+        <button class="btn btn-gold btn-sm" onclick="openModal('modal-temoignage')">✍️ Laisser un témoignage</button>
+      </div>
+      <div class="temo-grid" id="temo-grid"></div>
+    </div>
+  </div>
+
+  <!-- ████ CLINIQUE VIRTUELLE ████ -->
+  <div class="view" id="view-clinique" style="display:none;padding-top:68px">
+    <div class="section">
+      <div class="section-badge">🏥 Phase 2 — Clinique Virtuelle</div>
+      <h2 class="section-title">Consultation & <span class="gold">Suivi</span></h2>
+      <div class="divider"></div>
+
+      <!-- Tabs -->
+      <div style="display:flex;gap:4px;background:var(--surface2);border-radius:10px;padding:4px;max-width:400px;margin-bottom:28px" id="clinique-tabs">
+        <button class="btn" style="flex:1;justify-content:center;background:var(--surface3);color:var(--gold);border:1px solid var(--border2)" id="tab-consult" onclick="cliTab('consult')">🩺 Consultation</button>
+        <button class="btn" style="flex:1;justify-content:center;background:transparent;color:var(--text2);border:none" id="tab-suivi" onclick="cliTab('suivi')">📋 Suivi traitement</button>
+      </div>
+
+      <!-- Consultation -->
+      <div id="clin-consult">
+        <div class="consultation-grid">
+          <div class="card">
+            <div class="card-title">📝 Nouvelle consultation</div>
+            <div style="display:flex;gap:12px;margin-bottom:20px">
+              <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all .2s" onclick="selectConsultType('presentiel',this)">
+                <div style="font-size:28px;margin-bottom:6px">🏠</div>
+                <div style="font-size:13px;font-weight:600;color:var(--cream)">En présentiel</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:3px">Azové, Bénin</div>
+              </div>
+              <div style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:all .2s" onclick="selectConsultType('distance',this)">
+                <div style="font-size:28px;margin-bottom:6px">💻</div>
+                <div style="font-size:13px;font-weight:600;color:var(--cream)">À distance</div>
+                <div style="font-size:11px;color:var(--text3);margin-top:3px">WhatsApp / Vidéo</div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <div class="form-label">Nom complet *</div>
+                <input id="c-nom" class="form-input" placeholder="Votre nom et prénom">
+              </div>
+              <div class="form-group">
+                <div class="form-label">Téléphone *</div>
+                <input id="c-tel" class="form-input" placeholder="+229...">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <div class="form-label">Date souhaitée</div>
+                <input id="c-date" class="form-input" type="date">
+              </div>
+              <div class="form-group">
+                <div class="form-label">Heure</div>
+                <select id="c-heure" class="form-select">
+                  <option>08h00</option><option>09h00</option><option>10h00</option>
+                  <option>11h00</option><option>14h00</option><option>15h00</option>
+                  <option>16h00</option><option>17h00</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom:14px">
+              <div class="form-label">Motif / Symptômes *</div>
+              <textarea id="c-motif" class="form-textarea" placeholder="Décrivez vos symptômes ou le motif de consultation..."></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom:16px">
+              <div class="form-label">Type de soin souhaité</div>
+              <select id="c-type-soin" class="form-select">
+                <option>Réflexologie plantaire</option>
+                <option>Physiothérapie</option>
+                <option>Conseils en phytothérapie</option>
+                <option>Fabrication remèdes personnalisés</option>
+                <option>Bilan santé global</option>
+                <option>Suivi traitement en cours</option>
+              </select>
+            </div>
+            <button class="btn btn-gold" style="width:100%;justify-content:center" onclick="demanderConsultation()">📅 Demander une consultation</button>
+          </div>
+          <div>
+            <div class="card" style="margin-bottom:16px">
+              <div class="card-title">📞 Contact direct</div>
+              <div style="font-size:13px;color:var(--text2);line-height:1.9">
+                <div>👤 <strong style="color:var(--cream)">Tohoun Achille</strong> — Thérapeute</div>
+                <div>📞 <a href="tel:+2290140602126" style="color:var(--gold)">+229 01 40 60 21 26</a></div>
+                <div>📧 <a href="mailto:amawognon@gmail.com" style="color:var(--gold)">amawognon@gmail.com</a></div>
+                <div>📍 Azové, Bénin</div>
+                <div style="margin-top:12px">
+                  <button class="btn btn-emerald btn-sm" onclick="contactWhatsApp('Bonjour Docteur Achille, je souhaite prendre rendez-vous.')">
+                    💚 WhatsApp
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-title">⏰ Horaires d'ouverture</div>
+              <div style="font-size:13px;color:var(--text2);line-height:2">
+                <div style="display:flex;justify-content:space-between"><span>Lundi – Vendredi</span><strong style="color:var(--cream)">08h – 18h</strong></div>
+                <div style="display:flex;justify-content:space-between"><span>Samedi</span><strong style="color:var(--cream)">08h – 14h</strong></div>
+                <div style="display:flex;justify-content:space-between"><span>Dimanche</span><strong style="color:var(--terracotta)">Fermé</strong></div>
+                <div style="margin-top:10px;padding:8px;background:rgba(45,158,107,.08);border-radius:8px;font-size:11px;color:var(--emerald2)">
+                  ✅ Consultations à distance disponibles en dehors des heures
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suivi Traitement -->
+      <div id="clin-suivi" style="display:none">
+        <div style="max-width:500px;margin-bottom:24px">
+          <div class="form-row">
+            <div class="form-group">
+              <div class="form-label">Code patient / Email</div>
+              <input id="suivi-code" class="form-input" placeholder="Votre code patient ou email">
+            </div>
+            <div class="form-group" style="align-items:flex-end">
+              <button class="btn btn-gold" style="width:100%;justify-content:center" onclick="chargerSuivi()">🔍 Voir mon dossier</button>
+            </div>
+          </div>
+        </div>
+        <div id="suivi-content">
+          <div style="text-align:center;padding:40px;color:var(--text3)">
+            <div style="font-size:40px;margin-bottom:12px">📋</div>
+            <div>Entrez votre code patient pour accéder à votre suivi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ████ BOUTIQUE ████ -->
+  <div class="view" id="view-boutique" style="display:none;padding-top:68px">
+    <div class="section">
+      <div class="section-badge">🛒 Phase 3 — Boutique</div>
+      <h2 class="section-title">Produits <span class="gold">naturels</span></h2>
+      <div class="divider"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px" id="produit-filters">
+        <button class="btn btn-outline btn-sm" onclick="filtrerProduits('',this)" style="border-color:var(--border2)">Tous</button>
+        <button class="btn btn-outline btn-sm" onclick="filtrerProduits('thé',this)">🍵 Thés</button>
+        <button class="btn btn-outline btn-sm" onclick="filtrerProduits('huile',this)">💧 Huiles</button>
+        <button class="btn btn-outline btn-sm" onclick="filtrerProduits('savon',this)">🧼 Savons</button>
+        <button class="btn btn-outline btn-sm" onclick="filtrerProduits('pommade',this)">🧴 Pommades</button>
+      </div>
+      <div class="produits-grid" id="produits-grid"></div>
+    </div>
+  </div>
+
+</div><!-- /app-views -->
+
+<!-- ══ ADMIN MÉDICAL ══ -->
+<div id="screen-admin-med" style="display:none">
+  <div class="admin-nav">
+    <span style="font-size:20px">🌿</span>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--gold)">Santé Globale Amawognon — Admin</div>
+    <div style="background:rgba(45,158,107,.1);border:1px solid rgba(45,158,107,.25);border-radius:20px;padding:3px 12px;font-size:11px;font-weight:700;color:var(--emerald2);margin-left:8px" id="admin-role-badge">ADMIN</div>
+    <div style="margin-left:auto;display:flex;gap:10px;align-items:center">
+      <span id="admin-nom-display" style="font-size:12px;color:var(--text2)"></span>
+      <button class="btn btn-danger btn-sm" onclick="showAdminLogin()">Déconnexion</button>
+    </div>
+  </div>
+  <div class="admin-body">
+    <nav class="admin-sidebar">
+      <div class="adm-nav-section">📊 Tableau de bord</div>
+      <div class="adm-nav-item active" onclick="admPage('dashboard',this)"><span class="ni">📊</span>Vue d'ensemble</div>
+      <div class="adm-nav-section">🏥 Clinique</div>
+      <div class="adm-nav-item" onclick="admPage('consultations',this)"><span class="ni">🩺</span>Consultations <span style="margin-left:auto;font-size:9px;background:rgba(201,168,76,.15);color:var(--gold);border-radius:8px;padding:1px 6px" id="badge-consult">0</span></div>
+      <div class="adm-nav-item" onclick="admPage('patients',this)"><span class="ni">👥</span>Patients</div>
+      <div class="adm-nav-item" onclick="admPage('suivis',this)"><span class="ni">📋</span>Suivis traitement</div>
+      <div class="adm-nav-section">🎓 Formation</div>
+      <div class="adm-nav-item" onclick="admPage('modules',this)"><span class="ni">📚</span>Modules formation</div>
+      <div class="adm-nav-item" onclick="admPage('upload-media',this)"><span class="ni">🎬</span>Médias & PDF</div>
+      <div class="adm-nav-item" onclick="admPage('biblio-adm',this)"><span class="ni">📖</span>Bibliothèque</div>
+      <div class="adm-nav-section">🛒 Boutique</div>
+      <div class="adm-nav-item" onclick="admPage('produits-adm',this)"><span class="ni">🧴</span>Produits</div>
+      <div class="adm-nav-item" onclick="admPage('commandes',this)"><span class="ni">📦</span>Commandes <span style="margin-left:auto;font-size:9px;background:rgba(201,168,76,.15);color:var(--gold);border-radius:8px;padding:1px 6px" id="badge-commandes">0</span></div>
+      <div class="adm-nav-item" onclick="admPage('clients',this)"><span class="ni">👤</span>Base clients</div>
+      <div class="adm-nav-section">💬 Communication</div>
+      <div class="adm-nav-item" onclick="admPage('messages',this)"><span class="ni">💬</span>Messages <span style="margin-left:auto;font-size:9px;background:rgba(196,112,74,.15);color:var(--terracotta);border-radius:8px;padding:1px 6px" id="badge-msgs">0</span></div>
+      <div class="adm-nav-item" onclick="admPage('temoignages-adm',this)"><span class="ni">⭐</span>Témoignages</div>
+      <div class="adm-nav-section">⚙️ Config</div>
+      <div class="adm-nav-item" onclick="admPage('parametres-med',this)"><span class="ni">⚙️</span>Paramètres</div>
+    </nav>
+    <div class="admin-main" id="admin-main-med">
+
+      <!-- Stats -->
+      <div class="admin-page active" id="adm-page-dashboard">
+        <div style="margin-bottom:20px;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--cream)">📊 Vue d'ensemble</div>
+        <div class="kpi-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px">
+          <div class="card"><div style="font-size:22px;margin-bottom:6px">🩺</div><div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--gold)" id="adm-nb-consult">0</div><div style="font-size:11px;color:var(--text2)">Consultations</div></div>
+          <div class="card"><div style="font-size:22px;margin-bottom:6px">👥</div><div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--emerald2)" id="adm-nb-patients">0</div><div style="font-size:11px;color:var(--text2)">Patients</div></div>
+          <div class="card"><div style="font-size:22px;margin-bottom:6px">📦</div><div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--gold)" id="adm-nb-commandes">0</div><div style="font-size:11px;color:var(--text2)">Commandes</div></div>
+          <div class="card"><div style="font-size:22px;margin-bottom:6px">💰</div><div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--gold)" id="adm-ca">0 F</div><div style="font-size:11px;color:var(--text2)">Chiffre d'affaires</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="card"><div class="card-title">🩺 Dernières consultations</div><div id="adm-derniers-consult"></div></div>
+          <div class="card"><div class="card-title">📦 Dernières commandes</div><div id="adm-dernieres-commandes"></div></div>
+        </div>
+      </div>
+
+      <!-- Consultations -->
+      <div class="admin-page" id="adm-page-consultations">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--cream)">🩺 Consultations</div>
+          <button class="btn btn-gold btn-sm" onclick="exporterConsultations()">📥 Exporter</button>
+        </div>
+        <div class="card"><table class="data-table"><thead><tr><th>Patient</th><th>Type</th><th>Date</th><th>Motif</th><th>Soin</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="consult-tbody"></tbody></table></div>
+      </div>
+
+      <!-- Patients -->
+      <div class="admin-page" id="adm-page-patients">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--cream)">👥 Base patients</div>
+          <div style="display:flex;gap:8px">
+            <input class="form-input" style="width:200px;font-size:12px" placeholder="🔍 Rechercher..." oninput="rechercherPatient(this.value)">
+            <button class="btn btn-gold btn-sm" onclick="exporterPatients()">📥 CSV</button>
+            <button class="btn btn-emerald btn-sm" onclick="openModal('modal-new-patient')">＋ Patient</button>
+          </div>
+        </div>
+        <div class="card"><table class="data-table"><thead><tr><th>Patient</th><th>Contact</th><th>Consultations</th><th>Dernier rdv</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="patients-tbody"></tbody></table></div>
+      </div>
+
+      <!-- Suivis -->
+      <div class="admin-page" id="adm-page-suivis">
+        <div style="margin-bottom:20px;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--cream)">📋 Suivis de traitement</div>
+        <div style="display:grid;grid-template-columns:1fr 1.5fr;gap:16px">
+          <div class="card"><div class="card-title">👥 Sélectionner un patient</div><div id="suivis-patients-list"></div></div>
+          <div class="card"><div class="card-title" id="suivi-patient-title">📋 Dossier de suivi</div>
+            <div id="suivi-patient-content">
+              <div style="text-align:center;padding:24px;color:var(--text3)">Sélectionnez un patient</div>
+            </div>
+            <div id="suivi-add-form" style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px;display:none">
+              <div class="form-group" style="margin-bottom:10px"><div class="form-label">Nouvelle entrée de suivi</div><textarea id="suivi-note" class="form-textarea" rows="2" placeholder="Observations, traitement administré..."></textarea></div>
+              <button class="btn btn-gold btn-sm" onclick="ajouterSuivi()">➕ Ajouter note</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upload Médias -->
+      <div class="admin-page" id="adm-page-upload-media">
+        <div style="margin-bottom:20px;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--cream)">🎬 Médias & Documents PDF</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+          <div class="card">
+            <div class="card-title">📤 Charger une vidéo</div>
+            <div class="upload-zone" onclick="document.getElementById('upload-video-input').click()">
+              <div style="font-size:36px;margin-bottom:8px">🎬</div>
+              <div style="font-size:13px;font-weight:600;color:var(--cream)">Cliquez pour charger une vidéo</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:4px">MP4, AVI, MOV — Max 500 Mo</div>
+              <input type="file" id="upload-video-input" accept="video/*" onchange="uploadMedia(this,'video')">
+            </div>
+            <div class="form-group" style="margin-top:12px;margin-bottom:10px"><div class="form-label">Titre de la vidéo</div><input id="video-titre" class="form-input" placeholder="Ex: Formation Réflexologie — Module 1"></div>
+            <div class="form-group" style="margin-bottom:10px"><div class="form-label">Module associé</div>
+              <select id="video-module" class="form-select">
+                <option>Réflexologie plantaire</option><option>Physiothérapie</option>
+                <option>Fabrication de thés</option><option>Macérâts d'huile</option>
+                <option>Savons & Pommades</option><option>Général</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:12px"><div class="form-label">Gratuit ou Premium</div>
+              <select id="video-acces" class="form-select"><option value="gratuit">Gratuit</option><option value="premium">Premium (abonnés)</option></select>
+            </div>
+            <button class="btn btn-gold" onclick="confirmerUploadVideo()">📤 Publier la vidéo</button>
+          </div>
+          <div class="card">
+            <div class="card-title">📄 Charger un PDF</div>
+            <div class="upload-zone" onclick="document.getElementById('upload-pdf-input').click()">
+              <div style="font-size:36px;margin-bottom:8px">📄</div>
+              <div style="font-size:13px;font-weight:600;color:var(--cream)">Cliquez pour charger un PDF</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:4px">Fichiers PDF uniquement</div>
+              <input type="file" id="upload-pdf-input" accept=".pdf" onchange="uploadMedia(this,'pdf')">
+            </div>
+            <div class="form-group" style="margin-top:12px;margin-bottom:10px"><div class="form-label">Titre du document</div><input id="pdf-titre" class="form-input" placeholder="Ex: Guide Réflexologie Complète"></div>
+            <div class="form-group" style="margin-bottom:10px"><div class="form-label">Description</div><textarea id="pdf-desc" class="form-textarea" rows="2" placeholder="Description du document..."></textarea></div>
+            <div class="form-group" style="margin-bottom:10px"><div class="form-label">Prix de vente (0 = gratuit)</div><input id="pdf-prix" type="number" class="form-input" value="0" min="0"></div>
+            <div class="form-group" style="margin-bottom:12px"><div class="form-label">Ajouter à la bibliothèque</div>
+              <select id="pdf-biblio" class="form-select"><option value="oui">Oui — Vente bibliothèque</option><option value="non">Non — Médias seulement</option></select>
+            </div>
+            <button class="btn btn-gold" onclick="confirmerUploadPDF()">📤 Publier le PDF</button>
+          </div>
+        </div>
+        <div class="card"><div class="card-title">📁 Médias publiés</div><div id="adm-medias-list"></div></div>
+      </div>
+
+      <!-- Biblio Admin -->
+      <div class="admin-page" id="adm-page-biblio-adm">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--cream)">📖 Bibliothèque</div>
+          <button class="btn btn-gold btn-sm" onclick="openModal('modal-add-pdf')">＋ Ajouter PDF</button>
+        </div>
+        <div class="card"><table class="data-table"><thead><tr><th>Titre</th><th>Description</th><th>Prix</th><th>Ventes</th><th>Actions</th></tr></thead><tbody id="biblio-adm-tbody"></tbody></table></div>
+      </div>
+
+      <!-- Produits Admin -->
+      <div class="admin-page" id="adm-page-produits-adm">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--cream)">🧴 Gestion produits</div>
+          <button class="btn btn-gold btn-sm" onclick="openModal('modal-add-produit')">＋ Nouveau produit</button>
+        </div>
+        <div class="card"><table class="data-table"><thead><tr><th>Produit</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th>Visible</th><th>Actions</th></tr></thead><tbody id="produits-adm-tbody"></tbody></table></div>
+      </div>
+
+      <!-- Commandes -->
+      <div class="admin-page" id="adm-page-commandes">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--cream)">📦 Commandes</div>
+          <button class="btn btn-outline btn-sm" onclick="exporterCommandes()">📥 Exporter CSV</button>
+        </div>
+        <div class="card"><table class="data-table"><thead><tr><th>N° Commande</th><th>Client</th><th>Produits</th><th>Montant</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="commandes-tbody"></tbody></table></div>
+      </div>
+
+      <!-- Clients -->
+      <div class="admin-page" id="adm-page-clients">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--cream)">👤 Base clients</div>
+          <button class="btn btn-outline btn-sm" onclick="exporterClients()">📥 CSV</button>
+        </div>
+        <div class="card"><table class="data-table"><thead><tr><th>Client</th><th>Email</th><th>Téléphone</th><th>Commandes</th><th>Total dépensé</th><th>Date inscription</th><th>Actions</th></tr></thead><tbody id="clients-tbody"></tbody></table></div>
+      </div>
+
+      <!-- Messages -->
+      <div class="admin-page" id="adm-page-messages">
+        <div style="margin-bottom:20px;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--cream)">💬 Messages & Tchat</div>
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:16px">
+          <div class="card"><div class="card-title">Conversations</div><div id="adm-conv-list"></div></div>
+          <div class="card" style="display:flex;flex-direction:column">
+            <div class="card-title" id="adm-chat-title">Sélectionnez une conversation</div>
+            <div id="adm-chat-messages" style="flex:1;height:300px;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px"></div>
+            <div id="adm-chat-input" style="margin-top:10px;display:none">
+              <div style="display:flex;gap:8px">
+                <input id="adm-msg-input" class="form-input" placeholder="Répondre..." onkeydown="if(event.key==='Enter') envoyerMsgAdmin()">
+                <button class="btn btn-emerald btn-sm" onclick="envoyerMsgAdmin()">Envoyer</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Témoignages Admin -->
+      <div class="admin-page" id="adm-page-temoignages-adm">
+        <div style="margin-bottom:20px;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--cream)">⭐ Témoignages</div>
+        <div class="card"><table class="data-table"><thead><tr><th>Auteur</th><th>Étoiles</th><th>Témoignage</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="temo-adm-tbody"></tbody></table></div>
+      </div>
+
+      <!-- Paramètres -->
+      <div class="admin-page" id="adm-page-parametres-med">
+        <div style="margin-bottom:20px;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--cream)">⚙️ Paramètres</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="card">
+            <div class="card-title">🌿 Identité</div>
+            <div class="form-group" style="margin-bottom:12px"><div class="form-label">Nom du centre</div><input id="p-nom" class="form-input" value="Santé Globale Amawognon"></div>
+            <div class="form-group" style="margin-bottom:12px"><div class="form-label">Thérapeute</div><input id="p-therapeute" class="form-input" value="Tohoun Achille"></div>
+            <div class="form-group" style="margin-bottom:12px"><div class="form-label">Téléphone WhatsApp</div><input id="p-tel" class="form-input" value="+229 01 40 60 21 26"></div>
+            <div class="form-group" style="margin-bottom:12px"><div class="form-label">Email</div><input id="p-email" class="form-input" value="amawognon@gmail.com"></div>
+            <div class="form-group" style="margin-bottom:12px"><div class="form-label">Adresse</div><input id="p-adresse" class="form-input" value="Azové, Bénin"></div>
+            <button class="btn btn-gold btn-sm" onclick="sauvegarderParams()">💾 Sauvegarder</button>
+          </div>
+          <div class="card">
+            <div class="card-title">📲 Réseaux sociaux</div>
+            <div class="form-group" style="margin-bottom:10px"><div class="form-label">YouTube</div><input id="p-youtube" class="form-input" value="https://youtube.com/@amawognon"></div>
+            <div class="form-group" style="margin-bottom:10px"><div class="form-label">Facebook</div><input id="p-facebook" class="form-input" value="https://facebook.com/amawognon"></div>
+            <div class="form-group" style="margin-bottom:10px"><div class="form-label">WhatsApp canal</div><input id="p-wa-canal" class="form-input" value="https://wa.me/2290140602126"></div>
+            <div class="form-group" style="margin-bottom:12px"><div class="form-label">TikTok</div><input id="p-tiktok" class="form-input" value="https://tiktok.com/@amawognon"></div>
+            <button class="btn btn-gold btn-sm" onclick="sauvegarderReseaux()">💾 Sauvegarder</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /admin-main-med -->
+  </div>
+</div><!-- /screen-admin-med -->
+
+<!-- ══ LOGIN ADMIN ══ -->
+<div class="modal-overlay" id="modal-admin-login">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-hdr">🌿 Accès Administration <button class="modal-close" onclick="closeModal('modal-admin-login')">✕</button></div>
+    <div class="modal-body">
+      <div style="text-align:center;margin-bottom:20px;font-size:13px;color:var(--text2)">
+        Accès réservé : Tohoun Achille (traitant) & Admin principal
+      </div>
+      <div class="form-group" style="margin-bottom:12px"><div class="form-label">Identifiant</div><input id="adm-login-id" class="form-input" placeholder="admin ou traitant"></div>
+      <div class="form-group" style="margin-bottom:16px"><div class="form-label">Mot de passe</div><input id="adm-login-pw" class="form-input" type="password" placeholder="••••••••"></div>
+      <div style="font-size:11px;color:var(--text3);background:rgba(201,168,76,.06);padding:8px;border-radius:8px;text-align:center;margin-bottom:14px">
+        Démo: <strong style="color:var(--gold)">admin</strong> / <strong style="color:var(--gold)">ama2026</strong> ou <strong style="color:var(--gold)">achille</strong> / <strong style="color:var(--gold)">ama2026</strong>
+      </div>
+      <button class="btn btn-gold" style="width:100%;justify-content:center" onclick="loginAdmin()">🔐 Connexion</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODALS ══ -->
+
+<!-- Upload -->
+<div class="modal-overlay" id="modal-upload">
+  <div class="modal"><div class="modal-hdr">📤 Téléverser un média <button class="modal-close" onclick="closeModal('modal-upload')">✕</button></div>
+    <div class="modal-body">
+      <div class="upload-zone" onclick="document.getElementById('upload-gen').click()">
+        <div style="font-size:36px;margin-bottom:8px">📁</div><div style="font-size:13px;color:var(--cream)">Cliquez pour choisir votre fichier</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:4px">Vidéo (MP4) ou PDF</div>
+        <input type="file" id="upload-gen" accept="video/*,.pdf" onchange="handleUploadGen(this)">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Témoignage -->
+<div class="modal-overlay" id="modal-temoignage">
+  <div class="modal"><div class="modal-hdr">✍️ Laisser un témoignage <button class="modal-close" onclick="closeModal('modal-temoignage')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><div class="form-label">Votre nom *</div><input id="t-nom" class="form-input" placeholder="Prénom Nom"></div>
+        <div class="form-group"><div class="form-label">Ville</div><input id="t-ville" class="form-input" placeholder="Cotonou, Parakou..."></div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <div class="form-label">Note (étoiles)</div>
+        <div style="display:flex;gap:8px;margin-top:6px" id="stars-selector">
+          <span style="font-size:24px;cursor:pointer;transition:all .2s" onclick="setStars(1)" onmouseover="hoverStars(1)" onmouseout="resetStars()">☆</span>
+          <span style="font-size:24px;cursor:pointer;transition:all .2s" onclick="setStars(2)" onmouseover="hoverStars(2)" onmouseout="resetStars()">☆</span>
+          <span style="font-size:24px;cursor:pointer;transition:all .2s" onclick="setStars(3)" onmouseover="hoverStars(3)" onmouseout="resetStars()">☆</span>
+          <span style="font-size:24px;cursor:pointer;transition:all .2s" onclick="setStars(4)" onmouseover="hoverStars(4)" onmouseout="resetStars()">☆</span>
+          <span style="font-size:24px;cursor:pointer;transition:all .2s" onclick="setStars(5)" onmouseover="hoverStars(5)" onmouseout="resetStars()">☆</span>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px">
+        <div class="form-label">Votre témoignage *</div>
+        <textarea id="t-texte" class="form-textarea" placeholder="Partagez votre expérience avec nos soins ou formations..."></textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:14px">
+        <div class="form-label">Type (soin ou formation)</div>
+        <select id="t-type" class="form-select"><option>Soin / Traitement</option><option>Formation</option><option>Produit acheté</option></select>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-outline" onclick="closeModal('modal-temoignage')">Annuler</button>
+      <button class="btn btn-gold" onclick="soumettreTeemoignage()">✅ Soumettre</button>
+    </div>
+  </div>
+</div>
+
+<!-- Module formation détail -->
+<div class="modal-overlay" id="modal-module">
+  <div class="modal"><div class="modal-hdr" id="modal-module-titre">Module <button class="modal-close" onclick="closeModal('modal-module')">✕</button></div>
+    <div class="modal-body" id="modal-module-content"></div>
+    <div class="modal-ftr">
+      <button class="btn btn-outline" onclick="closeModal('modal-module')">Fermer</button>
+      <button class="btn btn-gold" onclick="sInscrireModule()">🎓 S'inscrire à ce module</button>
+    </div>
+  </div>
+</div>
+
+<!-- Commande confirmation -->
+<div class="modal-overlay" id="modal-commande">
+  <div class="modal"><div class="modal-hdr">📦 Finaliser la commande <button class="modal-close" onclick="closeModal('modal-commande')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><div class="form-label">Nom complet *</div><input id="cmd-nom" class="form-input" placeholder="Prénom Nom"></div>
+        <div class="form-group"><div class="form-label">Téléphone *</div><input id="cmd-tel" class="form-input" placeholder="+229..."></div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px"><div class="form-label">Email</div><input id="cmd-email" class="form-input" placeholder="email@..."></div>
+      <div class="form-group" style="margin-bottom:12px"><div class="form-label">Adresse de livraison *</div><textarea id="cmd-adresse" class="form-textarea" rows="2" placeholder="Quartier, ville, pays..."></textarea></div>
+      <div class="form-group" style="margin-bottom:12px">
+        <div class="form-label">Mode de paiement</div>
+        <select id="cmd-paiement" class="form-select">
+          <option>MTN Mobile Money</option><option>Moov Money</option><option>Wave</option>
+          <option>Paiement à la livraison</option><option>Virement bancaire</option>
+        </select>
+      </div>
+      <div id="cmd-recap" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px;font-size:13px"></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-outline" onclick="closeModal('modal-commande')">Annuler</button>
+      <button class="btn btn-gold" onclick="confirmerCommande()">✅ Confirmer la commande</button>
+    </div>
+  </div>
+</div>
+
+<!-- Ajout produit -->
+<div class="modal-overlay" id="modal-add-produit">
+  <div class="modal"><div class="modal-hdr">🧴 Nouveau produit <button class="modal-close" onclick="closeModal('modal-add-produit')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><div class="form-label">Nom du produit *</div><input id="np-nom" class="form-input" placeholder="Ex: Thé détox aux feuilles de neem"></div>
+        <div class="form-group"><div class="form-label">Catégorie</div>
+          <select id="np-cat" class="form-select"><option>thé</option><option>huile</option><option>savon</option><option>pommade</option><option>autre</option></select>
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px"><div class="form-label">Description</div><textarea id="np-desc" class="form-textarea" rows="2" placeholder="Description du produit, bienfaits..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><div class="form-label">Prix (F CFA) *</div><input id="np-prix" type="number" class="form-input" placeholder="2500"></div>
+        <div class="form-group"><div class="form-label">Prix barré (promo)</div><input id="np-prix-old" type="number" class="form-input" placeholder="Optionnel"></div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px"><div class="form-label">Stock</div><input id="np-stock" type="number" class="form-input" value="10" min="0"></div>
+      <div class="form-group" style="margin-bottom:12px">
+        <div class="form-label">Emoji / Icône</div>
+        <input id="np-emoji" class="form-input" value="🌿" style="width:80px">
+      </div>
+      <div class="form-group" style="margin-bottom:12px"><div class="form-label">URL Image (optionnel)</div><input id="np-img" class="form-input" placeholder="https://..."></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-produit')">Annuler</button>
+      <button class="btn btn-gold" onclick="ajouterProduit()">✅ Ajouter le produit</button>
+    </div>
+  </div>
+</div>
+
+<!-- Nouveau patient -->
+<div class="modal-overlay" id="modal-new-patient">
+  <div class="modal"><div class="modal-hdr">👤 Nouveau patient <button class="modal-close" onclick="closeModal('modal-new-patient')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><div class="form-label">Nom *</div><input id="pat-nom" class="form-input"></div>
+        <div class="form-group"><div class="form-label">Prénom *</div><input id="pat-prenom" class="form-input"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><div class="form-label">Téléphone</div><input id="pat-tel" class="form-input"></div>
+        <div class="form-group"><div class="form-label">Date de naissance</div><input id="pat-naissance" type="date" class="form-input"></div>
+      </div>
+      <div class="form-group" style="margin-bottom:12px"><div class="form-label">Adresse</div><input id="pat-adresse" class="form-input"></div>
+      <div class="form-group" style="margin-bottom:12px"><div class="form-label">Antécédents médicaux</div><textarea id="pat-antecedents" class="form-textarea" rows="2" placeholder="Maladies chroniques, allergies..."></textarea></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-outline" onclick="closeModal('modal-new-patient')">Annuler</button>
+      <button class="btn btn-gold" onclick="ajouterPatient()">✅ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ══ CHAT FAB ══ -->
+<div class="chat-wrap" id="chat-wrap">
+  <div class="chat-box" id="chat-box">
+    <div class="chat-hdr">
+      <div class="chat-hdr-avatar">TA</div>
+      <div>
+        <div class="chat-hdr-name">Tohoun Achille</div>
+        <div class="chat-hdr-status">🟢 Disponible — Réponse rapide</div>
+      </div>
+      <button style="margin-left:auto;background:none;border:none;color:var(--text2);cursor:pointer;font-size:18px" onclick="closeChat()">✕</button>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="msg msg-in">
+        Bonjour ! 🌿 Je suis Tohoun Achille, thérapeute en médecine naturelle. Comment puis-je vous aider ?
+        <div class="msg-time">Maintenant</div>
+      </div>
+    </div>
+    <div class="chat-input-wrap">
+      <textarea class="chat-input" id="chat-input" rows="1" placeholder="Votre message..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();envoyerMessage()}"></textarea>
+      <button class="chat-send" onclick="envoyerMessage()">➤</button>
+    </div>
+  </div>
+  <div class="chat-badge" id="chat-badge" style="display:none">1</div>
+  <button class="chat-fab" onclick="toggleChat()">💬</button>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════
+// SANTÉ GLOBALE AMAWOGNON — Application complète
+// Traitant: Tohoun Achille | Admin: Jean Paul BOGNON
+// ════════════════════════════════════════════════════════
+
+var CONFIG = {
+  nom: 'Santé Globale Amawognon',
+  therapeute: 'Tohoun Achille',
+  tel: '+229 01 40 60 21 26',
+  email: 'amawognon@gmail.com',
+  adresse: 'Azové, Bénin',
+  youtube: 'https://youtube.com/@amawognon',
+  facebook: 'https://facebook.com/amawognon',
+  whatsapp: 'https://wa.me/2290140602126',
+  tiktok: 'https://tiktok.com/@amawognon',
+};
+
+var ADMIN_USERS = {
+  'admin'  : { pw:'ama2026', role:'admin',     nom:'Jean Paul BOGNON',  email:'jeanpaulbognon3@gmail.com' },
+  'achille': { pw:'ama2026', role:'traitant',  nom:'Tohoun Achille',     email:'amawognon@gmail.com' },
+};
+
+var DB = {
+  modules    : [],
+  medias     : [],
+  biblioPdfs : [],
+  temoignages: [],
+  produits   : [],
+  commandes  : [],
+  clients    : [],
+  patients   : [],
+  consultations: [],
+  messages   : {},
+  panier     : [],
+  stars      : 0,
+  selectedPatientId: null,
+  currentAdmin: null,
+  consultType: 'distance',
+  selectedConvId: null,
+};
+
+// ══════════════════════════════════
+// DONNÉES INITIALES
+// ══════════════════════════════════
+
+DB.modules = [
+  {
+    id:'reflex', emoji:'🦶', titre:'Réflexologie Plantaire',
+    gradient:'linear-gradient(135deg,#0a2a1a,#0d3d22)',
+    duree:'8 semaines', lecons:16, prix:35000, niveau:'Débutant',
+    desc:'Apprenez les techniques ancestrales de la réflexologie plantaire pour soulager douleurs et stimuler la guérison naturelle.',
+    programme:['Anatomie et cartographie du pied','Zones réflexes des organes','Techniques de massage thérapeutique','Diagnostic par la plante des pieds','Protocoles de traitement','Pratique supervisée'],
+    objectifs:['Maîtriser les 10 zones réflexes','Pratiquer sur patients','Créer votre cabinet','Certificat de formation']
+  },
+  {
+    id:'physio', emoji:'💆', titre:'Physiothérapie Naturelle',
+    gradient:'linear-gradient(135deg,#1a200a,#2d3d0d)',
+    duree:'10 semaines', lecons:20, prix:45000, niveau:'Intermédiaire',
+    desc:'Techniques physiothérapeutiques combinant massages thérapeutiques, hydrothérapie et applications de plantes médicinales.',
+    programme:['Anatomie et physiologie','Techniques de massage profond','Hydrothérapie aux plantes','Argile et cataplasmes','Traitements des pathologies courantes','Évaluation et diagnostic'],
+    objectifs:['Traiter douleurs articulaires','Rééducation motrice','Pratiquer hydrothérapie','Diplôme reconnu']
+  },
+  {
+    id:'thes', emoji:'🍵', titre:'Fabrication de Thés Médicinaux',
+    gradient:'linear-gradient(135deg,#1a1000,#3d2a00)',
+    duree:'6 semaines', lecons:12, prix:25000, niveau:'Débutant',
+    desc:'Maîtrisez la composition, la récolte et la transformation des plantes médicinales pour créer des thés thérapeutiques certifiés.',
+    programme:['Botanique des plantes médicinales','Propriétés et indications','Récolte et séchage','Dosages et assemblages','Conservation et conditionnement','Certification et vente'],
+    objectifs:['Identifier 50+ plantes médicinales','Composer vos propres tisanes','Créer votre gamme','Vendre vos produits']
+  },
+  {
+    id:'macerat', emoji:'💧', titre:'Macérâts d\'Huile Végétale',
+    gradient:'linear-gradient(135deg,#0a1a20,#0d2d3a)',
+    duree:'4 semaines', lecons:8, prix:20000, niveau:'Débutant',
+    desc:'Techniques de macération à froid et à chaud pour extraire les principes actifs des plantes dans les huiles végétales.',
+    programme:['Huiles supports et leurs propriétés','Plantes pour la macération','Méthode à froid — 4-6 semaines','Méthode à chaud — extraction rapide','Filtration et conservation','Formulation et dosages'],
+    objectifs:['Maîtriser 2 techniques de macération','Créer 10 macérâts différents','Formules anti-douleurs','Anti-inflammatoires naturels']
+  },
+  {
+    id:'savons', emoji:'🧼', titre:'Savons & Pommades Médicales',
+    gradient:'linear-gradient(135deg,#1a0a20,#2d1a3a)',
+    duree:'8 semaines', lecons:16, prix:40000, niveau:'Intermédiaire',
+    desc:'Fabrication artisanale de savons thérapeutiques à froid et de pommades médicales pour soins dermatologiques naturels.',
+    programme:['Chimie des corps gras','Procédé à froid (cold process)','Formulation de pommades','Huiles essentielles en cosmétique','Packaging et étiquetage','Réglementation et certification'],
+    objectifs:['Fabriquer savons médicaux','Créer pommades anti-fongiques','Soins dermatologiques','Démarrer votre production']
+  },
+];
+
+DB.temoignages = [
+  {id:'t1', nom:'Adjoavi Roseline', ville:'Cotonou', stars:5, type:'Soin', date:'15/03/2026', approuve:true,
+   texte:'La réflexologie plantaire de Tohoun Achille m\'a soulagée de mes migraines chroniques après seulement 3 séances. Je recommande vivement !'},
+  {id:'t2', nom:'Komlan Fiogan', ville:'Lomé, Togo', stars:5, type:'Formation', date:'20/02/2026', approuve:true,
+   texte:'Formation en fabrication de thés médicinaux très complète. J\'ai pu lancer mon activité 2 mois après. Merci Amawognon !'},
+  {id:'t3', nom:'Abosèdé Yémalin', ville:'Parakou', stars:5, type:'Produit', date:'01/04/2026', approuve:true,
+   texte:'La pommade anti-douleurs a totalement éliminé mes douleurs articulaires. Un produit miraculeux 100% naturel.'},
+  {id:'t4', nom:'Dèdjèdo Hubert', ville:'Azové', stars:4, type:'Soin', date:'10/03/2026', approuve:true,
+   texte:'Très bon traitement de physiothérapie. Docteur Achille est très professionnel et à l\'écoute. Je suis en nette amélioration.'},
+];
+
+DB.medias = [
+  {id:'m1', type:'video', titre:'Introduction à la Réflexologie', module:'Réflexologie plantaire', emoji:'🦶', duree:'45 min', acces:'gratuit', date:'01/04/2026'},
+  {id:'m2', type:'video', titre:'Les plantes médicinales du Bénin', module:'Fabrication de thés', emoji:'🌿', duree:'32 min', acces:'gratuit', date:'15/03/2026'},
+  {id:'m3', type:'pdf',   titre:'Guide complet Réflexologie', module:'Réflexologie plantaire', emoji:'📄', taille:'2.4 Mo', acces:'premium', date:'20/02/2026'},
+  {id:'m4', type:'video', titre:'Technique massage physiothérapique', module:'Physiothérapie', emoji:'💆', duree:'58 min', acces:'premium', date:'10/02/2026'},
+  {id:'m5', type:'pdf',   titre:'Catalogue plantes médicinales', module:'Fabrication de thés', emoji:'📄', taille:'5.1 Mo', acces:'gratuit', date:'05/01/2026'},
+  {id:'m6', type:'video', titre:'Fabrication savon à froid', module:'Savons & Pommades', emoji:'🧼', duree:'1h12', acces:'premium', date:'12/01/2026'},
+];
+
+DB.biblioPdfs = [
+  {id:'b1', titre:'Manuel Complet de Réflexologie', emoji:'📗', desc:'Guide de référence — 180 pages avec cartographies et protocoles thérapeutiques', prix:5000, ventes:23},
+  {id:'b2', titre:'Les 100 Plantes Médicinales d\'Afrique', emoji:'📘', desc:'Encyclopédie illustrée des plantes médicinales africaines et leurs usages', prix:8000, ventes:41},
+  {id:'b3', titre:'Guide Fabrication Savons Naturels', emoji:'📙', desc:'Formules, techniques et recettes pour fabriquer vos savons thérapeutiques', prix:3500, ventes:67},
+  {id:'b4', titre:'Recettes de Tisanes Ancestrales', emoji:'📕', desc:'50 recettes traditionnelles de thés médicinaux pour 50 pathologies courantes', prix:2500, ventes:89},
+  {id:'b5', titre:'Pommades & Macérâts Thérapeutiques', emoji:'📔', desc:'Formulation et techniques pour créer pommades et macérâts actifs', prix:4000, ventes:34},
+];
+
+DB.produits = [
+  {id:'p1', nom:'Thé détox Neem & Moringa', cat:'thé', emoji:'🍵', prix:2500, prixOld:0, stock:25, desc:'Mélange détoxifiant puissant aux feuilles de neem et moringa. Riche en antioxydants.', visible:true},
+  {id:'p2', nom:'Macérât d\'huile d\'argan', cat:'huile', emoji:'💧', prix:4500, prixOld:5500, stock:15, desc:'Macérât d\'huile d\'argan enrichi aux plantes anti-inflammatoires. Soulage douleurs articulaires.', visible:true},
+  {id:'p3', nom:'Savon médical au karité', cat:'savon', emoji:'🧼', prix:1500, prixOld:0, stock:40, desc:'Savon thérapeutique au beurre de karité et huile de coco. Traite eczéma et psoriasis.', visible:true},
+  {id:'p4', nom:'Pommade anti-douleurs', cat:'pommade', emoji:'🧴', prix:3500, prixOld:4000, stock:20, desc:'Pommade naturelle anti-inflammatoire aux extraits de plantes. Efficace en 30 minutes.', visible:true},
+  {id:'p5', nom:'Thé immunity Moringa+', cat:'thé', emoji:'🌿', prix:3000, prixOld:0, stock:35, desc:'Tisane immunostimulante au moringa, gingembre et plantes africaines. 30 sachets.', visible:true},
+  {id:'p6', nom:'Huile de massage réflexologie', cat:'huile', emoji:'✋', prix:5000, prixOld:0, stock:12, desc:'Huile spécialement formulée pour les séances de réflexologie plantaire.', visible:true},
+];
+
+DB.patients = [
+  {id:'pat1', nom:'ADJOVI', prenom:'Roseline', tel:'97123456', adresse:'Cotonou', naissance:'1985-06-15', antecedents:'Migraines chroniques', consultations:4, dernierRdv:'15/03/2026', statut:'actif',
+   suivis:[
+     {date:'15/03/2026', note:'1ère séance réflexologie. Zones cérébrales très sensibles. Protocole crânien commencé.'},
+     {date:'22/03/2026', note:'2ème séance. Amélioration notable. Patient rapporte réduction de 50% des migraines.'},
+     {date:'29/03/2026', note:'3ème séance. Quasi-guérison. Recommandation: 1 séance par mois en entretien.'},
+   ]},
+  {id:'pat2', nom:'FIOGAN', prenom:'Komlan', tel:'91234567', adresse:'Lomé, Togo', naissance:'1990-03-20', antecedents:'Douleurs lombaires', consultations:2, dernierRdv:'20/03/2026', statut:'actif',
+   suivis:[
+     {date:'10/03/2026', note:'Consultation initiale. Douleurs lombaires chroniques depuis 2 ans. Physiothérapie prescrite.'},
+     {date:'20/03/2026', note:'2ème séance physiothérapie + macérât anti-inflammatoire. Amélioration de 30%.'},
+   ]},
+];
+
+DB.consultations = [
+  {id:'c1', patient:'ADJOVI Roseline', tel:'97123456', type:'presentiel', date:'15/03/2026', heure:'09h00', motif:'Migraines chroniques récurrentes', soin:'Réflexologie plantaire', statut:'termine'},
+  {id:'c2', patient:'FIOGAN Komlan',   tel:'91234567', type:'distance',   date:'20/03/2026', heure:'14h00', motif:'Douleurs lombaires', soin:'Physiothérapie', statut:'en-cours'},
+  {id:'c3', patient:'Nouveau patient', tel:'97654321', type:'presentiel', date:'05/04/2026', heure:'10h00', motif:'Problèmes digestifs', soin:'Conseils phytothérapie', statut:'attente'},
+];
+
+DB.commandes = [];
+DB.clients   = [];
+DB.messages  = {
+  'Roseline': [{from:'client',msg:'Bonjour Docteur, comment puis-je prendre RDV ?',time:'09:15'},{from:'admin',msg:'Bonjour ! Appelez le +229 01 40 60 21 26 ou remplissez le formulaire en ligne.',time:'09:18'}],
+  'Komlan':   [{from:'client',msg:'Ma douleur a beaucoup diminué, merci !',time:'14:30'},{from:'admin',msg:'Excellent ! Continuez les applications d\'huile matin et soir.',time:'14:45'}],
+};
+
+// ══════════════════════════════════
+// NAVIGATION VUES
+// ══════════════════════════════════
+
+function showView(id, btn) {
+  document.querySelectorAll('.view').forEach(function(v){ v.style.display='none'; });
+  document.querySelectorAll('.nav-link').forEach(function(n){ n.classList.remove('active'); });
+  var el = document.getElementById('view-'+id);
+  if(el) el.style.display='block';
+  if(btn) btn.classList.add('active');
+  document.getElementById('screen-admin-med').style.display='none';
+  document.getElementById('app-views').style.display='block';
+  window.scrollTo(0,0);
+  // Init pages
+  if(id==='formation')    renderModules();
+  if(id==='medias')       renderMedias();
+  if(id==='bibliotheque') renderBibliotheque();
+  if(id==='temoignages')  renderTemoignages();
+  if(id==='boutique')     renderProduits();
+}
+
+function openModal(id){ var el=document.getElementById(id); if(el) el.classList.add('open'); }
+function closeModal(id){ var el=document.getElementById(id); if(el) el.classList.remove('open'); }
+function toast(msg, type) {
+  var el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast'+(type==='ok'?' ok':type==='err'?' err':'');
+  el.style.display='block'; clearTimeout(el._t);
+  el._t=setTimeout(function(){ el.style.display='none'; },3500);
+}
+function fmtNum(n){ return Number(n||0).toLocaleString('fr-FR'); }
+function genId(){ return 'AMA-'+String(Date.now()).slice(-6); }
+
+// ══════════════════════════════════
+// MODULES FORMATION
+// ══════════════════════════════════
+
+function renderModules() {
+  var el = document.getElementById('modules-grid'); if(!el) return;
+  el.innerHTML = DB.modules.map(function(m){
+    return '<div class="module-card" onclick="voirModule(\''+m.id+'\')">'
+      +'<div class="module-card-thumb" style="background:'+m.gradient+'">'
+        +'<div style="font-size:68px;filter:drop-shadow(0 4px 16px rgba(0,0,0,.5))">'+m.emoji+'</div>'
+        +'<div class="module-num">Module '+(DB.modules.indexOf(m)+1)+'</div>'
+      +'</div>'
+      +'<div class="module-card-body">'
+        +'<div class="module-title">'+m.titre+'</div>'
+        +'<div class="module-desc">'+m.desc+'</div>'
+        +'<div class="module-meta">'
+          +'<span>⏱ '+m.duree+'</span>'
+          +'<span>📄 '+m.lecons+' leçons</span>'
+          +'<span>🎯 '+m.niveau+'</span>'
+        +'</div>'
+        +'<div class="module-prix">'+fmtNum(m.prix)+' F CFA</div>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+var _currentModule = null;
+function voirModule(id) {
+  var m = DB.modules.find(function(x){ return x.id===id; });
+  if(!m) return;
+  _currentModule = m;
+  var el = document.getElementById('modal-module-titre');
+  if(el) el.innerHTML = m.emoji+' '+m.titre+'<button class="modal-close" onclick="closeModal(\'modal-module\')">✕</button>';
+  var body = document.getElementById('modal-module-content');
+  if(body) body.innerHTML =
+    '<div style="margin-bottom:16px">'
+      +'<div style="font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:14px">'+m.desc+'</div>'
+      +'<div style="display:flex;gap:16px;font-size:12px;color:var(--text2);margin-bottom:16px">'
+        +'<span>⏱ '+m.duree+'</span><span>📄 '+m.lecons+' leçons</span><span>🎯 '+m.niveau+'</span>'
+      +'</div>'
+    +'</div>'
+    +'<h3 style="font-family:\'Cormorant Garamond\',serif;font-size:17px;color:var(--cream);margin-bottom:10px">📋 Programme</h3>'
+    +'<ul style="padding-left:18px;margin-bottom:16px">'
+    +m.programme.map(function(p){ return '<li style="font-size:13px;color:var(--text2);line-height:1.9">'+p+'</li>'; }).join('')
+    +'</ul>'
+    +'<h3 style="font-family:\'Cormorant Garamond\',serif;font-size:17px;color:var(--cream);margin-bottom:10px">🎯 Objectifs</h3>'
+    +'<ul style="padding-left:18px;margin-bottom:16px">'
+    +m.objectifs.map(function(o){ return '<li style="font-size:13px;color:var(--text2);line-height:1.9">'+o+'</li>'; }).join('')
+    +'</ul>'
+    +'<div style="background:rgba(201,168,76,.08);border:1px solid var(--border2);border-radius:10px;padding:14px;text-align:center">'
+      +'<div style="font-family:\'Cormorant Garamond\',serif;font-size:26px;font-weight:700;color:var(--gold)">'+fmtNum(m.prix)+' F CFA</div>'
+      +'<div style="font-size:11px;color:var(--text3);margin-top:4px">Paiement en plusieurs fois disponible</div>'
+    +'</div>';
+  openModal('modal-module');
+}
+
+function sInscrireModule() {
+  if(!_currentModule) return;
+  closeModal('modal-module');
+  contactWhatsApp('Bonjour Docteur Achille ! Je souhaite m\'inscrire au module : '+_currentModule.titre+' ('+fmtNum(_currentModule.prix)+' F CFA). Pouvez-vous me guider ?');
+}
+
+// ══════════════════════════════════
+// MÉDIAS
+// ══════════════════════════════════
+
+var _mediaFiltre = 'tout';
+function filtrerMedia(type, btn) {
+  _mediaFiltre = type;
+  document.querySelectorAll('#view-medias .btn').forEach(function(b){ b.style.background=''; b.style.borderColor='var(--border)'; b.style.color='var(--text2)'; });
+  if(btn){ btn.style.background='var(--surface3)'; btn.style.borderColor='var(--border2)'; btn.style.color='var(--gold)'; }
+  renderMedias();
+}
+
+function renderMedias() {
+  var el = document.getElementById('medias-grid'); if(!el) return;
+  var data = _mediaFiltre==='tout' ? DB.medias : DB.medias.filter(function(m){ return m.type===_mediaFiltre; });
+  el.innerHTML = data.map(function(m){
+    var isVideo = m.type==='video';
+    return '<div class="media-card" onclick="ouvrirMedia(\''+m.id+'\')">'
+      +'<div class="media-thumb">'
+        +'<div>'+m.emoji+'</div>'
+        +'<div class="media-play"><div style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px;backdrop-filter:blur(4px)">'+(isVideo?'▶':'📖')+'</div></div>'
+        +(m.acces==='premium'?'<div style="position:absolute;top:10px;right:10px;background:rgba(201,168,76,.85);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;color:#0a1208">⭐ Premium</div>':'<div style="position:absolute;top:10px;right:10px;background:rgba(45,158,107,.85);border-radius:20px;padding:2px 8px;font-size:10px;font-weight:700;color:#fff">Gratuit</div>')
+      +'</div>'
+      +'<div class="media-body">'
+        +'<div class="media-type">'+(isVideo?'🎬 Vidéo':'📄 Document PDF')+'</div>'
+        +'<div class="media-name">'+m.titre+'</div>'
+        +'<div class="media-meta">📚 '+m.module+' · '+(isVideo?'⏱ '+m.duree:'📦 '+m.taille)+' · '+m.date+'</div>'
+      +'</div>'
+    +'</div>';
+  }).join('') || '<div style="text-align:center;padding:40px;color:var(--text3);grid-column:1/-1">Aucun média disponible</div>';
+}
+
+function ouvrirMedia(id) {
+  var m = DB.medias.find(function(x){ return x.id===id; });
+  if(!m) return;
+  if(m.acces==='premium' && !DB.currentAdmin) {
+    toast('⭐ Contenu premium — Inscrivez-vous à une formation pour y accéder', 'err');
+    return;
+  }
+  toast(m.type==='video' ? '▶ Lecture: '+m.titre : '📖 Ouverture: '+m.titre);
+}
+
+function uploadMedia(input, type) {
+  var file = input.files[0];
+  if(!file) return;
+  toast('📁 Fichier sélectionné: '+file.name+' ('+Math.round(file.size/1024)+'KB)');
+}
+
+function confirmerUploadVideo() {
+  var titre = document.getElementById('video-titre')?.value.trim();
+  if(!titre){ toast('Entrez le titre de la vidéo', 'err'); return; }
+  var newMedia = {
+    id:'m'+Date.now(), type:'video', titre,
+    module: document.getElementById('video-module')?.value||'Général',
+    emoji:'🎬', duree:'?', acces:document.getElementById('video-acces')?.value||'gratuit',
+    date:new Date().toLocaleDateString('fr-FR')
+  };
+  DB.medias.unshift(newMedia);
+  document.getElementById('video-titre').value='';
+  toast('✅ Vidéo "'+titre+'" publiée !', 'ok');
+  renderAdmMedias(); renderMedias();
+}
+
+function confirmerUploadPDF() {
+  var titre = document.getElementById('pdf-titre')?.value.trim();
+  if(!titre){ toast('Entrez le titre du PDF', 'err'); return; }
+  var prix = parseInt(document.getElementById('pdf-prix')?.value)||0;
+  var newMedia = {
+    id:'m'+Date.now(), type:'pdf', titre,
+    emoji:'📄', taille:'?', acces:prix>0?'premium':'gratuit',
+    module:document.getElementById('video-module')?.value||'Général',
+    date:new Date().toLocaleDateString('fr-FR')
+  };
+  DB.medias.unshift(newMedia);
+  if(document.getElementById('pdf-biblio')?.value==='oui' && prix>0){
+    DB.biblioPdfs.unshift({
+      id:'b'+Date.now(), titre, emoji:'📄',
+      desc:document.getElementById('pdf-desc')?.value||'',
+      prix, ventes:0
+    });
+    toast('✅ PDF publié dans les médias ET la bibliothèque !', 'ok');
+  } else {
+    toast('✅ PDF "'+titre+'" publié dans les médias !', 'ok');
+  }
+  document.getElementById('pdf-titre').value='';
+  renderAdmMedias(); renderMedias(); renderBibliotheque();
+}
+
+// ══════════════════════════════════
+// BIBLIOTHÈQUE
+// ══════════════════════════════════
+
+function renderBibliotheque() {
+  var el = document.getElementById('biblio-grid'); if(!el) return;
+  el.innerHTML = DB.biblioPdfs.map(function(b){
+    return '<div class="biblio-card">'
+      +'<div class="biblio-badge">PDF</div>'
+      +'<div class="biblio-cover">'+b.emoji+'</div>'
+      +'<div class="biblio-title">'+b.titre+'</div>'
+      +'<div class="biblio-desc">'+b.desc+'</div>'
+      +'<div class="biblio-prix">'+fmtNum(b.prix)+' F CFA</div>'
+      +'<div style="font-size:10px;color:var(--text3);margin-bottom:10px">'+b.ventes+' ventes</div>'
+      +'<button class="btn btn-gold btn-sm" style="width:100%;justify-content:center" onclick="acheterPdf(\''+b.id+'\')">🛒 Acheter</button>'
+    +'</div>';
+  }).join('') || '<div style="text-align:center;padding:40px;color:var(--text3);grid-column:1/-1">Bibliothèque vide</div>';
+}
+
+function acheterPdf(id) {
+  var b = DB.biblioPdfs.find(function(x){ return x.id===id; });
+  if(!b) return;
+  b.ventes++;
+  toast('📧 Redirection vers paiement pour "'+b.titre+'" — '+fmtNum(b.prix)+' F CFA. Vous recevrez le lien de téléchargement après confirmation.');
+  contactWhatsApp('Bonjour ! Je souhaite acheter le PDF: '+b.titre+' ('+fmtNum(b.prix)+' F CFA). Comment procéder ?');
+}
+
+// ══════════════════════════════════
+// TÉMOIGNAGES
+// ══════════════════════════════════
+
+var _currentStars = 5;
+function setStars(n) {
+  _currentStars = n;
+  var stars = document.querySelectorAll('#stars-selector span');
+  stars.forEach(function(s, i){ s.textContent = i<n?'⭐':'☆'; s.style.color=i<n?'var(--gold)':'var(--text3)'; });
+}
+function hoverStars(n) { var stars=document.querySelectorAll('#stars-selector span'); stars.forEach(function(s,i){ s.textContent=i<n?'⭐':'☆'; }); }
+function resetStars() { setStars(_currentStars); }
+
+function soumettreTeemoignage() {
+  var nom = document.getElementById('t-nom')?.value.trim();
+  var texte = document.getElementById('t-texte')?.value.trim();
+  if(!nom||!texte){ toast('Nom et témoignage obligatoires', 'err'); return; }
+  DB.temoignages.unshift({
+    id:'t'+Date.now(), nom, ville:document.getElementById('t-ville')?.value||'',
+    stars:_currentStars, type:document.getElementById('t-type')?.value||'Soin',
+    date:new Date().toLocaleDateString('fr-FR'), approuve:false,
+    texte
+  });
+  closeModal('modal-temoignage');
+  toast('✅ Témoignage soumis ! Il sera publié après validation par Tohoun Achille.', 'ok');
+  renderTemoignages();
+}
+
+function renderTemoignages(tous) {
+  var data = DB.temoignages.filter(function(t){ return tous||t.approuve; });
+  ['temo-grid','home-temo'].forEach(function(id){
+    var el = document.getElementById(id); if(!el) return;
+    var slice = id==='home-temo' ? data.slice(0,3) : data;
+    el.innerHTML = slice.map(function(t){
+      var col = ['#2d9e6b','#c9a84c','#c4704a','#7aaa6e','#3dbf82'][Math.floor(Math.random()*5)];
+      return '<div class="temo-card">'
+        +'<div class="temo-stars">'+'⭐'.repeat(t.stars)+'</div>'
+        +'<div class="temo-text">'+t.texte+'</div>'
+        +'<div class="temo-author">'
+          +'<div class="temo-avatar" style="background:'+col+'">'+t.nom[0].toUpperCase()+'</div>'
+          +'<div><div class="temo-name">'+t.nom+'</div><div class="temo-role">'+(t.ville||'')+' · '+t.type+' · '+t.date+'</div></div>'
+        +'</div>'
+      +'</div>';
+    }).join('') || '<div style="text-align:center;padding:30px;color:var(--text3);grid-column:1/-1">Aucun témoignage pour le moment</div>';
+  });
+}
+
+// ══════════════════════════════════
+// CLINIQUE
+// ══════════════════════════════════
+
+function cliTab(tab) {
+  document.getElementById('clin-consult').style.display = tab==='consult'?'block':'none';
+  document.getElementById('clin-suivi').style.display   = tab==='suivi'?'block':'none';
+  ['consult','suivi'].forEach(function(t){
+    var btn = document.getElementById('tab-'+t);
+    if(!btn) return;
+    if(t===tab){
+      btn.style.background='var(--surface3)'; btn.style.color='var(--gold)'; btn.style.border='1px solid var(--border2)';
+    } else {
+      btn.style.background='transparent'; btn.style.color='var(--text2)'; btn.style.border='none';
+    }
+  });
+}
+
+function selectConsultType(type, card) {
+  DB.consultType = type;
+  document.querySelectorAll('#clin-consult .card > div > div[onclick]').forEach(function(c){ c.style.borderColor='var(--border)'; });
+  if(card) { card.style.borderColor='var(--border2)'; }
+}
+
+function demanderConsultation() {
+  var nom   = document.getElementById('c-nom')?.value.trim();
+  var tel   = document.getElementById('c-tel')?.value.trim();
+  var motif = document.getElementById('c-motif')?.value.trim();
+  var date  = document.getElementById('c-date')?.value;
+  var heure = document.getElementById('c-heure')?.value;
+  var soin  = document.getElementById('c-type-soin')?.value;
+  if(!nom||!tel||!motif){ toast('Remplissez les champs obligatoires *', 'err'); return; }
+
+  var newConsult = {
+    id:'c'+Date.now(), patient:nom, tel, type:DB.consultType||'distance',
+    date:date||new Date().toLocaleDateString('fr-FR'), heure:heure||'À définir',
+    motif, soin:soin||'À définir', statut:'attente'
+  };
+  DB.consultations.unshift(newConsult);
+  // Enregistrement patient si nouveau
+  var patientExist = DB.patients.find(function(p){ return p.tel===tel; });
+  if(!patientExist){
+    DB.patients.push({
+      id:'pat'+Date.now(), nom:nom.split(' ').pop()||nom, prenom:nom.split(' ')[0]||'',
+      tel, adresse:'', naissance:'', antecedents:'', consultations:1,
+      dernierRdv:date||new Date().toLocaleDateString('fr-FR'), statut:'actif', suivis:[]
+    });
+  }
+
+  toast('✅ Demande envoyée ! Tohoun Achille vous contactera sous 2h.', 'ok');
+  var msg = 'Bonjour Docteur Achille ! Demande de consultation:\n👤 '+nom+'\n📞 '+tel+'\n📅 '+date+' à '+heure+'\n🩺 '+soin+'\n📋 '+motif;
+  setTimeout(function(){ contactWhatsApp(msg); }, 1000);
+  ['c-nom','c-tel','c-motif'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+  updateAdminBadges();
+}
+
+function chargerSuivi() {
+  var code = document.getElementById('suivi-code')?.value.trim();
+  if(!code){ toast('Entrez votre code ou email', 'err'); return; }
+  var patient = DB.patients.find(function(p){ return p.tel===code || (p.prenom+' '+p.nom).toLowerCase().includes(code.toLowerCase()); });
+  var el = document.getElementById('suivi-content');
+  if(!el) return;
+  if(!patient){
+    el.innerHTML='<div style="text-align:center;padding:20px;color:var(--terracotta)">Patient non trouvé. Vérifiez votre code ou contactez le thérapeute.</div>';
+    return;
+  }
+  el.innerHTML = '<div style="font-family:\'Cormorant Garamond\',serif;font-size:18px;color:var(--cream);margin-bottom:14px">Dossier de '+patient.prenom+' '+patient.nom+'</div>'
+    +'<div class="suivi-timeline">'
+    +(patient.suivis||[]).map(function(s){
+      return '<div class="suivi-item"><div class="suivi-date">'+s.date+'</div><div class="suivi-content">'+s.note+'</div></div>';
+    }).join('')
+    +'</div>'
+    +(!patient.suivis?.length?'<div style="color:var(--text3);text-align:center;padding:20px">Aucune note de suivi pour le moment</div>':'');
+}
+
+// ══════════════════════════════════
+// BOUTIQUE
+// ══════════════════════════════════
+
+var _filtreProds = '';
+function filtrerProduits(val, btn) {
+  _filtreProds = val;
+  document.querySelectorAll('#produit-filters button').forEach(function(b){ b.style.borderColor='var(--border)'; b.style.color='var(--text2)'; });
+  if(btn){ btn.style.borderColor='var(--border2)'; btn.style.color='var(--gold)'; }
+  renderProduits();
+}
+
+function renderProduits(admPage) {
+  var data = _filtreProds ? DB.produits.filter(function(p){ return p.cat===_filtreProds && p.visible; }) : DB.produits.filter(function(p){ return p.visible; });
+  var el = document.getElementById('produits-grid');
+  if(el) el.innerHTML = data.map(function(p){
+    return '<div class="produit-card">'
+      +'<div class="produit-img"><div>'+p.emoji+'</div>'
+        +(p.prixOld?'<div class="produit-badge promo">Promo</div>':'')
+        +'<div class="produit-badge" style="top:12px;right:12px;left:auto">'+p.cat+'</div>'
+      +'</div>'
+      +'<div class="produit-body">'
+        +'<div class="produit-cat">'+p.cat.toUpperCase()+'</div>'
+        +'<div class="produit-title">'+p.nom+'</div>'
+        +'<div class="produit-desc">'+p.desc+'</div>'
+        +'<div class="produit-footer">'
+          +'<div>'+(p.prixOld?'<span class="produit-prix-old">'+fmtNum(p.prixOld)+' F</span>':'')+'<span class="produit-prix">'+fmtNum(p.prix)+' F</span></div>'
+          +'<button class="btn-add-cart" onclick="addToCart(\''+p.id+'\')">🛒 Ajouter</button>'
+        +'</div>'
+        +'<div style="font-size:10px;color:var(--text3);margin-top:8px">Stock: '+p.stock+' unités</div>'
+      +'</div>'
+    +'</div>';
+  }).join('') || '<div style="text-align:center;padding:40px;color:var(--text3);grid-column:1/-1">Aucun produit dans cette catégorie</div>';
+}
+
+// ══════════════════════════════════
+// PANIER
+// ══════════════════════════════════
+
+function addToCart(id) {
+  var p = DB.produits.find(function(x){ return x.id===id; }); if(!p) return;
+  var existing = DB.panier.find(function(i){ return i.id===id; });
+  if(existing) existing.qte++;
+  else DB.panier.push({id, nom:p.nom, emoji:p.emoji, prix:p.prix, qte:1});
+  updateCart(); toggleCart(); toast('✅ '+p.nom+' ajouté au panier', 'ok');
+}
+
+function updateCart() {
+  var total = DB.panier.reduce(function(s,i){ return s+i.prix*i.qte; }, 0);
+  var count = DB.panier.reduce(function(s,i){ return s+i.qte; }, 0);
+  var countEl = document.getElementById('cart-count'); if(countEl) countEl.textContent=count;
+  var totalEl = document.getElementById('cart-total'); if(totalEl) totalEl.textContent=fmtNum(total)+' F CFA';
+  var listEl  = document.getElementById('cart-items-list');
+  if(listEl){
+    if(!DB.panier.length){
+      listEl.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)"><div style="font-size:40px;margin-bottom:10px">🛒</div><div>Votre panier est vide</div></div>';
+    } else {
+      listEl.innerHTML = DB.panier.map(function(item){
+        return '<div class="cart-item">'
+          +'<div class="cart-item-img">'+item.emoji+'</div>'
+          +'<div class="cart-item-info">'
+            +'<div class="cart-item-name">'+item.nom+'</div>'
+            +'<div style="display:flex;align-items:center;gap:8px;margin-top:4px">'
+              +'<button onclick="changeQte(\''+item.id+'\',-1)" style="width:24px;height:24px;border-radius:50%;background:var(--surface3);border:1px solid var(--border);color:var(--text2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">−</button>'
+              +'<span style="font-size:13px;color:var(--cream);font-weight:600">'+item.qte+'</span>'
+              +'<button onclick="changeQte(\''+item.id+'\',1)" style="width:24px;height:24px;border-radius:50%;background:var(--surface3);border:1px solid var(--border);color:var(--text2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center">＋</button>'
+            +'</div>'
+          +'</div>'
+          +'<div>'
+            +'<div class="cart-item-prix">'+fmtNum(item.prix*item.qte)+' F</div>'
+            +'<button onclick="removeFromCart(\''+item.id+'\')" style="margin-top:6px;background:none;border:none;color:var(--terracotta);font-size:11px;cursor:pointer">Retirer</button>'
+          +'</div>'
+        +'</div>';
+      }).join('');
+    }
+  }
+  // Récap dans modal commande
+  var recapEl = document.getElementById('cmd-recap');
+  if(recapEl && DB.panier.length) {
+    recapEl.innerHTML = '<div style="font-weight:700;color:var(--cream);margin-bottom:8px">Récapitulatif:</div>'
+      +DB.panier.map(function(i){ return '<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0">'+i.emoji+' '+i.nom+' × '+i.qte+'<strong style="color:var(--gold)">'+fmtNum(i.prix*i.qte)+' F</strong></div>'; }).join('')
+      +'<div style="display:flex;justify-content:space-between;font-weight:800;font-size:14px;margin-top:8px;padding-top:8px;border-top:1px solid var(--border)">Total<strong style="color:var(--gold)">'+fmtNum(total)+' F CFA</strong></div>';
+  }
+}
+
+function changeQte(id, delta) {
+  var item = DB.panier.find(function(i){ return i.id===id; });
+  if(!item) return;
+  item.qte += delta;
+  if(item.qte <= 0) DB.panier = DB.panier.filter(function(i){ return i.id!==id; });
+  updateCart();
+}
+function removeFromCart(id) { DB.panier=DB.panier.filter(function(i){ return i.id!==id; }); updateCart(); }
+
+function toggleCart() {
+  var panel = document.getElementById('cart-panel');
+  var overlay = document.getElementById('cart-overlay');
+  if(panel) panel.classList.toggle('open');
+  if(overlay) overlay.classList.toggle('open');
+}
+
+function passerCommande() {
+  if(!DB.panier.length){ toast('Votre panier est vide', 'err'); return; }
+  toggleCart();
+  updateCart();
+  openModal('modal-commande');
+}
+
+function confirmerCommande() {
+  var nom  = document.getElementById('cmd-nom')?.value.trim();
+  var tel  = document.getElementById('cmd-tel')?.value.trim();
+  var adr  = document.getElementById('cmd-adresse')?.value.trim();
+  if(!nom||!tel||!adr){ toast('Remplissez tous les champs obligatoires', 'err'); return; }
+
+  var total = DB.panier.reduce(function(s,i){ return s+i.prix*i.qte; }, 0);
+  var email = document.getElementById('cmd-email')?.value.trim();
+  var paiement = document.getElementById('cmd-paiement')?.value;
+  var numCommande = genId();
+
+  var commande = {
+    id:numCommande, client:nom, tel, email, adresse:adr, paiement,
+    produits:[...DB.panier], montant:total,
+    date:new Date().toLocaleDateString('fr-FR'), statut:'en-attente'
+  };
+  DB.commandes.unshift(commande);
+
+  // Enregistrement automatique client
+  var clientExist = DB.clients.find(function(c){ return c.tel===tel; });
+  if(!clientExist){
+    DB.clients.push({
+      id:'cli'+Date.now(), nom, tel, email, adresse,
+      commandes:1, total, dateInscription:new Date().toLocaleDateString('fr-FR')
+    });
+  } else {
+    clientExist.commandes++;
+    clientExist.total = (clientExist.total||0) + total;
+  }
+
+  closeModal('modal-commande');
+  DB.panier = [];
+  updateCart();
+  updateAdminBadges();
+
+  toast('✅ Commande '+numCommande+' confirmée ! Reçu envoyé par WhatsApp.', 'ok');
+  // Imprimer reçu
+  setTimeout(function(){ imprimerRecu(commande); }, 500);
+  // WhatsApp notification
+  var msg = '📦 NOUVELLE COMMANDE '+numCommande+'\n👤 '+nom+'\n📞 '+tel+'\n📍 '+adr+'\n💳 '+paiement+'\n💰 Total: '+fmtNum(total)+' F CFA\n🛒 Produits: '+commande.produits.map(function(p){ return p.nom+'×'+p.qte; }).join(', ');
+  setTimeout(function(){ contactWhatsApp(msg); }, 1500);
+}
+
+function imprimerRecu(commande) {
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Reçu '+commande.id+'</title>'
+    +'<style>*{margin:0;padding:0;box-sizing:border-box}body{font-family:Georgia,serif;max-width:500px;margin:30px auto;color:#1a2e1a;background:#fafaf5}'
+    +'.hdr{background:linear-gradient(135deg,#0e1a0c,#1d2e1a);color:#fff;padding:28px;text-align:center;border-radius:10px 10px 0 0}'
+    +'.logo{font-size:20px;font-weight:700;color:#c9a84c;margin-bottom:6px}'
+    +'.recu{background:#fff;border:1px solid #ddd;padding:24px;border-top:none;border-radius:0 0 10px 10px}'
+    +'.ref{text-align:center;background:#f0f8f0;padding:12px;border-radius:8px;margin-bottom:20px;font-size:11px}'
+    +'.ref strong{font-size:18px;color:#2d9e6b;display:block;margin-top:4px}'
+    +'.row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #f0f0f0;font-size:13px}'
+    +'.total{background:#f0f8f0;padding:12px;border-radius:8px;display:flex;justify-content:space-between;font-size:16px;font-weight:800;margin-top:12px}'
+    +'.total strong{color:#2d9e6b}'
+    +'.footer{text-align:center;font-size:11px;color:#999;margin-top:20px}'
+    +'</style></head><body>'
+    +'<div class="hdr"><div class="logo">🌿 Santé Globale Amawognon</div><div style="font-size:12px;opacity:.8">Azové, Bénin · amawognon@gmail.com</div></div>'
+    +'<div class="recu"><div class="ref">Reçu de commande<strong>'+commande.id+'</strong></div>'
+    +'<div class="row"><span>Client</span><strong>'+commande.client+'</strong></div>'
+    +'<div class="row"><span>Téléphone</span><strong>'+commande.tel+'</strong></div>'
+    +'<div class="row"><span>Date</span><strong>'+commande.date+'</strong></div>'
+    +'<div class="row"><span>Livraison</span><strong>'+commande.adresse+'</strong></div>'
+    +'<div class="row"><span>Paiement</span><strong>'+commande.paiement+'</strong></div>'
+    +'<div style="margin:16px 0 10px;font-weight:700;font-size:13px">Articles commandés:</div>'
+    +commande.produits.map(function(p){ return '<div class="row"><span>'+p.emoji+' '+p.nom+' × '+p.qte+'</span><strong>'+fmtNum(p.prix*p.qte)+' F</strong></div>'; }).join('')
+    +'<div class="total"><span>Total TTC</span><strong>'+fmtNum(commande.montant)+' F CFA</strong></div>'
+    +'<div class="footer">Merci pour votre confiance · Tohoun Achille · +229 01 40 60 21 26</div>'
+    +'</div><script>window.onload=function(){window.print();}<\/script></body></html>';
+  var w=window.open('','_blank','width=600,height=700');
+  if(w){w.document.write(html);w.document.close();}
+}
+
+// ══════════════════════════════════
+// CHAT
+// ══════════════════════════════════
+
+var _chatOpen = false;
+function toggleChat() { _chatOpen=!_chatOpen; var box=document.getElementById('chat-box'); if(box){box.classList.toggle('open',_chatOpen);} var badge=document.getElementById('chat-badge'); if(badge) badge.style.display='none'; }
+function openChat() { _chatOpen=false; toggleChat(); }
+function closeChat() { _chatOpen=true; toggleChat(); }
+
+function envoyerMessage() {
+  var input = document.getElementById('chat-input');
+  var msg   = (input?.value||'').trim();
+  if(!msg) return;
+  input.value='';
+  var msgs = document.getElementById('chat-messages');
+  var time  = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  if(msgs){
+    var div=document.createElement('div');
+    div.className='msg msg-out';
+    div.innerHTML=msg+'<div class="msg-time">'+time+'</div>';
+    msgs.appendChild(div); msgs.scrollTop=msgs.scrollHeight;
+  }
+  // Réponse auto
+  setTimeout(function(){
+    var rep = reponseAuto(msg);
+    if(msgs){
+      var div2=document.createElement('div');
+      div2.className='msg msg-in';
+      div2.innerHTML=rep+'<div class="msg-time">'+new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})+'</div>';
+      msgs.appendChild(div2); msgs.scrollTop=msgs.scrollHeight;
+    }
+    var badge=document.getElementById('chat-badge'); if(badge){ badge.style.display='flex'; }
+  }, 1200);
+  // Stocker message
+  if(!DB.messages['Visiteur']) DB.messages['Visiteur']=[];
+  DB.messages['Visiteur'].push({from:'client',msg,time});
+}
+
+function reponseAuto(msg) {
+  msg = msg.toLowerCase();
+  if(msg.includes('rdv')||msg.includes('rendez')||msg.includes('consult')) return '📅 Pour prendre RDV, appelez le <strong>+229 01 40 60 21 26</strong> ou remplissez notre formulaire dans la section Clinique. Nous vous rappelons sous 2h !';
+  if(msg.includes('prix')||msg.includes('coût')||msg.includes('tarif')) return '💰 Nos consultations démarrent à partir de 5 000 F CFA. Nos formations vont de 20 000 à 45 000 F CFA. Contactez-nous pour un devis personnalisé.';
+  if(msg.includes('bonjour')||msg.includes('bonsoir')||msg.includes('salut')) return '🌿 Bonjour ! Bienvenue chez Santé Globale Amawognon. Comment puis-je vous aider aujourd\'hui ?';
+  if(msg.includes('formation')) return '🎓 Nous proposons 5 modules de formation : Réflexologie, Physiothérapie, Thés médicinaux, Macérâts et Savons. Consultez notre page Formation pour plus de détails !';
+  if(msg.includes('produit')||msg.includes('huile')||msg.includes('savon')) return '🧴 Tous nos produits sont 100% naturels et fabriqués artisanalement à Azové. Visitez notre boutique pour voir la gamme complète !';
+  return '🌿 Merci pour votre message ! Tohoun Achille vous répondra personnellement dans les plus brefs délais. Pour urgence: 📞 +229 01 40 60 21 26';
+}
+
+function contactWhatsApp(msg) {
+  var encoded = encodeURIComponent(msg||'Bonjour Docteur Achille !');
+  window.open('https://wa.me/2290140602126?text='+encoded, '_blank');
+}
+
+function abonnerReseau(type, url) {
+  window.open(url, '_blank');
+  toast('✅ Redirection vers '+type+'...', 'ok');
+}
+
+function sAbonnerNewsletter() {
+  var email = document.getElementById('sub-email')?.value.trim();
+  if(!email){ toast('Entrez votre email', 'err'); return; }
+  toast('✅ Inscription newsletter confirmée pour '+email+' !', 'ok');
+  document.getElementById('sub-email').value='';
+}
+
+// ══════════════════════════════════
+// ADMIN
+// ══════════════════════════════════
+
+function showAdminLogin() { openModal('modal-admin-login'); }
+
+function loginAdmin() {
+  var id = document.getElementById('adm-login-id')?.value.trim();
+  var pw = document.getElementById('adm-login-pw')?.value.trim();
+  var user = ADMIN_USERS[id];
+  if(!user||user.pw!==pw){ toast('Identifiants incorrects', 'err'); return; }
+  DB.currentAdmin = user;
+  closeModal('modal-admin-login');
+  document.getElementById('app-views').style.display='none';
+  document.getElementById('screen-admin-med').style.display='flex';
+  document.getElementById('admin-nom-display').textContent=user.nom;
+  document.getElementById('admin-role-badge').textContent=user.role==='admin'?'ADMIN PRINCIPAL':'TRAITANT';
+  document.getElementById('admin-upload-btn').style.display='block';
+  initAdminMed();
+  toast('✅ Connecté: '+user.nom, 'ok');
+}
+
+function initAdminMed() {
+  updateAdminBadges();
+  admPage('dashboard', document.querySelector('#screen-admin-med .adm-nav-item'));
+  renderTemoignages(true);
+}
+
+function updateAdminBadges() {
+  var attente = DB.consultations.filter(function(c){ return c.statut==='attente'; }).length;
+  var b1=document.getElementById('badge-consult'); if(b1) b1.textContent=attente;
+  var b2=document.getElementById('badge-commandes'); if(b2) b2.textContent=DB.commandes.filter(function(c){return c.statut==='en-attente';}).length;
+  var b3=document.getElementById('badge-msgs'); if(b3) b3.textContent=Object.keys(DB.messages).length;
+}
+
+function admPage(id, btn) {
+  document.querySelectorAll('#screen-admin-med .admin-page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('#screen-admin-med .adm-nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var el = document.getElementById('adm-page-'+id); if(el) el.classList.add('active');
+  if(btn) btn.classList.add('active');
+  if(id==='dashboard')      renderAdmDashboard();
+  if(id==='consultations')  renderAdmConsultations();
+  if(id==='patients')       renderAdmPatients();
+  if(id==='suivis')         renderAdmSuivis();
+  if(id==='upload-media')   renderAdmMedias();
+  if(id==='biblio-adm')     renderAdmBiblio();
+  if(id==='produits-adm')   renderAdmProduits();
+  if(id==='commandes')      renderAdmCommandes();
+  if(id==='clients')        renderAdmClients();
+  if(id==='messages')       renderAdmMessages();
+  if(id==='temoignages-adm')renderAdmTemoignages();
+}
+
+function renderAdmDashboard() {
+  var ca = DB.commandes.reduce(function(s,c){ return s+c.montant; }, 0);
+  var el1=document.getElementById('adm-nb-consult'); if(el1) el1.textContent=DB.consultations.length;
+  var el2=document.getElementById('adm-nb-patients'); if(el2) el2.textContent=DB.patients.length;
+  var el3=document.getElementById('adm-nb-commandes'); if(el3) el3.textContent=DB.commandes.length;
+  var el4=document.getElementById('adm-ca'); if(el4) el4.textContent=fmtNum(ca)+' F';
+
+  var dcEl = document.getElementById('adm-derniers-consult');
+  if(dcEl) dcEl.innerHTML = DB.consultations.slice(0,4).map(function(c){
+    var sColor = c.statut==='termine'?'var(--emerald2)':c.statut==='en-cours'?'var(--gold)':'var(--terracotta)';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">'
+      +'<div style="width:32px;height:32px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--gold)">'+c.patient[0]+'</div>'
+      +'<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--cream)">'+c.patient+'</div><div style="font-size:10px;color:var(--text3)">'+c.date+' · '+c.soin+'</div></div>'
+      +'<span style="font-size:11px;font-weight:700;color:'+sColor+'">'+c.statut+'</span>'
+    +'</div>';
+  }).join('');
+
+  var dcmEl = document.getElementById('adm-dernieres-commandes');
+  if(dcmEl) dcmEl.innerHTML = DB.commandes.slice(0,4).map(function(c){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">'
+      +'<div style="width:32px;height:32px;border-radius:50%;background:var(--surface3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--gold)">'+c.client[0]+'</div>'
+      +'<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--cream)">'+c.client+'</div><div style="font-size:10px;color:var(--text3)">'+c.date+'</div></div>'
+      +'<span style="font-size:12px;font-weight:700;color:var(--gold)">'+fmtNum(c.montant)+' F</span>'
+    +'</div>';
+  }).join('') || '<div style="text-align:center;color:var(--text3);padding:20px;font-size:12px">Aucune commande</div>';
+}
+
+function renderAdmConsultations(filtre) {
+  var tbody = document.getElementById('consult-tbody'); if(!tbody) return;
+  var data = filtre ? DB.consultations.filter(function(c){ return c.statut===filtre; }) : DB.consultations;
+  tbody.innerHTML = data.map(function(c){
+    var sColor = c.statut==='termine'?'badge-ok':c.statut==='en-cours'?'badge-warn':'badge-err';
+    return '<tr>'
+      +'<td><strong style="color:var(--cream)">'+c.patient+'</strong><br><span style="font-size:10px;color:var(--text3)">'+c.tel+'</span></td>'
+      +'<td><span style="font-size:11px;background:var(--surface3);padding:2px 8px;border-radius:4px">'+(c.type==='presentiel'?'🏠 Présentiel':'💻 Distance')+'</span></td>'
+      +'<td>'+c.date+' '+c.heure+'</td>'
+      +'<td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+c.motif+'">'+c.motif+'</td>'
+      +'<td>'+c.soin+'</td>'
+      +'<td><span class="badge '+sColor+'">'+c.statut+'</span></td>'
+      +'<td><div style="display:flex;gap:4px">'
+        +'<button onclick="changerStatutConsult(\''+c.id+'\')" style="padding:3px 8px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:5px;color:var(--gold);font-size:10px;cursor:pointer">Avancer</button>'
+        +'<button onclick="contactWhatsApp(\'Rappel consultation '+c.date+' pour '+c.patient+'\')" style="padding:3px 8px;background:rgba(45,158,107,.1);border:1px solid rgba(45,158,107,.3);border-radius:5px;color:var(--emerald2);font-size:10px;cursor:pointer">📱 WA</button>'
+      +'</div></td>'
+    +'</tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text3)">Aucune consultation</td></tr>';
+}
+
+function changerStatutConsult(id) {
+  var c = DB.consultations.find(function(x){ return x.id===id; });
+  if(!c) return;
+  var ordre = ['attente','en-cours','termine'];
+  var idx = ordre.indexOf(c.statut);
+  c.statut = ordre[Math.min(idx+1, ordre.length-1)];
+  renderAdmConsultations(); updateAdminBadges();
+  toast('✅ Consultation → '+c.statut);
+}
+
+function renderAdmPatients(filtre) {
+  var tbody = document.getElementById('patients-tbody'); if(!tbody) return;
+  var data = filtre ? DB.patients.filter(function(p){ return (p.prenom+' '+p.nom).toLowerCase().includes(filtre.toLowerCase()); }) : DB.patients;
+  tbody.innerHTML = data.map(function(p){
+    return '<tr>'
+      +'<td><strong style="color:var(--cream)">'+p.prenom+' '+p.nom+'</strong></td>'
+      +'<td><div style="font-size:11px">'+p.tel+'</div><div style="font-size:10px;color:var(--text3)">'+p.adresse+'</div></td>'
+      +'<td>'+p.consultations+'</td>'
+      +'<td>'+p.dernierRdv+'</td>'
+      +'<td><span class="badge badge-ok">'+p.statut+'</span></td>'
+      +'<td><div style="display:flex;gap:4px">'
+        +'<button onclick="voirDossierPatient(\''+p.id+'\')" style="padding:3px 8px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:5px;color:var(--gold);font-size:10px;cursor:pointer">📋 Dossier</button>'
+        +'<button onclick="contactWhatsApp(\'Bonjour '+p.prenom+'\')" style="padding:3px 8px;background:rgba(45,158,107,.1);border:1px solid rgba(45,158,107,.3);border-radius:5px;color:var(--emerald2);font-size:10px;cursor:pointer">📱 WA</button>'
+      +'</div></td>'
+    +'</tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text3)">Aucun patient</td></tr>';
+}
+
+function rechercherPatient(v) { renderAdmPatients(v); }
+
+function ajouterPatient() {
+  var nom = document.getElementById('pat-nom')?.value.trim();
+  var prenom = document.getElementById('pat-prenom')?.value.trim();
+  if(!nom||!prenom){ toast('Nom et prénom obligatoires','err'); return; }
+  DB.patients.push({
+    id:'pat'+Date.now(), nom, prenom,
+    tel: document.getElementById('pat-tel')?.value||'',
+    adresse: document.getElementById('pat-adresse')?.value||'',
+    naissance: document.getElementById('pat-naissance')?.value||'',
+    antecedents: document.getElementById('pat-antecedents')?.value||'',
+    consultations:0, dernierRdv:'—', statut:'actif', suivis:[]
+  });
+  closeModal('modal-new-patient');
+  renderAdmPatients(); toast('✅ Patient enregistré: '+prenom+' '+nom,'ok');
+}
+
+function renderAdmSuivis() {
+  var listEl = document.getElementById('suivis-patients-list'); if(!listEl) return;
+  listEl.innerHTML = DB.patients.map(function(p){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--surface2);border-radius:8px;cursor:pointer;margin-bottom:6px;transition:all .2s;border:1px solid var(--border)" onclick="ouvrirSuiviAdmin(\''+p.id+'\')" onmouseover="this.style.borderColor=\'var(--border2)\'" onmouseout="this.style.borderColor=\'var(--border)\'">'
+      +'<div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--emerald),var(--gold));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--bg)">'+p.prenom[0]+p.nom[0]+'</div>'
+      +'<div><div style="font-size:13px;font-weight:600;color:var(--cream)">'+p.prenom+' '+p.nom+'</div><div style="font-size:10px;color:var(--text3)">'+(p.suivis||[]).length+' note(s) · '+p.consultations+' consult.</div></div>'
+    +'</div>';
+  }).join('') || '<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">Aucun patient</div>';
+}
+
+function ouvrirSuiviAdmin(id) {
+  DB.selectedPatientId = id;
+  var p = DB.patients.find(function(x){ return x.id===id; }); if(!p) return;
+  document.getElementById('suivi-patient-title').textContent='📋 Dossier — '+p.prenom+' '+p.nom;
+  var content = document.getElementById('suivi-patient-content');
+  if(content) {
+    content.innerHTML = '<div class="suivi-timeline">'
+      +(p.suivis||[]).map(function(s){
+        return '<div class="suivi-item"><div class="suivi-date">'+s.date+'</div><div class="suivi-content">'+s.note+'</div></div>';
+      }).join('')
+    +'</div>'
+    +(!(p.suivis||[]).length?'<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">Aucune note de suivi</div>':'');
+  }
+  var addForm = document.getElementById('suivi-add-form');
+  if(addForm) addForm.style.display='block';
+}
+
+function ajouterSuivi() {
+  var note = document.getElementById('suivi-note')?.value.trim();
+  if(!note){ toast('Entrez une note de suivi', 'err'); return; }
+  var p = DB.patients.find(function(x){ return x.id===DB.selectedPatientId; });
+  if(!p) return;
+  if(!p.suivis) p.suivis=[];
+  p.suivis.push({date:new Date().toLocaleDateString('fr-FR'), note});
+  document.getElementById('suivi-note').value='';
+  ouvrirSuiviAdmin(p.id);
+  toast('✅ Note de suivi ajoutée pour '+p.prenom+' '+p.nom,'ok');
+}
+
+function voirDossierPatient(id) {
+  admPage('suivis', null); setTimeout(function(){ ouvrirSuiviAdmin(id); }, 100);
+}
+
+function renderAdmMedias() {
+  var el = document.getElementById('adm-medias-list'); if(!el) return;
+  el.innerHTML = DB.medias.map(function(m){
+    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)">'
+      +'<div style="font-size:24px">'+m.emoji+'</div>'
+      +'<div style="flex:1"><div style="font-size:13px;font-weight:600;color:var(--cream)">'+m.titre+'</div>'
+      +'<div style="font-size:10px;color:var(--text3)">'+m.type.toUpperCase()+' · '+m.module+' · '+m.date+'</div></div>'
+      +'<span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:'+(m.acces==='gratuit'?'rgba(45,158,107,.12)':'rgba(201,168,76,.12)')+';color:'+(m.acces==='gratuit'?'var(--emerald2)':'var(--gold)')+'">'+m.acces+'</span>'
+      +'<button onclick="supprimerMedia(\''+m.id+'\')" style="padding:3px 8px;background:rgba(196,112,74,.12);border:1px solid rgba(196,112,74,.3);border-radius:5px;color:var(--terracotta);font-size:10px;cursor:pointer">🗑 Suppr.</button>'
+    +'</div>';
+  }).join('') || '<div style="text-align:center;padding:20px;color:var(--text3)">Aucun média publié</div>';
+}
+function supprimerMedia(id) { if(!confirm('Supprimer ce média ?')) return; DB.medias=DB.medias.filter(function(m){return m.id!==id;}); renderAdmMedias(); renderMedias(); toast('🗑 Média supprimé'); }
+
+function renderAdmBiblio() {
+  var tbody = document.getElementById('biblio-adm-tbody'); if(!tbody) return;
+  tbody.innerHTML = DB.biblioPdfs.map(function(b){
+    return '<tr>'
+      +'<td>'+b.emoji+' <strong style="color:var(--cream)">'+b.titre+'</strong></td>'
+      +'<td style="font-size:11px;color:var(--text2)">'+b.desc.slice(0,60)+'...</td>'
+      +'<td style="font-weight:700;color:var(--gold)">'+fmtNum(b.prix)+' F</td>'
+      +'<td>'+b.ventes+'</td>'
+      +'<td><div style="display:flex;gap:4px">'
+        +'<button onclick="modifierPdfPrix(\''+b.id+'\')" style="padding:3px 8px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:5px;color:var(--gold);font-size:10px;cursor:pointer">✏️ Prix</button>'
+        +'<button onclick="supprimerPdf(\''+b.id+'\')" style="padding:3px 8px;background:rgba(196,112,74,.12);border:1px solid rgba(196,112,74,.3);border-radius:5px;color:var(--terracotta);font-size:10px;cursor:pointer">🗑</button>'
+      +'</div></td>'
+    +'</tr>';
+  }).join('') || '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text3)">Bibliothèque vide</td></tr>';
+}
+function modifierPdfPrix(id) { var b=DB.biblioPdfs.find(function(x){return x.id===id;}); if(!b) return; var p=prompt('Nouveau prix pour "'+b.titre+'" (F CFA):',b.prix); if(p&&!isNaN(p)){b.prix=parseInt(p);renderAdmBiblio();renderBibliotheque();toast('✅ Prix mis à jour: '+fmtNum(b.prix)+' F','ok');} }
+function supprimerPdf(id) { if(!confirm('Supprimer ce PDF ?')) return; DB.biblioPdfs=DB.biblioPdfs.filter(function(b){return b.id!==id;}); renderAdmBiblio(); renderBibliotheque(); toast('🗑 PDF supprimé'); }
+
+function renderAdmProduits() {
+  var tbody = document.getElementById('produits-adm-tbody'); if(!tbody) return;
+  tbody.innerHTML = DB.produits.map(function(p){
+    return '<tr>'
+      +'<td>'+p.emoji+' <strong style="color:var(--cream)">'+p.nom+'</strong></td>'
+      +'<td><span style="font-size:11px;background:var(--surface3);padding:2px 8px;border-radius:4px">'+p.cat+'</span></td>'
+      +'<td><input type="number" value="'+p.prix+'" onchange="modifierPrixProduit(\''+p.id+'\',this.value)" style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--gold);font-weight:700;font-size:13px;width:100px"></td>'
+      +'<td>'+p.stock+'</td>'
+      +'<td><label style="cursor:pointer;display:flex;align-items:center;gap:6px"><input type="checkbox" '+(p.visible?'checked':'')+' onchange="toggleProduitVisible(\''+p.id+'\',this.checked)" style="accent-color:var(--emerald)"><span style="font-size:11px;color:'+(p.visible?'var(--emerald2)':'var(--terracotta)')+'\">'+(p.visible?'Visible':'Masqué')+'</span></label></td>'
+      +'<td><div style="display:flex;gap:4px">'
+        +'<button onclick="supprimerProduit(\''+p.id+'\')" style="padding:3px 8px;background:rgba(196,112,74,.12);border:1px solid rgba(196,112,74,.3);border-radius:5px;color:var(--terracotta);font-size:10px;cursor:pointer">🗑</button>'
+      +'</div></td>'
+    +'</tr>';
+  }).join('');
+}
+function modifierPrixProduit(id, val) { var p=DB.produits.find(function(x){return x.id===id;}); if(p&&!isNaN(val)){p.prix=parseInt(val);renderProduits();toast('✅ Prix mis à jour: '+fmtNum(p.prix)+' F CFA','ok');} }
+function toggleProduitVisible(id, val) { var p=DB.produits.find(function(x){return x.id===id;}); if(p){p.visible=val;renderProduits();} }
+function supprimerProduit(id) { if(!confirm('Supprimer ce produit ?')) return; DB.produits=DB.produits.filter(function(p){return p.id!==id;}); renderAdmProduits(); renderProduits(); toast('🗑 Produit supprimé'); }
+
+function ajouterProduit() {
+  var nom = document.getElementById('np-nom')?.value.trim();
+  var prix = parseInt(document.getElementById('np-prix')?.value)||0;
+  if(!nom||!prix){ toast('Nom et prix obligatoires', 'err'); return; }
+  DB.produits.push({
+    id:'p'+Date.now(), nom, emoji:document.getElementById('np-emoji')?.value||'🌿',
+    cat:document.getElementById('np-cat')?.value||'autre',
+    desc:document.getElementById('np-desc')?.value||'', prix,
+    prixOld:parseInt(document.getElementById('np-prix-old')?.value)||0,
+    stock:parseInt(document.getElementById('np-stock')?.value)||10,
+    visible:true,
+  });
+  closeModal('modal-add-produit');
+  renderAdmProduits(); renderProduits();
+  toast('✅ Produit "'+nom+'" ajouté !','ok');
+}
+
+function renderAdmCommandes() {
+  var tbody = document.getElementById('commandes-tbody'); if(!tbody) return;
+  tbody.innerHTML = DB.commandes.map(function(c){
+    var sColor = c.statut==='livre'?'badge-ok':c.statut==='expédie'?'badge-warn':'badge-err';
+    return '<tr>'
+      +'<td style="font-family:monospace;font-size:11px;color:var(--gold)">'+c.id+'</td>'
+      +'<td><strong style="color:var(--cream)">'+c.client+'</strong><br><span style="font-size:10px;color:var(--text3)">'+c.tel+'</span></td>'
+      +'<td style="font-size:11px">'+c.produits.map(function(p){return p.emoji+' '+p.nom+'×'+p.qte;}).join(', ')+'</td>'
+      +'<td style="font-weight:700;color:var(--gold)">'+fmtNum(c.montant)+' F</td>'
+      +'<td><span class="badge '+sColor+'">'+c.statut+'</span></td>'
+      +'<td><div style="display:flex;gap:4px">'
+        +'<select onchange="changerStatutCommande(\''+c.id+'\',this.value)" style="background:var(--surface2);border:1px solid var(--border);border-radius:5px;color:var(--text2);font-size:10px;padding:2px 6px">'
+          +'<option value="en-attente" '+(c.statut==='en-attente'?'selected':'')+'>En attente</option>'
+          +'<option value="confirme" '+(c.statut==='confirme'?'selected':'')+'>Confirmée</option>'
+          +'<option value="expédie" '+(c.statut==='expédie'?'selected':'')+'>Expédiée</option>'
+          +'<option value="livre" '+(c.statut==='livre'?'selected':'')+'>Livrée</option>'
+        +'</select>'
+        +'<button onclick="imprimerBonCommande(\''+c.id+'\')" style="padding:3px 8px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.3);border-radius:5px;color:var(--gold);font-size:10px;cursor:pointer">🖨 Bon</button>'
+      +'</div></td>'
+    +'</tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text3)">Aucune commande</td></tr>';
+}
+
+function changerStatutCommande(id, statut) {
+  var c = DB.commandes.find(function(x){ return x.id===id; });
+  if(c){ c.statut=statut; toast('✅ Commande '+id+' → '+statut); renderAdmCommandes(); }
+}
+
+function imprimerBonCommande(id) {
+  var c = DB.commandes.find(function(x){ return x.id===id; });
+  if(!c) return;
+  imprimerRecu(c);
+}
+
+function renderAdmClients() {
+  var tbody = document.getElementById('clients-tbody'); if(!tbody) return;
+  tbody.innerHTML = DB.clients.map(function(c){
+    return '<tr>'
+      +'<td><strong style="color:var(--cream)">'+c.nom+'</strong></td>'
+      +'<td>'+c.email+'</td>'
+      +'<td>'+c.tel+'</td>'
+      +'<td>'+c.commandes+'</td>'
+      +'<td style="font-weight:700;color:var(--gold)">'+fmtNum(c.total)+' F</td>'
+      +'<td>'+c.dateInscription+'</td>'
+      +'<td><button onclick="contactWhatsApp(\'Bonjour '+c.nom+'\')" style="padding:3px 8px;background:rgba(45,158,107,.1);border:1px solid rgba(45,158,107,.3);border-radius:5px;color:var(--emerald2);font-size:10px;cursor:pointer">📱 WA</button></td>'
+    +'</tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--text3)">Aucun client enregistré</td></tr>';
+}
+
+function renderAdmMessages() {
+  var listEl = document.getElementById('adm-conv-list'); if(!listEl) return;
+  listEl.innerHTML = Object.keys(DB.messages).map(function(nom){
+    var msgs = DB.messages[nom];
+    var last = msgs[msgs.length-1];
+    return '<div style="padding:10px;background:var(--surface2);border-radius:8px;cursor:pointer;margin-bottom:6px;border:1px solid var(--border);transition:all .2s" onclick="ouvrirConvAdmin(\''+nom+'\')" onmouseover="this.style.borderColor=\'var(--border2)\'" onmouseout="this.style.borderColor=\'var(--border)\'">'
+      +'<div style="font-size:13px;font-weight:600;color:var(--cream)">'+nom+'</div>'
+      +'<div style="font-size:11px;color:var(--text3);margin-top:2px">'+last.msg.slice(0,40)+'...</div>'
+    +'</div>';
+  }).join('') || '<div style="text-align:center;padding:20px;color:var(--text3);font-size:12px">Aucune conversation</div>';
+}
+
+function ouvrirConvAdmin(nom) {
+  DB.selectedConvId = nom;
+  document.getElementById('adm-chat-title').textContent = '💬 Conversation avec '+nom;
+  var msgs = DB.messages[nom]||[];
+  var msgsEl = document.getElementById('adm-chat-messages');
+  if(msgsEl) msgsEl.innerHTML = msgs.map(function(m){
+    return '<div class="msg '+(m.from==='admin'?'msg-out':'msg-in')+'">'+m.msg+'<div class="msg-time">'+m.time+'</div></div>';
+  }).join('');
+  var inputEl = document.getElementById('adm-chat-input'); if(inputEl) inputEl.style.display='block';
+}
+
+function envoyerMsgAdmin() {
+  var input = document.getElementById('adm-msg-input');
+  var msg = (input?.value||'').trim();
+  if(!msg||!DB.selectedConvId) return;
+  input.value='';
+  var time = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  if(!DB.messages[DB.selectedConvId]) DB.messages[DB.selectedConvId]=[];
+  DB.messages[DB.selectedConvId].push({from:'admin',msg,time});
+  ouvrirConvAdmin(DB.selectedConvId);
+  toast('✅ Message envoyé à '+DB.selectedConvId);
+}
+
+function renderAdmTemoignages() {
+  var tbody = document.getElementById('temo-adm-tbody'); if(!tbody) return;
+  tbody.innerHTML = DB.temoignages.map(function(t){
+    return '<tr>'
+      +'<td><strong style="color:var(--cream)">'+t.nom+'</strong><br><span style="font-size:10px;color:var(--text3)">'+t.ville+'</span></td>'
+      +'<td>'+'⭐'.repeat(t.stars)+'</td>'
+      +'<td style="font-size:11px;max-width:200px">'+t.texte.slice(0,80)+'...</td>'
+      +'<td>'+t.date+'</td>'
+      +'<td><span class="badge '+(t.approuve?'badge-ok':'badge-warn')+'">'+(t.approuve?'✅ Publié':'⏳ En attente')+'</span></td>'
+      +'<td><div style="display:flex;gap:4px">'
+        +(!t.approuve?'<button onclick="approuverTemoignage(\''+t.id+'\')" style="padding:3px 8px;background:rgba(45,158,107,.12);border:1px solid rgba(45,158,107,.3);border-radius:5px;color:var(--emerald2);font-size:10px;cursor:pointer">✅ Valider</button>':'')
+        +'<button onclick="supprimerTemoignage(\''+t.id+'\')" style="padding:3px 8px;background:rgba(196,112,74,.12);border:1px solid rgba(196,112,74,.3);border-radius:5px;color:var(--terracotta);font-size:10px;cursor:pointer">🗑</button>'
+      +'</div></td>'
+    +'</tr>';
+  }).join('') || '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text3)">Aucun témoignage</td></tr>';
+}
+function approuverTemoignage(id){ var t=DB.temoignages.find(function(x){return x.id===id;}); if(t){t.approuve=true;renderAdmTemoignages();renderTemoignages();toast('✅ Témoignage approuvé et publié','ok');} }
+function supprimerTemoignage(id){ if(!confirm('Supprimer ce témoignage ?')) return; DB.temoignages=DB.temoignages.filter(function(t){return t.id!==id;}); renderAdmTemoignages(); renderTemoignages(); }
+
+// Exports CSV
+function exporterConsultations() {
+  var csv='ID,Patient,Tel,Type,Date,Heure,Motif,Soin,Statut\n'+DB.consultations.map(function(c){return [c.id,c.patient,c.tel,c.type,c.date,c.heure,c.motif,c.soin,c.statut].join(',');}).join('\n');
+  dlCSV(csv,'consultations-amawognon.csv');
+}
+function exporterPatients() {
+  var csv='ID,Nom,Prenom,Tel,Adresse,Consultations,DernierRdv\n'+DB.patients.map(function(p){return [p.id,p.nom,p.prenom,p.tel,p.adresse,p.consultations,p.dernierRdv].join(',');}).join('\n');
+  dlCSV(csv,'patients-amawognon.csv');
+}
+function exporterCommandes() {
+  var csv='ID,Client,Tel,Montant,Paiement,Statut,Date\n'+DB.commandes.map(function(c){return [c.id,c.client,c.tel,c.montant,c.paiement,c.statut,c.date].join(',');}).join('\n');
+  dlCSV(csv,'commandes-amawognon.csv');
+}
+function exporterClients() {
+  var csv='ID,Nom,Tel,Email,Commandes,Total,Inscription\n'+DB.clients.map(function(c){return [c.id,c.nom,c.tel,c.email,c.commandes,c.total,c.dateInscription].join(',');}).join('\n');
+  dlCSV(csv,'clients-amawognon.csv');
+}
+function dlCSV(csv, fname) {
+  var blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob); var a=document.createElement('a');
+  a.href=url; a.download=fname; a.click();
+  toast('📥 Fichier téléchargé: '+fname,'ok');
+}
+
+function sauvegarderParams() {
+  CONFIG.nom  = document.getElementById('p-nom')?.value||CONFIG.nom;
+  CONFIG.therapeute=document.getElementById('p-therapeute')?.value||CONFIG.therapeute;
+  CONFIG.tel  = document.getElementById('p-tel')?.value||CONFIG.tel;
+  CONFIG.email= document.getElementById('p-email')?.value||CONFIG.email;
+  toast('✅ Paramètres sauvegardés !','ok');
+}
+function sauvegarderReseaux() {
+  CONFIG.youtube  = document.getElementById('p-youtube')?.value||CONFIG.youtube;
+  CONFIG.facebook = document.getElementById('p-facebook')?.value||CONFIG.facebook;
+  CONFIG.whatsapp = document.getElementById('p-wa-canal')?.value||CONFIG.whatsapp;
+  toast('✅ Réseaux sociaux mis à jour !','ok');
+}
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+renderTemoignages();
+updateCart();
+// Afficher badge chat après 3s
+setTimeout(function(){
+  var badge = document.getElementById('chat-badge');
+  if(badge) badge.style.display='flex';
+}, 3000);
+</script>
+</body>
+</html>

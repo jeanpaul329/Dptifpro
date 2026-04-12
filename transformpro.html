@@ -1,0 +1,2214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TransformPro — Transformation Alimentaire & Jus</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,900;1,300;1,600&family=DM+Sans:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+/* ══ RESET & ROOT ══ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0d08;--surf:#111408;--surf2:#181c0e;--surf3:#1f2413;
+  --acc:#a3e635;--acc2:#fb923c;--acc3:#fde047;--acc4:#4ade80;
+  --red:#f87171;--blue:#67e8f9;
+  --bdr:rgba(163,230,53,.12);--bdr2:rgba(163,230,53,.06);
+  --txt:#eef2e0;--txt2:#8a9464;--txt3:#4a5228;
+  --radius:16px;
+  --font-display:'Fraunces',Georgia,serif;
+  --font-body:'DM Sans',system-ui,sans-serif;
+}
+html,body{min-height:100vh;font-family:var(--font-body);background:var(--bg);color:var(--txt);overflow-x:hidden}
+
+/* ══ LAYOUT ══ */
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ══ SIDEBAR ══ */
+.sidebar{
+  width:256px;background:var(--surf);
+  border-right:1px solid var(--bdr);
+  display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;
+  position:relative;
+}
+.sidebar::after{
+  content:'';position:absolute;top:0;right:0;width:1px;height:100%;
+  background:linear-gradient(180deg,transparent,var(--acc),transparent);
+  opacity:.3;
+}
+.logo-wrap{
+  padding:22px 18px 18px;
+  border-bottom:1px solid var(--bdr);
+  background:radial-gradient(ellipse at 20% 50%,rgba(163,230,53,.08) 0%,transparent 70%);
+}
+.logo-icon{
+  width:44px;height:44px;
+  background:linear-gradient(135deg,var(--acc),var(--acc4));
+  border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:10px;
+  box-shadow:0 0 20px rgba(163,230,53,.25);
+}
+.logo-name{
+  font-family:var(--font-display);
+  font-size:20px;font-weight:900;
+  color:var(--acc);letter-spacing:-.5px;line-height:1;
+}
+.logo-tagline{
+  font-size:10px;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:1.5px;
+  margin-top:4px;
+}
+.nav-sec{
+  padding:14px 18px 4px;
+  font-size:9px;font-weight:700;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:1.5px;
+}
+.nav-item{
+  width:100%;padding:9px 18px;
+  border:none;background:transparent;
+  color:var(--txt2);text-align:left;cursor:pointer;
+  font-size:12px;font-weight:500;font-family:var(--font-body);
+  display:flex;align-items:center;gap:10px;
+  transition:all .18s;border-left:2px solid transparent;
+}
+.nav-item:hover{background:rgba(163,230,53,.06);color:var(--txt)}
+.nav-item.active{
+  background:rgba(163,230,53,.1);color:var(--acc);
+  border-left-color:var(--acc);font-weight:700;
+}
+.nav-badge{
+  margin-left:auto;background:var(--acc);color:#0b0d08;
+  font-size:9px;font-weight:900;
+  padding:1px 7px;border-radius:20px;
+}
+.nav-emoji{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+
+/* ══ MAIN ══ */
+.main{flex:1;overflow-y:auto;scroll-behavior:smooth}
+.page{display:none;min-height:100vh;padding:28px}
+.page.active{display:block}
+
+/* ══ HERO HEADER ══ */
+.page-hero{
+  margin-bottom:28px;
+  padding:28px 32px;
+  background:linear-gradient(135deg,var(--surf2),var(--surf3));
+  border:1px solid var(--bdr);
+  border-radius:20px;
+  position:relative;overflow:hidden;
+}
+.page-hero::before{
+  content:'';position:absolute;top:-40px;right:-40px;
+  width:200px;height:200px;
+  background:radial-gradient(circle,rgba(163,230,53,.1) 0%,transparent 70%);
+}
+.page-hero-row{display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px}
+.page-title{
+  font-family:var(--font-display);
+  font-size:26px;font-weight:900;
+  color:var(--txt);line-height:1.1;
+}
+.page-title em{color:var(--acc);font-style:italic}
+.page-sub{font-size:12px;color:var(--txt2);margin-top:6px;line-height:1.6}
+
+/* ══ STATS ══ */
+.stats-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;margin-bottom:24px;
+}
+.stat-card{
+  background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:var(--radius);padding:18px 16px;
+  position:relative;overflow:hidden;transition:transform .2s;cursor:default;
+}
+.stat-card:hover{transform:translateY(-3px)}
+.stat-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
+  background:var(--acc);opacity:.3;
+}
+.stat-val{
+  font-family:var(--font-display);
+  font-size:28px;font-weight:900;margin-bottom:4px;
+}
+.stat-lbl{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.8px}
+
+/* ══ CARDS ══ */
+.card{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);margin-bottom:16px}
+.card-hdr{
+  padding:14px 20px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.card-title{
+  font-family:var(--font-display);
+  font-size:15px;font-weight:600;
+  display:flex;align-items:center;gap:8px;
+}
+.card-body{padding:18px 20px}
+
+/* ══ RECETTES GRID ══ */
+.recettes-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:16px;
+}
+.recette-card{
+  background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:var(--radius);overflow:hidden;
+  cursor:pointer;transition:all .22s;position:relative;
+}
+.recette-card:hover{
+  border-color:var(--acc);
+  transform:translateY(-4px);
+  box-shadow:0 12px 36px rgba(0,0,0,.4),0 0 0 1px rgba(163,230,53,.2);
+}
+.recette-banner{
+  height:130px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:60px;position:relative;overflow:hidden;
+}
+.recette-banner::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to bottom,transparent 50%,var(--surf2));
+}
+.recette-badge{
+  position:absolute;top:10px;right:10px;
+  padding:3px 10px;border-radius:20px;
+  font-size:9px;font-weight:900;
+  text-transform:uppercase;letter-spacing:.8px;z-index:1;
+}
+.recette-body{padding:14px 16px}
+.recette-nom{
+  font-family:var(--font-display);
+  font-size:15px;font-weight:600;margin-bottom:4px;
+}
+.recette-meta{font-size:11px;color:var(--txt2);margin-bottom:8px;line-height:1.5}
+.recette-tags{display:flex;gap:5px;flex-wrap:wrap}
+.tag{
+  padding:2px 8px;border-radius:20px;
+  font-size:10px;font-weight:700;
+  background:rgba(163,230,53,.08);color:var(--acc);
+  border:1px solid var(--bdr);
+}
+.tag.orange{background:rgba(251,146,60,.08);color:var(--acc2);border-color:rgba(251,146,60,.2)}
+.tag.yellow{background:rgba(253,224,71,.08);color:var(--acc3);border-color:rgba(253,224,71,.2)}
+.tag.blue{background:rgba(103,232,249,.08);color:var(--blue);border-color:rgba(103,232,249,.2)}
+.recette-footer{
+  padding:10px 16px;border-top:1px solid var(--bdr);
+  display:flex;gap:6px;justify-content:flex-end;
+}
+
+/* ══ TABS ══ */
+.tabs{
+  display:flex;gap:3px;
+  background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:12px;padding:4px;
+  margin-bottom:20px;flex-wrap:wrap;
+}
+.tab{
+  padding:7px 16px;border-radius:9px;border:none;
+  background:transparent;color:var(--txt2);
+  font-size:11px;font-weight:600;cursor:pointer;
+  transition:all .18s;font-family:var(--font-body);
+}
+.tab.active{background:var(--acc);color:#0b0d08;font-weight:800}
+
+/* ══ ÉTAPES DE PRODUCTION ══ */
+.prod-steps{display:flex;flex-direction:column;gap:0}
+.prod-step{display:flex;gap:0;position:relative;padding-bottom:24px}
+.prod-step:not(:last-child)::before{
+  content:'';position:absolute;left:21px;top:44px;
+  width:1px;height:calc(100% - 20px);
+  background:linear-gradient(to bottom,var(--acc),transparent);
+  opacity:.3;
+}
+.step-circle{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  margin-right:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;position:relative;z-index:1;
+  border:2px solid var(--acc);background:var(--surf);
+  box-shadow:0 0 12px rgba(163,230,53,.15);
+}
+.step-content{flex:1;padding-top:4px}
+.step-title{
+  font-family:var(--font-display);
+  font-size:14px;font-weight:600;
+  color:var(--txt);margin-bottom:5px;
+}
+.step-desc{font-size:12px;color:var(--txt2);line-height:1.7}
+.step-tip{
+  margin-top:8px;padding:8px 12px;
+  background:rgba(163,230,53,.06);
+  border-left:3px solid var(--acc);
+  border-radius:0 8px 8px 0;
+  font-size:11px;color:var(--acc);line-height:1.6;
+}
+.step-duration{
+  font-size:10px;color:var(--acc2);font-weight:700;
+  margin-top:5px;display:flex;align-items:center;gap:4px;
+}
+
+/* ══ TABLE ══ */
+.table-wrap{
+  background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:var(--radius);overflow:hidden;margin-bottom:16px;
+}
+table{width:100%;border-collapse:collapse}
+th{
+  padding:10px 16px;font-size:10px;font-weight:700;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:.8px;text-align:left;
+  background:var(--surf3);border-bottom:1px solid var(--bdr);
+}
+td{
+  padding:10px 16px;font-size:12px;
+  border-bottom:1px solid rgba(163,230,53,.04);
+  vertical-align:top;
+}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(163,230,53,.025)}
+
+/* ══ FORMULAIRES ══ */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-lbl{
+  font-size:10px;font-weight:700;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:.8px;
+}
+.form-inp{
+  padding:10px 14px;
+  background:var(--surf3);border:1px solid var(--bdr);
+  border-radius:9px;color:var(--txt);
+  font-size:13px;font-family:var(--font-body);width:100%;
+  transition:border-color .15s;
+}
+.form-inp:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(163,230,53,.08)}
+
+/* ══ BOUTONS ══ */
+.btn{
+  padding:9px 18px;border-radius:10px;border:none;
+  cursor:pointer;font-size:12px;font-weight:700;
+  display:inline-flex;align-items:center;gap:7px;
+  transition:all .18s;font-family:var(--font-body);
+}
+.btn:hover{opacity:.85;transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-primary{background:linear-gradient(135deg,var(--acc),var(--acc4));color:#0b0d08}
+.btn-sec{background:rgba(163,230,53,.08);color:var(--acc);border:1px solid var(--bdr)}
+.btn-orange{background:rgba(251,146,60,.1);color:var(--acc2);border:1px solid rgba(251,146,60,.2)}
+.btn-danger{background:rgba(248,113,113,.1);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+.btn-sm{padding:5px 12px;font-size:10px;border-radius:7px}
+
+/* ══ BADGES ══ */
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700}
+.badge-green{background:rgba(74,222,128,.12);color:var(--acc4)}
+.badge-yellow{background:rgba(253,224,71,.12);color:var(--acc3)}
+.badge-orange{background:rgba(251,146,60,.12);color:var(--acc2)}
+.badge-red{background:rgba(248,113,113,.12);color:var(--red)}
+.badge-blue{background:rgba(103,232,249,.12);color:var(--blue)}
+
+/* ══ ALERTES ══ */
+.alert{padding:12px 16px;border-radius:10px;font-size:12px;line-height:1.6;margin-bottom:14px}
+.alert-success{background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.2);color:var(--acc4)}
+.alert-warn{background:rgba(253,224,71,.07);border:1px solid rgba(253,224,71,.2);color:var(--acc3)}
+.alert-info{background:rgba(103,232,249,.07);border:1px solid rgba(103,232,249,.2);color:var(--blue)}
+.alert-orange{background:rgba(251,146,60,.07);border:1px solid rgba(251,146,60,.2);color:var(--acc2)}
+
+/* ══ MODAL ══ */
+.modal-bg{
+  display:none;position:fixed;inset:0;
+  background:rgba(0,0,0,.8);backdrop-filter:blur(4px);
+  z-index:1000;align-items:center;justify-content:center;padding:16px;
+}
+.modal-bg.open{display:flex}
+.modal-box{
+  background:var(--surf);border-radius:20px;
+  width:100%;max-width:580px;max-height:90vh;
+  overflow-y:auto;border:1px solid var(--bdr);
+  box-shadow:0 24px 64px rgba(0,0,0,.6);
+}
+.modal-hdr{
+  padding:20px 24px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:var(--surf);z-index:1;
+}
+.modal-title{
+  font-family:var(--font-display);
+  font-size:17px;font-weight:700;
+}
+.modal-close{
+  background:none;border:none;color:var(--txt3);
+  font-size:24px;cursor:pointer;line-height:1;
+  transition:color .15s;
+}
+.modal-close:hover{color:var(--red)}
+.modal-body{padding:22px 24px}
+.modal-footer{
+  padding:16px 24px;border-top:1px solid var(--bdr);
+  display:flex;justify-content:flex-end;gap:8px;
+  position:sticky;bottom:0;background:var(--surf);
+}
+
+/* ══ IA CHAT ══ */
+.ia-layout{display:grid;grid-template-columns:2fr 1fr;gap:16px;height:calc(100vh - 200px)}
+.ia-box{
+  background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:var(--radius);display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.ia-header{
+  padding:14px 18px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;gap:10px;
+  background:linear-gradient(135deg,var(--surf3),var(--surf2));
+}
+.ia-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--acc),var(--acc4));
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.ia-name{font-weight:800;font-size:13px}
+.ia-status{font-size:10px;color:var(--acc);display:flex;align-items:center;gap:4px}
+.ia-dot{width:6px;height:6px;border-radius:50%;background:var(--acc);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.ia-msgs{
+  flex:1;overflow-y:auto;padding:16px;
+  display:flex;flex-direction:column;gap:12px;
+}
+.ia-msg-user{
+  align-self:flex-end;
+  background:linear-gradient(135deg,var(--acc),var(--acc4));
+  color:#0b0d08;padding:10px 16px;
+  border-radius:18px 18px 4px 18px;
+  font-size:13px;max-width:80%;line-height:1.5;font-weight:500;
+}
+.ia-msg-bot{
+  align-self:flex-start;
+  background:var(--surf3);color:var(--txt);
+  padding:10px 16px;border-radius:18px 18px 18px 4px;
+  font-size:13px;max-width:85%;line-height:1.7;
+  white-space:pre-line;border:1px solid var(--bdr);
+}
+.ia-msg-bot strong{color:var(--acc)}
+.ia-typing-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--acc);margin:0 2px;animation:blink 1.2s infinite}
+.ia-typing-dot:nth-child(2){animation-delay:.2s}
+.ia-typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.2}30%{opacity:1}}
+.ia-inp-row{
+  padding:14px 16px;border-top:1px solid var(--bdr);
+  display:flex;gap:8px;align-items:center;
+}
+.ia-inp{
+  flex:1;padding:11px 16px;
+  background:var(--surf3);border:1px solid var(--bdr);
+  border-radius:24px;color:var(--txt);font-size:13px;
+  font-family:var(--font-body);outline:none;
+  transition:border-color .15s;
+}
+.ia-inp:focus{border-color:var(--acc)}
+.ia-send-btn{
+  width:40px;height:40px;border-radius:50%;border:none;
+  background:linear-gradient(135deg,var(--acc),var(--acc4));
+  color:#0b0d08;font-size:16px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .15s;flex-shrink:0;
+}
+.ia-send-btn:hover{transform:scale(1.1)}
+.ia-quick-panel{display:flex;flex-direction:column;gap:8px;overflow-y:auto}
+.ia-q-section{font-size:10px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;padding:2px 0 6px}
+.ia-q-btn{
+  width:100%;padding:9px 13px;
+  background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:10px;color:var(--txt2);font-size:11px;
+  cursor:pointer;text-align:left;transition:all .15s;
+  font-family:var(--font-body);line-height:1.5;
+}
+.ia-q-btn:hover{border-color:var(--acc);color:var(--acc);background:rgba(163,230,53,.06)}
+
+/* ══ TUTORIELS ══ */
+.tuto-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.tuto-card{
+  background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:var(--radius);padding:18px;
+  cursor:pointer;transition:all .2s;
+  display:flex;flex-direction:column;gap:8px;
+}
+.tuto-card:hover{border-color:var(--acc);transform:translateY(-3px)}
+.tuto-icon{font-size:36px}
+.tuto-cat{font-size:9px;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:.8px}
+.tuto-title{font-family:var(--font-display);font-size:14px;font-weight:600;line-height:1.3}
+.tuto-desc{font-size:11px;color:var(--txt2);line-height:1.6;flex:1}
+.tuto-link{font-size:11px;color:var(--acc);font-weight:700;display:flex;align-items:center;gap:4px}
+
+/* ══ KALEIDOSCOPE BENTO ══ */
+.bento{display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:auto;gap:14px;margin-bottom:20px}
+.bento-item{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);padding:18px;overflow:hidden;position:relative}
+.bento-wide{grid-column:1/3}
+.bento-tall{grid-row:span 2}
+
+/* ══ SECRETS ══ */
+.secret-card{
+  background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:var(--radius);padding:18px;position:relative;
+  overflow:hidden;margin-bottom:12px;
+}
+.secret-card::before{
+  content:'';position:absolute;top:0;left:0;
+  width:4px;height:100%;background:var(--acc);
+  border-radius:0 2px 2px 0;
+}
+.secret-num{
+  position:absolute;top:16px;right:16px;
+  font-family:var(--font-display);
+  font-size:40px;font-weight:900;
+  color:rgba(163,230,53,.06);line-height:1;
+}
+.secret-cat{font-size:9px;font-weight:700;color:var(--acc);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.secret-title{font-family:var(--font-display);font-size:14px;font-weight:600;margin-bottom:8px}
+.secret-text{font-size:12px;color:var(--txt2);line-height:1.8}
+
+/* ══ NORMES ══ */
+.normes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+.norme-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);padding:16px}
+.norme-icon{font-size:28px;margin-bottom:8px}
+.norme-title{font-family:var(--font-display);font-size:13px;font-weight:600;margin-bottom:8px;color:var(--acc)}
+.norme-list li{font-size:12px;color:var(--txt2);line-height:1.8;padding-left:2px}
+.norme-list li::marker{color:var(--acc)}
+
+/* ══ FINANCES ══ */
+.progress-bar{height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;margin:6px 0}
+.progress-fill{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.25,.46,.45,.94)}
+
+/* ══ TOAST ══ */
+.toast{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--surf2);border:1px solid var(--bdr);
+  padding:11px 22px;border-radius:12px;
+  font-size:13px;font-weight:600;z-index:9999;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 8px 32px rgba(0,0,0,.5);
+}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:760px){
+  .sidebar{width:210px}.form-grid{grid-template-columns:1fr}
+  .ia-layout{grid-template-columns:1fr}.bento{grid-template-columns:1fr}
+}
+
+/* Fix modals */
+.modal.open,
+.modal-overlay.open { display:flex !important; align-items:center; justify-content:center; }
+.modal:not(.open), .modal-overlay:not(.open) { display:none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar">
+  <div class="logo-wrap">
+    <div class="logo-icon">🍹</div>
+    <div class="logo-name">TransformPro</div>
+    <div class="logo-tagline">Transformation Alimentaire</div>
+  </div>
+
+  <div class="nav-sec">Tableau de bord</div>
+  <button class="nav-item active" onclick="showPage('dashboard',this)">
+    <span class="nav-emoji">🏠</span> Accueil
+  </button>
+
+  <div class="nav-sec">Production</div>
+  <button class="nav-item" onclick="showPage('recettes',this)">
+    <span class="nav-emoji">📋</span> Recettes &amp; Formules
+    <span class="nav-badge" id="badge-recettes">0</span>
+  </button>
+  <button class="nav-item" onclick="showPage('production',this)">
+    <span class="nav-emoji">⚗️</span> Guide de production
+  </button>
+  <button class="nav-item" onclick="showPage('matieres',this)">
+    <span class="nav-emoji">🍊</span> Matières premières
+  </button>
+  <button class="nav-item" onclick="showPage('equipements',this)">
+    <span class="nav-emoji">🔧</span> Équipements
+  </button>
+
+  <div class="nav-sec">Qualité</div>
+  <button class="nav-item" onclick="showPage('hygiene',this)">
+    <span class="nav-emoji">🧼</span> Hygiène &amp; HACCP
+  </button>
+  <button class="nav-item" onclick="showPage('conservation',this)">
+    <span class="nav-emoji">❄️</span> Conservation
+  </button>
+  <button class="nav-item" onclick="showPage('emballage',this)">
+    <span class="nav-emoji">📦</span> Emballage &amp; Étiquetage
+  </button>
+
+  <div class="nav-sec">Business</div>
+  <button class="nav-item" onclick="showPage('finances',this)">
+    <span class="nav-emoji">💰</span> Calcul de rentabilité
+  </button>
+  <button class="nav-item" onclick="showPage('marche',this)">
+    <span class="nav-emoji">🛒</span> Marché &amp; Vente
+  </button>
+  <button class="nav-item" onclick="showPage('normes',this)">
+    <span class="nav-emoji">📋</span> Normes &amp; Légal
+  </button>
+
+  <div class="nav-sec">Formation</div>
+  <button class="nav-item" onclick="showPage('tutoriels',this)">
+    <span class="nav-emoji">📚</span> Tutoriels &amp; Docs
+  </button>
+  <button class="nav-item" onclick="showPage('secrets',this)">
+    <span class="nav-emoji">⭐</span> Secrets Pro
+  </button>
+  <button class="nav-item" onclick="showPage('assistant',this)">
+    <span class="nav-emoji">🤖</span> Assistant IA
+  </button>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="page-hero">
+    <div class="page-hero-row">
+      <div>
+        <div class="page-title">Transformez la nature<br>en <em>produits d'excellence</em></div>
+        <div class="page-sub">Jus de fruits · Confitures · Sirops · Purées · Produits fermentés · Transformation complète</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-sec" onclick="showPage('recettes',null)">📋 Voir les recettes</button>
+        <button class="btn btn-primary" onclick="ouvrirNouvelleRecette()">+ Nouvelle recette</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats-row" id="dash-stats"></div>
+
+  <div style="display:grid;grid-template-columns:3fr 2fr;gap:16px;margin-bottom:16px">
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">🍹 Mes recettes récentes</span></div>
+      <div class="card-body" id="dash-recettes"></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">⚡ Démarrage rapide</span></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn btn-sec" style="justify-content:flex-start;width:100%" onclick="showPage('production',null)">⚗️ Guide de production étape par étape</button>
+          <button class="btn btn-sec" style="justify-content:flex-start;width:100%" onclick="showPage('finances',null)">💰 Calculer ma rentabilité</button>
+          <button class="btn btn-sec" style="justify-content:flex-start;width:100%" onclick="showPage('hygiene',null)">🧼 Protocoles HACCP</button>
+          <button class="btn btn-sec" style="justify-content:flex-start;width:100%" onclick="showPage('assistant',null)">🤖 Poser une question à l'IA</button>
+          <button class="btn btn-sec" style="justify-content:flex-start;width:100%" onclick="showPage('marche',null)">🛒 Stratégie de vente</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Fruits de saison -->
+  <div class="card">
+    <div class="card-hdr"><span class="card-title">🌿 Fruits & matières premières de saison</span>
+      <span style="font-size:11px;color:var(--txt3)" id="saison-mois"></span>
+    </div>
+    <div class="card-body" id="dash-saison"></div>
+  </div>
+</div>
+
+<!-- RECETTES -->
+<div class="page" id="page-recettes">
+  <div class="page-hero">
+    <div class="page-hero-row">
+      <div>
+        <div class="page-title">📋 Recettes &amp; <em>Formules</em></div>
+        <div class="page-sub">Jus · Sirops · Confitures · Purées · Nectars · Boissons fermentées</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <select id="filter-categorie" class="form-inp" style="width:160px" onchange="renderRecettes()">
+          <option value="">Toutes catégories</option>
+          <option>Jus de fruits</option><option>Sirop</option><option>Confiture</option>
+          <option>Nectar</option><option>Purée</option><option>Smoothie</option>
+          <option>Boisson fermentée</option><option>Vinaigre</option><option>Sauce pimentée</option>
+        </select>
+        <button class="btn btn-primary" onclick="ouvrirNouvelleRecette()">+ Nouvelle recette</button>
+      </div>
+    </div>
+  </div>
+  <div class="recettes-grid" id="recettes-grid"></div>
+</div>
+
+<!-- GUIDE DE PRODUCTION -->
+<div class="page" id="page-production">
+  <div class="page-hero">
+    <div class="page-hero-row">
+      <div>
+        <div class="page-title">⚗️ Guide de <em>Production</em></div>
+        <div class="page-sub">Procédures complètes · De la matière première au produit fini</div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('jus',this,'prod')">🍊 Jus de fruits</button>
+    <button class="tab" onclick="switchTab('sirop',this,'prod')">🍯 Sirops</button>
+    <button class="tab" onclick="switchTab('confiture',this,'prod')">🫙 Confitures</button>
+    <button class="tab" onclick="switchTab('nectar',this,'prod')">🥭 Nectars</button>
+    <button class="tab" onclick="switchTab('fermente',this,'prod')">🫧 Fermentés</button>
+    <button class="tab" onclick="switchTab('sauce',this,'prod')">🌶️ Sauces</button>
+  </div>
+  <div id="prod-content"></div>
+</div>
+
+<!-- MATIÈRES PREMIÈRES -->
+<div class="page" id="page-matieres">
+  <div class="page-hero">
+    <div class="page-hero-row">
+      <div>
+        <div class="page-title">🍊 Matières <em>Premières</em></div>
+        <div class="page-sub">Fruits tropicaux · Légumes · Épices · Additifs naturels · Calendrier des saisons</div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('fruits',this,'mat')">🍊 Fruits tropicaux</button>
+    <button class="tab" onclick="switchTab('legumes',this,'mat')">🫑 Légumes &amp; Épices</button>
+    <button class="tab" onclick="switchTab('additifs',this,'mat')">🧪 Additifs naturels</button>
+    <button class="tab" onclick="switchTab('saison-cal',this,'mat')">📅 Calendrier des saisons</button>
+  </div>
+  <div id="mat-content"></div>
+</div>
+
+<!-- ÉQUIPEMENTS -->
+<div class="page" id="page-equipements">
+  <div class="page-hero">
+    <div class="page-hero-row">
+      <div>
+        <div class="page-title">🔧 <em>Équipements</em> de production</div>
+        <div class="page-sub">De l'artisanal au semi-industriel · Coûts · Entretien</div>
+      </div>
+    </div>
+  </div>
+  <div id="equip-content"></div>
+</div>
+
+<!-- HYGIÈNE HACCP -->
+<div class="page" id="page-hygiene">
+  <div class="page-hero">
+    <div class="page-hero-row">
+      <div>
+        <div class="page-title">🧼 Hygiène &amp; <em>HACCP</em></div>
+        <div class="page-sub">Points critiques · Protocoles · Normes sanitaires · Bonnes pratiques</div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('haccp-intro',this,'hyg')">📋 Principes HACCP</button>
+    <button class="tab" onclick="switchTab('protocoles',this,'hyg')">🧴 Protocoles nettoyage</button>
+    <button class="tab" onclick="switchTab('ccp',this,'hyg')">⚠️ Points critiques</button>
+    <button class="tab" onclick="switchTab('perso-hygiene',this,'hyg')">👷 Hygiène personnel</button>
+  </div>
+  <div id="hyg-content"></div>
+</div>
+
+<!-- CONSERVATION -->
+<div class="page" id="page-conservation">
+  <div class="page-hero">
+    <div class="page-hero-row">
+      <div>
+        <div class="page-title">❄️ <em>Conservation</em> &amp; Durée de vie</div>
+        <div class="page-sub">Pasteurisation · Stérilisation · DLC · Conditionnement</div>
+      </div>
+    </div>
+  </div>
+  <div id="cons-content"></div>
+</div>
+
+<!-- EMBALLAGE -->
+<div class="page" id="page-emballage">
+  <div class="page-hero">
+    <div class="page-hero-row">
+      <div>
+        <div class="page-title">📦 Emballage &amp; <em>Étiquetage</em></div>
+        <div class="page-sub">Types de contenants · Mentions obligatoires · Design</div>
+      </div>
+    </div>
+  </div>
+  <div id="emb-content"></div>
+</div>
+
+<!-- FINANCES -->
+<div class="page" id="page-finances">
+  <div class="page-hero">
+    <div class="page-hero-row">
+      <div>
+        <div class="page-title">💰 Calcul de <em>Rentabilité</em></div>
+        <div class="page-sub">Coûts de production · Prix de vente · Marges · Seuil de rentabilité</div>
+      </div>
+    </div>
+  </div>
+  <div id="fin-content"></div>
+</div>
+
+<!-- MARCHÉ -->
+<div class="page" id="page-marche">
+  <div class="page-hero">
+    <div class="page-hero-row">
+      <div>
+        <div class="page-title">🛒 Marché &amp; <em>Stratégie de vente</em></div>
+        <div class="page-sub">Canaux de distribution · Prix marché · Marketing · Export</div>
+      </div>
+    </div>
+  </div>
+  <div id="marche-content"></div>
+</div>
+
+<!-- NORMES -->
+<div class="page" id="page-normes">
+  <div class="page-hero">
+    <div class="page-hero-row">
+      <div>
+        <div class="page-title">📋 Normes &amp; <em>Cadre légal</em></div>
+        <div class="page-sub">Réglementation Bénin · Certifications · ANPC · OMS · Codex Alimentarius</div>
+      </div>
+    </div>
+  </div>
+  <div id="normes-content"></div>
+</div>
+
+<!-- TUTORIELS -->
+<div class="page" id="page-tutoriels">
+  <div class="page-hero">
+    <div class="page-hero-row">
+      <div>
+        <div class="page-title">📚 Tutoriels &amp; <em>Documents</em></div>
+        <div class="page-sub">FAO · ONUDI · Guides pratiques · Vidéos · PDF téléchargeables</div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('tuto-jus',this,'tuto')">🍊 Jus &amp; Boissons</button>
+    <button class="tab" onclick="switchTab('tuto-transfo',this,'tuto')">🫙 Transformation</button>
+    <button class="tab" onclick="switchTab('tuto-qualite',this,'tuto')">✅ Qualité &amp; Normes</button>
+    <button class="tab" onclick="switchTab('tuto-business',this,'tuto')">💼 Business</button>
+  </div>
+  <div class="tuto-grid" id="tuto-grid"></div>
+</div>
+
+<!-- SECRETS PRO -->
+<div class="page" id="page-secrets">
+  <div class="page-hero">
+    <div class="page-hero-row">
+      <div>
+        <div class="page-title">⭐ Secrets &amp; <em>Astuces Pro</em></div>
+        <div class="page-sub">Techniques des experts · Augmenter rendement · Qualité premium</div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('sec-qualite',this,'sec')">🏆 Qualité</button>
+    <button class="tab" onclick="switchTab('sec-rendement',this,'sec')">📈 Rendement</button>
+    <button class="tab" onclick="switchTab('sec-conservation',this,'sec')">❄️ Conservation</button>
+    <button class="tab" onclick="switchTab('sec-saveur',this,'sec')">👅 Saveurs</button>
+    <button class="tab" onclick="switchTab('sec-cout',this,'sec')">💰 Réduction coûts</button>
+  </div>
+  <div id="secrets-container"></div>
+</div>
+
+<!-- ASSISTANT IA -->
+<div class="page" id="page-assistant">
+  <div class="page-hero">
+    <div class="page-hero-row">
+      <div>
+        <div class="page-title">🤖 Assistant <em>IA Alimentaire</em></div>
+        <div class="page-sub">Expert en transformation · Recettes · HACCP · Business · Normes</div>
+      </div>
+    </div>
+  </div>
+  <div class="ia-layout">
+    <div class="ia-box">
+      <div class="ia-header">
+        <div class="ia-avatar">🍹</div>
+        <div>
+          <div class="ia-name">TransformIA</div>
+          <div class="ia-status"><div class="ia-dot"></div> Expert en transformation alimentaire</div>
+        </div>
+      </div>
+      <div class="ia-msgs" id="ia-msgs">
+        <div class="ia-msg-bot">🍊 Bonjour ! Je suis votre expert en transformation alimentaire.
+
+Je peux vous aider sur :
+<strong>• Recettes et formulations</strong> de jus, sirops, confitures
+<strong>• Processus de production</strong> étape par étape
+<strong>• HACCP et hygiène</strong> alimentaire
+<strong>• Calculs de rentabilité</strong> et prix de vente
+<strong>• Normes et réglementation</strong> au Bénin
+<strong>• Conservation et emballage</strong>
+
+Posez-moi votre question !</div>
+      </div>
+      <div class="ia-inp-row">
+        <input class="ia-inp" id="ia-inp" placeholder="Ex: Comment faire un jus de mangue pasteurisé ?"
+          onkeydown="if(event.key==='Enter') sendIA()">
+        <button class="ia-send-btn" onclick="sendIA()">➤</button>
+      </div>
+    </div>
+    <div class="ia-quick-panel">
+      <div class="ia-q-section">Questions fréquentes</div>
+      <button class="ia-q-btn" onclick="poserQ(this.textContent)">Comment faire du jus de mangue pasteurisé ?</button>
+      <button class="ia-q-btn" onclick="poserQ(this.textContent)">Quelle est la DLC d'un jus naturel sans conservateur ?</button>
+      <button class="ia-q-btn" onclick="poserQ(this.textContent)">Comment calculer le prix de vente de mes jus ?</button>
+      <button class="ia-q-btn" onclick="poserQ(this.textContent)">Quels équipements pour débuter la production de jus ?</button>
+      <button class="ia-q-btn" onclick="poserQ(this.textContent)">Comment conserver un sirop de gingembre 6 mois ?</button>
+      <button class="ia-q-btn" onclick="poserQ(this.textContent)">Quelles normes HACCP appliquer dans mon atelier ?</button>
+      <button class="ia-q-btn" onclick="poserQ(this.textContent)">Comment obtenir l'agrément sanitaire au Bénin ?</button>
+      <button class="ia-q-btn" onclick="poserQ(this.textContent)">Recette de confiture d'ananas au gingembre ?</button>
+      <button class="ia-q-btn" onclick="poserQ(this.textContent)">Comment augmenter la durée de vie de mes produits ?</button>
+      <div class="ia-q-section" style="margin-top:8px">Calculs rapides</div>
+      <button class="ia-q-btn" onclick="poserQ(this.textContent)">Quel rendement pour 10kg de mangues en jus ?</button>
+      <button class="ia-q-btn" onclick="poserQ(this.textContent)">Dosage acide citrique pour 50L de jus d'ananas ?</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- fin .main -->
+</div><!-- fin .app -->
+
+<!-- MODAL RECETTE -->
+<div class="modal-bg" id="modal-recette">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title" id="modal-rec-title">📋 Nouvelle recette</div>
+      <button class="modal-close" onclick="closeModal('modal-recette')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="rec-id">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label class="form-lbl">Nom du produit *</label>
+          <input id="rec-nom" class="form-inp" placeholder="Ex: Jus de mangue gingembre bio">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Catégorie *</label>
+          <select id="rec-cat" class="form-inp">
+            <option>Jus de fruits</option><option>Sirop</option><option>Confiture</option>
+            <option>Nectar</option><option>Purée</option><option>Smoothie</option>
+            <option>Boisson fermentée</option><option>Vinaigre</option>
+            <option>Sauce pimentée</option><option>Coulis</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Fruit / Matière principale</label>
+          <input id="rec-fruit" class="form-inp" placeholder="Mangue, Ananas, Gingembre...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Volume / Quantité produite</label>
+          <input id="rec-vol" class="form-inp" placeholder="Ex: 10L, 20 pots de 250g...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Durée de production</label>
+          <input id="rec-duree" class="form-inp" placeholder="Ex: 2h30">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">DLC (durée de vie)</label>
+          <input id="rec-dlc" class="form-inp" placeholder="Ex: 6 mois au réfrigérateur">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Coût matières premières (F)</label>
+          <input type="number" id="rec-cout" class="form-inp" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Prix de vente unitaire (F)</label>
+          <input type="number" id="rec-prix" class="form-inp" placeholder="0">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Ingrédients & Proportions</label>
+          <textarea id="rec-ingredients" class="form-inp" rows="3"
+            placeholder="Ex: 2kg mangues, 500ml eau, 100g sucre, 10g acide citrique, 1g benzoate..."></textarea>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Procédé de fabrication (résumé)</label>
+          <textarea id="rec-procede" class="form-inp" rows="3"
+            placeholder="Laver, éplucher, couper, mixer, filtrer, pasteuriser 85°C/15min, conditionner..."></textarea>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Notes / Points critiques</label>
+          <textarea id="rec-notes" class="form-inp" rows="2"
+            placeholder="pH cible, température critique, points d'attention..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-sec" onclick="closeModal('modal-recette')">Annuler</button>
+      <button class="btn btn-primary" onclick="sauvegarderRecette()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// TRANSFORMPRO — Transformation Alimentaire & Jus
+// ══════════════════════════════════════════════════════════════════
+
+var DB = {
+  recettes: JSON.parse(localStorage.getItem('tp_recettes') || '[]'),
+  production: JSON.parse(localStorage.getItem('tp_production') || '[]'),
+};
+if (!DB.recettes.length) chargerDemoRecettes();
+
+function chargerDemoRecettes() {
+  DB.recettes = [
+    { id:1, nom:'Jus de mangue gingembre', cat:'Jus de fruits', fruit:'Mangue', vol:'10L', duree:'2h', dlc:'3 mois réfrigéré / 1 an pasteurisé', cout:8500, prix:1500, unite:'bouteille 50cl',
+      ingredients:'3kg mangues mûres, 500g gingembre frais, 100g sucre de canne, 8g acide citrique, 2g métabisulfite de sodium, eau filtrée qsp 10L',
+      procede:'1-Laver fruits à eau javellisée 50ppm. 2-Éplucher, dénoyauter. 3-Mixer finement. 4-Filtrer sur grille 0.5mm. 5-Ajuster pH à 3.5-4.0. 6-Pasteuriser 85°C/15min. 7-Conditionner chaud en bouteilles stérilisées. 8-Étiqueter.',
+      notes:'pH critique: <4.0. Contrôler Brix: 12-14°Bx.' },
+    { id:2, nom:'Sirop de bissap (hibiscus)', cat:'Sirop', fruit:'Bissap', vol:'5L', duree:'1h30', dlc:'12 mois à température ambiante', cout:4500, prix:1200, unite:'bouteille 33cl',
+      ingredients:'500g fleurs de bissap séchées, 1kg sucre, 20g acide citrique, 3g benzoate de sodium, eau 5L',
+      procede:'1-Trier et rincer les fleurs. 2-Faire bouillir dans 4L eau 20min. 3-Filtrer et presser. 4-Ajouter sucre, chauffer à dissolution. 5-Ajouter acide citrique et benzoate. 6-Mettre en bouteilles chaudes.',
+      notes:'Brix cible: 65-70°. Couleur indicateur qualité.' },
+    { id:3, nom:'Confiture d\'ananas vanille', cat:'Confiture', fruit:'Ananas', vol:'20 pots 250g', duree:'3h', dlc:'18 mois hermétique', cout:12000, prix:1500, unite:'pot 250g',
+      ingredients:'3kg ananas épluché, 2kg sucre cristal, 2 gousses vanille, 40g pectine NH, 20g acide citrique',
+      procede:'1-Couper ananas en morceaux 2cm. 2-Macérer avec sucre 2h. 3-Cuire en bassine à 104°C (test assiette froide). 4-Ajouter pectine + acide. 5-Mise en pots chauds retournés 5min.',
+      notes:'Test gélification: 1 goutte sur assiette froide doit figer. Stérilisation pots 15min.' },
+    { id:4, nom:'Jus de tamarin sucré', cat:'Nectar', fruit:'Tamarin', vol:'8L', duree:'2h', dlc:'6 mois pasteurisé', cout:5500, prix:800, unite:'sachet 20cl',
+      ingredients:'1kg tamarin décortiqué, 600g sucre, 5g acide citrique, eau qsp 8L',
+      procede:'1-Tremper tamarin dans eau chaude 30min. 2-Presser et filtrer. 3-Ajouter sucre et acide. 4-Pasteuriser 80°C/15min. 5-Conditionner en sachets ou bouteilles.',
+      notes:'Brix: 14-16°. pH < 3.8 naturellement acide.' },
+    { id:5, nom:'Vinaigre de fruits (ananas)', cat:'Vinaigre', fruit:'Ananas', vol:'3L', duree:'30 jours', dlc:'24 mois', cout:3000, prix:2500, unite:'bouteille 50cl',
+      ingredients:'2kg ananas (pelures + coeur), 200g sucre, eau 3L, vinaigre mère (ferment acétique)',
+      procede:'1-Préparer jus de pelures. 2-Fermentation alcoolique 7 jours (levures). 3-Fermentation acétique 21 jours (acétobacter). 4-Filtrer et pasteuriser légèrement. 5-Mettre en bouteilles.',
+      notes:'Acidité cible: 5-7% acide acétique. Tester avec bandelettes pH.' },
+    { id:6, nom:'Sauce pimentée tropicale', cat:'Sauce pimentée', fruit:'Piment', vol:'5L', duree:'1h', dlc:'12 mois', cout:6000, prix:1000, unite:'flacon 100ml',
+      ingredients:'1kg piment frais (mélange fort/doux), 200g oignons, 100g ail, 30g sel, 50ml vinaigre blanc, 20g sucre, 5g conservateur E211',
+      procede:'1-Laver et épépiner piments. 2-Mixer avec oignons et ail. 3-Cuire 20min en remuant. 4-Ajouter vinaigre, sel, sucre. 5-Pasteuriser 85°C/10min. 6-Conditionner en flacons.',
+      notes:'pH < 4.0 impératif. Couleur et texture indicateur de cuisson.' },
+  ];
+  saveAll();
+}
+function saveAll() {
+  Object.keys(DB).forEach(function(k) {
+    try { localStorage.setItem('tp_' + k, JSON.stringify(DB[k])); } catch(e) {}
+  });
+}
+
+// ── Navigation ──
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(b) { b.classList.remove('active'); });
+  var pg = document.getElementById('page-' + id);
+  if (pg) pg.classList.add('active');
+  if (btn) btn.classList.add('active');
+  var map = {
+    dashboard: renderDashboard,
+    recettes: renderRecettes,
+    production: function() { renderProduction('jus'); },
+    matieres: function() { renderMatieres('fruits'); },
+    equipements: renderEquipements,
+    hygiene: function() { renderHygiene('haccp-intro'); },
+    conservation: renderConservation,
+    emballage: renderEmballage,
+    finances: renderFinances,
+    marche: renderMarche,
+    normes: renderNormes,
+    tutoriels: function() { renderTutoriels('tuto-jus'); },
+    secrets: function() { renderSecrets('sec-qualite'); },
+    assistant: function() {},
+  };
+  if (map[id]) map[id]();
+}
+
+function switchTab(tab, btn, ctx) {
+  var pg = document.querySelector('.page.active');
+  if (pg) pg.querySelectorAll('.tab').forEach(function(b) { b.classList.remove('active'); });
+  if (btn) btn.classList.add('active');
+  var map = {
+    jus: function() { renderProduction('jus'); },
+    sirop: function() { renderProduction('sirop'); },
+    confiture: function() { renderProduction('confiture'); },
+    nectar: function() { renderProduction('nectar'); },
+    fermente: function() { renderProduction('fermente'); },
+    sauce: function() { renderProduction('sauce'); },
+    fruits: function() { renderMatieres('fruits'); },
+    legumes: function() { renderMatieres('legumes'); },
+    additifs: function() { renderMatieres('additifs'); },
+    'saison-cal': function() { renderMatieres('saison-cal'); },
+    'haccp-intro': function() { renderHygiene('haccp-intro'); },
+    protocoles: function() { renderHygiene('protocoles'); },
+    ccp: function() { renderHygiene('ccp'); },
+    'perso-hygiene': function() { renderHygiene('perso-hygiene'); },
+    'tuto-jus': function() { renderTutoriels('tuto-jus'); },
+    'tuto-transfo': function() { renderTutoriels('tuto-transfo'); },
+    'tuto-qualite': function() { renderTutoriels('tuto-qualite'); },
+    'tuto-business': function() { renderTutoriels('tuto-business'); },
+    'sec-qualite': function() { renderSecrets('sec-qualite'); },
+    'sec-rendement': function() { renderSecrets('sec-rendement'); },
+    'sec-conservation': function() { renderSecrets('sec-conservation'); },
+    'sec-saveur': function() { renderSecrets('sec-saveur'); },
+    'sec-cout': function() { renderSecrets('sec-cout'); },
+  };
+  if (map[tab]) map[tab]();
+}
+
+// ── Utils ──
+function fmtNum(n) { return Number(n||0).toLocaleString('fr-FR'); }
+function today() { return new Date().toISOString().split('T')[0]; }
+function genId() { return Date.now(); }
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+var _tt;
+function toast(msg, type) {
+  var el = document.getElementById('toast');
+  el.textContent = msg;
+  el.style.borderColor = type === 'error' ? 'rgba(248,113,113,.3)' : 'var(--bdr)';
+  el.classList.add('show');
+  clearTimeout(_tt);
+  _tt = setTimeout(function() { el.classList.remove('show'); }, 3500);
+}
+function mkStat(val, lbl, col) {
+  return '<div class="stat-card"><div class="stat-val" style="color:' + col + '">' + val +
+    '</div><div class="stat-lbl">' + lbl + '</div></div>';
+}
+function badge(t, c) { return '<span class="badge badge-' + c + '">' + t + '</span>'; }
+
+var CAT_EMOJI = {
+  'Jus de fruits':'🍊', 'Sirop':'🍯', 'Confiture':'🫙', 'Nectar':'🥭',
+  'Purée':'🥣', 'Smoothie':'🥤', 'Boisson fermentée':'🫧', 'Vinaigre':'🍶',
+  'Sauce pimentée':'🌶️', 'Coulis':'🫙',
+};
+var CAT_COLOR = {
+  'Jus de fruits':'rgba(251,146,60,.15)', 'Sirop':'rgba(253,224,71,.15)',
+  'Confiture':'rgba(248,113,113,.15)', 'Nectar':'rgba(163,230,53,.15)',
+  'Purée':'rgba(167,139,250,.15)', 'Smoothie':'rgba(103,232,249,.15)',
+  'Boisson fermentée':'rgba(163,230,53,.1)', 'Vinaigre':'rgba(251,146,60,.1)',
+  'Sauce pimentée':'rgba(248,113,113,.1)', 'Coulis':'rgba(253,224,71,.1)',
+};
+
+// ══ DASHBOARD ══
+function renderDashboard() {
+  document.getElementById('badge-recettes').textContent = DB.recettes.length;
+  var totalCA = DB.recettes.reduce(function(s,r) {
+    var nb = parseInt((r.vol||'0').replace(/\D.*$/,'')) || 1;
+    return s + (r.prix||0)*nb;
+  }, 0);
+  document.getElementById('dash-stats').innerHTML =
+    mkStat(DB.recettes.length, 'Recettes créées', 'var(--acc)') +
+    mkStat(DB.recettes.filter(function(r){return r.cat==='Jus de fruits';}).length, 'Jus de fruits', 'var(--acc2)') +
+    mkStat(DB.recettes.filter(function(r){return r.cat==='Confiture';}).length, 'Confitures', 'var(--acc3)') +
+    mkStat(DB.recettes.filter(function(r){return r.cat==='Sirop';}).length, 'Sirops', 'var(--blue)');
+
+  // Recettes récentes
+  var rEl = document.getElementById('dash-recettes');
+  rEl.innerHTML = DB.recettes.slice(-4).reverse().map(function(r) {
+    var marge = r.cout>0 ? Math.round((r.prix-r.cout/10)/r.prix*100) : 0;
+    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr2)">' +
+      '<div style="font-size:26px;flex-shrink:0">' + (CAT_EMOJI[r.cat]||'🍹') + '</div>' +
+      '<div style="flex:1">' +
+        '<div style="font-weight:700;font-size:13px">' + r.nom + '</div>' +
+        '<div style="font-size:11px;color:var(--txt2)">' + r.cat + ' · ' + r.vol + ' · DLC: ' + r.dlc + '</div>' +
+      '</div>' +
+      '<div style="text-align:right">' +
+        '<div style="font-weight:800;font-size:13px;color:var(--acc)">' + fmtNum(r.prix) + ' F</div>' +
+        '<div style="font-size:10px;color:var(--txt3)">' + r.unite + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  // Saison
+  var mois = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  var m = new Date().getMonth();
+  document.getElementById('saison-mois').textContent = mois[m];
+  var saisons = {
+    0:['🥭 Mangue (début)','🍊 Orange','🍋 Citron','🫑 Piment doux'],
+    1:['🥭 Mangue','🍍 Ananas','🍊 Orange','🍋 Citron vert'],
+    2:['🥭 Mangue (pleine saison)','🍍 Ananas','🌶️ Piment','🥥 Noix de coco'],
+    3:['🥭 Mangue (pic)','🍍 Ananas','🌺 Bissap','🫚 Palme'],
+    4:['🥭 Mangue (fin)','🍍 Ananas','🌺 Bissap','🍃 Moringa'],
+    5:['🍍 Ananas (pleine saison)','🌺 Bissap','🍋 Tamarin','🍃 Moringa'],
+    6:['🍍 Ananas','🍋 Tamarin','🌺 Bissap','🥥 Noix de coco'],
+    7:['🍍 Ananas','🍋 Tamarin','🥥 Noix de coco','🌶️ Piment'],
+    8:['🍍 Ananas','🍊 Mandarine','🌶️ Piment rouge','🍐 Papaye'],
+    9:['🍊 Orange (début)','🍐 Papaye','🌶️ Piment','🫐 Fruit de la passion'],
+    10:['🍊 Orange','🍐 Papaye','🫐 Fruit de la passion','🍋 Citron'],
+    11:['🍊 Orange','🍋 Citron','🍐 Papaye','🥥 Noix de coco'],
+  };
+  var fruitsM = saisons[m] || ['🍊 Fruits tropicaux variés'];
+  document.getElementById('dash-saison').innerHTML =
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px">' +
+    fruitsM.map(function(f) {
+      return '<div style="background:var(--surf3);border:1px solid var(--bdr);border-radius:10px;padding:12px;display:flex;align-items:center;gap:8px;font-size:13px;color:var(--txt2)">' + f + '</div>';
+    }).join('') +
+    '<div style="background:rgba(163,230,53,.06);border:1px solid var(--bdr);border-radius:10px;padding:12px;font-size:12px;color:var(--acc)">✅ Pleine saison = prix bas & qualité maximale</div>' +
+    '</div>';
+}
+
+// ══ RECETTES ══
+function renderRecettes() {
+  var filtre = document.getElementById('filter-categorie').value;
+  var data = DB.recettes.filter(function(r) { return !filtre || r.cat === filtre; });
+  document.getElementById('badge-recettes').textContent = DB.recettes.length;
+  var grid = document.getElementById('recettes-grid');
+  if (!data.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:80px;color:var(--txt3)">' +
+      '<div style="font-size:60px;margin-bottom:16px">🍹</div>' +
+      '<div style="font-family:var(--font-display);font-size:18px;font-weight:600">Aucune recette</div>' +
+      '<button class="btn btn-primary" style="margin-top:16px" onclick="ouvrirNouvelleRecette()">+ Créer ma première recette</button></div>';
+    return;
+  }
+  grid.innerHTML = '';
+  data.forEach(function(r) {
+    var emoji = CAT_EMOJI[r.cat] || '🍹';
+    var bg = CAT_COLOR[r.cat] || 'rgba(163,230,53,.08)';
+    var marge = r.cout>0 ? Math.round((r.prix*10-r.cout)/(r.prix*10)*100) : 0;
+    var card = document.createElement('div');
+    card.className = 'recette-card';
+    card.innerHTML =
+      '<div class="recette-banner" style="background:' + bg + '">' +
+        '<span>' + emoji + '</span>' +
+        '<span class="recette-badge" style="background:rgba(0,0,0,.4);color:var(--acc);border:1px solid var(--bdr)">' + r.cat + '</span>' +
+      '</div>' +
+      '<div class="recette-body">' +
+        '<div class="recette-nom">' + r.nom + '</div>' +
+        '<div class="recette-meta">' +
+          '📦 ' + r.vol + ' · ⏱ ' + r.duree + '<br>' +
+          '❄️ DLC: ' + r.dlc +
+        '</div>' +
+        '<div class="recette-tags">' +
+          '<span class="tag">' + r.fruit + '</span>' +
+          (marge>30 ? '<span class="tag">Rentable +' + marge + '%</span>' : '') +
+          '<span class="tag orange">' + fmtNum(r.prix) + ' F/' + (r.unite||'unité') + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="recette-footer">' +
+        '<button class="btn btn-sec btn-sm" data-id="' + r.id + '" onclick="voirRecette(this.dataset.id)">👁 Détail</button>' +
+        '<button class="btn btn-orange btn-sm" data-id="' + r.id + '" onclick="editerRecette(this.dataset.id)">✏️</button>' +
+        '<button class="btn btn-danger btn-sm" data-id="' + r.id + '" onclick="supprimerRecette(this.dataset.id)">🗑</button>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+
+function voirRecette(id) {
+  var r = DB.recettes.find(function(x) { return String(x.id) === String(id); });
+  if (!r) return;
+  var w = window.open('', '_blank');
+  var marge = r.cout>0 ? Math.round((r.prix*10-r.cout)/(r.prix*10)*100) : 0;
+  w.document.write('<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><title>' + r.nom + '</title>' +
+    '<style>body{font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:30px;background:#fff;color:#1a1a1a}' +
+    'h1{font-size:24px;color:#a3e635;border-bottom:3px solid #a3e635;padding-bottom:10px}' +
+    'h2{font-size:14px;color:#555;text-transform:uppercase;letter-spacing:1px;margin:20px 0 8px}' +
+    '.meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:#f9fafb;padding:14px;border-radius:8px;margin:14px 0}' +
+    '.meta-item{font-size:13px}.meta-label{font-size:10px;text-transform:uppercase;color:#999;margin-bottom:2px}' +
+    'p{font-size:13px;line-height:1.8;color:#444}' +
+    '.badge{background:#a3e635;color:#0b0d08;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}</style></head><body>' +
+    '<span class="badge">' + r.cat + '</span>' +
+    '<h1>' + r.nom + '</h1>' +
+    '<div class="meta">' +
+      '<div class="meta-item"><div class="meta-label">Volume produit</div>' + r.vol + '</div>' +
+      '<div class="meta-item"><div class="meta-label">Durée production</div>' + r.duree + '</div>' +
+      '<div class="meta-item"><div class="meta-label">DLC</div>' + r.dlc + '</div>' +
+      '<div class="meta-item"><div class="meta-label">Coût matières</div>' + fmtNum(r.cout) + ' F</div>' +
+      '<div class="meta-item"><div class="meta-label">Prix de vente</div>' + fmtNum(r.prix) + ' F / ' + r.unite + '</div>' +
+      '<div class="meta-item"><div class="meta-label">Marge brute estimée</div>' + marge + '%</div>' +
+    '</div>' +
+    '<h2>🧪 Ingrédients & Proportions</h2><p>' + (r.ingredients||'').replace(/\n/g,'<br>') + '</p>' +
+    '<h2>⚗️ Procédé de fabrication</h2><p>' + (r.procede||'').replace(/\n/g,'<br>') + '</p>' +
+    '<h2>⚠️ Points critiques</h2><p>' + (r.notes||'—') + '</p>' +
+    '<p style="font-size:11px;color:#aaa;margin-top:30px">TransformPro — Fiche recette générée le ' + new Date().toLocaleDateString('fr-FR') + '</p>' +
+    '<script>window.onload=function(){window.print();}<\/script>
+
+<script>
+// DPTIF Pro — Démarrage application
+window.DPTIF_APP_ID   = 'transformpro';
+window.DPTIF_APP_NAME = document.title || 'transformpro';
+
+// Appelée par le module licence quand l'accès est autorisé
+window.dptifOnLicenceOk = function() {
+  // Cacher l'écran de licence s'il est visible
+  var lic = document.getElementById('dptif-lic-screen');
+  if(lic) lic.remove();
+  var ban = document.getElementById('dptif-banner');
+  // Démarrer l'application
+  try {
+    renderDashboard();
+  } catch(e) {
+    console.log('[DPTIF] Démarrage:', e.message);
+    // Essayer d'autres méthodes de démarrage
+    var firstNav = document.querySelector('.nav-item, [onclick*="showPage"], [onclick*="showSection"], [onclick*="showView"]');
+    if(firstNav) firstNav.click();
+  }
+};
+</script>
+<script>
+
+// ══════════════════════════════════════════════════════════════
+// DPTIF PRO — Module de vérification de licence v2
+// Contact: jeanpaulbognon3@gmail.com
+// ══════════════════════════════════════════════════════════════
+
+(function() {
+  var APP_ID    = window.DPTIF_APP_ID    || 'dptif-app';
+  var APP_NAME  = window.DPTIF_APP_NAME  || 'DPTIF Pro';
+  var DEMO_DAYS = 30;
+  var ADMIN_WA  = '22901970000';
+
+  function storageGet(k)  { try { return localStorage.getItem(k);       } catch(e){ return null; } }
+  function storageSet(k,v){ try { localStorage.setItem(k,v);            } catch(e){} }
+
+  function getLic()   { try{ return JSON.parse(storageGet('dptif_lic_'+APP_ID)||'null'); } catch(e){ return null; } }
+  function saveLic(l) { storageSet('dptif_lic_'+APP_ID, JSON.stringify(l)); }
+
+  function getFirstRun() {
+    var key = 'dptif_first_'+APP_ID;
+    var d = storageGet(key);
+    if(!d){ d=new Date().toISOString().slice(0,10); storageSet(key,d); }
+    return d;
+  }
+
+  function joursRestants(fin) {
+    return Math.ceil((new Date(fin)-new Date())/86400000);
+  }
+
+  function validerCle(cle) {
+    cle = (cle||'').trim().toUpperCase();
+    if(!cle) return {ok:false, msg:'Entrez votre clé'};
+    if(cle === 'DPTIF-MASTER-2026-JP') return {ok:true, jours:9999};
+    var parts = cle.split('-');
+    if(parts.length < 4) return {ok:false, msg:'Format invalide (ex: APP-CLI-XXXX-XXXX-XXXX)'};
+    // Vérifier si déjà stockée
+    var stored = getLic();
+    if(stored && stored.cle===cle) {
+      var j = joursRestants(stored.fin);
+      if(j < 0) return {ok:false, msg:'Licence expirée le '+stored.fin};
+      return {ok:true, jours:j, fin:stored.fin};
+    }
+    // Nouvelle clé — valider le format et stocker
+    var allValid = parts.every(function(p){ return /^[A-Z0-9]{3,}$/.test(p); });
+    if(!allValid) return {ok:false, msg:'Clé invalide — contactez Jean Paul BOGNON'};
+    var fin = new Date(); fin.setFullYear(fin.getFullYear()+1);
+    var finStr = fin.toISOString().slice(0,10);
+    saveLic({cle:cle, debut:new Date().toISOString().slice(0,10), fin:finStr});
+    return {ok:true, jours:365, fin:finStr};
+  }
+
+  function afficherBanniere(msg, color) {
+    var old = document.getElementById('dptif-banner');
+    if(old) old.remove();
+    var b = document.createElement('div');
+    b.id = 'dptif-banner';
+    b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9998;'
+      + 'background:'+color+';padding:9px 16px;display:flex;align-items:center;'
+      + 'justify-content:space-between;font-size:12px;font-weight:600;color:#000';
+    b.innerHTML = msg
+      + '<button onclick="this.parentNode.remove()" '
+      + 'style="background:rgba(0,0,0,.15);border:none;padding:4px 10px;'
+      + 'border-radius:6px;cursor:pointer;font-size:11px">✕</button>';
+    document.body.insertBefore(b, document.body.firstChild);
+  }
+
+  function afficherEcranLicence(msgTop, demoRestants) {
+    var old = document.getElementById('dptif-lic-screen');
+    if(old) old.remove();
+
+    var screen = document.createElement('div');
+    screen.id = 'dptif-lic-screen';
+    screen.style.cssText = 'position:fixed;inset:0;z-index:99999;'
+      + 'background:linear-gradient(135deg,#05060e,#0e0a2e);'
+      + 'display:flex;align-items:center;justify-content:center;padding:20px;'
+      + 'font-family:Arial,sans-serif';
+    document.body.appendChild(screen);
+
+    // Construire l'UI avec createElement
+    var box = document.createElement('div');
+    box.style.cssText = 'width:460px;max-width:100%;text-align:center';
+
+    // Logo
+    var logo = document.createElement('div');
+    logo.style.cssText = 'width:64px;height:64px;border-radius:18px;margin:0 auto 16px;'
+      + 'background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;'
+      + 'align-items:center;justify-content:center;font-size:28px';
+    logo.textContent = '⚡';
+
+    var title = document.createElement('div');
+    title.style.cssText = 'font-size:22px;font-weight:800;color:#fff;margin-bottom:4px';
+    title.textContent = 'DPTIF Pro';
+
+    var sub = document.createElement('div');
+    sub.style.cssText = 'font-size:13px;color:#9090c0;margin-bottom:24px';
+    sub.textContent = APP_NAME;
+
+    // Carte
+    var card = document.createElement('div');
+    card.style.cssText = 'background:#0f1118;border:1px solid rgba(99,102,241,.3);'
+      + 'border-radius:18px;padding:24px';
+
+    // Message statut
+    if(msgTop) {
+      var msgEl = document.createElement('div');
+      msgEl.style.cssText = 'background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);'
+        + 'border-radius:8px;padding:10px 14px;color:#f87171;font-size:13px;margin-bottom:16px';
+      msgEl.textContent = msgTop;
+      card.appendChild(msgEl);
+    } else if(demoRestants > 0) {
+      var demoEl = document.createElement('div');
+      demoEl.style.cssText = 'background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);'
+        + 'border-radius:8px;padding:10px 14px;color:#fbbf24;font-size:13px;margin-bottom:16px';
+      demoEl.textContent = '⏳ Mode démo — '+demoRestants+' jour(s) restant(s) sur '+DEMO_DAYS;
+      card.appendChild(demoEl);
+    }
+
+    // Label
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'text-align:left;font-size:11px;font-weight:700;color:#9090c0;'
+      + 'text-transform:uppercase;letter-spacing:1px;margin-bottom:6px';
+    lbl.textContent = 'Clé de licence';
+
+    // Input
+    var inp = document.createElement('input');
+    inp.id = 'dptif-lic-input';
+    inp.placeholder = 'APP-CLI-XXXX-XXXX-XXXX';
+    inp.style.cssText = 'width:100%;background:#161922;border:1px solid rgba(99,102,241,.3);'
+      + 'border-radius:10px;padding:12px 16px;color:#fff;font-size:14px;'
+      + 'font-family:monospace;letter-spacing:1px;box-sizing:border-box;margin-bottom:8px';
+    inp.addEventListener('input', function(){ this.value=this.value.toUpperCase(); });
+    inp.addEventListener('keydown', function(e){ if(e.key==='Enter') btn.click(); });
+
+    // Erreur
+    var errEl = document.createElement('div');
+    errEl.id = 'dptif-lic-err';
+    errEl.style.cssText = 'color:#f87171;font-size:12px;margin-bottom:10px;display:none;text-align:left';
+
+    // Bouton activer
+    var btn = document.createElement('button');
+    btn.style.cssText = 'width:100%;padding:13px;background:linear-gradient(135deg,#6366f1,#8b5cf6);'
+      + 'border:none;border-radius:11px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px';
+    btn.textContent = '🔑 Activer la licence';
+    btn.addEventListener('click', function() {
+      var cle = inp.value.trim();
+      var r = validerCle(cle);
+      if(r.ok) {
+        screen.remove();
+        if(r.jours <= 7) afficherBanniere('⚠️ Licence expire dans '+r.jours+' jour(s).','rgba(245,158,11,.9)');
+        if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+      } else {
+        errEl.style.display='block';
+        errEl.textContent = '❌ '+r.msg;
+      }
+    });
+
+    // Bouton démo
+    if(demoRestants > 0) {
+      var btnDemo = document.createElement('button');
+      btnDemo.style.cssText = 'width:100%;padding:11px;background:rgba(245,158,11,.12);'
+        + 'border:1px solid rgba(245,158,11,.3);border-radius:10px;color:#fbbf24;'
+        + 'font-size:13px;font-weight:600;cursor:pointer;margin-bottom:14px';
+      btnDemo.textContent = '⏳ Continuer en mode démo ('+demoRestants+'j)';
+      btnDemo.addEventListener('click', function() {
+        screen.remove();
+        if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+      });
+      card.appendChild(lbl);
+      card.appendChild(inp);
+      card.appendChild(errEl);
+      card.appendChild(btn);
+      card.appendChild(btnDemo);
+    } else {
+      card.appendChild(lbl);
+      card.appendChild(inp);
+      card.appendChild(errEl);
+      card.appendChild(btn);
+    }
+
+    // Footer contact
+    var footer = document.createElement('div');
+    footer.style.cssText = 'border-top:1px solid rgba(99,102,241,.15);padding-top:14px;'
+      + 'font-size:12px;color:#505080;margin-top:4px';
+    footer.innerHTML = 'Obtenir une licence: '
+      + '<a href="https://wa.me/'+ADMIN_WA+'" target="_blank" style="color:#6366f1">WhatsApp</a>'
+      + ' · jeanpaulbognon3@gmail.com';
+    card.appendChild(footer);
+
+    box.appendChild(logo);
+    box.appendChild(title);
+    box.appendChild(sub);
+    box.appendChild(card);
+    screen.appendChild(box);
+
+    setTimeout(function(){ inp.focus(); }, 200);
+  }
+
+  function init() {
+    var stored = getLic();
+    if(stored && stored.cle) {
+      var j = joursRestants(stored.fin);
+      if(j >= 0) {
+        if(j <= 7) afficherBanniere('⚠️ Licence expire dans '+j+' jour(s) — Contactez: wa.me/'+ADMIN_WA,'rgba(245,158,11,.9)');
+        if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+        return;
+      }
+      afficherEcranLicence('⏰ Licence expirée le '+stored.fin+' — Renouvelez pour continuer', 0);
+      return;
+    }
+    var firstRun = getFirstRun();
+    var joursDemo = Math.floor((new Date()-new Date(firstRun))/86400000);
+    var restants  = DEMO_DAYS - joursDemo;
+    if(restants > 5) {
+      if(restants <= DEMO_DAYS) {
+        afficherBanniere('⏳ Mode démo — '+restants+' jour(s) restants. <a href="https://wa.me/'+ADMIN_WA+'" target="_blank" style="color:#000;font-weight:700">Obtenir une licence</a>', 'rgba(245,158,11,.85)');
+      }
+      if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+    } else {
+      afficherEcranLicence(restants>0?null:'🔒 Démo expirée — Entrez votre clé de licence', restants>0?restants:0);
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
+  else setTimeout(init, 200);
+
+})();
+
+</script>
+</script>
+</body></html>');
+  w.document.close();
+}
+
+function ouvrirNouvelleRecette() {
+  document.getElementById('rec-id').value = '';
+  document.getElementById('modal-rec-title').textContent = '📋 Nouvelle recette';
+  ['rec-nom','rec-fruit','rec-vol','rec-duree','rec-dlc','rec-ingredients','rec-procede','rec-notes'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  document.getElementById('rec-cout').value = '';
+  document.getElementById('rec-prix').value = '';
+  openModal('modal-recette');
+}
+
+function editerRecette(id) {
+  var r = DB.recettes.find(function(x) { return String(x.id) === String(id); });
+  if (!r) return;
+  document.getElementById('rec-id').value = r.id;
+  document.getElementById('modal-rec-title').textContent = '✏️ Modifier — ' + r.nom;
+  document.getElementById('rec-nom').value = r.nom||'';
+  document.getElementById('rec-cat').value = r.cat||'';
+  document.getElementById('rec-fruit').value = r.fruit||'';
+  document.getElementById('rec-vol').value = r.vol||'';
+  document.getElementById('rec-duree').value = r.duree||'';
+  document.getElementById('rec-dlc').value = r.dlc||'';
+  document.getElementById('rec-cout').value = r.cout||'';
+  document.getElementById('rec-prix').value = r.prix||'';
+  document.getElementById('rec-ingredients').value = r.ingredients||'';
+  document.getElementById('rec-procede').value = r.procede||'';
+  document.getElementById('rec-notes').value = r.notes||'';
+  openModal('modal-recette');
+}
+
+function sauvegarderRecette() {
+  var nom = document.getElementById('rec-nom').value.trim();
+  if (!nom) { toast('Le nom du produit est obligatoire', 'error'); return; }
+  var id_val = document.getElementById('rec-id').value;
+  var obj = {
+    id: id_val ? Number(id_val) : genId(),
+    nom, cat: document.getElementById('rec-cat').value,
+    fruit: document.getElementById('rec-fruit').value.trim(),
+    vol: document.getElementById('rec-vol').value.trim(),
+    duree: document.getElementById('rec-duree').value.trim(),
+    dlc: document.getElementById('rec-dlc').value.trim(),
+    cout: parseFloat(document.getElementById('rec-cout').value)||0,
+    prix: parseFloat(document.getElementById('rec-prix').value)||0,
+    unite: 'unité',
+    ingredients: document.getElementById('rec-ingredients').value.trim(),
+    procede: document.getElementById('rec-procede').value.trim(),
+    notes: document.getElementById('rec-notes').value.trim(),
+  };
+  if (id_val) {
+    var i = DB.recettes.findIndex(function(x) { return String(x.id) === String(id_val); });
+    if (i >= 0) DB.recettes[i] = obj; else DB.recettes.push(obj);
+  } else { DB.recettes.push(obj); }
+  saveAll(); closeModal('modal-recette'); renderRecettes();
+  if (document.getElementById('page-dashboard').classList.contains('active')) renderDashboard();
+  toast('✅ Recette enregistrée: ' + nom);
+}
+
+function supprimerRecette(id) {
+  if (!confirm('Supprimer cette recette ?')) return;
+  DB.recettes = DB.recettes.filter(function(r) { return String(r.id) !== String(id); });
+  saveAll(); renderRecettes(); toast('🗑 Recette supprimée');
+}
+
+// ══ PRODUCTION ══
+var PROD_DATA = {
+  jus: {
+    titre:'🍊 Production de Jus de Fruits',
+    alerte:'Règle d\'or: un jus de qualité commence par des fruits de qualité. Jamais de fruits pourris, même partiellement.',
+    steps:[
+      {n:'🛒',t:'Réception & sélection des fruits',d:'Inspecter chaque lot: couleur, odeur, fermeté. Refuser tout fruit pourri, moissi ou avec traces de pesticides visibles. Peser et enregistrer le lot dans le cahier de production.',tip:'Taux de refus acceptable: < 5%. Si > 10% refus → renégocier avec le fournisseur.',dur:'15-30 min'},
+      {n:'🧴',t:'Lavage & désinfection',d:'Trempage dans solution eau + hypochlorite de sodium 50 ppm (eau de javel diluée: 5mL de javel à 12° pour 10L eau) pendant 10 minutes. Rincer abondamment à l\'eau potable.',tip:'Ne jamais utiliser plus de 200 ppm de chlore → goût résiduel. Test bandelettes chlore recommandé.',dur:'20-30 min'},
+      {n:'🔪',t:'Épluchage & découpe',d:'Éplucher manuellement ou mécaniquement. Retirer pépins, noyaux, parties abîmées. Couper en morceaux de 4-6 cm pour faciliter l\'extraction. Travailler sur table inox ou plastique alimentaire.',tip:'Les couteaux doivent être en inox, jamais en fer rouillé. Désinfecter les couteaux toutes les 2h.',dur:'30-60 min'},
+      {n:'⚙️',t:'Extraction du jus',d:'Mixer dans extracteur ou blender industriel. Pour pulpe: passer au broyeur à marteaux. Durée: 2-3 minutes par batch. Ne pas surchauffer (protéger les vitamines).',tip:'Extraction à froid préserve 30% de vitamines de plus. Température jus à la sortie: < 25°C idéal.',dur:'20-40 min'},
+      {n:'🔽',t:'Filtration & clarification',d:'Filtrer sur grille 0.5mm pour éliminer fibres grossières. Pour jus clair: filtration sur toile fine puis centrifugation ou décantation 2h. Jus trouble: garder les fines particules.',tip:'Jus trouble = plus de nutriments. Jus clair = meilleure apparence commerciale. Adapter selon le marché cible.',dur:'30-60 min'},
+      {n:'⚗️',t:'Formulation & correction',d:'Mesurer Brix (sucre), pH et acidité. Ajuster: sucre (objectif Brix 12-14°), acide citrique (pH 3.5-4.0), sel si besoin. Ajouter conservateurs autorisés si nécessaire (benzoate 0.1% max ou sorbate).',tip:'Toujours corriger le pH EN PREMIER, puis le Brix. L\'acidité masque le goût sucré: ne pas sur-sucrer.',dur:'15-20 min'},
+      {n:'🌡️',t:'Pasteurisation',d:'Chauffer le jus à 85°C pendant 15-20 minutes (bain-marie ou pasteurisateur). Ou méthode HTST: 95°C pendant 30 secondes. Maintenir la température constante avec thermomètre.',tip:'Ne pas dépasser 95°C → caramélisation et perte de saveur. Pasteuriser toujours avant l\'embouteillage.',dur:'20-30 min'},
+      {n:'🍶',t:'Conditionnement chaud',d:'Verser le jus chaud (>75°C) directement dans bouteilles ou sachets stérilisés. Remplir jusqu\'en haut (< 5mm d\'espace). Capsulter immédiatement. Retourner les bouteilles 5 min pour stériliser le bouchon.',tip:'Température de remplissage > 75°C est clé: c\'est une deuxième pasteurisation du contenant.',dur:'30-60 min'},
+      {n:'❄️',t:'Refroidissement & contrôle',d:'Refroidir rapidement sous eau froide courante ou en chambre froide. Vérifier étanchéité de chaque bouteille. Prélever 2 échantillons par lot pour tests et archivage 3 mois.',tip:'Refroidissement rapide < 30°C en moins de 30 min réduit la prolifération bactérienne résiduelle.',dur:'30-45 min'},
+      {n:'🏷️',t:'Étiquetage & stockage',d:'Apposer étiquette obligatoire: nom produit, ingrédients, DLC, lot, conditions conservation, poids net, fabricant. Stocker à l\'abri de la lumière et de la chaleur (< 25°C ou réfrigéré).',tip:'La lumière UV dégrade les vitamines et la couleur. Bouteilles teintées ou stockage à l\'obscurité = +50% durée de vie.',dur:'20-30 min'},
+    ]
+  },
+  sirop: {
+    titre:'🍯 Production de Sirops',
+    alerte:'Le sirop est un concentré sucré: Brix > 60° = milieu inhospitalier pour les bactéries. La concentration en sucre EST le conservateur naturel.',
+    steps:[
+      {n:'🌺',t:'Préparation des matières végétales',d:'Infuser plantes, fleurs ou fruits dans l\'eau bouillante 20-30 min. Ratio typique: 100-200g matières pour 1L eau. Qualité de l\'eau déterminante: utiliser eau purifiée ou bouillie.',tip:'Bissap: 80g/L eau. Gingembre: 150g/L. Citronnelle: 100g/L. Menthe: 50g/L.',dur:'30-40 min'},
+      {n:'🔽',t:'Filtration soigneuse',d:'Filtrer sur toile très fine ou papier filtre pour obtenir infusion claire. Presser délicatement les matières pour extraire tous les arômes. Mesurer le volume d\'infusion obtenu.',tip:'Infusion trouble → sirop trouble mais plus de saveur. Faire un choix commercial conscient.',dur:'15-20 min'},
+      {n:'⚖️',t:'Pesée du sucre',d:'Peser précisément le sucre. Pour sirop classique: 1kg sucre pour 1L infusion = Brix 50-55°. Pour sirop riche: 1.5kg sucre pour 1L = Brix 65-70° (meilleure conservation).',tip:'Utiliser uniquement sucre cristal blanc ou sucre de canne pour couleur neutre. Éviter le sucre humide.',dur:'10 min'},
+      {n:'🔥',t:'Cuisson & dissolution',d:'Chauffer l\'infusion, ajouter sucre progressivement en remuant. Porter à ébullition douce 5-10 min. Écumer les impuretés qui remontent en surface. Ajouter acide citrique et conservateur.',tip:'Ne pas couvrir pendant la cuisson: l\'évaporation concentre le sirop. Viser Brix cible mesuré au réfractomètre.',dur:'20-30 min'},
+      {n:'🌡️',t:'Mise en bouteilles chaudes',d:'Verser à chaud (>80°C) dans bouteilles en verre stérilisées ou flacon HDPE alimentaire. Laisser minimum 5mm d\'espace. Boucher hermétiquement. Retourner 5 min.',tip:'Brix > 65° + pH < 4 + mise en bouteille chaude = 12-18 mois de conservation sans réfrigération.',dur:'20-30 min'},
+    ]
+  },
+  confiture: {
+    titre:'🫙 Production de Confitures',
+    alerte:'La confiture réussie = bon équilibre sucre / pectine / acidité. Le test assiette froide ne ment jamais.',
+    steps:[
+      {n:'⚖️',t:'Pesée et préparation des fruits',d:'Peser fruits épluchés et dénoyautés. Ratio standard: 1kg fruits = 700-800g sucre. Pour fruits riches en pectine (pomme, agrumes): 600g sucre suffit. Fruits pauvres en pectine (fraise, mangue): ajouter pectine.',tip:'Pectine NH: 10-15g/kg de fruit. Pectine jaune: 8-12g/kg. Toujours mélanger pectine avec sucre avant ajout.',dur:'20 min'},
+      {n:'🍯',t:'Macération sucre-fruit',d:'Mélanger fruits + sucre dans la bassine. Laisser macérer 2-4 heures (ou une nuit). Le sucre va extraire le jus des fruits par osmose. Ne pas ajouter d\'eau.',tip:'La macération diminue le temps de cuisson et préserve les arômes volatils des fruits.',dur:'2-4 h'},
+      {n:'🔥',t:'Cuisson à la bassine',d:'Porter à ébullition forte en remuant constamment. La cuisson typique: 20-45 min selon les fruits. Température cible: 104-105°C (point de gélification). Écumer régulièrement.',tip:'Test assiette froide: déposer une goutte sur assiette à -18°C. Si elle fige et ne coule pas → confiture cuite.',dur:'30-50 min'},
+      {n:'⚗️',t:'Ajout acide et pectine',d:'5 minutes avant fin de cuisson: ajouter acide citrique (10g/kg fruit) et pectine préalablement mélangée au sucre. Mélanger vigoureusement. L\'acidité active la pectine.',tip:'pH confiture: 3.0-3.5 idéal. pH trop haut → confiture liquide. pH trop bas → trop gélatineuse.',dur:'5-10 min'},
+      {n:'🫙',t:'Mise en pots et retournement',d:'Verser confiture bouillante dans pots stérilisés chauds (jamais de pot froid!). Remplir à ras bord, fermer hermétiquement. Retourner immédiatement et laisser refroidir 10 min à l\'envers.',tip:'Le retournement crée un vide partiel → pasteurise le couvercle et garantit l\'étanchéité.',dur:'20-30 min'},
+    ]
+  },
+  nectar: {
+    titre:'🥭 Production de Nectars',
+    alerte:'Le nectar est un produit intermédiaire entre le jus (100% fruit) et la boisson aromatisée. Minimum 25% de teneur en fruit exigé.',
+    steps:[
+      {n:'🥭',t:'Extraction et préparation de la purée',d:'Mixer finement les fruits sans filtration totale (garder les fines fibres). Mixer: 2-3 min. Tamiser sur grille 1-2mm pour éliminer uniquement les fibres grossières et graines. La texture doit rester épaisse.',tip:'La purée représente 25-50% du produit final. Qualité et maturité des fruits = qualité du nectar.',dur:'30-45 min'},
+      {n:'💧',t:'Dilution et formulation',d:'Diluer la purée avec eau traitée: ratio 1 purée pour 1-3 eau selon la concentration voulue. Ajouter sucre (Brix cible: 12-15°), acide citrique (pH cible: 3.5-4.0), arômes naturels, colorants naturels si besoin.',tip:'Nectar haut de gamme: 40-50% fruit. Standard: 25-35%. Toujours mentionner le % sur l\'étiquette.',dur:'20-30 min'},
+      {n:'🌡️',t:'Homogénéisation',d:'Mixer le mélange final à haute vitesse pour homogénéiser parfaitement. Évite la séparation pendant la conservation. Un homogénéisateur à haute pression donne les meilleurs résultats.',tip:'Sans homogénéisateur: secouer vigoureusement la bouteille après production. Mentionner "Agiter avant usage" sur l\'étiquette.',dur:'15-20 min'},
+      {n:'🔥',t:'Pasteurisation et conditionnement',d:'Pasteuriser à 85-90°C / 15-20 min. Conditionner chaud dans bouteilles stérilisées. Procédure identique au jus. Contrôler Brix et pH du produit fini avant libération du lot.',tip:'Test avant commercialisation: DLC test → incuber 1 bouteille à 37°C pendant 14 jours. Si pas de gonflement ou moisissure → lot libéré.',dur:'40-60 min'},
+    ]
+  },
+  fermente: {
+    titre:'🫧 Boissons Fermentées (Ginger Beer, Kefir de fruits, Kombucha)',
+    alerte:'La fermentation est vivante. Maîtriser la température, le temps et l\'hygiène est non-négociable pour des produits sûrs et reproductibles.',
+    steps:[
+      {n:'🌿',t:'Préparation du substrat sucré',d:'Ginger beer: décoction gingembre 100g/L + sucre 80g/L. Kombucha: thé noir infusé + sucre 70g/L. Kefir: jus de fruits + sucre 50g/L. Toujours partir d\'eau bouillante refroidie à 25°C avant inoculation.',tip:'Sucre = nourriture pour les micro-organismes. Pas assez → fermentation trop lente. Trop → stress osmotique.',dur:'30-45 min'},
+      {n:'🦠',t:'Inoculation avec le ferment',d:'Ajouter la souche starter (SCOBY pour kombucha, grains de kéfir, levures actives). Ratio: 10% de starter pour 90% de nouveau substrat. Mélanger délicatement. Couvrir avec tissu respirant.',tip:'Conserver toujours une partie du liquide fermenté précédent comme "back-slopping" (10-15%). Garantit la continuité.',dur:'15 min'},
+      {n:'🌡️',t:'Fermentation primaire',d:'Maintenir à 25-28°C à l\'obscurité. Durée: 3-7 jours selon le produit et la température. Goûter quotidiennement. Arrêter quand le niveau d\'acidité et d\'effervescence souhaités sont atteints.',tip:'Température < 20°C → fermentation trop lente. > 35°C → acidification excessive + risque contamination. 25°C est optimal.',dur:'3-7 jours'},
+      {n:'🔽',t:'Filtration et mise en bouteilles',d:'Filtrer sur grille fine pour retirer le ferment (conserver pour prochaine batch). Mettre en bouteilles résistantes à la pression (verre ou PET épais). Fermer hermétiquement.',tip:'IMPORTANT: ne jamais remplir une bouteille normale de verre mince avec une boisson effervescente → risque d\'explosion.',dur:'30 min'},
+      {n:'🫧',t:'Fermentation secondaire (carbonatation)',d:'Laisser 2-3 jours à température ambiante pour développer le CO2 (pétillant naturel). Tester la pression: bouteille PET doit être dure. Réfrigérer ensuite pour stopper la fermentation.',tip:'Ouvrir délicatement en pointant vers l\'évier. La fermentation continue en bouteille: DLC max 30 jours au réfrigérateur.',dur:'2-3 jours'},
+    ]
+  },
+  sauce: {
+    titre:'🌶️ Sauces Pimentées & Condiments',
+    alerte:'L\'acidité (pH < 4) est le principal conservateur naturel des sauces. Mesurer le pH est non-optionnel.',
+    steps:[
+      {n:'🌶️',t:'Sélection et préparation des piments',d:'Choisir piments frais, fermes, sans moisissure. Laver à l\'eau javellisée. Retirer queues. Épépiner si sauce douce, garder graines si sauce forte (capsaïcine concentrée dans graines et placenta).',tip:'Porter des gants imperméables obligatoirement. Ne jamais toucher les yeux. Travailler en espace ventilé.',dur:'20-30 min'},
+      {n:'⚙️',t:'Broyage et mixage',d:'Mixer piments avec oignons, ail, épices. Ajouter vinaigre progressivement pour faciliter le mixage. Texture selon le produit: sauce lisse (passer au tamis), sauce rustique (garder texture).',tip:'Vitesse de rotation: haute vitesse = texture fine. Basse vitesse = sauce à morceaux. Définir le cahier des charges avant production.',dur:'15-20 min'},
+      {n:'🔥',t:'Cuisson et réduction',d:'Cuire le mélange mixé à feu moyen 20-30 min en remuant. La cuisson: détruit les pathogènes, concentre les saveurs, stabilise la couleur. Ajouter sel, sucre, acide citrique selon la formule.',tip:'Ne pas couvrir: l\'évaporation concentre les arômes. Couleur plus foncée = saveur plus intense.',dur:'25-35 min'},
+      {n:'📏',t:'Contrôle qualité pH',d:'Mesurer le pH obligatoirement. Objectif: pH < 4.0 pour sécurité microbiologique. Si pH > 4: ajouter vinaigre ou acide citrique par petites doses et remesurez. Ne jamais commercialiser sans validation du pH.',tip:'pH 3.5-3.8: très acide, longue conservation. pH 3.8-4.0: acide, saveur équilibrée. pH > 4: DANGER microbiologique.',dur:'10 min'},
+      {n:'🌶️',t:'Conditionnement en flacons',d:'Conditionner chaud (>75°C) en flacons stérilisés (verre ou PET alimentaire). Fermer hermétiquement. Retourner 5 min. Refroidir. DLC: 12 mois non ouvert, 2-3 mois réfrigéré après ouverture.',tip:'Flacons de 100ml (restaurants, sachets) et 350ml (familles) sont les formats les plus vendus au Bénin.',dur:'20-30 min'},
+    ]
+  }
+};
+
+function renderProduction(tab) {
+  var data = PROD_DATA[tab];
+  if (!data) return;
+  var el = document.getElementById('prod-content');
+  el.innerHTML =
+    '<div class="alert alert-orange" style="margin-bottom:20px">⚠️ <strong>Point critique:</strong> ' + data.alerte + '</div>' +
+    '<div class="prod-steps">' +
+    data.steps.map(function(s) {
+      return '<div class="prod-step">' +
+        '<div class="step-circle">' + s.n + '</div>' +
+        '<div class="step-content">' +
+          '<div class="step-title">' + s.t + '</div>' +
+          '<div class="step-desc">' + s.d + '</div>' +
+          (s.tip ? '<div class="step-tip">💡 ' + s.tip + '</div>' : '') +
+          '<div class="step-duration">⏱ ' + s.dur + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('') +
+    '</div>';
+}
+
+// ══ MATIÈRES PREMIÈRES ══
+function renderMatieres(tab) {
+  var el = document.getElementById('mat-content');
+  if (tab === 'fruits') {
+    el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Fruit</th><th>Saison Bénin</th><th>Rendement jus</th><th>Brix naturel</th><th>pH naturel</th><th>Produits recommandés</th></tr></thead><tbody>' +
+    [['🥭 Mangue','Fév–Mai','55–65%','14–18°','3.5–4.5','Jus, nectar, confiture, sirop'],
+     ['🍍 Ananas','Toute l\'année (pic Mai-Aoû)','60–70%','12–16°','3.4–4.0','Jus, vinaigre, confiture, sirop'],
+     ['🌺 Bissap (Hibiscus)','Juil–Oct (fleurs sèches toute l\'année)','80–90% infusion','—','2.5–3.5','Sirop, jus, boisson fermentée'],
+     ['🍋 Tamarin','Juil–Sep','40–50% (pulpe)','—','3.0–3.5','Sirop, boisson, sauce'],
+     ['🥥 Noix de coco','Toute l\'année','40–50% (eau/lait)','4–6°','5.5–6.5','Lait, eau, huile'],
+     ['🍊 Orange','Oct–Fév','45–55%','10–13°','3.3–4.0','Jus, confiture, sirop'],
+     ['🍋 Citron/Lime','Toute l\'année','35–45%','7–10°','2.0–3.0','Jus, sirop, citronnade'],
+     ['🍐 Papaye','Toute l\'année','65–75%','12–16°','5.0–6.0','Nectar, confiture, purée'],
+     ['🌶️ Piment','Toute l\'année (pic Juil–Nov)','70–80%','—','4.5–6.5','Sauce, poudre, huile'],
+     ['🫚 Palme','Toute l\'année','Huile 18–20%','—','—','Huile, savon'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    + '</tbody></table></div>';
+  } else if (tab === 'legumes') {
+    el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Ingrédient</th><th>Usage transformation</th><th>Propriétés</th><th>Dose habituelle</th></tr></thead><tbody>' +
+    [['🧅 Oignon','Sauces, condiments','Aromatique, prébiotique, conservateur naturel','10-20% du poids total'],
+     ['🧄 Ail','Sauces, condiments, huile aromatisée','Antibactérien naturel, aromatique puissant','3-8% du poids total'],
+     ['🫚 Gingembre','Sirop, jus, boisson fermentée','Anti-inflammatoire, aromatique, piquant','5-15% selon intensité voulue'],
+     ['🌿 Citronnelle','Sirop, infusion, boisson','Aromatique délicat, légèrement citronné','80-100g/L eau pour infusion'],
+     ['🌿 Moringa (feuilles)','Poudre, jus enrichi, capsules','Très riche en protéines, vitamines, minéraux','2-5% en poudre dans jus'],
+     ['🌶️ Piment de Cayenne','Sauce, condiment','Capsaïcine = conservateur + stimulant','1-10% selon la force voulue'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    + '</tbody></table></div>';
+  } else if (tab === 'additifs') {
+    el.innerHTML = '<div class="alert alert-info" style="margin-bottom:16px">Tous les additifs ci-dessous sont autorisés par le Codex Alimentarius. Respecter strictement les doses maximales autorisées (DMA).</div>' +
+    '<div class="table-wrap"><table><thead><tr><th>Additif</th><th>Code E</th><th>Rôle</th><th>Dose max (g/L ou g/kg)</th><th>Remarques</th></tr></thead><tbody>' +
+    [['Acide citrique','E330','Acidifiant, conservateur, antioxydant','3-5 g/L','Naturel (agrumes). Corrige pH et goût.'],
+     ['Benzoate de sodium','E211','Conservateur antimicrobien','1 g/L max (0.1%)','Efficace à pH < 4. Interdit > 1g/L.'],
+     ['Sorbate de potassium','E202','Conservateur antilevures/moisissures','1 g/L max','Alternative au benzoate. Moins de goût.'],
+     ['Métabisulfite de sodium','E223','Antioxydant, conservateur','0.2 g/L max','Interdit si allergie sulfites. Toujours déclarer.'],
+     ['Acide ascorbique (Vit C)','E300','Antioxydant naturel','5 g/L','Naturel, bénéfique. Préserve couleur et vitamines.'],
+     ['Pectine','E440','Gélifiant, épaississant','2-10 g/kg','Naturelle (pomme, agrumes). Indispensable confitures.'],
+     ['Colorants naturels','E101-E163','Coloration','Voir fiche par colorant','Curcumine, anthocyanes, chlorophylle: naturels.'],
+     ['Gomme xanthane','E415','Épaississant, stabilisant','0.5-5 g/L','Évite la séparation dans nectars et smoothies.'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    + '</tbody></table></div>';
+  } else {
+    el.innerHTML = '<div class="alert alert-success" style="margin-bottom:16px">Acheter EN SAISON = qualité maximale + prix minimal. Prévoyez des stocks à transformer en période d\'abondance.</div>' +
+    '<div class="table-wrap"><table><thead><tr><th>Mois</th><th>Fruits abondants</th><th>Produits à fabriquer en priorité</th><th>Stratégie</th></tr></thead><tbody>' +
+    [['Jan-Fév','Orange, Citron, Papaye','Jus orange, sirop citron, confiture papaye','Stocker concentrés pour dilution hors saison'],
+     ['Fév-Mar','Mangue (début), Ananas','Confiture mangue, sirop mangue, jus mangue','Début de la grande saison mangue → produire en masse'],
+     ['Mar-Mai','Mangue (pic), Ananas','Jus mangue pasteurisé, confiture, purée congelée','Pasteuriser et stocker MAXIMUM pendant le pic'],
+     ['Mai-Juil','Ananas (pic), Gingembre','Vinaigre ananas, sirop ananas, gingembre beer','Ananas très abondant et pas cher: idéal vinaigre'],
+     ['Juil-Sep','Bissap, Tamarin, Piment','Sirop bissap, sauce pimentée, boisson tamarin','Grand pic bissap: stocker sirop concentré 12 mois'],
+     ['Sep-Nov','Piment rouge (pic), Papaye','Sauce pimentée, ketchup papaye, purée papaye','Piment rouge: couleur et prix excellent en cette période'],
+     ['Nov-Jan','Orange (début), Citron','Jus d\'orange, limonade, sirop citron, marmelade','Préparatifs des fêtes: grande demande en boissons'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    + '</tbody></table></div>';
+  }
+}
+
+// ══ ÉQUIPEMENTS ══
+function renderEquipements() {
+  var el = document.getElementById('equip-content');
+  el.innerHTML = '<div class="tabs" style="margin-bottom:16px">' +
+    '<button class="tab active">🏠 Atelier artisanal</button>' +
+    '<button class="tab">🏭 Semi-industriel</button>' +
+    '</div>' +
+  '<div class="table-wrap"><table><thead><tr><th>Équipement</th><th>Indispensable?</th><th>Usage</th><th>Coût estimé (F CFA)</th><th>Entretien</th></tr></thead><tbody>' +
+  [['Blender/Mixer industriel (≥ 2L)','⭐ Indispensable','Extraction jus, mixage','80 000–300 000 F','Lame à changer tous 6 mois'],
+   ['Réfractomètre (Brix 0-32°)','⭐ Indispensable','Mesure sucre (Brix)','15 000–35 000 F','Calibrer à l\'eau distillée chaque usage'],
+   ['pH-mètre numérique','⭐ Indispensable','Contrôle acidité','20 000–60 000 F','Calibrer avec solutions tampon (pH 4 + pH 7)'],
+   ['Thermomètre sonde inox','⭐ Indispensable','Contrôle pasteurisation','8 000–25 000 F','Tester précision tous les 3 mois'],
+   ['Marmite inox 50L','⭐ Indispensable','Cuisson, pasteurisation','45 000–120 000 F','Pas de détergents abrasifs sur inox'],
+   ['Balance de précision (0-5kg)','⭐ Indispensable','Pesée ingrédients','15 000–40 000 F','Étalonner mensuellement'],
+   ['Filtres/Tamis (jeu 0.5/1/2mm)','⭐ Indispensable','Filtration jus/sauce','8 000–20 000 F','Nettoyer et désinfecter après chaque usage'],
+   ['Machine de capsulage','Recommandé','Bouchage bouteilles','25 000–80 000 F','Vérifier alignement hebdomadairement'],
+   ['Réfrigérateur 200L+','Recommandé','Stockage produits finis','150 000–350 000 F','Nettoyer bobines condenseur mensuellement'],
+   ['Pasteurisateur à bain-marie','Recommandé','Pasteurisation homogène','80 000–250 000 F','Détartrer tous les 3 mois'],
+   ['Extracteur à jus centrifuge','Optionnel','Extraction rapide agrumes','60 000–200 000 F','Démontage complet pour nettoyage'],
+   ['Ensacheuse manuelle (sachets)','Optionnel','Conditionnement sachets','40 000–120 000 F','Lame de soudure à contrôler'],
+  ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':i===1?';text-align:center':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+  + '</tbody></table></div>' +
+  '<div class="alert alert-warn">💡 <strong>Budget minimal pour démarrer:</strong> 250 000 – 400 000 F CFA (équipements basiques). Budget semi-industriel: 2 000 000 – 8 000 000 F CFA.</div>';
+}
+
+// ══ HYGIÈNE HACCP ══
+function renderHygiene(tab) {
+  var el = document.getElementById('hyg-content');
+  if (tab === 'haccp-intro') {
+    el.innerHTML = '<div class="alert alert-info" style="margin-bottom:16px">HACCP = Hazard Analysis Critical Control Points (Analyse des dangers et points critiques pour leur maîtrise). Méthode internationale obligatoire pour toute production alimentaire professionnelle.</div>' +
+    '<div class="prod-steps">' +
+    [
+      {n:'1️⃣',t:'Identifier les dangers',d:'Biologique: bactéries (Salmonella, E. coli, Listeria), moisissures, levures. Chimique: pesticides, métaux lourds, additifs mal dosés. Physique: corps étrangers (verre, métal, os, insectes).',tip:'Faire la liste de TOUS les dangers possibles à chaque étape, même les plus improbables.'},
+      {n:'2️⃣',t:'Identifier les CCP (Points Critiques)',d:'Un CCP est une étape où une mesure de contrôle peut être appliquée pour prévenir, éliminer ou réduire un danger alimentaire. Pour les jus: lavage (risque biologique), pasteurisation (destruction bactéries), pH (conservation).',tip:'Tous les points ne sont pas CCP. Un CCP = il n\'existe pas d\'autre étape pour éliminer ce danger spécifique.'},
+      {n:'3️⃣',t:'Établir les limites critiques',d:'Pasteurisation: 85°C minimum pendant 15 min. pH final: < 4.0. Chlore solution lavage: 50-100 ppm. Brix confiture: > 65°. Ces limites doivent être vérifiables et mesurables.',tip:'Si une limite critique est dépassée = LOT REFUSÉ. Pas de compromis sur les limites critiques.'},
+      {n:'4️⃣',t:'Surveiller les CCP',d:'Vérifier la température de pasteurisation TOUTES les 5 minutes (thermomètre). Mesurer pH de CHAQUE lot. Tester le chlore CHAQUE matin avant le lavage. Consigner dans le cahier de bord OBLIGATOIREMENT.',tip:'Si vous ne mesurez pas = vous ne maîtrisez pas. Le cahier HACCP est votre preuve légale de contrôle.'},
+      {n:'5️⃣',t:'Actions correctives',d:'Si température pasteurisation trop basse: repasteuriser immédiatement. Si pH trop haut: ajouter acide citrique et remesurer. Si corps étranger: éliminer tout le lot et investiguer la source.',tip:'Tracer l\'action corrective dans le cahier: date, problème, action, résultat, signature.'},
+      {n:'6️⃣',t:'Vérification et documentation',d:'Vérification hebdomadaire: relire les cahiers de bord, tester les équipements de mesure. Mensuelle: auto-inspection complète de l\'atelier. Archiver tous les documents 3 ans minimum.',tip:'Sans documentation écrite, il n\'y a pas de système HACCP. C\'est la base de votre défense légale.'},
+    ].map(function(s) {
+      return '<div class="prod-step"><div class="step-circle">' + s.n + '</div>' +
+        '<div class="step-content"><div class="step-title">' + s.t + '</div>' +
+        '<div class="step-desc">' + s.d + '</div>' +
+        (s.tip ? '<div class="step-tip">💡 ' + s.tip + '</div>' : '') +
+        '</div></div>';
+    }).join('') + '</div>';
+  } else if (tab === 'protocoles') {
+    el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Surface/Équipement</th><th>Fréquence</th><th>Produit</th><th>Méthode</th></tr></thead><tbody>' +
+    [['Plan de travail inox','Avant et après chaque usage','Eau javellisée 200 ppm + rinçage','Gratter → laver → désinfecter → rincer → sécher'],
+     ['Blender, tamis, ustensiles','Après chaque usage','Eau chaude + détergent + eau javellisée 100 ppm','Démonter, laver chaque pièce, désinfecter, rincer, sécher'],
+     ['Sol de l\'atelier','Quotidiennement','Eau + détergent neutre + javelle diluée','Balayer → laver → désinfecter → rincer → sécher'],
+     ['Murs et plafond','Hebdomadaire','Détergent dégraissant + désinfectant','Dépoussiérer → laver → désinfecter en partant du haut'],
+     ['Réfrigérateur','Mensuel + après déversement','Eau tiède + bicarbonate de soude','Vider, laver clayettes, désodoriser, rincer'],
+     ['Bacs, bassines','Après chaque usage','Eau chaude + détergent + javelle 200 ppm','Trempage 10 min + frottage + rinçage abondant'],
+     ['WC et lavabos','Quotidiennement','Détergent + désinfectant spécifique sanitaires','Séparer impérativement les matériels sanitaires des matériels alimentaires'],
+     ['Mains du personnel','Avant toute manipulation + après WC','Savon bactéricide + solution hydro-alcoolique','Mouiller, savonner 30s, brosser, rincer, sécher, désinfecter'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    + '</tbody></table></div>';
+  } else if (tab === 'ccp') {
+    el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">' +
+    [
+      {titre:'CCP 1 — Lavage fruits',danger:'Biologique: E.coli, Salmonella',limite:'Chlore 50-100 ppm / 10 min contact',action:'Si chlore < 50 ppm: refaire la solution. Si contact < 10 min: relaver.',col:'var(--red)'},
+      {titre:'CCP 2 — Pasteurisation',danger:'Biologique: destruction pathogènes',limite:'85°C minimum / 15 min maintenu',action:'Si T° < 85°C: prolonger et vérifier la source de chaleur. Si impossible: REJETER le lot.',col:'var(--acc2)'},
+      {titre:'CCP 3 — pH du produit fini',danger:'Chimique/Biologique: prolifération bactérienne',limite:'pH < 4.0 obligatoire',action:'Si pH > 4.0: ajouter acide citrique, remélanger, repasteuriser. Remesurer avant mise en bouteilles.',col:'var(--acc3)'},
+      {titre:'CCP 4 — Conditionnement chaud',danger:'Biologique: recontamination',limite:'Température remplissage > 75°C',action:'Si T° < 75°C: réchauffer le produit avant conditionnement. Vérifier la stérilisation des bouteilles.',col:'var(--blue)'},
+      {titre:'CCP 5 — Dosage additifs',danger:'Chimique: surdosage conservateurs',limite:'Benzoate ≤ 1g/L, Sorbate ≤ 1g/L',action:'Si dosage incertain: REJETER le lot. Peser toujours avec balance de précision.',col:'var(--acc4)'},
+    ].map(function(c) {
+      return '<div class="norme-card" style="border-color:' + c.col + '22;border-width:2px">' +
+        '<div style="font-family:var(--font-display);font-size:14px;font-weight:600;color:' + c.col + ';margin-bottom:8px">' + c.titre + '</div>' +
+        '<div style="font-size:12px;color:var(--txt2);margin-bottom:6px">⚠️ Danger: ' + c.danger + '</div>' +
+        '<div style="font-size:12px;color:var(--txt);margin-bottom:6px;font-weight:600">📏 Limite critique: ' + c.limite + '</div>' +
+        '<div style="font-size:11px;color:' + c.col + ';background:rgba(163,230,53,.04);padding:8px;border-radius:8px">🚨 Action corrective: ' + c.action + '</div>' +
+      '</div>';
+    }).join('') + '</div>';
+  } else {
+    el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Règle</th><th>Détail</th><th>Sanction si non-respect</th></tr></thead><tbody>' +
+    [['Tenues propres obligatoires','Blouse blanche, tablier, charlotte (couvre-chef), bottes ou chaussures fermées','Risque de contamination physique (cheveux, fibres)'],
+     ['Lavage des mains','Avant toute manipulation, après WC, après manipulation de déchets','Principal vecteur de contamination microbienne'],
+     ['Pas de bijoux ni montre','Les bijoux retiennent les bactéries et peuvent tomber dans les produits','Corps étranger + contamination bactérienne'],
+     ['Ongles courts et propres','Jamais de vernis à ongles dans un atelier alimentaire','Les ongles longs brisent les gants et hébergent des bactéries'],
+     ['Interdiction de fumer, manger, boire dans l\'atelier','Hors de la zone de production uniquement','Contamination salive, résidus alimentaires'],
+     ['Personnel malade = hors production','Toute personne avec diarrhée, vomissements, plaies ouvertes = arrêt immédiat','Risque de transmission directe de pathogènes'],
+     ['Visiteurs en tenue de protection','Blouse + charlotte + couvre-chaussures pour tout visiteur','Contamination croisée par personnes extérieures'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    + '</tbody></table></div>';
+  }
+}
+
+// ══ CONSERVATION ══
+function renderConservation() {
+  var el = document.getElementById('cons-content');
+  el.innerHTML = '<div class="table-wrap"><table><thead><tr><th>Méthode</th><th>Principe</th><th>Température</th><th>DLC obtenue</th><th>Produits adaptés</th></tr></thead><tbody>' +
+  [['Pasteurisation basse','72°C / 15 sec ou 65°C / 30 min','65-75°C','2-3 semaines réfrigéré','Jus frais premium, produits délicats'],
+   ['Pasteurisation standard','85°C / 15-20 min','85°C','3-6 mois réfrigéré ou ambiant (si hermétique)','Jus, nectars, sauces'],
+   ['Stérilisation UHT','140°C / 4-5 secondes','140°C','12-18 mois ambiant','Lait, jus longue conservation (industrie)'],
+   ['Stérilisation appertisation','121°C / 15-20 min (autoclave)','121°C','2-5 ans','Confitures hautes pH, sauces peu acides'],
+   ['Conservation par le sucre','Brix > 65° inhibe microbes','Ambiante','12-24 mois','Sirops, confitures, gelées'],
+   ['Conservation par l\'acide','pH < 4.0 inhibe pathogènes','Ambiante','6-18 mois','Sauces, vinaigres, condiments acides'],
+   ['Réfrigération seule','Ralentit prolifération microbienne','4-8°C','7-21 jours','Jus frais, produits sans conservateur'],
+   ['Congélation','Arrête toute prolifération','< -18°C','12-24 mois','Purées, pulpes, concentrés'],
+  ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+  + '</tbody></table></div>' +
+  '<div class="alert alert-warn" style="margin-top:16px">⚠️ <strong>Test DLC maison:</strong> Incuber 1 bouteille du lot à 37°C pendant 14 jours. Si gonflement, mauvaise odeur ou changement visuel → DLC insuffisante → revoir le procédé.</div>';
+}
+
+// ══ EMBALLAGE ══
+function renderEmballage() {
+  var el = document.getElementById('emb-content');
+  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">' +
+  '<div class="card"><div class="card-hdr"><span class="card-title">📦 Types de contenants</span></div><div class="card-body">' +
+  '<div class="table-wrap" style="margin:0"><table><thead><tr><th>Contenant</th><th>Avantages</th><th>Inconvénients</th><th>Produits</th></tr></thead><tbody>' +
+  [['Bouteille verre 33/50cl','Noble, recyclable, barrière totale UV et O2','Lourd, fragile, coût élevé','Jus premium, sirop, vinaigre'],
+   ['Sachet plastique souple','Très peu cher, léger, facile à transporter','Non recyclable, durée de vie limitée','Jus populaire, eau, boissons'],
+   ['Bouteille PET 50cl/1L','Léger, solide, économique','Sensible à la chaleur, O2 peut pénétrer','Jus, nectar, boisson fermentée'],
+   ['Pot verre 250/500g','Imperméable, noble, recyclable','Fragile, lourd','Confiture, sauce, purée'],
+   ['Flacon HDPE 100/250ml','Flexible, léger, résistant aux chocs','Moins premium que verre','Sauce pimentée, condiment'],
+   ['Bidon plastique 5L','Grande contenance, économique','Non premium, usage professionnel','Vente en gros, restaurants'],
+  ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:11px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')+'</tbody></table></div>' +
+  '</div></div>' +
+  '<div class="card"><div class="card-hdr"><span class="card-title">🏷️ Mentions obligatoires étiquette</span></div><div class="card-body">' +
+  '<div style="display:flex;flex-direction:column;gap:6px">' +
+  [['1. Dénomination du produit','Ex: "Jus de mangue pasteurisé"'],
+   ['2. Liste des ingrédients','Par ordre décroissant de poids (+ additifs)'],
+   ['3. Date limite de consommation','DLC: "à consommer avant le..." ou DDM "à consommer de préférence avant"'],
+   ['4. Lot de fabrication','Numéro permettant la traçabilité (ex: L2024-001)'],
+   ['5. Poids net / Volume net','Ex: 50 cl, 250 g'],
+   ['6. Conditions de conservation','Ex: "Conserver à l\'abri de la chaleur"'],
+   ['7. Nom et adresse du fabricant','Vos coordonnées complètes'],
+   ['8. Pays d\'origine','Ex: "Fabriqué au Bénin"'],
+   ['9. Allergènes','En gras dans la liste des ingrédients'],
+   ['10. Informations nutritionnelles','Si vendu en supermarché ou export'],
+  ].map(function(r) {
+    return '<div style="display:flex;gap:10px;padding:6px 0;border-bottom:1px solid var(--bdr2);font-size:12px">' +
+      '<span style="color:var(--acc);font-weight:700;flex-shrink:0">' + r[0] + '</span>' +
+      '<span style="color:var(--txt2)">' + r[1] + '</span></div>';
+  }).join('') +
+  '</div></div></div></div>';
+}
+
+// ══ FINANCES ══
+function renderFinances() {
+  var el = document.getElementById('fin-content');
+  el.innerHTML = '<div class="card"><div class="card-hdr"><span class="card-title">💰 Calculateur de rentabilité</span></div><div class="card-body">' +
+  '<div class="form-grid" style="margin-bottom:16px">' +
+  '<div class="form-group"><label class="form-lbl">Volume produit (L ou kg)</label><input id="fin-vol" class="form-inp" type="number" placeholder="10" oninput="calcFin()"></div>' +
+  '<div class="form-group"><label class="form-lbl">Coût matières premières (F)</label><input id="fin-mp" class="form-inp" type="number" placeholder="8500" oninput="calcFin()"></div>' +
+  '<div class="form-group"><label class="form-lbl">Coût emballages (F)</label><input id="fin-emb" class="form-inp" type="number" placeholder="3000" oninput="calcFin()"></div>' +
+  '<div class="form-group"><label class="form-lbl">Énergie + eau (F)</label><input id="fin-ener" class="form-inp" type="number" placeholder="1500" oninput="calcFin()"></div>' +
+  '<div class="form-group"><label class="form-lbl">Main d\'œuvre (F)</label><input id="fin-mo" class="form-inp" type="number" placeholder="5000" oninput="calcFin()"></div>' +
+  '<div class="form-group"><label class="form-lbl">Autres charges (F)</label><input id="fin-autres" class="form-inp" type="number" placeholder="1000" oninput="calcFin()"></div>' +
+  '<div class="form-group"><label class="form-lbl">Volume/unité (cl ou g)</label><input id="fin-unite" class="form-inp" type="number" placeholder="50" oninput="calcFin()"></div>' +
+  '<div class="form-group"><label class="form-lbl">Prix de vente unitaire (F)</label><input id="fin-pvente" class="form-inp" type="number" placeholder="500" oninput="calcFin()"></div>' +
+  '</div>' +
+  '<div id="fin-result" style="display:none"></div>' +
+  '</div></div>' +
+  '<div class="table-wrap"><table><thead><tr><th>Produit</th><th>Coût revient</th><th>Prix marché Bénin</th><th>Marge brute</th></tr></thead><tbody>' +
+  [['Jus de mangue 50cl (bouteille)','800-1200 F','1200-2000 F','30-50%'],
+   ['Sirop de bissap 33cl','600-900 F','1000-1500 F','35-50%'],
+   ['Confiture ananas pot 250g','900-1300 F','1500-2500 F','40-55%'],
+   ['Sauce pimentée 100ml','250-400 F','500-800 F','40-55%'],
+   ['Jus d\'ananas 50cl (sachet)','200-350 F','300-500 F','25-40%'],
+   ['Sirop gingembre 33cl','500-800 F','800-1500 F','35-50%'],
+   ['Ginger beer fermenté 33cl','400-600 F','700-1200 F','35-50%'],
+   ['Vinaigre d\'ananas 50cl','800-1200 F','1500-3000 F','45-60%'],
+  ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':i===3?';color:var(--acc4);font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+  + '</tbody></table></div>';
+}
+
+function calcFin() {
+  var vol = parseFloat(document.getElementById('fin-vol').value)||0;
+  var mp = parseFloat(document.getElementById('fin-mp').value)||0;
+  var emb = parseFloat(document.getElementById('fin-emb').value)||0;
+  var ener = parseFloat(document.getElementById('fin-ener').value)||0;
+  var mo = parseFloat(document.getElementById('fin-mo').value)||0;
+  var autres = parseFloat(document.getElementById('fin-autres').value)||0;
+  var unite = parseFloat(document.getElementById('fin-unite').value)||50;
+  var pvente = parseFloat(document.getElementById('fin-pvente').value)||0;
+  if (!vol||!pvente) return;
+  var totalCout = mp + emb + ener + mo + autres;
+  var nbUnites = Math.floor(vol * 100 / unite); // si L et cl
+  var coutRevientU = Math.round(totalCout / nbUnites);
+  var coutRevient100 = Math.round(totalCout / vol * 100) / 100;
+  var caTotal = pvente * nbUnites;
+  var benefice = caTotal - totalCout;
+  var marge = Math.round(benefice / caTotal * 100);
+  var seuil = Math.ceil(totalCout / pvente);
+  var el = document.getElementById('fin-result');
+  el.style.display = 'block';
+  el.innerHTML = '<div class="table-wrap" style="margin-top:0"><table><tbody>' +
+    '<tr><td style="font-weight:700">Nombre d\'unités (' + unite + 'cl/g)</td><td style="font-weight:800;color:var(--acc)">' + nbUnites.toLocaleString('fr-FR') + ' unités</td></tr>' +
+    '<tr><td style="font-weight:700">Coût de revient total</td><td style="color:var(--red);font-weight:700">' + (totalCout).toLocaleString('fr-FR') + ' F</td></tr>' +
+    '<tr><td style="font-weight:700">Coût de revient par unité</td><td style="color:var(--acc2);font-weight:700">' + coutRevientU.toLocaleString('fr-FR') + ' F/unité</td></tr>' +
+    '<tr><td style="font-weight:700">CA total (si tout vendu)</td><td style="color:var(--acc4);font-weight:700">' + caTotal.toLocaleString('fr-FR') + ' F</td></tr>' +
+    '<tr><td style="font-weight:700">Bénéfice brut</td><td style="font-weight:900;font-size:16px;color:' + (benefice>=0?'var(--acc4)':'var(--red)') + '">' + benefice.toLocaleString('fr-FR') + ' F</td></tr>' +
+    '<tr><td style="font-weight:700">Marge brute</td><td style="font-weight:900;color:' + (marge>=30?'var(--acc4)':marge>=15?'var(--acc3)':'var(--red)') + '">' + marge + '%</td></tr>' +
+    '<tr><td style="font-weight:700">Seuil de rentabilité</td><td style="color:var(--acc2);font-weight:700">Vendre au moins <strong>' + seuil.toLocaleString('fr-FR') + '</strong> unités pour couvrir les coûts</td></tr>' +
+    '</tbody></table></div>';
+}
+
+// ══ MARCHÉ ══
+function renderMarche() {
+  var el = document.getElementById('marche-content');
+  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">' +
+  [
+    {titre:'🏪 Canaux de distribution',items:['Marchés locaux: vente directe, marge max','Restaurants et maquis: volume régulier','Supermarchés: visibilité mais marge réduite (-30%)','Vente en ligne (Facebook, WhatsApp): croissance rapide','Grossistes: gros volume, prix bas mais régularité','Hôtels: premium, contrats stables','Entreprises (commandes groupées)','Export sous-régional (UEMOA)']},
+    {titre:'📱 Marketing numérique',items:['Facebook/Instagram: photos produits chaque semaine','Whatsapp Business: catalogue + commandes','Vidéos de fabrication: crédibilité + viralité','Témoignages clients: conversions +40%','Codes promo pour premier achat','Livraison à domicile: avantage concurrentiel','Page Google My Business: recherches locales','Groupes WhatsApp de quartier: bouche à oreille']},
+    {titre:'🏆 Stratégies de différenciation',items:['Label "100% naturel sans conservateur"','Packaging premium (bouteille en verre + étiquette soignée)','Certification biologique si possible','Personnalisation: produits aux couleurs du client','Edition limitée fruits de saison','Gamme "Santé": enrichi en vitamines/moringa','Offre coffret cadeau: plusieurs produits assortis','Abonnement hebdomadaire: client fidélisé']},
+    {titre:'💰 Stratégie de prix',items:['Calcul prix = coût revient × 2 minimum','Prix psychologique: 990F mieux perçu que 1000F','Différencier taille (50cl, 1L, 5L) et format (sachet, bouteille)','Réduction quantité: -10% dès 6 bouteilles, -20% dès 12','Pas de solde en dessous du seuil de rentabilité','Prix premium si qualité différenciée garantie','Revoir prix tous les 3 mois (coût matières variable)','Offre d\'essai: bouteille 25cl à prix réduit']},
+  ].map(function(c) {
+    return '<div class="card"><div class="card-hdr"><span class="card-title">' + c.titre + '</span></div><div class="card-body">' +
+      c.items.map(function(i) {
+        return '<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--bdr2);font-size:12px;color:var(--txt2)">' +
+          '<span style="color:var(--acc);flex-shrink:0">▸</span>' + i + '</div>';
+      }).join('') + '</div></div>';
+  }).join('') + '</div>';
+}
+
+// ══ NORMES ══
+function renderNormes() {
+  var el = document.getElementById('normes-content');
+  el.innerHTML = '<div class="alert alert-info" style="margin-bottom:20px">La conformité aux normes n\'est pas optionnelle. Elle protège vos clients, votre business et vous évite des sanctions légales graves.</div>' +
+  '<div class="normes-grid">' +
+  [
+    {icon:'🇧🇯',titre:'Réglementation Bénin — ANPC',items:['Agence Nationale de Protection des Consommateurs: agrément obligatoire','Déclaration d\'activité à la Direction du Commerce','Visite de conformité de l\'atelier (conditions d\'hygiène)','Étiquetage conforme à la réglementation nationale','Taxe professionnelle et déclaration fiscale']},
+    {icon:'🌍',titre:'Codex Alimentarius (OMS/FAO)',items:['Norme pour les jus de fruits: CODEX STAN 247-2005','Norme confitures et gelées: CODEX STAN 79-1981','Liste autorisée des additifs alimentaires (GSFA)','Limites maximales résidus pesticides','Bonnes pratiques de fabrication (BPF/GMP)']},
+    {icon:'✅',titre:'Certifications valorisantes',items:['ISO 22000: Management sécurité alimentaire','HACCP certifié (audit externe tiers)','Label agriculture biologique (si sans intrants chimiques)','Certification halal ou casher si marchés ciblés','Label local "Fabriqué au Bénin": valorisation nationale']},
+    {icon:'🧪',titre:'Tests laboratoire obligatoires',items:['Test microbiologique: absence Salmonella, E.coli, Listeria','Test physico-chimique: pH, Brix, acidité titrable','Dosage des additifs (si conservateurs utilisés)','Test de stabilité (DLC): incubation 14j à 37°C','Recherche de pesticides si produits bio'],},
+    {icon:'🏭',titre:'Conditions d\'agrément atelier',items:['Sols, murs, plafonds lavables et désinfectables','Eau potable courante (froide et chaude)','Séparation zone propre / zone souillée','Vestiaires et sanitaires séparés de la zone de production','Ventilation adaptée (évite condensation = champignons)','Stockage matières premières séparé des produits finis']},
+    {icon:'📑',titre:'Documents à tenir à jour',items:['Cahier de production: chaque lot horodaté','Cahier HACCP: mesures CCP, actions correctives','Registre des fournisseurs et des achats','Registre des réclamations clients','Cahier d\'entretien des équipements','Cahier de formation du personnel'],},
+  ].map(function(n) {
+    return '<div class="norme-card"><div class="norme-icon">' + n.icon + '</div>' +
+      '<div class="norme-title">' + n.titre + '</div>' +
+      '<ul class="norme-list" style="list-style:disc;padding-left:14px">' +
+      n.items.map(function(i) { return '<li>' + i + '</li>'; }).join('') +
+      '</ul></div>';
+  }).join('') + '</div>';
+}
+
+// ══ TUTORIELS ══
+var TUTOS = {
+  'tuto-jus':[
+    {icon:'📹',cat:'FAO',titre:'Production artisanale de jus de fruits tropicaux',desc:'Guide complet FAO sur la transformation des fruits en jus au niveau artisanal en Afrique subsaharienne. Hygiène, équipements, formulation.',lien:'https://www.fao.org/3/y5113f/y5113f.pdf'},
+    {icon:'🎬',cat:'Vidéo',titre:'Comment faire du jus de mangue pasteurisé',desc:'Démonstration pratique complète: lavage, extraction, formulation, pasteurisation, embouteillage. Adapté aux conditions africaines.',lien:'https://www.youtube.com/results?search_query=jus+mangue+pasteurisé+artisanal+afrique'},
+    {icon:'📋',cat:'Guide',titre:'Formulation de boissons de fruits (nectars, jus)',desc:'Guide ONUDI sur la formulation de boissons: Brix, pH, additifs, pasteurisation. Avec tables de référence.',lien:'https://www.unido.org/resources'},
+    {icon:'🎬',cat:'Vidéo',titre:'Ginger beer artisanal — fermentation naturelle',desc:'Tutoriel complet sur la fabrication du ginger beer fermenté. Starter, fermentation primaire et secondaire, embouteillage sécurisé.',lien:'https://www.youtube.com/results?search_query=ginger+beer+artisanal+fermentation'},
+    {icon:'📹',cat:'FAO',titre:'Sirop de fruits tropicaux — Manuel de fabrication',desc:'Fabrication de sirops concentrés: méthodes, conservation, emballage. Avec études de cas Afrique de l\'Ouest.',lien:'https://www.fao.org/3/t0389f/t0389f.pdf'},
+    {icon:'🎬',cat:'Vidéo',titre:'Bissap (hibiscus) — De la fleur au sirop',desc:'Transformation du bissap en sirop concentré. Méthode artisanale simple avec équipements accessibles.',lien:'https://www.youtube.com/results?search_query=sirop+bissap+artisanal'},
+  ],
+  'tuto-transfo':[
+    {icon:'📋',cat:'Guide',titre:'Fabrication de confitures et gelées — Codex',desc:'Norme Codex STAN 79-1981 sur les confitures et gelées + guide pratique de fabrication.',lien:'https://www.fao.org/fao-who-codexalimentarius/'},
+    {icon:'📹',cat:'FAO',titre:'Conservation et transformation des fruits et légumes',desc:'Guide FAO complet sur la conservation post-récolte et les techniques de transformation en Afrique.',lien:'https://www.fao.org/3/t0073f/T0073F.htm'},
+    {icon:'🎬',cat:'Vidéo',titre:'Sauce pimentée africaine — Recette et production',desc:'Fabrication professionnelle de sauce pimentée: sélection piments, broyage, cuisson, conditionnement, DLC.',lien:'https://www.youtube.com/results?search_query=sauce+pimentée+africaine+production'},
+    {icon:'📋',cat:'ONUDI',titre:'Technologies de transformation des fruits tropicaux',desc:'Guide ONUDI sur les petites industries de transformation en Afrique. Investissements, équipements, rentabilité.',lien:'https://www.unido.org/'},
+  ],
+  'tuto-qualite':[
+    {icon:'📋',cat:'OMS',titre:'Principes HACCP — Guide d\'application',desc:'Document officiel OMS/FAO sur l\'application des principes HACCP dans les petites entreprises alimentaires.',lien:'https://www.who.int/publications/i/item/9789240032026'},
+    {icon:'📹',cat:'FAO',titre:'Bonnes pratiques de fabrication (BPF)',desc:'Guide pratique des BPF pour les PME alimentaires en pays en développement. Hygiène, locaux, équipements, personnel.',lien:'https://www.fao.org/3/a0236f/a0236f.pdf'},
+    {icon:'📋',cat:'Codex',titre:'Additifs alimentaires autorisés (GSFA)',desc:'Base de données complète du Codex Alimentarius sur les additifs alimentaires autorisés, dosages et catégories.',lien:'https://www.fao.org/fao-who-codexalimentarius/codex-texts/dbs/gsfa/fr/'},
+    {icon:'🎬',cat:'Vidéo',titre:'Utiliser un réfractomètre et pH-mètre',desc:'Démonstration pratique de l\'utilisation et calibration du réfractomètre et du pH-mètre pour contrôle qualité.',lien:'https://www.youtube.com/results?search_query=réfractomètre+pH-mètre+utilisation'},
+  ],
+  'tuto-business':[
+    {icon:'📋',cat:'ONUDI',titre:'Business plan pour petite entreprise alimentaire',desc:'Guide ONUDI pour établir un business plan complet pour une unité de transformation alimentaire artisanale.',lien:'https://www.unido.org/'},
+    {icon:'📹',cat:'FAO',titre:'Commercialisation des produits alimentaires transformés',desc:'Stratégies marketing, canaux de distribution, prix et packaging pour PME alimentaires africaines.',lien:'https://www.fao.org/3/a0237f/a0237f.pdf'},
+    {icon:'📋',cat:'Guide',titre:'Obtenir l\'agrément alimentaire au Bénin',desc:'Démarches administratives, dossier à constituer, organismes à contacter pour l\'agrément de production alimentaire au Bénin.',lien:'#'},
+    {icon:'🎬',cat:'Vidéo',titre:'Stratégie de vente et prix sur le marché africain',desc:'Comment fixer ses prix, identifier ses clients, développer sa clientèle et fidéliser dans le contexte béninois.',lien:'https://www.youtube.com/results?search_query=prix+vente+produits+transformés+afrique+bénin'},
+  ]
+};
+
+function renderTutoriels(tab) {
+  var data = TUTOS[tab] || [];
+  var grid = document.getElementById('tuto-grid');
+  if (!grid) return;
+  grid.innerHTML = data.map(function(t) {
+    var tagColors = {FAO:'var(--acc4)',Vidéo:'var(--red)',Guide:'var(--acc)',ONUDI:'var(--blue)',OMS:'var(--acc2)',Codex:'var(--acc3)'};
+    var col = tagColors[t.cat] || 'var(--acc)';
+    return '<div class="tuto-card" onclick="ouvrirTuto(this)" data-url="' + t.lien + '" data-titre="' + t.titre + '">' +
+      '<div class="tuto-icon">' + t.icon + '</div>' +
+      '<div><span style="background:' + col + '22;color:' + col + ';padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700">' + t.cat + '</span></div>' +
+      '<div class="tuto-title">' + t.titre + '</div>' +
+      '<div class="tuto-desc">' + t.desc + '</div>' +
+      (t.lien && t.lien !== '#' ?
+        '<div class="tuto-link">🔗 Accéder au document →</div>' :
+        '<div style="font-size:10px;color:var(--txt3)">📋 Disponible prochainement</div>') +
+    '</div>';
+  }).join('');
+}
+
+function ouvrirTuto(el) {
+  var url = el.dataset.url;
+  if (url && url !== '#') window.open(url, '_blank');
+  else toast('📚 ' + el.dataset.titre + ' — Disponible prochainement');
+}
+
+// ══ SECRETS PRO ══
+var SECRETS_DATA = {
+  'sec-qualite':[
+    {cat:'Qualité matières', titre:'Le fruit mûr ≠ fruit trop mûr', text:'Un fruit trop mûr donne un jus fermenté, trouble et de courte durée de vie. Le stade optimal: mûr mais ferme (mangue: cède légèrement à la pression mais ne s\'écrase pas). Préférez 3kg de fruits A au lieu de 5kg de fruits B qui incluent 2kg douteux.'},
+    {cat:'Qualité eau', titre:'L\'eau est votre ingrédient n°1', text:'Un jus c\'est 50-80% d\'eau. Utiliser une eau chlorée, calcaire ou bactériologiquement douteuse détruit la qualité finale. Toujours utiliser eau filtrée + bouillie, ou eau minérale pour les produits premium. Le filtre à eau est un investissement rentable.'},
+    {cat:'Contrôle qualité', titre:'Mesurer avant, pendant, après — jamais "à l\'œil"', text:'pH, Brix, température: ces 3 mesures définissent la qualité et la sécurité de votre produit. Un lot non mesuré est un lot à risque. Achetez les instruments de mesure AVANT l\'équipement de production. Ils coûtent moins cher et valent plus.'},
+    {cat:'Homogénéité', titre:'La recette exacte chaque fois = la confiance client', text:'Pesez TOUJOURS vos ingrédients. Une cuillère à soupe de sel peut peser entre 10g et 20g selon la grosseur du sel. Une recette reproductible = des clients fidèles. Notez chaque paramètre dans votre cahier de production.'},
+  ],
+  'sec-rendement':[
+    {cat:'Rendement matière', titre:'Le secret des pro: congeler pour mieux presser', text:'Congeler les fruits 24h avant extraction améliore le rendement de 10-15%. La congélation rompt les parois cellulaires, libérant plus de jus. Idéal pour les fruits difficiles à presser (goyave, tamarin). Décongeler partiellement avant extraction.'},
+    {cat:'Rendement jus', titre:'La règle des 2 passages pour maximiser le rendement', text:'Après une première extraction, remixer les résidus avec 20% d\'eau chaude et represser. Ce deuxième jus (moins concentré) est mélangé au premier. Gain: +15% de volume final. Exemple: 10kg mangues → 7L au lieu de 6L.'},
+    {cat:'Planification', titre:'Produire en batch groupé divise les coûts',text:'Produire 100L en une session coûte bien moins qu\'100 sessions de 1L. Optimisez le temps de chauffe, de nettoyage, de conditionnement. Produire 3 fois par semaine est plus rentable que produire quotidiennement en petites quantités.'},
+    {cat:'Zéro déchet', titre:'Valoriser les résidus (peaux, graines)',text:'Peaux de mangue → confiture / compost. Graines de mangue → beurre de mangue. Résidus d\'ananas → vinaigre. Pulpe filtrée → face mask artisanal. Les déchets de production peuvent générer 10-20% de CA supplémentaire.'},
+  ],
+  'sec-conservation':[
+    {cat:'Pasteurisation', titre:'Le choc thermique: pasteuriser deux fois en une seule',text:'Remplir les bouteilles à 85°C (chaud) et les retourner immédiatement crée une deuxième pasteurisation du bouchon et du goulot. Ce geste gratuit rallonge la DLC de 20-30%. Ne JAMAIS sauter cette étape.'},
+    {cat:'pH', titre:'Le pH < 4: votre meilleur conservateur est gratuit',text:'L\'acide citrique (citrons naturels ou poudre) ajusté pour maintenir pH < 4.0 élimine 99% des pathogènes dangereux. À ce pH, Salmonella et E.coli ne peuvent pas survivre. Une bouteille bien acide dure 3x plus longtemps qu\'une bouteille au pH neutre.'},
+    {cat:'Lumière', titre:'L\'ennemi invisible: la lumière UV',text:'La lumière détruit les vitamines C et les anthocyanes (pigments colorés). En 2 semaines, un jus exposé à la lumière perd 40% de sa vitamine C et sa couleur. Bouteilles teintées ou stockage à l\'obscurité = DLC ×1.5 et qualité nutritionnelle préservée.'},
+    {cat:'Emballage', titre:'L\'étanchéité, ça se teste systématiquement',text:'Après capsulage de chaque lot: retourner les bouteilles et observer 5 minutes. Si une goutte apparaît → recapsuler immédiatement. Taux de fuites acceptable: 0%. Une fuite = contamination garantie + perte financière + risque client.'},
+  ],
+  'sec-saveur':[
+    {cat:'Saveur', titre:'Le mariage des acides pour une saveur ronde',text:'Mélanger deux sources d\'acidité crée une saveur plus complexe. Ex: acide citrique (note fraîche) + jus de tamarin (note terreuse) + un peu de sel (amplificateur gustatif) = saveur qui "pop". 0.5g de sel pour 1L de jus est imperceptible mais double l\'impact gustatif.'},
+    {cat:'Arôme', titre:'L\'ajout d\'épices en fin de cuisson préserve 80% des arômes',text:'Ajouter gingembre ou cannelle EN FIN de pasteurisation (et non au début) préserve les huiles essentielles volatiles. Les arômes s\'évaporent à haute température. Principe: chauffer les sucres avec les fruits, ajouter les arômes à 70°C en éteignant le feu.'},
+    {cat:'Sucre', titre:'Le sucre de canne non raffiné = profondeur de saveur',text:'Le sucre blanc donne du sucré "plat". Le sucre de canne complet (rapadura, muscovado) apporte des notes de mélasse et de caramel qui enrichissent les confitures et sirops. Premium + différenciant + naturel.'},
+    {cat:'Équilibre', titre:'Le test des 5 gorgées: comment valider votre recette',text:'Faire goûter votre produit à 5 personnes différentes (pas votre famille). Demander: trop sucré? Trop acide? Trop épais? La recette finale est validée quand au moins 4/5 disent "c\'est bien équilibré". Ne jamais lancer une production sans ce test.'},
+  ],
+  'sec-cout':[
+    {cat:'Économies', titre:'L\'achat groupé avec d\'autres transformateurs',text:'S\'associer à 2-3 autres producteurs de la zone pour acheter en commun les emballages, sucre, acide citrique. Commande ×10 = prix ÷2 en général. Les importateurs et grossistes accordent des remises dès 100kg ou 500 bouteilles. Une coopérative d\'achat se crée en une journée.'},
+    {cat:'Energie', titre:'Le timing de production pour réduire la facture énergie',text:'Si vous utilisez l\'électricité SBEE: produire entre 23h et 6h (tarif nuit, environ 30% moins cher) ou lors des creux de consommation. Si vous avez des panneaux solaires: produire entre 9h et 15h. L\'énergie représente 15-25% du coût de revient.'},
+    {cat:'Emballages', titre:'Le verre récupéré: divise le coût emballage par 5',text:'Collecter les bouteilles consignées auprès des restaurants, bars et ménages. Désinfecter à l\'eau bouillante + javelle. Taux de réutilisation possible: jusqu\'à 15 fois pour bouteilles verre épais. Économie: 200-400 F/bouteille × nombre de lots = économies majeures.'},
+    {cat:'Pertes', titre:'La réduction des pertes = gain immédiat',text:'Chaque kilo de fruit perdu = argent perdu. Auditer votre processus: où perd-on le plus? Transformation immédiate à réception (évite la pourriture), lavage à l\'eau légèrement chlorée (prolonge la vie 2-3 jours), tri strict à la réception (refuser lot de mauvaise qualité).'},
+  ]
+};
+
+function renderSecrets(tab) {
+  var data = SECRETS_DATA[tab] || [];
+  var el = document.getElementById('secrets-container');
+  el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px">' +
+  data.map(function(s, i) {
+    return '<div class="secret-card">' +
+      '<div class="secret-num">' + (i+1) + '</div>' +
+      '<div class="secret-cat">' + s.cat + '</div>' +
+      '<div class="secret-title">' + s.titre + '</div>' +
+      '<div class="secret-text">' + s.text + '</div>' +
+    '</div>';
+  }).join('') + '</div>';
+}
+
+// ══ ASSISTANT IA ══
+var IA_REPS = {
+  'jus.*mangue|mangue.*jus':
+    '🥭 Jus de mangue pasteurisé — Procédé complet:\n\n' +
+    '<strong>Formule de base (10L):</strong>\n' +
+    '• 3kg mangues mûres épluchées\n' +
+    '• Eau filtrée qsp 10L\n' +
+    '• 100-150g sucre (si mangues peu sucrées)\n' +
+    '• 8g acide citrique (ajuster pour pH 3.5-4.0)\n' +
+    '• 1g métabisulfite de sodium (optionnel)\n\n' +
+    '<strong>Procédé:</strong>\n' +
+    '1. Laver mangues (eau chlorée 50 ppm, 10 min)\n' +
+    '2. Éplucher et dénoyauter\n' +
+    '3. Mixer finement\n' +
+    '4. Filtrer sur grille 0.5-1mm\n' +
+    '5. Mesurer Brix (cible: 12-14°) et pH (cible: 3.5-4.0)\n' +
+    '6. Pasteuriser 85°C / 15-20 minutes\n' +
+    '7. Embouteiller chaud (>75°C), boucher, retourner 5 min\n' +
+    '8. Refroidir rapidement\n\n' +
+    '<strong>DLC:</strong> 3-6 mois (réfrigéré) / 12 mois (pasteurisé hermétique)\n' +
+    '<strong>Rendement:</strong> 55-65% → 10kg mangues ≈ 6-6.5L de jus',
+
+  'dlc|durée.*vie|combien.*temps|conservation':
+    '❄️ Durées de conservation selon le procédé:\n\n' +
+    '<strong>Jus de fruits:</strong>\n' +
+    '• Sans traitement: 24-48h réfrigéré\n' +
+    '• Pasteurisé 85°C + conservateur + pH<4: 6-12 mois\n' +
+    '• Pasteurisé + conditionnement hermétique chaud: 3-6 mois\n\n' +
+    '<strong>Sirops:</strong>\n' +
+    '• Brix > 65° + pH < 4 + hermétique: 12-18 mois\n' +
+    '<strong>Confitures:</strong>\n' +
+    '• Brix > 65° + stérilisation pots: 18-24 mois\n' +
+    '<strong>Sauces pimentées:</strong>\n' +
+    '• pH < 4 + pasteurisé: 12 mois non ouvert\n\n' +
+    '<strong>Test DLC maison:</strong> Incuber 1 bouteille du lot à 37°C pendant 14 jours. Si aucun gonflement, ni odeur anormale → DLC validée.',
+
+  'prix.*vente|calculer.*prix|rentabilité|marge':
+    '💰 Calcul du prix de vente:\n\n' +
+    '<strong>Formule de base:</strong>\n' +
+    'Prix = Coût de revient × 2 à 3 minimum\n\n' +
+    '<strong>Exemple jus de mangue 50cl:</strong>\n' +
+    '• Matières premières: 800F\n' +
+    '• Emballage (bouteille+bouchon+étiquette): 300F\n' +
+    '• Énergie + eau: 150F\n' +
+    '• Main d\'œuvre: 200F\n' +
+    '→ Coût de revient: 1 450F\n' +
+    '→ Prix de vente minimum: 1 450 × 2 = 2 900F\n' +
+    '→ Prix marché réaliste: 1 500-2 000F\n\n' +
+    'Si le prix marché est < 2× votre coût revient, il faut:\n' +
+    '1. Réduire les coûts (achat groupé, zéro déchet)\n' +
+    '2. Monter en gamme (bouteille verre, label naturel)\n' +
+    '3. Viser un autre canal (restaurants, hôtels)',
+
+  'équipement|matériel|commencer|démarrer':
+    '🔧 Équipements pour démarrer — Budget 250 000 à 400 000 F:\n\n' +
+    '<strong>Indispensables (priorité 1):</strong>\n' +
+    '• Réfractomètre: 20 000F\n' +
+    '• pH-mètre numérique: 35 000F\n' +
+    '• Thermomètre sonde inox: 15 000F\n' +
+    '• Balance de précision: 25 000F\n' +
+    '<strong>→ Instruments de contrôle: ~95 000F</strong>\n\n' +
+    '<strong>Production (priorité 2):</strong>\n' +
+    '• Blender industriel 2L: 120 000F\n' +
+    '• Marmite inox 20L: 50 000F\n' +
+    '• Tamis inox (jeu): 15 000F\n' +
+    '• Bidons + entonnoir: 20 000F\n' +
+    '<strong>→ Équipements base: ~205 000F</strong>\n\n' +
+    '<strong>Total démarrage minimum: ~300 000F</strong>\n\n' +
+    '💡 Conseil: acheter les instruments de mesure AVANT la production. Ils vous éviteront de perdre des lots entiers.',
+
+  'gingembre.*bière|ginger.*beer|ferment':
+    '🫧 Ginger Beer artisanal — Recette complète:\n\n' +
+    '<strong>Ingrédients (5L):</strong>\n' +
+    '• 250g gingembre frais râpé\n' +
+    '• 400g sucre de canne\n' +
+    '• 3 citrons (jus + zestes)\n' +
+    '• 5L eau filtrée\n' +
+    '• 5g levure de boulanger sèche active\n\n' +
+    '<strong>Procédé:</strong>\n' +
+    '1. Faire bouillir 1L eau + gingembre râpé 15 min\n' +
+    '2. Ajouter sucre, dissoudre, laisser refroidir à 30°C\n' +
+    '3. Ajouter jus de citrons et reste d\'eau\n' +
+    '4. Inoculer avec levure (activée dans 50ml eau tiède)\n' +
+    '5. Couvrir avec tissu (pas hermétique!), 25°C, 48-72h\n' +
+    '6. Filtrer, mettre en bouteilles PET résistantes\n' +
+    '7. 24-48h à température ambiante (carbonatation)\n' +
+    '8. Réfrigérer → consommer sous 2-3 semaines\n\n' +
+    '⚠️ Utiliser UNIQUEMENT bouteilles PET épaisses ou verre de bière. Jamais bouteille verre mince (risque explosion).',
+
+  'haccp|hygiène|norme.*qualité':
+    '🧼 Mise en place HACCP simplifiée:\n\n' +
+    '<strong>5 CCP critiques transformation jus:</strong>\n\n' +
+    '1️⃣ Lavage fruits: eau chlorée 50-100 ppm, 10 min\n' +
+    '→ Limite: chlore < 50 ppm = danger\n\n' +
+    '2️⃣ Pasteurisation: 85°C / 15 min minimum\n' +
+    '→ Limite: T° < 85°C = refaire ou rejeter\n\n' +
+    '3️⃣ pH produit fini: < 4.0 obligatoire\n' +
+    '→ Limite: pH > 4 = ajouter acide + repasteuriser\n\n' +
+    '4️⃣ Conditionnement chaud: > 75°C au remplissage\n' +
+    '→ Limite: T° < 75°C = réchauffer avant\n\n' +
+    '5️⃣ Dosage conservateurs: ≤ 1g/L benzoate\n' +
+    '→ Limite: TOUJOURS peser, jamais estimer\n\n' +
+    '📋 Consigner CHAQUE mesure dans votre cahier de bord. Sans documentation = sans HACCP.',
+
+  'agrément|autorisation|légal|bénin':
+    '📑 Agrément alimentaire au Bénin — Démarches:\n\n' +
+    '<strong>Étape 1: Déclaration d\'activité</strong>\n' +
+    '→ Direction du Commerce de votre département\n' +
+    '→ Formulaire de déclaration + statuts si société\n\n' +
+    '<strong>Étape 2: Agrément sanitaire ANPC</strong>\n' +
+    '→ Agence Nationale de Protection des Consommateurs\n' +
+    '→ Visite de conformité de votre atelier\n' +
+    '→ Conditions: eau potable, sols lavables, séparation propre/souillé\n\n' +
+    '<strong>Étape 3: Enregistrement produits</strong>\n' +
+    '→ Soumettre les fiches techniques et étiquettes\n' +
+    '→ Tests laboratoire si requis\n\n' +
+    '<strong>Étape 4: Registre du commerce</strong>\n' +
+    '→ Si activité commerciale régulière\n\n' +
+    'Budget estimé démarches: 50 000 – 150 000 F\n' +
+    '💡 Contacter la Chambre de Commerce du Bénin pour accompagnement.',
+
+  'confiture|gelée':
+    '🫙 Confiture d\'ananas — Recette professionnelle:\n\n' +
+    '<strong>Pour 20 pots de 250g:</strong>\n' +
+    '• 3kg ananas épluché (environ 5kg brut)\n' +
+    '• 2.4kg sucre cristal\n' +
+    '• 30g pectine NH (ou pectine jaune)\n' +
+    '• 20g acide citrique\n\n' +
+    '<strong>Procédé:</strong>\n' +
+    '1. Couper ananas en dés 2cm\n' +
+    '2. Macérer 2h avec 90% du sucre\n' +
+    '3. Porter à ébullition, cuire 20-30 min en remuant\n' +
+    '4. Mélanger pectine + reste sucre (10%)\n' +
+    '5. Ajouter pectine+sucre en pluie en remuant fort\n' +
+    '6. Ajouter acide citrique, cuire 5 min de plus\n' +
+    '7. Test assiette froide: 1 goutte doit figer en 30 sec\n' +
+    '8. Verser bouillant dans pots chauds, fermer, retourner 10 min\n\n' +
+    '<strong>DLC:</strong> 18-24 mois hermétique\n' +
+    '<strong>pH cible:</strong> 3.0-3.5',
+};
+
+function poserQ(q) { document.getElementById('ia-inp').value = q; sendIA(); }
+
+function sendIA() {
+  var inp = document.getElementById('ia-inp');
+  var q = (inp.value || '').trim();
+  if (!q) return;
+  inp.value = '';
+  var msgs = document.getElementById('ia-msgs');
+  var u = document.createElement('div'); u.className = 'ia-msg-user'; u.textContent = q;
+  msgs.appendChild(u);
+  var t = document.createElement('div'); t.className = 'ia-msg-bot';
+  t.innerHTML = '<span class="ia-typing-dot"></span><span class="ia-typing-dot"></span><span class="ia-typing-dot"></span>';
+  msgs.appendChild(t); msgs.scrollTop = msgs.scrollHeight;
+  setTimeout(function() {
+    var ql = q.toLowerCase();
+    var rep = null;
+    for (var p in IA_REPS) {
+      if (new RegExp(p, 'i').test(ql)) { rep = IA_REPS[p]; break; }
+    }
+    if (!rep) {
+      rep = '🍹 Je ne dispose pas encore d\'une réponse précise pour cette question.\n\nExplorez les sections de l\'application:\n• ⚗️ Guide de production → procédés détaillés\n• 🧼 Hygiène HACCP → normes et protocoles\n• 💰 Calcul de rentabilité → prix et marges\n• 📚 Tutoriels → guides FAO et vidéos\n• ⭐ Secrets Pro → astuces des experts\n\nReformulations possibles: "comment faire du jus de...", "quelle DLC pour...", "prix de vente...", "quels équipements..."';
+    }
+    t.innerHTML = rep;
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 900);
+}
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded', function() {
+  renderDashboard();
+  renderProduction('jus');
+  renderMatieres('fruits');
+  renderHygiene('haccp-intro');
+  renderConservation();
+  renderEmballage();
+  renderFinances();
+  renderMarche();
+  renderNormes();
+  renderTutoriels('tuto-jus');
+  renderSecrets('sec-qualite');
+  renderEquipements();
+});
+</script>
+</body>
+</html>

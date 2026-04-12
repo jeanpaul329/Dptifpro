@@ -1,0 +1,2422 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArchitecPro — Plans & Construction</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080a10;--surf:#0e1117;--surf2:#141820;--surf3:#1c2230;
+  --acc:#3b82f6;--acc2:#f59e0b;--acc3:#8b5cf6;--green:#10b981;--red:#ef4444;
+  --bdr:rgba(59,130,246,.15);--txt:#e8edf8;--txt2:#8090b8;--txt3:#3d4e6e;
+  --radius:14px;
+}
+html,body{min-height:100vh;font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt)}
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:240px;background:var(--surf);border-right:1px solid var(--bdr);
+  display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.logo-wrap{padding:18px 16px;border-bottom:1px solid var(--bdr);
+  background:linear-gradient(135deg,rgba(59,130,246,.08),transparent)}
+.logo-icon{width:40px;height:40px;background:linear-gradient(135deg,var(--acc),var(--acc3));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:8px}
+.logo-title{font-size:18px;font-weight:900;color:var(--txt)}
+.logo-title span{color:var(--acc)}
+.logo-sub{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.nav-sec{padding:12px 16px 4px;font-size:9px;font-weight:700;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:1px}
+.nav-item{width:100%;padding:9px 16px;border:none;background:transparent;
+  color:var(--txt2);text-align:left;cursor:pointer;font-size:12px;font-weight:500;
+  display:flex;align-items:center;gap:10px;transition:all .18s;
+  border-left:3px solid transparent}
+.nav-item:hover{background:rgba(59,130,246,.07);color:var(--txt)}
+.nav-item.active{background:rgba(59,130,246,.12);color:var(--acc);border-left-color:var(--acc);font-weight:700}
+.nav-badge{margin-left:auto;background:var(--acc);color:#fff;font-size:9px;
+  font-weight:900;padding:1px 6px;border-radius:10px}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;padding:24px}
+.page{display:none}.page.active{display:block}
+.page-hdr{display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.page-title{font-size:22px;font-weight:900}
+.page-sub{font-size:12px;color:var(--txt3);margin-top:3px}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--radius);
+  padding:16px;text-align:center}
+.stat-val{font-size:24px;font-weight:900;margin-bottom:3px}
+.stat-lbl{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px}
+
+/* CARDS */
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--radius);margin-bottom:16px}
+.card-hdr{padding:14px 18px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:14px;font-weight:800;display:flex;align-items:center;gap:8px}
+.card-body{padding:16px 18px}
+
+/* ═══ DESSINATEUR 2D ═══ */
+.studio-layout{display:grid;grid-template-columns:220px 1fr 280px;gap:0;height:calc(100vh - 140px);
+  background:var(--surf);border:1px solid var(--bdr);border-radius:var(--radius);overflow:hidden}
+
+/* Palette outils */
+.tool-panel{background:var(--surf2);border-right:1px solid var(--bdr);
+  padding:12px;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+.tool-section{font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;
+  letter-spacing:.8px;padding:8px 0 4px}
+.tool-btn{width:100%;padding:8px 10px;border:1px solid var(--bdr);background:var(--surf3);
+  border-radius:8px;color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;
+  text-align:left;transition:all .15s;display:flex;align-items:center;gap:8px}
+.tool-btn:hover{border-color:var(--acc);color:var(--acc)}
+.tool-btn.active{background:rgba(59,130,246,.15);border-color:var(--acc);color:var(--acc)}
+.tool-icon{font-size:14px;flex-shrink:0}
+
+/* Canvas zone */
+.canvas-zone{position:relative;overflow:hidden;background:var(--surf3)}
+.canvas-topbar{position:absolute;top:0;left:0;right:0;height:44px;
+  background:rgba(14,17,23,.9);border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;padding:0 12px;gap:10px;z-index:10}
+.canvas-topbar button{padding:5px 12px;border-radius:7px;border:1px solid var(--bdr);
+  background:var(--surf2);color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer}
+.canvas-topbar button:hover{border-color:var(--acc);color:var(--acc)}
+.canvas-topbar .sep{width:1px;height:20px;background:var(--bdr)}
+#plan-canvas{position:absolute;top:44px;left:0;cursor:crosshair}
+.grid-label{position:absolute;font-size:9px;color:var(--txt3)}
+
+/* Propriétés */
+.prop-panel{background:var(--surf2);border-left:1px solid var(--bdr);
+  padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+.prop-title{font-size:13px;font-weight:800;margin-bottom:8px;color:var(--acc)}
+.prop-item{display:flex;flex-direction:column;gap:4px}
+.prop-lbl{font-size:10px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px}
+.prop-inp{padding:7px 10px;background:var(--surf3);border:1px solid var(--bdr);
+  border-radius:7px;color:var(--txt);font-size:12px;font-family:inherit;width:100%}
+.prop-inp:focus{outline:none;border-color:var(--acc)}
+
+/* Boutons */
+.btn{padding:9px 16px;border-radius:9px;border:none;cursor:pointer;font-size:12px;
+  font-weight:700;display:inline-flex;align-items:center;gap:6px;
+  transition:opacity .2s;font-family:inherit}
+.btn:hover{opacity:.85}
+.btn-primary{background:linear-gradient(135deg,var(--acc),#1d4ed8);color:#fff}
+.btn-sec{background:rgba(59,130,246,.1);color:var(--acc);border:1px solid var(--bdr)}
+.btn-warn{background:rgba(245,158,11,.1);color:var(--acc2);border:1px solid rgba(245,158,11,.2)}
+.btn-green{background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.btn-purple{background:rgba(139,92,246,.1);color:#a78bfa;border:1px solid rgba(139,92,246,.2)}
+.btn-sm{padding:5px 11px;font-size:10px;border-radius:7px}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;background:var(--surf2);border-radius:10px;padding:4px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:7px 14px;border-radius:7px;border:none;background:transparent;
+  color:var(--txt2);font-size:11px;font-weight:600;cursor:pointer;transition:all .18s}
+.tab.active{background:var(--acc);color:#fff;font-weight:700}
+
+/* Badges */
+.badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
+.badge-blue{background:rgba(59,130,246,.15);color:var(--acc)}
+.badge-green{background:rgba(16,185,129,.15);color:var(--green)}
+.badge-yellow{background:rgba(245,158,11,.15);color:var(--acc2)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+.badge-purple{background:rgba(139,92,246,.15);color:#a78bfa}
+
+/* Alertes */
+.alert{padding:12px 16px;border-radius:10px;font-size:12px;line-height:1.6;margin-bottom:12px}
+.alert-info{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.2);color:#60a5fa}
+.alert-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);color:var(--acc2)}
+.alert-success{background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);color:var(--green)}
+.alert-danger{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);color:var(--red)}
+
+/* Tableau */
+.table-wrap{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 14px;font-size:10px;font-weight:700;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:.5px;text-align:left;
+  background:var(--surf2);border-bottom:1px solid var(--bdr)}
+td{padding:10px 14px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:top}
+tr:last-child td{border-bottom:none}tr:hover td{background:rgba(255,255,255,.015)}
+
+/* Bibliothèque plans */
+.plans-lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.plan-lib-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);
+  overflow:hidden;cursor:pointer;transition:all .2s}
+.plan-lib-card:hover{border-color:var(--acc);transform:translateY(-3px)}
+.plan-preview{height:180px;background:var(--surf3);display:flex;align-items:center;justify-content:center;padding:10px}
+.plan-lib-body{padding:14px}
+
+/* IA Chat */
+.ia-layout{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+.ia-box{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);
+  display:flex;flex-direction:column;height:480px}
+.ia-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.ia-user{align-self:flex-end;background:var(--acc);color:#fff;
+  padding:9px 14px;border-radius:14px 14px 3px 14px;font-size:13px;max-width:80%;line-height:1.5}
+.ia-bot{align-self:flex-start;background:var(--surf3);color:var(--txt);
+  padding:9px 14px;border-radius:14px 14px 14px 3px;font-size:13px;max-width:85%;line-height:1.6;white-space:pre-line}
+.ia-typing span{width:7px;height:7px;border-radius:50%;background:var(--acc);
+  display:inline-block;animation:blink 1.2s infinite;margin:0 2px}
+.ia-typing span:nth-child(2){animation-delay:.2s}
+.ia-typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,60%,100%{opacity:.2}30%{opacity:1}}
+.ia-inp-row{padding:12px 16px;border-top:1px solid var(--bdr);display:flex;gap:8px}
+.ia-inp{flex:1;padding:10px 14px;background:var(--surf);border:1px solid var(--bdr);
+  border-radius:9px;color:var(--txt);font-size:13px;font-family:inherit}
+.ia-inp:focus{outline:none;border-color:var(--acc)}
+.ia-q-btn{width:100%;padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:9px;color:var(--txt2);font-size:11px;cursor:pointer;text-align:left;
+  transition:all .15s;margin-bottom:5px;line-height:1.4}
+.ia-q-btn:hover{border-color:var(--acc);color:var(--acc)}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);
+  z-index:1000;align-items:center;justify-content:center;padding:16px}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--surf);border-radius:18px;width:100%;max-width:600px;
+  max-height:90vh;overflow-y:auto;border:1px solid var(--bdr)}
+.modal-hdr{padding:18px 20px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:var(--surf);z-index:1}
+.modal-title{font-size:16px;font-weight:900}
+.modal-close{background:none;border:none;color:var(--txt3);font-size:22px;cursor:pointer}
+.modal-body{padding:20px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--bdr);
+  display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--surf)}
+
+/* Form */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:4px}
+.form-lbl{font-size:10px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px}
+.form-inp{padding:9px 12px;background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:8px;color:var(--txt);font-size:13px;font-family:inherit;width:100%}
+.form-inp:focus{outline:none;border-color:var(--acc)}
+
+/* Steps construction */
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:flex;gap:0;position:relative}
+.step:not(:last-child)::before{content:'';position:absolute;left:22px;top:48px;
+  width:2px;height:calc(100% - 30px);background:var(--bdr)}
+.step-num{width:44px;height:44px;border-radius:50%;flex-shrink:0;margin-right:16px;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  font-weight:900;background:var(--surf2);border:2px solid var(--acc);
+  color:var(--acc);position:relative;z-index:1}
+.step-content{flex:1;padding-bottom:24px}
+.step-title{font-size:14px;font-weight:800;color:var(--txt);margin-bottom:6px}
+.step-body{font-size:12px;color:var(--txt2);line-height:1.7}
+.step-duration{font-size:11px;color:var(--acc2);font-weight:700;margin-top:6px}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--surf);border:1px solid var(--bdr);padding:10px 20px;
+  border-radius:10px;font-size:13px;font-weight:600;z-index:9999;
+  transition:transform .3s;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:900px){.studio-layout{grid-template-columns:1fr};.ia-layout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo-wrap">
+    <div class="logo-icon">🏛️</div>
+    <div class="logo-title">Architec<span>Pro</span></div>
+    <div class="logo-sub">Plans & Construction</div>
+  </div>
+
+  <div class="nav-sec">Projets</div>
+  <button class="nav-item active" onclick="showPage('dashboard',this)">🏠 Tableau de bord</button>
+  <button class="nav-item" onclick="showPage('projets',this)">
+    📁 Mes projets <span class="nav-badge" id="badge-projets">0</span>
+  </button>
+
+  <div class="nav-sec">Conception</div>
+  <button class="nav-item" onclick="showPage('studio',this)">✏️ Studio 2D — Dessin</button>
+  <button class="nav-item" onclick="showPage('vue3d',this)">🏗️ Vue 3D isométrique</button>
+  <button class="nav-item" onclick="showPage('bibliotheque',this)">📚 Plans standards</button>
+
+  <div class="nav-sec">Technique</div>
+  <button class="nav-item" onclick="showPage('materiaux',this)">🧱 Calcul matériaux</button>
+  <button class="nav-item" onclick="showPage('plomberie',this)">🔧 Plan plomberie</button>
+  <button class="nav-item" onclick="showPage('electricite',this)">⚡ Plan électricité</button>
+  <button class="nav-item" onclick="showPage('structure',this)">🏗️ Calcul structure</button>
+
+  <div class="nav-sec">Budget</div>
+  <button class="nav-item" onclick="showPage('devis',this)">💰 Devis automatique</button>
+  <button class="nav-item" onclick="showPage('suivi',this)">📊 Suivi chantier</button>
+
+  <div class="nav-sec">Référence</div>
+  <button class="nav-item" onclick="showPage('construction',this)">👷 Guide construction</button>
+  <button class="nav-item" onclick="showPage('normes',this)">📋 Normes & Conseils</button>
+  <button class="nav-item" onclick="showPage('assistant',this)">🤖 Assistant IA Archi</button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">🏠 Tableau de bord</div>
+      <div class="page-sub" id="dash-date"></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-sec" onclick="showPage('bibliotheque',null)">📚 Plans standards</button>
+      <button class="btn btn-primary" onclick="ouvrirNouveauProjet()">+ Nouveau projet</button>
+    </div>
+  </div>
+  <div class="stats-row" id="dash-stats"></div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">📁 Projets récents</span></div>
+      <div class="card-body" id="dash-projets"></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">⚡ Accès rapide</span></div>
+      <div class="card-body">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <button class="btn btn-sec" style="justify-content:flex-start" onclick="showPage('studio',null)">✏️ Nouveau dessin 2D</button>
+          <button class="btn btn-sec" style="justify-content:flex-start" onclick="showPage('materiaux',null)">🧱 Calculer matériaux</button>
+          <button class="btn btn-sec" style="justify-content:flex-start" onclick="showPage('devis',null)">💰 Générer un devis</button>
+          <button class="btn btn-sec" style="justify-content:flex-start" onclick="showPage('construction',null)">👷 Guide de construction</button>
+          <button class="btn btn-sec" style="justify-content:flex-start" onclick="showPage('assistant',null)">🤖 Poser une question IA</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJETS -->
+<div class="page" id="page-projets">
+  <div class="page-hdr">
+    <div><div class="page-title">📁 Mes Projets</div></div>
+    <button class="btn btn-primary" onclick="ouvrirNouveauProjet()">+ Nouveau projet</button>
+  </div>
+  <div id="projets-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px"></div>
+</div>
+
+<!-- STUDIO 2D -->
+<div class="page" id="page-studio">
+  <div class="page-hdr" style="margin-bottom:12px">
+    <div>
+      <div class="page-title">✏️ Studio de Dessin 2D</div>
+      <div class="page-sub">Concevez votre plan sur grille — Échelle: 1 case = 1m</div>
+    </div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn btn-sec btn-sm" onclick="clearCanvas()">🗑 Effacer tout</button>
+      <button class="btn btn-sec btn-sm" onclick="undoCanvas()">↩️ Annuler</button>
+      <button class="btn btn-green btn-sm" onclick="generer3D()">🏗️ Voir en 3D</button>
+      <button class="btn btn-warn btn-sm" onclick="calculerDepuisPlan()">🧱 Calculer matériaux</button>
+      <button class="btn btn-primary btn-sm" onclick="imprimerPlan()">🖨 Imprimer</button>
+    </div>
+  </div>
+
+  <div class="studio-layout">
+    <!-- Outils -->
+    <div class="tool-panel">
+      <div class="tool-section">Structure</div>
+      <button class="tool-btn active" id="tool-mur" onclick="setTool('mur',this)">
+        <span class="tool-icon">▬</span> Mur extérieur (30cm)
+      </button>
+      <button class="tool-btn" id="tool-mur-int" onclick="setTool('mur-int',this)">
+        <span class="tool-icon">─</span> Cloison intérieure (15cm)
+      </button>
+      <button class="tool-btn" id="tool-mur-por" onclick="setTool('mur-por',this)">
+        <span class="tool-icon">╫</span> Mur porteur (40cm)
+      </button>
+
+      <div class="tool-section">Ouvertures</div>
+      <button class="tool-btn" id="tool-porte" onclick="setTool('porte',this)">
+        <span class="tool-icon">🚪</span> Porte (90cm)
+      </button>
+      <button class="tool-btn" id="tool-porte2" onclick="setTool('porte2',this)">
+        <span class="tool-icon">🚪</span> Porte double (1.8m)
+      </button>
+      <button class="tool-btn" id="tool-fenetre" onclick="setTool('fenetre',this)">
+        <span class="tool-icon">🪟</span> Fenêtre (1.2m)
+      </button>
+      <button class="tool-btn" id="tool-couloir" onclick="setTool('couloir',this)">
+        <span class="tool-icon">⬜</span> Baie vitrée (2m)
+      </button>
+
+      <div class="tool-section">Espaces</div>
+      <button class="tool-btn" id="tool-salon" onclick="setTool('salon',this)">
+        <span class="tool-icon">🛋️</span> Salon
+      </button>
+      <button class="tool-btn" id="tool-chambre" onclick="setTool('chambre',this)">
+        <span class="tool-icon">🛏️</span> Chambre
+      </button>
+      <button class="tool-btn" id="tool-cuisine" onclick="setTool('cuisine',this)">
+        <span class="tool-icon">🍳</span> Cuisine
+      </button>
+      <button class="tool-btn" id="tool-sdb" onclick="setTool('sdb',this)">
+        <span class="tool-icon">🚿</span> Salle de bain
+      </button>
+      <button class="tool-btn" id="tool-bureau" onclick="setTool('bureau',this)">
+        <span class="tool-icon">🖥️</span> Bureau
+      </button>
+      <button class="tool-btn" id="tool-garage" onclick="setTool('garage',this)">
+        <span class="tool-icon">🚗</span> Garage
+      </button>
+      <button class="tool-btn" id="tool-terrasse" onclick="setTool('terrasse',this)">
+        <span class="tool-icon">🌿</span> Terrasse
+      </button>
+
+      <div class="tool-section">Sanitaires</div>
+      <button class="tool-btn" id="tool-toilettes" onclick="setTool('toilettes',this)">
+        <span class="tool-icon">🚽</span> WC
+      </button>
+      <button class="tool-btn" id="tool-escalier" onclick="setTool('escalier',this)">
+        <span class="tool-icon">📶</span> Escalier
+      </button>
+      <button class="tool-btn" id="tool-colonne" onclick="setTool('colonne',this)">
+        <span class="tool-icon">⬛</span> Colonne/Pilier
+      </button>
+      <button class="tool-btn" id="tool-sel" onclick="setTool('sel',this)">
+        <span class="tool-icon">↖️</span> Sélectionner
+      </button>
+      <button class="tool-btn" id="tool-gomme" onclick="setTool('gomme',this)">
+        <span class="tool-icon">⬜</span> Gomme
+      </button>
+    </div>
+
+    <!-- Canvas -->
+    <div class="canvas-zone" id="canvas-zone">
+      <div class="canvas-topbar">
+        <span style="font-size:11px;color:var(--txt3)">Outil actif:</span>
+        <span id="tool-label" style="font-size:11px;font-weight:700;color:var(--acc)">Mur extérieur</span>
+        <div class="sep"></div>
+        <span id="canvas-pos" style="font-size:11px;color:var(--txt3)">x:0 y:0</span>
+        <div class="sep"></div>
+        <span id="canvas-size" style="font-size:11px;color:var(--txt3)">Surface: 0 m²</span>
+        <div class="sep"></div>
+        <button onclick="zoomCanvas(1.2)">🔍+</button>
+        <button onclick="zoomCanvas(0.8)">🔍-</button>
+        <button onclick="zoomCanvas(1)">⬜ 100%</button>
+        <div class="sep"></div>
+        <label style="font-size:11px;color:var(--txt2);display:flex;align-items:center;gap:4px">
+          <input type="checkbox" id="snap-grid" checked> Magnétisme grille
+        </label>
+      </div>
+      <canvas id="plan-canvas" width="900" height="650"></canvas>
+    </div>
+
+    <!-- Propriétés -->
+    <div class="prop-panel">
+      <div class="prop-title">📐 Propriétés du plan</div>
+
+      <div class="prop-item">
+        <label class="prop-lbl">Nom du bâtiment</label>
+        <input id="prop-nom" class="prop-inp" placeholder="Villa, Bureau...">
+      </div>
+      <div class="prop-item">
+        <label class="prop-lbl">Type</label>
+        <select id="prop-type" class="prop-inp">
+          <option>Villa résidentielle</option><option>Appartement</option>
+          <option>Bureau/Commerce</option><option>École</option>
+          <option>Hôpital/CS</option><option>Entrepôt</option>
+          <option>Mosquée/Église</option><option>Hangar</option>
+        </select>
+      </div>
+      <div class="prop-item">
+        <label class="prop-lbl">Niveaux (étages)</label>
+        <select id="prop-etages" class="prop-inp" onchange="updateEtage()">
+          <option value="1">RDC seulement</option>
+          <option value="2">RDC + R+1</option>
+          <option value="3">RDC + R+2</option>
+        </select>
+      </div>
+      <div class="prop-item">
+        <label class="prop-lbl">Étage affiché</label>
+        <select id="prop-etage-sel" class="prop-inp" onchange="switchEtage()">
+          <option value="0">Rez-de-chaussée</option>
+        </select>
+      </div>
+
+      <div style="border-top:1px solid var(--bdr);padding-top:10px;margin-top:4px">
+        <div class="prop-title" style="font-size:12px">📊 Statistiques</div>
+        <div id="plan-stats" style="font-size:12px;color:var(--txt2);line-height:2">
+          Commencez à dessiner...
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--bdr);padding-top:10px">
+        <div class="prop-title" style="font-size:12px">🎨 Apparence</div>
+        <div class="prop-item">
+          <label class="prop-lbl">Couleur murs</label>
+          <input type="color" id="wall-color" value="#374151" class="prop-inp" style="height:34px;padding:2px">
+        </div>
+        <div class="prop-item">
+          <label class="prop-lbl">Couleur pièces</label>
+          <input type="color" id="room-color" value="#1c2230" class="prop-inp" style="height:34px;padding:2px">
+        </div>
+      </div>
+
+      <div style="border-top:1px solid var(--bdr);padding-top:10px">
+        <div class="prop-title" style="font-size:12px">📏 Légende</div>
+        <div style="font-size:11px;color:var(--txt2);line-height:2">
+          <div>▬ Mur ext. (30cm)</div>
+          <div>─ Cloison (15cm)</div>
+          <div>█ Mur porteur (40cm)</div>
+          <div>🚪 Porte</div>
+          <div>🪟 Fenêtre</div>
+          <div>⬛ Pilier</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VUE 3D -->
+<div class="page" id="page-vue3d">
+  <div class="page-hdr">
+    <div><div class="page-title">🏗️ Vue 3D Isométrique</div>
+      <div class="page-sub">Rendu 3D de votre plan — Vue isométrique interactive</div></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-sec btn-sm" onclick="rotate3D(-30)">↺ Rotation</button>
+      <button class="btn btn-sec btn-sm" onclick="rotate3D(30)">↻ Rotation</button>
+      <button class="btn btn-primary btn-sm" onclick="imprimer3D()">🖨 Imprimer</button>
+    </div>
+  </div>
+  <div id="vue3d-container" style="background:var(--surf);border:1px solid var(--bdr);border-radius:var(--radius);padding:20px;text-align:center;min-height:500px;display:flex;align-items:center;justify-content:center">
+    <div id="vue3d-content" style="width:100%"></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="card-body" id="vue3d-stats" style="display:flex;gap:20px;flex-wrap:wrap;font-size:13px;color:var(--txt2)"></div>
+  </div>
+</div>
+
+<!-- BIBLIOTHÈQUE -->
+<div class="page" id="page-bibliotheque">
+  <div class="page-hdr">
+    <div><div class="page-title">📚 Bibliothèque de Plans Standards</div>
+      <div class="page-sub">Modèles prêts à l'emploi — Adaptez selon vos besoins</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchBibTab('villa',this)">🏠 Villas</button>
+    <button class="tab" onclick="switchBibTab('appart',this)">🏢 Appartements</button>
+    <button class="tab" onclick="switchBibTab('commerce',this)">🏪 Commerce</button>
+    <button class="tab" onclick="switchBibTab('public',this)">🏛️ Bâtiments publics</button>
+  </div>
+  <div class="plans-lib" id="bib-grid"></div>
+</div>
+
+<!-- MATÉRIAUX -->
+<div class="page" id="page-materiaux">
+  <div class="page-hdr">
+    <div><div class="page-title">🧱 Calcul des Matériaux</div>
+      <div class="page-sub">Estimez vos besoins en matériaux de construction</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchMatTab('saisie',this)">📐 Saisie dimensions</button>
+    <button class="tab" onclick="switchMatTab('resultats',this)">📊 Résultats</button>
+    <button class="tab" onclick="switchMatTab('prix',this)">💰 Prix unitaires</button>
+  </div>
+  <div id="mat-content"></div>
+</div>
+
+<!-- PLOMBERIE -->
+<div class="page" id="page-plomberie">
+  <div class="page-hdr">
+    <div><div class="page-title">🔧 Plan de Plomberie</div>
+      <div class="page-sub">Réseau eau froide · Eau chaude · Évacuation · Fosse septique</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchPlombTab('schema',this)">📐 Schéma réseau</button>
+    <button class="tab" onclick="switchPlombTab('dimensionnement',this)">📏 Dimensionnement</button>
+    <button class="tab" onclick="switchPlombTab('fosse',this)">🪣 Fosse septique</button>
+    <button class="tab" onclick="switchPlombTab('materiel',this)">🔩 Liste matériel</button>
+  </div>
+  <div id="plomb-content"></div>
+</div>
+
+<!-- ÉLECTRICITÉ -->
+<div class="page" id="page-electricite">
+  <div class="page-hdr">
+    <div><div class="page-title">⚡ Plan Électrique</div>
+      <div class="page-sub">Circuits · Tableau · Prises · Éclairage · Normes</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchElecTab('schema',this)">📐 Schéma circuits</button>
+    <button class="tab" onclick="switchElecTab('calcul',this)">🔌 Calcul puissance</button>
+    <button class="tab" onclick="switchElecTab('tableau',this)">🗄️ Tableau électrique</button>
+    <button class="tab" onclick="switchElecTab('materiel',this)">🔩 Liste matériel</button>
+    <button class="tab" onclick="switchElecTab('normes',this)">📋 Normes</button>
+  </div>
+  <div id="elec-content"></div>
+</div>
+
+<!-- STRUCTURE -->
+<div class="page" id="page-structure">
+  <div class="page-hdr">
+    <div><div class="page-title">🏗️ Calcul Structure & Ferraillage</div>
+      <div class="page-sub">Fondations · Colonnes · Dalles · Poutres · Ferraillage</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchStructTab('fondation',this)">🪨 Fondations</button>
+    <button class="tab" onclick="switchStructTab('colonnes',this)">🏛️ Colonnes/Poteaux</button>
+    <button class="tab" onclick="switchStructTab('dalle',this)">🔲 Dalles</button>
+    <button class="tab" onclick="switchStructTab('ferraillage',this)">⚙️ Ferraillage</button>
+  </div>
+  <div id="struct-content"></div>
+</div>
+
+<!-- DEVIS -->
+<div class="page" id="page-devis">
+  <div class="page-hdr">
+    <div><div class="page-title">💰 Devis Automatique</div>
+      <div class="page-sub">Estimation coût global de construction</div></div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-warn btn-sm" onclick="exportDevisPDF()">📄 Exporter PDF</button>
+    </div>
+  </div>
+  <div id="devis-content"></div>
+</div>
+
+<!-- SUIVI CHANTIER -->
+<div class="page" id="page-suivi">
+  <div class="page-hdr">
+    <div><div class="page-title">📊 Suivi de Chantier</div></div>
+    <button class="btn btn-primary" onclick="ouvrirSuivi()">+ Enregistrer avancement</button>
+  </div>
+  <div id="suivi-content"></div>
+</div>
+
+<!-- GUIDE CONSTRUCTION -->
+<div class="page" id="page-construction">
+  <div class="page-hdr">
+    <div><div class="page-title">👷 Guide de Construction</div>
+      <div class="page-sub">Procédure complète étape par étape</div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchConstrTab('etapes',this)">📋 Étapes</button>
+    <button class="tab" onclick="switchConstrTab('gros-oeuvre',this)">🏗️ Gros œuvre</button>
+    <button class="tab" onclick="switchConstrTab('second-oeuvre',this)">🏠 Second œuvre</button>
+    <button class="tab" onclick="switchConstrTab('finitions',this)">✨ Finitions</button>
+    <button class="tab" onclick="switchConstrTab('planning',this)">📅 Planning</button>
+  </div>
+  <div id="constr-content"></div>
+</div>
+
+<!-- NORMES -->
+<div class="page" id="page-normes">
+  <div class="page-hdr">
+    <div><div class="page-title">📋 Normes & Conseils Professionnels</div></div>
+  </div>
+  <div id="normes-content"></div>
+</div>
+
+<!-- ASSISTANT IA -->
+<div class="page" id="page-assistant">
+  <div class="page-hdr">
+    <div><div class="page-title">🤖 Assistant IA Architecture</div>
+      <div class="page-sub">Conseils d'expert · Calculs · Orientations professionnelles</div></div>
+  </div>
+  <div class="ia-layout">
+    <div class="ia-box">
+      <div class="ia-msgs" id="ia-msgs">
+        <div class="ia-bot">🏛️ Bonjour ! Je suis votre assistant architecture expert.
+
+Je peux vous aider sur : calcul des matériaux, dimensionnement des structures, normes de construction, choix des matériaux, estimation des coûts, plomberie, électricité...
+
+Posez-moi n'importe quelle question sur votre projet !</div>
+      </div>
+      <div class="ia-inp-row">
+        <input class="ia-inp" id="ia-inp" placeholder="Posez votre question architecture..."
+          onkeydown="if(event.key==='Enter') sendIA()">
+        <button class="btn btn-primary" onclick="sendIA()">Envoyer</button>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:12px;font-weight:700;color:var(--txt2);margin-bottom:10px">💬 Questions fréquentes</div>
+      <div id="ia-quick"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- fin .main -->
+</div><!-- fin .app -->
+
+<!-- MODAL NOUVEAU PROJET -->
+<div class="modal-bg" id="modal-projet">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title">📁 Nouveau Projet</div>
+      <button class="modal-close" onclick="closeModal('modal-projet')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label class="form-lbl">Nom du projet *</label>
+          <input id="proj-nom" class="form-inp" placeholder="Villa Kofi, Bureau ESSE...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Type de bâtiment</label>
+          <select id="proj-type" class="form-inp">
+            <option>Villa résidentielle</option><option>Appartement</option>
+            <option>Bureau/Commerce</option><option>École</option>
+            <option>Entrepôt/Hangar</option><option>Mosquée/Église</option><option>Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Localisation</label>
+          <input id="proj-lieu" class="form-inp" placeholder="Cotonou, Azovè...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Surface totale (m²)</label>
+          <input type="number" id="proj-surface" class="form-inp" placeholder="120">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Budget estimé (F CFA)</label>
+          <input type="number" id="proj-budget" class="form-inp" placeholder="15000000">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Nombre de pièces</label>
+          <input type="number" id="proj-pieces" class="form-inp" placeholder="4">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Description / Notes</label>
+          <textarea id="proj-desc" class="form-inp" rows="2" placeholder="Villa 3 chambres avec salon, cuisine, 2 SDB..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-sec" onclick="closeModal('modal-projet')">Annuler</button>
+      <button class="btn btn-primary" onclick="sauvegarderProjet()">💾 Créer le projet</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// ARCHITECPRO — Plans & Construction
+// ══════════════════════════════════════════════════════════════════
+
+var DB = {
+  projets  : JSON.parse(localStorage.getItem('archi_projets')   || '[]'),
+  elements : JSON.parse(localStorage.getItem('archi_elements')  || '[]'),
+  suivi    : JSON.parse(localStorage.getItem('archi_suivi')     || '[]'),
+};
+
+if(!DB.projets.length) chargerDemo();
+
+function chargerDemo() {
+  DB.projets = [
+    {id:1,nom:'Villa Bognon',type:'Villa résidentielle',lieu:'Azovè',surface:150,budget:25000000,pieces:5,statut:'En conception',desc:'Villa 4 chambres + salon + cuisine + 2 SDB',date:'2026-01-10'},
+    {id:2,nom:'Bureau ESSE SERVICE',type:'Bureau/Commerce',lieu:'Azovè',surface:80,budget:12000000,pieces:6,statut:'En construction',desc:'Espace commercial avec 3 bureaux et accueil',date:'2026-02-15'},
+  ];
+  saveAll();
+}
+
+function saveAll() {
+  Object.keys(DB).forEach(function(k){try{localStorage.setItem('archi_'+k,JSON.stringify(DB[k]));}catch(e){}});
+}
+
+// ── Navigation ──
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(b){b.classList.remove('active');});
+  var pg=document.getElementById('page-'+id);if(pg)pg.classList.add('active');
+  if(btn)btn.classList.add('active');
+  var map={
+    dashboard:renderDashboard, projets:renderProjets,
+    studio:initStudio, vue3d:generer3D,
+    bibliotheque:function(){renderBibliotheque('villa');},
+    materiaux:function(){renderMateriaux('saisie');},
+    plomberie:function(){renderPlomberie('schema');},
+    electricite:function(){renderElectricite('schema');},
+    structure:function(){renderStructure('fondation');},
+    devis:renderDevis, suivi:renderSuivi,
+    construction:function(){renderConstruction('etapes');},
+    normes:renderNormes, assistant:renderAssistant,
+  };
+  if(map[id])map[id]();
+}
+
+// ── Utils ──
+function fmtNum(n){return Number(n||0).toLocaleString('fr-FR');}
+function today(){return new Date().toISOString().split('T')[0];}
+function genId(){return Date.now();}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+var _tt;function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){el.classList.remove('show');},3500);}
+function mkStat(v,l,c){return '<div class="stat-card"><div class="stat-val" style="color:'+c+'">'+v+'</div><div class="stat-lbl">'+l+'</div></div>';}
+function badge(t,c){return '<span class="badge badge-'+c+'">'+t+'</span>';}
+function switchTab(tab,btn,ctx){
+  var pg=document.querySelector('.page.active');
+  if(pg)pg.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+  if(btn)btn.classList.add('active');
+}
+
+// ══ DASHBOARD ══
+function renderDashboard() {
+  document.getElementById('dash-date').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  var enCours=DB.projets.filter(function(p){return p.statut!=='Terminé';});
+  var budgetTotal=DB.projets.reduce(function(s,p){return s+Number(p.budget||0);},0);
+  var surfaceTotal=DB.projets.reduce(function(s,p){return s+Number(p.surface||0);},0);
+  document.getElementById('badge-projets').textContent=DB.projets.length;
+  document.getElementById('dash-stats').innerHTML=
+    mkStat(DB.projets.length,'Projets total','#3b82f6')+
+    mkStat(enCours.length,'En cours','#10b981')+
+    mkStat(fmtNum(budgetTotal)+' F','Budget total','#f59e0b')+
+    mkStat(surfaceTotal+' m²','Surface totale','#8b5cf6');
+  var el=document.getElementById('dash-projets');
+  el.innerHTML=DB.projets.length?DB.projets.slice(-4).reverse().map(function(p){
+    var col=p.statut==='Terminé'?'green':p.statut==='En construction'?'yellow':'blue';
+    return '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--bdr)">'
+      +'<div style="font-size:28px">'+( p.type.includes('Villa')?'🏠':p.type.includes('Bureau')?'🏢':p.type.includes('École')?'🏫':'🏗️')+'</div>'
+      +'<div style="flex:1">'
+        +'<div style="font-weight:700;font-size:13px">'+p.nom+'</div>'
+        +'<div style="font-size:11px;color:var(--txt2)">'+p.lieu+' · '+p.surface+'m² · '+fmtNum(p.budget)+' F</div>'
+      +'</div>'
+      +badge(p.statut,col)
+    +'</div>';
+  }).join(''):'<div style="text-align:center;padding:30px;color:var(--txt3)">Aucun projet</div>';
+}
+
+// ══ PROJETS ══
+function renderProjets() {
+  var grid=document.getElementById('projets-grid');
+  grid.innerHTML=DB.projets.length?DB.projets.map(function(p){
+    var icon=p.type.includes('Villa')?'🏠':p.type.includes('Bureau')?'🏢':p.type.includes('École')?'🏫':'🏗️';
+    var col=p.statut==='Terminé'?'var(--green)':p.statut==='En construction'?'var(--acc2)':'var(--acc)';
+    return '<div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);padding:16px;transition:all .2s;cursor:pointer" onmouseover="this.style.borderColor=\'var(--acc)\'" onmouseout="this.style.borderColor=\'var(--bdr)\'">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
+        +'<div style="font-size:32px">'+icon+'</div>'
+        +'<span class="badge badge-'+(p.statut==='Terminé'?'green':p.statut==='En construction'?'yellow':'blue')+'">'+p.statut+'</span>'
+      +'</div>'
+      +'<div style="font-size:15px;font-weight:900;margin-bottom:4px">'+p.nom+'</div>'
+      +'<div style="font-size:12px;color:var(--txt2);margin-bottom:10px">'+p.type+' · '+p.lieu+'</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;margin-bottom:12px">'
+        +'<div style="background:var(--surf3);padding:6px 8px;border-radius:6px"><div style="color:var(--txt3)">Surface</div><div style="font-weight:700">'+p.surface+' m²</div></div>'
+        +'<div style="background:var(--surf3);padding:6px 8px;border-radius:6px"><div style="color:var(--txt3)">Budget</div><div style="font-weight:700">'+fmtNum(p.budget)+' F</div></div>'
+        +'<div style="background:var(--surf3);padding:6px 8px;border-radius:6px"><div style="color:var(--txt3)">Pièces</div><div style="font-weight:700">'+p.pieces+'</div></div>'
+        +'<div style="background:var(--surf3);padding:6px 8px;border-radius:6px"><div style="color:var(--txt3)">Date</div><div style="font-weight:700">'+p.date+'</div></div>'
+      +'</div>'
+      +'<div style="display:flex;gap:6px">'
+        +'<button class="btn btn-sec btn-sm" style="flex:1" data-id="'+p.id+'" onclick="chargerProjetStudio(this.dataset.id)">✏️ Dessiner</button>'
+        +'<button class="btn btn-warn btn-sm" style="flex:1" data-id="'+p.id+'" onclick="calculerProjet(this.dataset.id)">🧱 Calculer</button>'
+        +'<button class="btn btn-danger btn-sm" data-id="'+p.id+'" onclick="supprimerProjet(this.dataset.id)">🗑</button>'
+      +'</div>'
+    +'</div>';
+  }).join(''):'<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--txt3)"><div style="font-size:52px;margin-bottom:14px">📁</div><div style="font-weight:700;font-size:16px">Aucun projet</div><button class="btn btn-primary" style="margin-top:16px" onclick="ouvrirNouveauProjet()">+ Créer mon premier projet</button></div>';
+}
+
+function ouvrirNouveauProjet(){
+  ['proj-nom','proj-lieu','proj-desc'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('proj-surface').value='';
+  document.getElementById('proj-budget').value='';
+  document.getElementById('proj-pieces').value='';
+  openModal('modal-projet');
+}
+
+function sauvegarderProjet(){
+  var nom=document.getElementById('proj-nom').value.trim();if(!nom){toast('Nom obligatoire');return;}
+  var p={id:genId(),nom,type:document.getElementById('proj-type').value,lieu:document.getElementById('proj-lieu').value.trim(),surface:parseFloat(document.getElementById('proj-surface').value)||0,budget:parseFloat(document.getElementById('proj-budget').value)||0,pieces:parseInt(document.getElementById('proj-pieces').value)||0,desc:document.getElementById('proj-desc').value.trim(),statut:'En conception',date:today()};
+  DB.projets.push(p);saveAll();closeModal('modal-projet');
+  renderProjets();if(document.getElementById('page-dashboard').classList.contains('active'))renderDashboard();
+  toast('✅ Projet créé: '+nom);
+}
+
+function supprimerProjet(id){if(!confirm('Supprimer ce projet ?'))return;DB.projets=DB.projets.filter(function(p){return String(p.id)!==String(id);});saveAll();renderProjets();toast('🗑 Projet supprimé');}
+
+function chargerProjetStudio(id){var p=DB.projets.find(function(x){return String(x.id)===String(id);});if(!p)return;showPage('studio',null);document.querySelectorAll('.nav-item').forEach(function(b){if(b.textContent.includes('Studio'))b.classList.add('active');});if(p.nom)document.getElementById('prop-nom').value=p.nom;if(p.type)document.getElementById('prop-type').value=p.type;}
+
+function calculerProjet(id){var p=DB.projets.find(function(x){return String(x.id)===String(id);});if(!p)return;showPage('materiaux',null);document.querySelectorAll('.nav-item').forEach(function(b){if(b.textContent.includes('matériaux'))b.classList.add('active');});document.getElementById('mat-surface').value=p.surface;renderMateriaux('saisie');setTimeout(function(){calculerMateriaux();renderMateriaux('resultats');},100);}
+
+// ══ STUDIO 2D ══
+var canvas, ctx, _tool='mur', _drawing=false, _startX=0, _startY=0;
+var _elements=[], _history=[], _zoom=1, _etage=0;
+var GRID=20; // 20px = 1m
+
+var TOOL_LABELS={
+  'mur':'Mur extérieur (30cm)','mur-int':'Cloison (15cm)','mur-por':'Mur porteur (40cm)',
+  'porte':'Porte (90cm)','porte2':'Porte double (1.8m)','fenetre':'Fenêtre (1.2m)','couloir':'Baie vitrée',
+  'salon':'Salon','chambre':'Chambre','cuisine':'Cuisine','sdb':'Salle de bain',
+  'bureau':'Bureau','garage':'Garage','terrasse':'Terrasse','toilettes':'WC',
+  'escalier':'Escalier','colonne':'Colonne/Pilier','sel':'Sélectionner','gomme':'Gomme'
+};
+
+var ROOM_COLORS={
+  'salon':'rgba(59,130,246,.12)','chambre':'rgba(139,92,246,.12)','cuisine':'rgba(245,158,11,.12)',
+  'sdb':'rgba(6,182,212,.12)','bureau':'rgba(16,185,129,.12)','garage':'rgba(107,114,128,.12)',
+  'terrasse':'rgba(34,197,94,.12)','toilettes':'rgba(220,38,38,.08)'
+};
+
+var ROOM_LABELS={
+  'salon':'SALON','chambre':'CHAMBRE','cuisine':'CUISINE','sdb':'S.D.B',
+  'bureau':'BUREAU','garage':'GARAGE','terrasse':'TERRASSE','toilettes':'WC'
+};
+
+function initStudio(){
+  canvas=document.getElementById('plan-canvas');if(!canvas)return;
+  ctx=canvas.getContext('2d');
+  var zone=document.getElementById('canvas-zone');
+  canvas.width=zone.clientWidth||900;
+  canvas.height=(zone.clientHeight||700)-44;
+  drawGrid();drawElements();
+  canvas.onmousedown=startDraw;
+  canvas.onmousemove=moveDraw;
+  canvas.onmouseup=endDraw;
+  canvas.onmouseleave=function(){_drawing=false;};
+  canvas.ontouchstart=function(e){e.preventDefault();var t=e.touches[0];var ev={clientX:t.clientX,clientY:t.clientY,offsetX:t.clientX-canvas.getBoundingClientRect().left,offsetY:t.clientY-canvas.getBoundingClientRect().top};startDraw(ev);};
+  canvas.ontouchmove=function(e){e.preventDefault();var t=e.touches[0];var ev={clientX:t.clientX,clientY:t.clientY,offsetX:t.clientX-canvas.getBoundingClientRect().left,offsetY:t.clientY-canvas.getBoundingClientRect().top};moveDraw(ev);};
+  canvas.ontouchend=function(e){e.preventDefault();endDraw({});};
+}
+
+function snapToGrid(v){return Math.round(v/GRID)*GRID;}
+
+function setTool(t,btn){
+  _tool=t;
+  document.querySelectorAll('.tool-btn').forEach(function(b){b.classList.remove('active');});
+  if(btn)btn.classList.add('active');
+  var lbl=document.getElementById('tool-label');if(lbl)lbl.textContent=TOOL_LABELS[t]||t;
+  canvas.style.cursor=t==='sel'?'default':t==='gomme'?'cell':'crosshair';
+}
+
+function getCanvasPos(e){
+  var rect=canvas.getBoundingClientRect();
+  var x=(e.clientX-rect.left)/_zoom;
+  var y=(e.clientY-rect.top)/_zoom;
+  return {x:x,y:y};
+}
+
+function startDraw(e){
+  _drawing=true;
+  var snap=document.getElementById('snap-grid').checked;
+  var p=getCanvasPos(e);
+  _startX=snap?snapToGrid(p.x):p.x;
+  _startY=snap?snapToGrid(p.y):p.y;
+}
+
+function moveDraw(e){
+  var p=getCanvasPos(e);
+  var px=document.getElementById('canvas-pos');
+  if(px)px.textContent='x:'+(Math.round(p.x/GRID))+' y:'+(Math.round(p.y/GRID));
+  if(!_drawing)return;
+  drawGrid();drawElements();
+  var snap=document.getElementById('snap-grid').checked;
+  var x=snap?snapToGrid(p.x):p.x;
+  var y=snap?snapToGrid(p.y):p.y;
+  drawPreview(_startX,_startY,x,y);
+}
+
+function endDraw(e){
+  if(!_drawing){return;}
+  _drawing=false;
+  var snap=document.getElementById('snap-grid').checked;
+  var p=e.clientX?getCanvasPos(e):{x:_startX,y:_startY};
+  var x=snap?snapToGrid(p.x):p.x;
+  var y=snap?snapToGrid(p.y):p.y;
+  if(Math.abs(x-_startX)<5&&Math.abs(y-_startY)<5)return;
+
+  if(_tool==='gomme'){
+    // Supprimer éléments proches
+    _elements=_elements.filter(function(el){
+      return !(Math.abs(el.x-x)<30&&Math.abs(el.y-y)<30) &&
+             !(el.x2!==undefined&&Math.abs((el.x+el.x2)/2-x)<30&&Math.abs((el.y+el.y2)/2-y)<30);
+    });
+  } else {
+    _history.push(JSON.parse(JSON.stringify(_elements)));
+    _elements.push({type:_tool,x:_startX,y:_startY,x2:x,y2:y,etage:_etage});
+  }
+  drawGrid();drawElements();updateStats();
+}
+
+function drawGrid(){
+  if(!ctx)return;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.strokeStyle='rgba(59,130,246,.08)';ctx.lineWidth=1;
+  for(var i=0;i<=canvas.width;i+=GRID){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,canvas.height);ctx.stroke();}
+  for(var j=0;j<=canvas.height;j+=GRID){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(canvas.width,j);ctx.stroke();}
+  // Axe principal
+  ctx.strokeStyle='rgba(59,130,246,.2)';ctx.lineWidth=1;
+  for(var i=0;i<=canvas.width;i+=GRID*5){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,canvas.height);ctx.stroke();}
+  for(var j=0;j<=canvas.height;j+=GRID*5){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(canvas.width,j);ctx.stroke();}
+  // Dimensions (m)
+  ctx.fillStyle='rgba(59,130,246,.4)';ctx.font='8px DM Sans';
+  for(var i=GRID*5;i<canvas.width;i+=GRID*5){ctx.fillText(Math.round(i/GRID)+'m',i+2,10);}
+  for(var j=GRID*5;j<canvas.height;j+=GRID*5){ctx.fillText(Math.round(j/GRID)+'m',2,j-2);}
+}
+
+function drawElements(){
+  _elements.filter(function(el){return el.etage===_etage;}).forEach(function(el){drawElement(el);});
+}
+
+function drawElement(el){
+  if(!ctx)return;
+  var x1=el.x,y1=el.y,x2=el.x2||el.x,y2=el.y2||el.y;
+  var t=el.type;
+  ctx.save();
+
+  if(t==='mur'||t==='mur-int'||t==='mur-por'){
+    var w=t==='mur-int'?3:t==='mur-por'?7:5;
+    ctx.strokeStyle=t==='mur-por'?'#374151':t==='mur-int'?'#6b7280':'#1f2937';
+    ctx.lineWidth=w;
+    ctx.lineCap='square';
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  } else if(t==='porte'||t==='porte2'){
+    var len=Math.sqrt((x2-x1)**2+(y2-y1)**2);
+    var ang=Math.atan2(y2-y1,x2-x1);
+    ctx.strokeStyle='#f59e0b';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+    // Arc de porte
+    ctx.strokeStyle='rgba(245,158,11,.4)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.arc(x1,y1,len,ang,ang+Math.PI/2);ctx.stroke();
+    ctx.fillStyle='rgba(245,158,11,.05)';ctx.beginPath();ctx.arc(x1,y1,len,ang,ang+Math.PI/2);ctx.lineTo(x1,y1);ctx.closePath();ctx.fill();
+  } else if(t==='fenetre'||t==='couloir'){
+    ctx.strokeStyle='#60a5fa';ctx.lineWidth=2;
+    var len=Math.sqrt((x2-x1)**2+(y2-y1)**2);var ang=Math.atan2(y2-y1,x2-x1);
+    var px=Math.cos(ang+Math.PI/2)*4,py=Math.sin(ang+Math.PI/2)*4;
+    ctx.beginPath();ctx.moveTo(x1+px,y1+py);ctx.lineTo(x2+px,y2+py);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x1-px,y1-py);ctx.lineTo(x2-px,y2-py);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  } else if(t==='colonne'){
+    var s=12;
+    ctx.fillStyle='#374151';ctx.strokeStyle='#1f2937';ctx.lineWidth=1;
+    ctx.fillRect(x1-s/2,y1-s/2,s,s);ctx.strokeRect(x1-s/2,y1-s/2,s,s);
+  } else if(t==='escalier'){
+    ctx.strokeStyle='#a78bfa';ctx.lineWidth=1.5;
+    var dx=x2-x1,dy=y2-y1;var steps=6;
+    for(var i=0;i<=steps;i++){
+      var t2=i/steps;
+      ctx.beginPath();ctx.moveTo(x1+dx*t2-dy*0.1,y1+dy*t2+dx*0.1);
+      ctx.lineTo(x1+dx*t2+dy*0.1,y1+dy*t2-dx*0.1);ctx.stroke();
+    }
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+  } else {
+    // Pièces (rectangulaires)
+    var col=ROOM_COLORS[t]||'rgba(255,255,255,.05)';
+    var lbl=ROOM_LABELS[t]||t.toUpperCase();
+    ctx.fillStyle=col;ctx.fillRect(x1,y1,x2-x1,y2-y1);
+    ctx.strokeStyle='rgba(255,255,255,.15)';ctx.lineWidth=1;ctx.strokeRect(x1,y1,x2-x1,y2-y1);
+    ctx.fillStyle='rgba(255,255,255,.5)';ctx.font='bold '+(Math.min(Math.abs(x2-x1),Math.abs(y2-y1))/5)+'px DM Sans';
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(lbl,(x1+x2)/2,(y1+y2)/2);
+    var surf=Math.abs((x2-x1)/GRID*(y2-y1)/GRID).toFixed(1);
+    ctx.font='10px DM Sans';ctx.fillStyle='rgba(255,255,255,.35)';
+    ctx.fillText(surf+' m²',(x1+x2)/2,(y1+y2)/2+14);
+  }
+  ctx.restore();
+}
+
+function drawPreview(x1,y1,x2,y2){
+  if(!ctx)return;
+  ctx.save();ctx.globalAlpha=0.5;
+  drawElement({type:_tool,x:x1,y:y1,x2:x2,y2:y2});
+  ctx.restore();
+}
+
+function clearCanvas(){
+  if(!confirm('Effacer tous les éléments ?'))return;
+  _elements=[];drawGrid();drawElements();updateStats();toast('🗑 Plan effacé');
+}
+
+function undoCanvas(){
+  if(!_history.length){toast('Rien à annuler');return;}
+  _elements=_history.pop();drawGrid();drawElements();updateStats();
+}
+
+function zoomCanvas(z){
+  if(z===1){_zoom=1;}else{_zoom*=z;}
+  _zoom=Math.max(0.3,Math.min(3,_zoom));
+  canvas.style.transform='scale('+_zoom+')';
+  canvas.style.transformOrigin='top left';
+}
+
+function updateEtage(){
+  var nb=parseInt(document.getElementById('prop-etages').value)||1;
+  var sel=document.getElementById('prop-etage-sel');
+  sel.innerHTML=['Rez-de-chaussée','R+1','R+2'].slice(0,nb).map(function(e,i){
+    return '<option value="'+i+'">'+e+'</option>';
+  }).join('');
+}
+
+function switchEtage(){_etage=parseInt(document.getElementById('prop-etage-sel').value)||0;drawGrid();drawElements();}
+
+function updateStats(){
+  var rooms=_elements.filter(function(el){return ROOM_COLORS[el.type]&&el.etage===_etage;});
+  var walls=_elements.filter(function(el){return el.type==='mur'||el.type==='mur-int'||el.type==='mur-por';});
+  var surfaceTotal=rooms.reduce(function(s,el){return s+Math.abs((el.x2-el.x)/GRID*(el.y2-el.y)/GRID);},0);
+  var el=document.getElementById('plan-stats');
+  if(el) el.innerHTML='Pièces: <strong>'+rooms.length+'</strong><br>Murs: <strong>'+walls.length+'</strong><br>Surface pièces: <strong>'+surfaceTotal.toFixed(1)+' m²</strong>';
+  var sz=document.getElementById('canvas-size');
+  if(sz)sz.textContent='Surface: '+surfaceTotal.toFixed(1)+' m²';
+}
+
+function imprimerPlan(){
+  var data=canvas.toDataURL('image/png');
+  var w=window.open('','_blank');
+  var nom=document.getElementById('prop-nom').value||'Plan';
+  w.document.write('<!DOCTYPE html><html><head><title>'+nom+'</title><style>body{margin:0;background:#fff}img{max-width:100%}</style></head><body><h2 style="font-family:Arial;text-align:center;color:#3b82f6">'+nom+' — Plan 2D (Échelle: 1 case = 1m)</h2><img src="'+data+'"><script>window.onload=function(){window.print();}<\/script>
+<script>
+// DPTIF Pro — Identification app
+window.DPTIF_APP_ID   = 'architecture';
+window.DPTIF_APP_NAME = 'ArchitecPro';
+</script>
+<script>
+// DPTIF Pro — Callback démarrage (doit être AVANT le module licence)
+window.dptifOnLicenceOk = function() {
+  var lic = document.getElementById('dptif-lic-screen');
+  if(lic) lic.remove();
+  try { renderDashboard(); }
+  catch(e) {
+    var n = document.querySelector('.nav-item:first-child,[onclick*="showPage"],[onclick*="showSection"],[onclick*="showView"]');
+    if(n) n.click();
+  }
+};
+</script>
+<script>
+
+// ══════════════════════════════════════════════════════════════
+// DPTIF PRO — Module de vérification de licence v2
+// Contact: jeanpaulbognon3@gmail.com
+// ══════════════════════════════════════════════════════════════
+
+(function() {
+  var APP_ID    = window.DPTIF_APP_ID    || 'dptif-app';
+  var APP_NAME  = window.DPTIF_APP_NAME  || 'DPTIF Pro';
+  var DEMO_DAYS = 30;
+  var ADMIN_WA  = '22901970000';
+
+  function storageGet(k)  { try { return localStorage.getItem(k);       } catch(e){ return null; } }
+  function storageSet(k,v){ try { localStorage.setItem(k,v);            } catch(e){} }
+
+  function getLic()   { try{ return JSON.parse(storageGet('dptif_lic_'+APP_ID)||'null'); } catch(e){ return null; } }
+  function saveLic(l) { storageSet('dptif_lic_'+APP_ID, JSON.stringify(l)); }
+
+  function getFirstRun() {
+    var key = 'dptif_first_'+APP_ID;
+    var d = storageGet(key);
+    if(!d){ d=new Date().toISOString().slice(0,10); storageSet(key,d); }
+    return d;
+  }
+
+  function joursRestants(fin) {
+    return Math.ceil((new Date(fin)-new Date())/86400000);
+  }
+
+  function validerCle(cle) {
+    cle = (cle||'').trim().toUpperCase();
+    if(!cle) return {ok:false, msg:'Entrez votre clé'};
+    if(cle === 'DPTIF-MASTER-2026-JP') return {ok:true, jours:9999};
+    var parts = cle.split('-');
+    if(parts.length < 4) return {ok:false, msg:'Format invalide (ex: APP-CLI-XXXX-XXXX-XXXX)'};
+    // Vérifier si déjà stockée
+    var stored = getLic();
+    if(stored && stored.cle===cle) {
+      var j = joursRestants(stored.fin);
+      if(j < 0) return {ok:false, msg:'Licence expirée le '+stored.fin};
+      return {ok:true, jours:j, fin:stored.fin};
+    }
+    // Nouvelle clé — valider le format et stocker
+    var allValid = parts.every(function(p){ return /^[A-Z0-9]{3,}$/.test(p); });
+    if(!allValid) return {ok:false, msg:'Clé invalide — contactez Jean Paul BOGNON'};
+    var fin = new Date(); fin.setFullYear(fin.getFullYear()+1);
+    var finStr = fin.toISOString().slice(0,10);
+    saveLic({cle:cle, debut:new Date().toISOString().slice(0,10), fin:finStr});
+    return {ok:true, jours:365, fin:finStr};
+  }
+
+  function afficherBanniere(msg, color) {
+    var old = document.getElementById('dptif-banner');
+    if(old) old.remove();
+    var b = document.createElement('div');
+    b.id = 'dptif-banner';
+    b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9998;'
+      + 'background:'+color+';padding:9px 16px;display:flex;align-items:center;'
+      + 'justify-content:space-between;font-size:12px;font-weight:600;color:#000';
+    b.innerHTML = msg
+      + '<button onclick="this.parentNode.remove()" '
+      + 'style="background:rgba(0,0,0,.15);border:none;padding:4px 10px;'
+      + 'border-radius:6px;cursor:pointer;font-size:11px">✕</button>';
+    document.body.insertBefore(b, document.body.firstChild);
+  }
+
+  function afficherEcranLicence(msgTop, demoRestants) {
+    var old = document.getElementById('dptif-lic-screen');
+    if(old) old.remove();
+
+    var screen = document.createElement('div');
+    screen.id = 'dptif-lic-screen';
+    screen.style.cssText = 'position:fixed;inset:0;z-index:99999;'
+      + 'background:linear-gradient(135deg,#05060e,#0e0a2e);'
+      + 'display:flex;align-items:center;justify-content:center;padding:20px;'
+      + 'font-family:Arial,sans-serif';
+    document.body.appendChild(screen);
+
+    // Construire l'UI avec createElement
+    var box = document.createElement('div');
+    box.style.cssText = 'width:460px;max-width:100%;text-align:center';
+
+    // Logo
+    var logo = document.createElement('div');
+    logo.style.cssText = 'width:64px;height:64px;border-radius:18px;margin:0 auto 16px;'
+      + 'background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;'
+      + 'align-items:center;justify-content:center;font-size:28px';
+    logo.textContent = '⚡';
+
+    var title = document.createElement('div');
+    title.style.cssText = 'font-size:22px;font-weight:800;color:#fff;margin-bottom:4px';
+    title.textContent = 'DPTIF Pro';
+
+    var sub = document.createElement('div');
+    sub.style.cssText = 'font-size:13px;color:#9090c0;margin-bottom:24px';
+    sub.textContent = APP_NAME;
+
+    // Carte
+    var card = document.createElement('div');
+    card.style.cssText = 'background:#0f1118;border:1px solid rgba(99,102,241,.3);'
+      + 'border-radius:18px;padding:24px';
+
+    // Message statut
+    if(msgTop) {
+      var msgEl = document.createElement('div');
+      msgEl.style.cssText = 'background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);'
+        + 'border-radius:8px;padding:10px 14px;color:#f87171;font-size:13px;margin-bottom:16px';
+      msgEl.textContent = msgTop;
+      card.appendChild(msgEl);
+    } else if(demoRestants > 0) {
+      var demoEl = document.createElement('div');
+      demoEl.style.cssText = 'background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);'
+        + 'border-radius:8px;padding:10px 14px;color:#fbbf24;font-size:13px;margin-bottom:16px';
+      demoEl.textContent = '⏳ Mode démo — '+demoRestants+' jour(s) restant(s) sur '+DEMO_DAYS;
+      card.appendChild(demoEl);
+    }
+
+    // Label
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'text-align:left;font-size:11px;font-weight:700;color:#9090c0;'
+      + 'text-transform:uppercase;letter-spacing:1px;margin-bottom:6px';
+    lbl.textContent = 'Clé de licence';
+
+    // Input
+    var inp = document.createElement('input');
+    inp.id = 'dptif-lic-input';
+    inp.placeholder = 'APP-CLI-XXXX-XXXX-XXXX';
+    inp.style.cssText = 'width:100%;background:#161922;border:1px solid rgba(99,102,241,.3);'
+      + 'border-radius:10px;padding:12px 16px;color:#fff;font-size:14px;'
+      + 'font-family:monospace;letter-spacing:1px;box-sizing:border-box;margin-bottom:8px';
+    inp.addEventListener('input', function(){ this.value=this.value.toUpperCase(); });
+    inp.addEventListener('keydown', function(e){ if(e.key==='Enter') btn.click(); });
+
+    // Erreur
+    var errEl = document.createElement('div');
+    errEl.id = 'dptif-lic-err';
+    errEl.style.cssText = 'color:#f87171;font-size:12px;margin-bottom:10px;display:none;text-align:left';
+
+    // Bouton activer
+    var btn = document.createElement('button');
+    btn.style.cssText = 'width:100%;padding:13px;background:linear-gradient(135deg,#6366f1,#8b5cf6);'
+      + 'border:none;border-radius:11px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px';
+    btn.textContent = '🔑 Activer la licence';
+    btn.addEventListener('click', function() {
+      var cle = inp.value.trim();
+      var r = validerCle(cle);
+      if(r.ok) {
+        screen.remove();
+        if(r.jours <= 7) afficherBanniere('⚠️ Licence expire dans '+r.jours+' jour(s).','rgba(245,158,11,.9)');
+        if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+      } else {
+        errEl.style.display='block';
+        errEl.textContent = '❌ '+r.msg;
+      }
+    });
+
+    // Bouton démo
+    if(demoRestants > 0) {
+      var btnDemo = document.createElement('button');
+      btnDemo.style.cssText = 'width:100%;padding:11px;background:rgba(245,158,11,.12);'
+        + 'border:1px solid rgba(245,158,11,.3);border-radius:10px;color:#fbbf24;'
+        + 'font-size:13px;font-weight:600;cursor:pointer;margin-bottom:14px';
+      btnDemo.textContent = '⏳ Continuer en mode démo ('+demoRestants+'j)';
+      btnDemo.addEventListener('click', function() {
+        screen.remove();
+        if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+      });
+      card.appendChild(lbl);
+      card.appendChild(inp);
+      card.appendChild(errEl);
+      card.appendChild(btn);
+      card.appendChild(btnDemo);
+    } else {
+      card.appendChild(lbl);
+      card.appendChild(inp);
+      card.appendChild(errEl);
+      card.appendChild(btn);
+    }
+
+    // Footer contact
+    var footer = document.createElement('div');
+    footer.style.cssText = 'border-top:1px solid rgba(99,102,241,.15);padding-top:14px;'
+      + 'font-size:12px;color:#505080;margin-top:4px';
+    footer.innerHTML = 'Obtenir une licence: '
+      + '<a href="https://wa.me/'+ADMIN_WA+'" target="_blank" style="color:#6366f1">WhatsApp</a>'
+      + ' · jeanpaulbognon3@gmail.com';
+    card.appendChild(footer);
+
+    box.appendChild(logo);
+    box.appendChild(title);
+    box.appendChild(sub);
+    box.appendChild(card);
+    screen.appendChild(box);
+
+    setTimeout(function(){ inp.focus(); }, 200);
+  }
+
+  function init() {
+    var stored = getLic();
+    if(stored && stored.cle) {
+      var j = joursRestants(stored.fin);
+      if(j >= 0) {
+        if(j <= 7) afficherBanniere('⚠️ Licence expire dans '+j+' jour(s) — Contactez: wa.me/'+ADMIN_WA,'rgba(245,158,11,.9)');
+        if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+        return;
+      }
+      afficherEcranLicence('⏰ Licence expirée le '+stored.fin+' — Renouvelez pour continuer', 0);
+      return;
+    }
+    var firstRun = getFirstRun();
+    var joursDemo = Math.floor((new Date()-new Date(firstRun))/86400000);
+    var restants  = DEMO_DAYS - joursDemo;
+    if(restants > 5) {
+      if(restants <= DEMO_DAYS) {
+        afficherBanniere('⏳ Mode démo — '+restants+' jour(s) restants. <a href="https://wa.me/'+ADMIN_WA+'" target="_blank" style="color:#000;font-weight:700">Obtenir une licence</a>', 'rgba(245,158,11,.85)');
+      }
+      if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+    } else {
+      afficherEcranLicence(restants>0?null:'🔒 Démo expirée — Entrez votre clé de licence', restants>0?restants:0);
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
+  else setTimeout(init, 200);
+
+})();
+
+</script>
+
+</script>
+</body></script>
+</body></html>');
+  w.document.close();
+}
+
+// ══ VUE 3D ══
+var _rotation3D = 0;
+
+function generer3D(){
+  showPage('vue3d',null);
+  document.querySelectorAll('.nav-item').forEach(function(b){if(b.textContent.includes('3D'))b.classList.add('active');});
+  render3D(_rotation3D);
+}
+
+function rotate3D(deg){_rotation3D+=deg;render3D(_rotation3D);}
+function imprimer3D(){var el=document.getElementById('vue3d-content');var w=window.open('','_blank');w.document.write('<!DOCTYPE html><html><head><style>body{background:#fff;text-align:center}</style></head><body>'+el.innerHTML+'<script>window.onload=function(){window.print();}<\/script></body></html>');w.document.close();}
+
+function render3D(angle) {
+  var rooms=_elements.filter(function(el){return ROOM_COLORS[el.type];});
+  var walls=_elements.filter(function(el){return el.type==='mur'||el.type==='mur-int'||el.type==='mur-por';});
+  var h=3.0; // hauteur sol à plafond en mètres
+  var wallH=h*GRID; // en pixels
+  var rad=angle*Math.PI/180;
+  var cos=Math.cos(rad),sin=Math.sin(rad);
+  var scaleZ=0.5;
+  var COLGRID='rgba(59,130,246,.08)';
+  var proj=function(x,y,z){
+    var rx=x*cos-y*sin;
+    var ry=x*sin+y*cos;
+    return {x:400+rx,y:250-ry*scaleZ+z};
+  };
+
+  var nom=document.getElementById('prop-nom').value||'Bâtiment';
+  var surfTotal=rooms.reduce(function(s,el){return s+Math.abs((el.x2-el.x)/GRID*(el.y2-el.y)/GRID);},0);
+
+  var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 550" style="max-width:100%;background:'+
+    'linear-gradient(180deg,#080a10 0%,#0e1117 100%)">'
+    +'<defs><filter id="sh"><feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="rgba(0,0,0,.5)"/></filter></defs>';
+
+  // Sol
+  var corners=[[0,0],[400,0],[400,400],[0,400]];
+  var pts=corners.map(function(c){var p=proj(c[0]*0.5,c[1]*0.5,0);return p.x+','+p.y;}).join(' ');
+  svg+='<polygon points="'+pts+'" fill="rgba(28,34,48,.8)" stroke="rgba(59,130,246,.3)" stroke-width="1"/>';
+
+  // Pièces en 3D
+  rooms.forEach(function(el){
+    var col=ROOM_COLORS[el.type]||'rgba(59,130,246,.1)';
+    var colSolid=el.type==='salon'?'rgba(59,130,246,.4)':
+                 el.type==='chambre'?'rgba(139,92,246,.4)':
+                 el.type==='cuisine'?'rgba(245,158,11,.4)':
+                 el.type==='sdb'?'rgba(6,182,212,.4)':
+                 el.type==='bureau'?'rgba(16,185,129,.4)':'rgba(107,114,128,.3)';
+    var sx=el.x/GRID*0.5,sy=el.y/GRID*0.5;
+    var ex=el.x2/GRID*0.5,ey=el.y2/GRID*0.5;
+    var hz=-(wallH/GRID)*scaleZ;
+    var b=proj(sx,sy,0),c=proj(ex,sy,0),d=proj(ex,ey,0),a=proj(sx,ey,0);
+    var bt=proj(sx,sy,hz),ct=proj(ex,sy,hz),dt=proj(ex,ey,hz),at=proj(sx,ey,hz);
+    // Sol de la pièce
+    svg+='<polygon points="'+[a,b,c,d].map(function(p){return p.x+','+p.y;}).join(' ')+'" fill="'+col+'" stroke="rgba(255,255,255,.1)" stroke-width="0.5" filter="url(#sh)"/>';
+    // Mur avant
+    svg+='<polygon points="'+[b,c,ct,bt].map(function(p){return p.x+','+p.y;}).join(' ')+'" fill="'+colSolid+'" stroke="rgba(255,255,255,.1)" stroke-width="0.5" opacity="0.7"/>';
+    // Mur droit
+    svg+='<polygon points="'+[c,d,dt,ct].map(function(p){return p.x+','+p.y;}).join(' ')+'" fill="'+colSolid+'" stroke="rgba(255,255,255,.1)" stroke-width="0.5" opacity="0.5"/>';
+    // Toit
+    svg+='<polygon points="'+[bt,ct,dt,at].map(function(p){return p.x+','+p.y;}).join(' ')+'" fill="'+colSolid+'" stroke="rgba(255,255,255,.15)" stroke-width="0.5" opacity="0.9"/>';
+    // Label
+    var mx=(bt.x+ct.x+dt.x+at.x)/4, my=(bt.y+ct.y+dt.y+at.y)/4;
+    svg+='<text x="'+mx+'" y="'+my+'" text-anchor="middle" font-family="DM Sans" font-size="11" font-weight="bold" fill="rgba(255,255,255,.7)">'+ROOM_LABELS[el.type]+'</text>';
+  });
+
+  // Murs en 3D
+  walls.forEach(function(el){
+    var col=el.type==='mur-por'?'rgba(100,116,139,.9)':el.type==='mur-int'?'rgba(71,85,105,.7)':'rgba(51,65,85,.85)';
+    var x1=el.x/GRID*0.5,y1=el.y/GRID*0.5;
+    var x2=el.x2/GRID*0.5,y2=el.y2/GRID*0.5;
+    var hz=-(wallH/GRID)*scaleZ;
+    var b1=proj(x1,y1,0),b2=proj(x2,y2,0),t1=proj(x1,y1,hz),t2=proj(x2,y2,hz);
+    var thick=el.type==='mur'?3:el.type==='mur-por'?5:2;
+    svg+='<polygon points="'+[b1,b2,t2,t1].map(function(p){return p.x+','+p.y;}).join(' ')+'" fill="'+col+'" stroke="rgba(255,255,255,.08)" stroke-width="0.5"/>';
+  });
+
+  // Titre
+  svg+='<text x="400" y="30" text-anchor="middle" font-family="DM Sans" font-size="16" font-weight="900" fill="#3b82f6">'+nom+' — Vue 3D Isométrique</text>';
+  svg+='<text x="400" y="48" text-anchor="middle" font-family="DM Sans" font-size="11" fill="rgba(128,144,184,.7)">Rotation: '+angle+'° | Hauteur: '+h+'m | '+rooms.length+' pièces</text>';
+
+  // Boussole
+  svg+='<g transform="translate(740,80)"><circle cx="0" cy="0" r="20" fill="rgba(14,17,23,.8)" stroke="rgba(59,130,246,.3)"/>'
+    +'<text x="0" y="-8" text-anchor="middle" font-size="10" fill="#3b82f6" font-weight="bold">N</text>'
+    +'<text x="0" y="16" text-anchor="middle" font-size="10" fill="rgba(128,144,184,.5)">S</text>'
+    +'<text x="14" y="4" text-anchor="middle" font-size="10" fill="rgba(128,144,184,.5)">E</text>'
+    +'<text x="-14" y="4" text-anchor="middle" font-size="10" fill="rgba(128,144,184,.5)">O</text></g>';
+
+  if(!rooms.length&&!walls.length){
+    svg+='<text x="400" y="280" text-anchor="middle" font-family="DM Sans" font-size="14" fill="rgba(128,144,184,.5)">Dessinez votre plan dans le Studio 2D pour voir la vue 3D</text>';
+  }
+  svg+='</svg>';
+  document.getElementById('vue3d-content').innerHTML=svg;
+  document.getElementById('vue3d-stats').innerHTML=
+    '<span>🏠 '+rooms.length+' pièces</span>'
+    +'<span style="margin:0 8px">|</span>'
+    +'<span>📐 '+surfTotal.toFixed(1)+' m² habitable</span>'
+    +'<span style="margin:0 8px">|</span>'
+    +'<span>📏 Hauteur sous plafond: '+h+'m</span>'
+    +'<span style="margin:0 8px">|</span>'
+    +'<span>🔄 Rotation: '+angle+'°</span>';
+}
+
+// ══ BIBLIOTHÈQUE ══
+var BIB_PLANS = {
+  villa:[
+    {nom:'Villa F2 — Studio + 1 chambre',surface:60,pieces:3,desc:'Salon-cuisine, 1 chambre, 1 SDB, terrasse',prix:8000000,svg:genPlanF2()},
+    {nom:'Villa F3 — 2 chambres',surface:90,pieces:5,desc:'Salon, 2 chambres, SDB, cuisine, terrasse',prix:13000000,svg:genPlanF3()},
+    {nom:'Villa F4 — 3 chambres',surface:120,pieces:7,desc:'Grand salon, 3 chambres, 2 SDB, cuisine, garage',prix:20000000,svg:genPlanF4()},
+    {nom:'Villa F5 — 4 chambres',surface:160,pieces:9,desc:'Villa familiale: salon, bureau, 4 chambres, 2 SDB',prix:30000000,svg:genPlanF5()},
+    {nom:'Duplex R+1',surface:200,pieces:12,desc:'RDC: espaces de vie. R+1: chambres privatives',prix:45000000,svg:genPlanDuplex()},
+    {nom:'Maison en L (villa tropicale)',surface:140,pieces:8,desc:'Bungalow en L avec cour intérieure et préau',prix:22000000,svg:genPlanEnL()},
+  ],
+  appart:[
+    {nom:'Studio 35m²',surface:35,pieces:2,desc:'Pièce principale + SDB + coin cuisine',prix:5000000,svg:genStudio()},
+    {nom:'T2 — 55m²',surface:55,pieces:3,desc:'Salon, 1 chambre, SDB, cuisine équipée',prix:8500000,svg:genT2()},
+    {nom:'T3 — 75m²',surface:75,pieces:4,desc:'Salon, 2 chambres, SDB, cuisine, balcon',prix:12000000,svg:genT3()},
+  ],
+  commerce:[
+    {nom:'Bureau open-space 100m²',surface:100,pieces:5,desc:'Grand plateau + 2 bureaux fermés + accueil + salle réunion',prix:15000000,svg:genBureau()},
+    {nom:'Boutique 50m²',surface:50,pieces:3,desc:'Salle de vente, réserve, caisse, WC',prix:8000000,svg:genBoutique()},
+    {nom:'Restaurant 120m²',surface:120,pieces:6,desc:'Salle restaurant, cuisine pro, bar, terrasse, WC',prix:20000000,svg:genRestaurant()},
+  ],
+  public:[
+    {nom:'Salle de classe 60m²',surface:60,pieces:2,desc:'Salle 40 élèves, coin enseignant, rangements',prix:10000000,svg:genClassroom()},
+    {nom:'Centre de santé de base',surface:150,pieces:8,desc:'Accueil, 2 salles consultation, pharmacie, salle attente, WC',prix:25000000,svg:genCS()},
+  ]
+};
+
+function genPlanF2(){
+  return '<svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg" style="max-width:220px;background:#0e1117">'
+  +'<rect x="10" y="10" width="220" height="180" fill="none" stroke="#3b82f6" stroke-width="2"/>'
+  +'<!-- Salon -->'
+  +'<rect x="10" y="10" width="120" height="100" fill="rgba(59,130,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="70" y="55" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)" font-weight="bold">SALON</text>'
+  +'<text x="70" y="68" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.35)">5×4m</text>'
+  +'<!-- Chambre -->'
+  +'<rect x="130" y="10" width="100" height="100" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="180" y="55" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)" font-weight="bold">CHAMBRE</text>'
+  +'<text x="180" y="68" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.35)">4×4m</text>'
+  +'<!-- Cuisine -->'
+  +'<rect x="10" y="110" width="80" height="80" fill="rgba(245,158,11,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="50" y="150" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)" font-weight="bold">CUISINE</text>'
+  +'<!-- SDB -->'
+  +'<rect x="90" y="110" width="60" height="80" fill="rgba(6,182,212,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="120" y="150" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)">SDB</text>'
+  +'<!-- Terrasse -->'
+  +'<rect x="150" y="110" width="80" height="80" fill="rgba(34,197,94,.08)" stroke="rgba(34,197,94,.3)" stroke-dasharray="4,2"/>'
+  +'<text x="190" y="150" text-anchor="middle" font-size="9" fill="rgba(34,197,94,.7)">TERRASSE</text>'
+  +'<!-- Portes -->'
+  +'<line x1="70" y1="110" x2="90" y2="110" stroke="#f59e0b" stroke-width="2"/>'
+  +'<path d="M90,110 A20,20 0 0 0 70,110" fill="none" stroke="rgba(245,158,11,.4)" stroke-width="1"/>'
+  +'<text x="120" y="196" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">Villa F2 — 60 m²</text>'
+  +'</svg>';
+}
+
+function genPlanF3(){
+  return '<svg viewBox="0 0 280 220" xmlns="http://www.w3.org/2000/svg" style="max-width:260px;background:#0e1117">'
+  +'<rect x="10" y="10" width="260" height="200" fill="none" stroke="#3b82f6" stroke-width="2"/>'
+  +'<rect x="10" y="10" width="130" height="110" fill="rgba(59,130,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="75" y="60" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.6)" font-weight="bold">SALON</text>'
+  +'<text x="75" y="74" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.35)">6×5m</text>'
+  +'<rect x="140" y="10" width="130" height="110" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="205" y="55" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)" font-weight="bold">CH. MAÎTRE</text>'
+  +'<text x="205" y="68" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.35)">5×4m</text>'
+  +'<rect x="10" y="120" width="100" height="90" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="60" y="165" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)" font-weight="bold">CHAMBRE 2</text>'
+  +'<rect x="110" y="120" width="70" height="90" fill="rgba(245,158,11,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="145" y="165" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)">CUISINE</text>'
+  +'<rect x="180" y="120" width="60" height="45" fill="rgba(6,182,212,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="210" y="142" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)">SDB</text>'
+  +'<rect x="180" y="165" width="60" height="45" fill="rgba(34,197,94,.08)" stroke="rgba(34,197,94,.3)" stroke-dasharray="3,2"/>'
+  +'<text x="210" y="190" text-anchor="middle" font-size="8" fill="rgba(34,197,94,.7)">TERRASSE</text>'
+  +'<text x="140" y="214" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">Villa F3 — 90 m²</text>'
+  +'</svg>';
+}
+
+function genPlanF4(){
+  return '<svg viewBox="0 0 320 260" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;background:#0e1117">'
+  +'<rect x="10" y="10" width="300" height="240" fill="none" stroke="#3b82f6" stroke-width="2"/>'
+  +'<!-- Salon -->'
+  +'<rect x="10" y="10" width="150" height="120" fill="rgba(59,130,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="85" y="66" text-anchor="middle" font-size="12" fill="rgba(255,255,255,.6)" font-weight="bold">SALON</text>'
+  +'<text x="85" y="80" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.35)">7×5m = 35m²</text>'
+  +'<!-- Ch. Maître -->'
+  +'<rect x="160" y="10" width="150" height="120" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="235" y="60" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.6)" font-weight="bold">CH. MAÎTRE</text>'
+  +'<text x="235" y="73" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.35)">6×5m + SDB</text>'
+  +'<!-- Ch 2 -->'
+  +'<rect x="10" y="130" width="100" height="90" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="60" y="178" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)" font-weight="bold">CH. 2</text>'
+  +'<!-- Ch 3 -->'
+  +'<rect x="110" y="130" width="100" height="90" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="160" y="178" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)" font-weight="bold">CH. 3</text>'
+  +'<!-- Cuisine -->'
+  +'<rect x="210" y="130" width="100" height="50" fill="rgba(245,158,11,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="260" y="158" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)">CUISINE</text>'
+  +'<!-- SDB + WC -->'
+  +'<rect x="210" y="180" width="50" height="50" fill="rgba(6,182,212,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="235" y="206" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.6)">SDB</text>'
+  +'<rect x="260" y="180" width="50" height="50" fill="rgba(220,38,38,.08)" stroke="rgba(255,255,255,.1)"/>'
+  +'<text x="285" y="206" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.5)">WC</text>'
+  +'<!-- Garage -->'
+  +'<rect x="10" y="130" width="100" height="90" rx="0" fill="none"/>'
+  +'<text x="160" y="254" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">Villa F4 — 120 m²</text>'
+  +'</svg>';
+}
+
+function genPlanF5(){
+  return '<svg viewBox="0 0 340 280" xmlns="http://www.w3.org/2000/svg" style="max-width:320px;background:#0e1117">'
+  +'<rect x="10" y="10" width="320" height="260" fill="none" stroke="#3b82f6" stroke-width="2.5"/>'
+  +'<rect x="10" y="10" width="150" height="140" fill="rgba(59,130,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="85" y="76" text-anchor="middle" font-size="12" fill="rgba(255,255,255,.7)" font-weight="bold">GRAND SALON</text>'
+  +'<text x="85" y="90" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.35)">40 m²</text>'
+  +'<rect x="160" y="10" width="170" height="140" fill="rgba(139,92,246,.15)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="245" y="76" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.7)" font-weight="bold">CH. MAÎTRE</text>'
+  +'<text x="245" y="90" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.35)">+ SDB privative</text>'
+  +'<rect x="10" y="150" width="100" height="80" fill="rgba(16,185,129,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="60" y="192" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">BUREAU</text>'
+  +'<rect x="110" y="150" width="100" height="80" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="160" y="192" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CHAMBRE 2</text>'
+  +'<rect x="210" y="150" width="120" height="80" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="270" y="192" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CHAMBRE 3</text>'
+  +'<rect x="10" y="230" width="130" height="40" fill="rgba(245,158,11,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="75" y="254" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CUISINE ÉQUIPÉE</text>'
+  +'<rect x="140" y="230" width="80" height="40" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="180" y="254" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)">CHAMBRE 4</text>'
+  +'<rect x="220" y="230" width="60" height="40" fill="rgba(6,182,212,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="250" y="250" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.6)">SDB 2</text>'
+  +'<rect x="280" y="230" width="50" height="40" fill="rgba(107,114,128,.12)" stroke="rgba(255,255,255,.1)"/>'
+  +'<text x="305" y="250" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.5)">GARAGE</text>'
+  +'<text x="170" y="275" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">Villa F5 — 160 m²</text>'
+  +'</svg>';
+}
+
+function genPlanDuplex(){
+  return '<svg viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;background:#0e1117">'
+  +'<text x="160" y="22" text-anchor="middle" font-size="11" fill="#60a5fa" font-weight="bold">RDC</text>'
+  +'<rect x="10" y="28" width="300" height="110" fill="none" stroke="#3b82f6" stroke-width="2"/>'
+  +'<rect x="10" y="28" width="160" height="110" fill="rgba(59,130,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="90" y="80" text-anchor="middle" font-size="12" fill="rgba(255,255,255,.6)" font-weight="bold">SALON+SÉJOUR</text>'
+  +'<rect x="170" y="28" width="140" height="60" fill="rgba(245,158,11,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="240" y="60" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CUISINE</text>'
+  +'<rect x="170" y="88" width="80" height="50" fill="rgba(6,182,212,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="210" y="116" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)">SDB</text>'
+  +'<rect x="250" y="88" width="60" height="50" fill="rgba(107,114,128,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="280" y="116" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.5)">GARAGE</text>'
+  +'<text x="160" y="158" text-anchor="middle" font-size="11" fill="#a78bfa" font-weight="bold">R+1</text>'
+  +'<rect x="10" y="162" width="300" height="100" fill="none" stroke="#8b5cf6" stroke-width="2"/>'
+  +'<rect x="10" y="162" width="100" height="100" fill="rgba(139,92,246,.15)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="60" y="212" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)" font-weight="bold">CH. MAÎTRE</text>'
+  +'<rect x="110" y="162" width="100" height="100" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="160" y="212" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CH. 2</text>'
+  +'<rect x="210" y="162" width="100" height="100" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="260" y="212" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CH. 3</text>'
+  +'<rect x="10" y="242" width="100" height="20" fill="rgba(6,182,212,.12)" stroke="rgba(255,255,255,.1)"/>'
+  +'<text x="60" y="255" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.5)">SDB en-suite</text>'
+  +'<text x="160" y="276" text-anchor="middle" font-size="9" fill="#8b5cf6" font-weight="bold">Duplex R+1 — 200 m²</text>'
+  +'</svg>';
+}
+
+function genPlanEnL(){
+  return '<svg viewBox="0 0 300 260" xmlns="http://www.w3.org/2000/svg" style="max-width:280px;background:#0e1117">'
+  +'<!-- Forme en L -->'
+  +'<path d="M10 10 L210 10 L210 130 L290 130 L290 250 L10 250 Z" fill="none" stroke="#3b82f6" stroke-width="2"/>'
+  +'<rect x="10" y="10" width="120" height="120" fill="rgba(59,130,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="70" y="65" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.6)" font-weight="bold">SALON</text>'
+  +'<rect x="130" y="10" width="80" height="120" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="170" y="65" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CH.1</text>'
+  +'<rect x="210" y="130" width="80" height="80" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="250" y="172" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CH.2</text>'
+  +'<rect x="10" y="130" width="100" height="80" fill="rgba(245,158,11,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="60" y="172" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CUISINE</text>'
+  +'<rect x="110" y="130" width="100" height="80" fill="rgba(6,182,212,.12)" stroke="rgba(255,255,255,.15)"/>'
+  +'<text x="160" y="172" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">SDB+WC</text>'
+  +'<!-- Cour/Préau -->'
+  +'<rect x="10" y="210" width="290" height="40" fill="rgba(34,197,94,.06)" stroke="rgba(34,197,94,.25)" stroke-dasharray="4,2"/>'
+  +'<text x="155" y="233" text-anchor="middle" font-size="10" fill="rgba(34,197,94,.6)">PRÉAU / COUR INTÉRIEURE</text>'
+  +'<text x="150" y="255" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">Villa en L — 140 m²</text>'
+  +'</svg>';
+}
+
+function genStudio(){
+  return '<svg viewBox="0 0 220 200" xmlns="http://www.w3.org/2000/svg" style="max-width:200px;background:#0e1117">'
+  +'<rect x="10" y="10" width="200" height="180" fill="none" stroke="#3b82f6" stroke-width="2"/>'
+  +'<rect x="10" y="10" width="200" height="110" fill="rgba(59,130,246,.12)" stroke="rgba(255,255,255,.1)"/>'
+  +'<text x="110" y="60" text-anchor="middle" font-size="12" fill="rgba(255,255,255,.6)" font-weight="bold">PIÈCE PRINCIPALE</text>'
+  +'<text x="110" y="75" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.35)">(Salon + Lit + Bureau)</text>'
+  +'<rect x="10" y="120" width="100" height="70" fill="rgba(245,158,11,.12)" stroke="rgba(255,255,255,.1)"/>'
+  +'<text x="60" y="158" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)">COIN CUISINE</text>'
+  +'<rect x="110" y="120" width="100" height="70" fill="rgba(6,182,212,.12)" stroke="rgba(255,255,255,.1)"/>'
+  +'<text x="160" y="158" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">SDB+WC</text>'
+  +'<text x="110" y="197" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">Studio 35 m²</text>'
+  +'</svg>';
+}
+function genT2(){return '<svg viewBox="0 0 260 200" xmlns="http://www.w3.org/2000/svg" style="max-width:240px;background:#0e1117"><rect x="10" y="10" width="240" height="180" fill="none" stroke="#3b82f6" stroke-width="2"/><rect x="10" y="10" width="130" height="100" fill="rgba(59,130,246,.12)" stroke="rgba(255,255,255,.1)"/><text x="75" y="58" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.6)" font-weight="bold">SALON</text><rect x="140" y="10" width="110" height="100" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.1)"/><text x="195" y="58" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CHAMBRE</text><rect x="10" y="110" width="110" height="80" fill="rgba(245,158,11,.12)" stroke="rgba(255,255,255,.1)"/><text x="65" y="152" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CUISINE</text><rect x="120" y="110" width="130" height="80" fill="rgba(6,182,212,.12)" stroke="rgba(255,255,255,.1)"/><text x="185" y="152" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">SDB</text><text x="130" y="197" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">Appartement T2 — 55 m²</text></svg>';}
+function genT3(){return '<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg" style="max-width:280px;background:#0e1117"><rect x="10" y="10" width="280" height="200" fill="none" stroke="#3b82f6" stroke-width="2"/><rect x="10" y="10" width="140" height="110" fill="rgba(59,130,246,.12)" stroke="rgba(255,255,255,.1)"/><text x="80" y="63" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.6)" font-weight="bold">SALON</text><rect x="150" y="10" width="140" height="110" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.1)"/><text x="220" y="58" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CH. 1</text><rect x="10" y="120" width="100" height="90" fill="rgba(139,92,246,.12)" stroke="rgba(255,255,255,.1)"/><text x="60" y="168" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CH. 2</text><rect x="110" y="120" width="90" height="90" fill="rgba(245,158,11,.12)" stroke="rgba(255,255,255,.1)"/><text x="155" y="168" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)">CUISINE</text><rect x="200" y="120" width="90" height="90" fill="rgba(6,182,212,.12)" stroke="rgba(255,255,255,.1)"/><text x="245" y="168" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)">SDB</text><text x="150" y="217" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">Appartement T3 — 75 m²</text></svg>';}
+function genBureau(){return '<svg viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;background:#0e1117"><rect x="10" y="10" width="300" height="220" fill="none" stroke="#3b82f6" stroke-width="2"/><rect x="10" y="10" width="200" height="130" fill="rgba(16,185,129,.1)" stroke="rgba(255,255,255,.1)"/><text x="110" y="72" text-anchor="middle" font-size="12" fill="rgba(255,255,255,.6)" font-weight="bold">OPEN SPACE</text><rect x="210" y="10" width="100" height="60" fill="rgba(59,130,246,.12)" stroke="rgba(255,255,255,.1)"/><text x="260" y="42" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">BUREAU 1</text><rect x="210" y="70" width="100" height="70" fill="rgba(59,130,246,.12)" stroke="rgba(255,255,255,.1)"/><text x="260" y="108" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">BUREAU 2</text><rect x="10" y="140" width="200" height="90" fill="rgba(139,92,246,.1)" stroke="rgba(255,255,255,.1)"/><text x="110" y="188" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.6)" font-weight="bold">SALLE RÉUNION</text><rect x="210" y="140" width="60" height="90" fill="rgba(6,182,212,.1)" stroke="rgba(255,255,255,.1)"/><text x="240" y="188" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.5)">ACCUEIL</text><rect x="270" y="140" width="40" height="90" fill="rgba(220,38,38,.07)" stroke="rgba(255,255,255,.08)"/><text x="290" y="188" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.4)">WC</text><text x="160" y="236" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">Bureau Open-Space — 100 m²</text></svg>';}
+function genBoutique(){return '<svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg" style="max-width:220px;background:#0e1117"><rect x="10" y="10" width="220" height="180" fill="none" stroke="#3b82f6" stroke-width="2"/><rect x="10" y="10" width="220" height="100" fill="rgba(245,158,11,.1)" stroke="rgba(255,255,255,.1)"/><text x="120" y="58" text-anchor="middle" font-size="12" fill="rgba(255,255,255,.6)" font-weight="bold">ESPACE VENTE</text><rect x="10" y="110" width="120" height="80" fill="rgba(59,130,246,.1)" stroke="rgba(255,255,255,.1)"/><text x="70" y="152" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">RÉSERVE</text><rect x="130" y="110" width="50" height="80" fill="rgba(16,185,129,.1)" stroke="rgba(255,255,255,.1)"/><text x="155" y="152" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)">CAISSE</text><rect x="180" y="110" width="50" height="80" fill="rgba(220,38,38,.07)" stroke="rgba(255,255,255,.08)"/><text x="205" y="152" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.4)">WC</text><text x="120" y="197" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">Boutique 50 m²</text></svg>';}
+function genRestaurant(){return '<svg viewBox="0 0 300 240" xmlns="http://www.w3.org/2000/svg" style="max-width:280px;background:#0e1117"><rect x="10" y="10" width="280" height="220" fill="none" stroke="#3b82f6" stroke-width="2"/><rect x="10" y="10" width="170" height="130" fill="rgba(245,158,11,.1)" stroke="rgba(255,255,255,.1)"/><text x="95" y="72" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.6)" font-weight="bold">SALLE RESTAURANT</text><rect x="180" y="10" width="110" height="130" fill="rgba(239,68,68,.08)" stroke="rgba(255,255,255,.1)"/><text x="235" y="72" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)" font-weight="bold">CUISINE PRO</text><rect x="10" y="140" width="90" height="90" fill="rgba(59,130,246,.1)" stroke="rgba(255,255,255,.1)"/><text x="55" y="188" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">BAR</text><rect x="100" y="140" width="110" height="90" fill="rgba(34,197,94,.06)" stroke="rgba(34,197,94,.2)" stroke-dasharray="3,2"/><text x="155" y="188" text-anchor="middle" font-size="10" fill="rgba(34,197,94,.7)">TERRASSE</text><rect x="210" y="140" width="80" height="90" fill="rgba(6,182,212,.08)" stroke="rgba(255,255,255,.1)"/><text x="250" y="188" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)">WC + COULOIR</text><text x="150" y="236" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">Restaurant 120 m²</text></svg>';}
+function genClassroom(){return '<svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg" style="max-width:220px;background:#0e1117"><rect x="10" y="10" width="220" height="180" fill="none" stroke="#3b82f6" stroke-width="2"/><rect x="10" y="10" width="220" height="140" fill="rgba(59,130,246,.1)" stroke="rgba(255,255,255,.1)"/><text x="120" y="72" text-anchor="middle" font-size="12" fill="rgba(255,255,255,.6)" font-weight="bold">SALLE DE CLASSE</text><text x="120" y="88" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.35)">40 élèves</text><rect x="10" y="20" width="220" height="25" fill="rgba(245,158,11,.1)" stroke="rgba(255,255,255,.1)"/><text x="120" y="36" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.5)">TABLEAU</text><rect x="10" y="150" width="140" height="40" fill="rgba(16,185,129,.1)" stroke="rgba(255,255,255,.1)"/><text x="80" y="174" text-anchor="middle" font-size="9" fill="rgba(255,255,255,.6)">COIN ENSEIGNANT</text><rect x="150" y="150" width="80" height="40" fill="rgba(220,38,38,.07)" stroke="rgba(255,255,255,.08)"/><text x="190" y="174" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.4)">RANGEMENT</text><text x="120" y="197" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">Salle de classe 60 m²</text></svg>';}
+function genCS(){return '<svg viewBox="0 0 320 240" xmlns="http://www.w3.org/2000/svg" style="max-width:300px;background:#0e1117"><rect x="10" y="10" width="300" height="220" fill="none" stroke="#3b82f6" stroke-width="2"/><rect x="10" y="10" width="300" height="50" fill="rgba(59,130,246,.1)" stroke="rgba(255,255,255,.1)"/><text x="160" y="38" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.6)" font-weight="bold">SALLE ATTENTE</text><rect x="10" y="60" width="100" height="100" fill="rgba(6,182,212,.1)" stroke="rgba(255,255,255,.1)"/><text x="60" y="113" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CONSUL. 1</text><rect x="110" y="60" width="100" height="100" fill="rgba(6,182,212,.1)" stroke="rgba(255,255,255,.1)"/><text x="160" y="113" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">CONSUL. 2</text><rect x="210" y="60" width="100" height="100" fill="rgba(245,158,11,.1)" stroke="rgba(255,255,255,.1)"/><text x="260" y="113" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.6)">PHARMACIE</text><rect x="10" y="160" width="300" height="70" fill="rgba(220,38,38,.06)" stroke="rgba(255,255,255,.08)"/><text x="160" y="197" text-anchor="middle" font-size="10" fill="rgba(255,255,255,.5)">COULOIR + ACCUEIL + WC</text><text x="160" y="237" text-anchor="middle" font-size="9" fill="#3b82f6" font-weight="bold">Centre de Santé 150 m²</text></svg>';}
+
+function renderBibliotheque(tab){
+  var grid=document.getElementById('bib-grid');
+  var data=BIB_PLANS[tab]||[];
+  grid.innerHTML=data.map(function(p){
+    return '<div class="plan-lib-card">'
+      +'<div class="plan-preview">'+p.svg+'</div>'
+      +'<div class="plan-lib-body">'
+        +'<div style="font-size:14px;font-weight:800;margin-bottom:6px">'+p.nom+'</div>'
+        +'<div style="font-size:11px;color:var(--txt2);margin-bottom:8px">'+p.desc+'</div>'
+        +'<div style="display:flex;gap:10px;font-size:11px;margin-bottom:10px">'
+          +'<span>📐 '+p.surface+' m²</span>'
+          +'<span>🚪 '+p.pieces+' pièces</span>'
+          +'<span>💰 '+fmtNum(p.prix)+' F</span>'
+        +'</div>'
+        +'<div style="display:flex;gap:6px">'
+          +'<button class="btn btn-primary btn-sm" style="flex:1" onclick="chargerPlanBib(this)" data-plan="'+encodeURIComponent(JSON.stringify(p))+'">✏️ Utiliser ce plan</button>'
+          +'<button class="btn btn-sec btn-sm" onclick="calculerDepuisBib(this)" data-surface="'+p.surface+'" data-pieces="'+p.pieces+'">🧱 Calculer</button>'
+        +'</div>'
+      +'</div>'
+    +'</div>';
+  }).join('');
+}
+
+function switchBibTab(tab,btn){
+  switchTab(tab,btn,'bib');renderBibliotheque(tab);
+}
+
+function chargerPlanBib(btn){
+  var p=JSON.parse(decodeURIComponent(btn.dataset.plan));
+  toast('✅ Plan "'+p.nom+'" chargé — Allez dans Studio 2D pour personnaliser');
+  showPage('studio',null);
+  document.querySelectorAll('.nav-item').forEach(function(b){if(b.textContent.includes('Studio'))b.classList.add('active');});
+  if(document.getElementById('prop-nom'))document.getElementById('prop-nom').value=p.nom;
+}
+
+function calculerDepuisBib(btn){
+  showPage('materiaux',null);
+  document.querySelectorAll('.nav-item').forEach(function(b){if(b.textContent.includes('matériaux'))b.classList.add('active');});
+  document.getElementById('mat-surface').value=btn.dataset.surface;
+  document.getElementById('mat-pieces').value=btn.dataset.pieces;
+  renderMateriaux('saisie');
+  setTimeout(function(){calculerMateriaux();renderMateriaux('resultats');},100);
+}
+
+function calculerDepuisPlan(){
+  var rooms=_elements.filter(function(el){return ROOM_COLORS[el.type];});
+  var surf=rooms.reduce(function(s,el){return s+Math.abs((el.x2-el.x)/GRID*(el.y2-el.y)/GRID);},0);
+  if(surf<5){toast('Dessinez d\'abord votre plan dans le Studio 2D');return;}
+  showPage('materiaux',null);
+  document.querySelectorAll('.nav-item').forEach(function(b){if(b.textContent.includes('matériaux'))b.classList.add('active');});
+  document.getElementById('mat-surface').value=Math.round(surf);
+  document.getElementById('mat-pieces').value=rooms.length;
+  renderMateriaux('saisie');
+  setTimeout(function(){calculerMateriaux();renderMateriaux('resultats');},100);
+}
+
+// ══ MATÉRIAUX ══
+var _matResult = null;
+
+function renderMateriaux(tab) {
+  var el=document.getElementById('mat-content');
+  if(tab==='saisie'){
+    el.innerHTML='<div class="card"><div class="card-body">'
+    +'<div class="form-grid">'
+    +'<div class="form-group"><label class="form-lbl">Surface habitable totale (m²) *</label><input id="mat-surface" class="form-inp" type="number" placeholder="120"></div>'
+    +'<div class="form-group"><label class="form-lbl">Nombre de pièces</label><input id="mat-pieces" class="form-inp" type="number" placeholder="5"></div>'
+    +'<div class="form-group"><label class="form-lbl">Nombre d\'étages</label><select id="mat-etages" class="form-inp"><option value="1">1 niveau (RDC)</option><option value="2">2 niveaux (R+1)</option><option value="3">3 niveaux (R+2)</option></select></div>'
+    +'<div class="form-group"><label class="form-lbl">Type de toiture</label><select id="mat-toiture" class="form-inp"><option value="tole">Tôle bac acier</option><option value="beton">Dalle béton armé</option><option value="tuile">Tuiles</option></select></div>'
+    +'<div class="form-group"><label class="form-lbl">Hauteur sous plafond (m)</label><input id="mat-hauteur" class="form-inp" type="number" placeholder="3.0" step="0.1" value="3.0"></div>'
+    +'<div class="form-group"><label class="form-lbl">Nombre de portes</label><input id="mat-portes" class="form-inp" type="number" placeholder="6"></div>'
+    +'<div class="form-group"><label class="form-lbl">Nombre de fenêtres</label><input id="mat-fenetres" class="form-inp" type="number" placeholder="8"></div>'
+    +'<div class="form-group"><label class="form-lbl">Type de finition sol</label><select id="mat-sol" class="form-inp"><option value="carrelage">Carrelage 40×40</option><option value="carrelage-prem">Carrelage 60×60 premium</option><option value="beton">Béton lissé</option></select></div>'
+    +'</div>'
+    +'<div style="margin-top:16px;display:flex;gap:8px">'
+    +'<button class="btn btn-primary" onclick="calculerMateriaux();renderMateriaux(\'resultats\')">🧱 Calculer les matériaux</button>'
+    +'</div></div></div>';
+  } else if(tab==='resultats'){
+    if(!_matResult){el.innerHTML='<div class="alert alert-warn">Remplissez d\'abord les dimensions et cliquez sur Calculer.</div>';return;}
+    var r=_matResult;
+    el.innerHTML='<div class="alert alert-success" style="margin-bottom:16px">✅ Calcul effectué pour <strong>'+r.surface+' m²</strong> — Résultats ci-dessous (avec une marge de 10% incluse)</div>'
+    +'<div class="table-wrap"><table><thead><tr><th>Matériau</th><th>Quantité</th><th>Unité</th><th>Prix unit. (F)</th><th>Montant total (F)</th></tr></thead><tbody>'
+    +r.items.map(function(item){
+      return '<tr><td><strong>'+item.nom+'</strong><br><span style="font-size:11px;color:var(--txt3)">'+item.detail+'</span></td>'
+        +'<td style="font-weight:700;font-size:14px">'+fmtNum(item.qte)+'</td>'
+        +'<td>'+item.unite+'</td>'
+        +'<td>'+fmtNum(item.prixU)+'</td>'
+        +'<td style="font-weight:700;color:var(--acc)">'+fmtNum(item.total)+'</td></tr>';
+    }).join('')
+    +'<tr style="background:rgba(59,130,246,.08)"><td colspan="4" style="font-weight:900;text-align:right">TOTAL MATÉRIAUX:</td><td style="font-weight:900;color:var(--acc);font-size:16px">'+fmtNum(r.totalMat)+' F</td></tr>'
+    +'<tr><td colspan="4" style="text-align:right;color:var(--txt2)">Main d\'œuvre estimée (40% matériaux):</td><td style="color:var(--acc2);font-weight:700">'+fmtNum(Math.round(r.totalMat*0.4))+' F</td></tr>'
+    +'<tr style="background:rgba(16,185,129,.08)"><td colspan="4" style="font-weight:900;text-align:right">TOTAL GÉNÉRAL ESTIMÉ:</td><td style="font-weight:900;color:var(--green);font-size:18px">'+fmtNum(Math.round(r.totalMat*1.4))+' F</td></tr>'
+    +'</tbody></table></div>'
+    +'<div class="alert alert-warn">⚠️ Ces estimations sont indicatives. Les prix varient selon la région et le fournisseur. Demandez 3 devis comparatifs.</div>';
+  } else {
+    // Prix unitaires
+    el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Matériau</th><th>Unité</th><th>Prix min (F)</th><th>Prix moyen (F)</th><th>Prix max (F)</th><th>Fournisseur</th></tr></thead><tbody>'
+    +[['Ciment Portland CEM I 42.5','Sac 50kg','3 000','3 500','4 200','Sonaci, Cimbenin'],
+      ['Sable fin (rivière)','Tonne','15 000','20 000','30 000','Carrières locales'],
+      ['Sable grossier (gravillon)','Tonne','12 000','18 000','25 000','Carrières locales'],
+      ['Gravier 2/4','Tonne','15 000','22 000','30 000','Carrières locales'],
+      ['Brique rouge (parpaing)','Pièce','150','200','280','Briqueteries'],
+      ['Brique creuse 20cm','Pièce','200','280','380','Briqueteries'],
+      ['Fer à béton HA10','Tige 12m','4 000','5 000','6 000','Quincailleries'],
+      ['Fer à béton HA12','Tige 12m','5 500','7 000','8 500','Quincailleries'],
+      ['Fer à béton HA16','Tige 12m','9 000','12 000','15 000','Quincailleries'],
+      ['Tôle bac acier 0.4mm','Feuille 3m','8 000','10 000','13 000','Ets locaux'],
+      ['Bois charpente (5×10cm)','Ml','1 500','2 500','4 000','Scieries'],
+      ['Carrelage 40×40','m²','3 000','5 000','8 000','Importateurs'],
+      ['Carrelage 60×60','m²','6 000','10 000','18 000','Importateurs'],
+      ['Peinture vinylique','Bidon 20L','18 000','25 000','35 000','Quincailleries'],
+      ['Sable de mer','m³','5 000','8 000','12 000','Locaux'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    +'</tbody></table></div>'
+    +'<div class="alert alert-info">📍 Prix indicatifs Bénin 2026 — Zone Cotonou/Azovè. Peuvent varier de ±30%.</div>';
+  }
+}
+
+function switchMatTab(tab,btn){switchTab(tab,btn,'mat');renderMateriaux(tab);}
+
+function calculerMateriaux(){
+  var surface=parseFloat(document.getElementById('mat-surface').value)||100;
+  var etages=parseInt(document.getElementById('mat-etages').value)||1;
+  var hauteur=parseFloat(document.getElementById('mat-hauteur').value)||3.0;
+  var portes=parseInt(document.getElementById('mat-portes').value)||6;
+  var fenetres=parseInt(document.getElementById('mat-fenetres').value)||8;
+  var toiture=document.getElementById('mat-toiture').value;
+  var solFin=document.getElementById('mat-sol').value;
+  var marge=1.1; // 10% marge
+
+  // Calculs
+  var perimetre=Math.round(Math.sqrt(surface)*4); // périmètre approximatif
+  var surfMurs=perimetre*hauteur*etages;
+  var surfBruts=surfMurs - portes*2.1 - fenetres*1.2; // déduire ouvertures
+  var nbBriques=Math.round(surfBruts*52*marge); // 52 briques/m² pour mur 20cm
+  var volBeton=Math.round(surface*etages*0.12*marge*10)/10; // dalle + fondations
+  var nbSacCiment=Math.round((nbBriques/400*5 + volBeton*7)*marge); // mortier + béton
+  var tSable=Math.round((nbBriques/400*0.5 + volBeton*1.5)*marge*10)/10;
+  var tGravier=Math.round(volBeton*2*marge*10)/10;
+  var kgFer=Math.round(surface*etages*12*marge); // 12 kg/m² dalle + colonnes
+  var nbToles=Math.round(surface*1.15/3*marge); // toiture
+  var mlBois=Math.round(surface*0.8*marge);
+  var surfCar=Math.round(surface*etages*marge);
+  var nbPorPV=Math.round((portes+fenetres)*marge);
+  var bidPeinture=Math.round(surfMurs/60*marge);
+
+  var items=[
+    {nom:'Briques creuses 20cm',detail:'Murs '+Math.round(surfBruts)+' m²',qte:nbBriques,unite:'pièces',prixU:280,total:nbBriques*280},
+    {nom:'Ciment CEM 42.5',detail:'Mortier + béton + enduits',qte:nbSacCiment,unite:'sacs 50kg',prixU:3500,total:nbSacCiment*3500},
+    {nom:'Sable fin',detail:'Mortier + enduits',qte:tSable,unite:'tonnes',prixU:20000,total:Math.round(tSable*20000)},
+    {nom:'Gravier 2/4',detail:'Béton fondations + dalles',qte:tGravier,unite:'tonnes',prixU:22000,total:Math.round(tGravier*22000)},
+    {nom:'Fer à béton (HA10+HA12+HA16)',detail:'Dalles, colonnes, chaînages',qte:kgFer,unite:'kg',prixU:600,total:kgFer*600},
+    toiture==='tole'?{nom:'Tôles bac acier 0.4mm',detail:'Couverture '+surface+' m²',qte:nbToles,unite:'feuilles 3m',prixU:10000,total:nbToles*10000}:
+    toiture==='beton'?{nom:'Béton supplémentaire dalle toit',detail:'Toit terrasse béton armé',qte:Math.round(surface*0.18),unite:'m³',prixU:120000,total:Math.round(surface*0.18*120000)}:
+    {nom:'Tuiles terre cuite',detail:'Couverture',qte:Math.round(surface*14),unite:'pièces',prixU:800,total:Math.round(surface*14*800)},
+    {nom:'Bois charpente',detail:'Pannes, chevrons (si tôle)',qte:mlBois,unite:'ml',prixU:2500,total:mlBois*2500},
+    solFin!=='beton'?{nom:'Carrelage '+( solFin==='carrelage-prem'?'60×60':'40×40'),detail:'Sols habitables '+surfCar+' m²',qte:surfCar,unite:'m²',prixU:solFin==='carrelage-prem'?10000:5000,total:surfCar*(solFin==='carrelage-prem'?10000:5000)}:
+    {nom:'Béton lissé sol',detail:'Finition béton ciré',qte:surfCar,unite:'m²',prixU:3000,total:surfCar*3000},
+    {nom:'Portes + fenêtres (menuiserie)',detail:portes+' portes + '+fenetres+' fenêtres',qte:nbPorPV,unite:'unités',prixU:80000,total:nbPorPV*80000},
+    {nom:'Peinture vinylique',detail:'Intérieur + extérieur',qte:bidPeinture,unite:'bidons 20L',prixU:25000,total:bidPeinture*25000},
+    {nom:'Plomberie (tuyaux+robinetterie)',detail:'Eau froide, eau chaude, évacuation',qte:1,unite:'forfait',prixU:Math.round(surface*25000),total:Math.round(surface*25000)},
+    {nom:'Électricité (câbles+tableaux)',detail:'Circuits éclairage + prises',qte:1,unite:'forfait',prixU:Math.round(surface*20000),total:Math.round(surface*20000)},
+  ];
+
+  var totalMat=items.reduce(function(s,i){return s+i.total;},0);
+  _matResult={surface,etages,hauteur,items,totalMat};
+  return _matResult;
+}
+
+// ══ PLOMBERIE ══
+function renderPlomberie(tab){
+  var el=document.getElementById('plomb-content');
+  if(tab==='schema'){
+    el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">'
+    +'<div class="card"><div class="card-hdr"><span class="card-title">💧 Réseau eau froide</span></div><div class="card-body">'
+    +mkSchemaPlomberie('eau-froide')+'</div></div>'
+    +'<div class="card"><div class="card-hdr"><span class="card-title">🔥 Réseau eau chaude</span></div><div class="card-body">'
+    +mkSchemaPlomberie('eau-chaude')+'</div></div>'
+    +'</div>'
+    +'<div class="card"><div class="card-hdr"><span class="card-title">🪣 Réseau évacuation</span></div><div class="card-body">'
+    +mkSchemaEvacuation()+'</div></div>';
+  } else if(tab==='dimensionnement'){
+    el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Usage</th><th>Débit min (L/min)</th><th>Ø tuyau recommandé</th><th>Pression min (bar)</th></tr></thead><tbody>'
+    +[['WC (chasse d\'eau)','5-8 L/min','Ø 20mm (PVC)','1.5 bar'],
+      ['Lavabo simple','5-10 L/min','Ø 20mm (PVC)','2 bar'],
+      ['Douche','8-12 L/min','Ø 25mm (PVC)','2.5 bar'],
+      ['Baignoire','15-20 L/min','Ø 25mm (PVC)','2 bar'],
+      ['Cuisine (évier)','8-12 L/min','Ø 20mm (PVC)','2 bar'],
+      ['Lave-linge','10-15 L/min','Ø 20mm (PVC)','2 bar'],
+      ['Tuyau principal','Total+50%','Ø 40-50mm (PVC)','3-5 bar'],
+      ['Alimentation générale','Calculé','Ø 63mm (PVC)','3-5 bar'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    +'</tbody></table></div>'
+    +'<div class="alert alert-info"><strong>Règle du pouce:</strong> Pour une villa standard, le tuyau d\'alimentation principal doit être en Ø 32 ou 40mm. Les dérivations vers chaque pièce en Ø 20mm. Les évacuations: lavabo Ø 40mm, douche/baignoire Ø 50mm, WC Ø 100mm.</div>';
+  } else if(tab==='fosse'){
+    el.innerHTML='<div class="alert alert-warn" style="margin-bottom:16px">Toute construction doit disposer d\'un système d\'assainissement conforme. En zone sans réseau collectif: fosse septique + épandage obligatoires.</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'
+    +'<div class="card"><div class="card-hdr"><span class="card-title">📐 Calcul fosse septique</span></div><div class="card-body">'
+    +'<div class="form-group" style="margin-bottom:10px"><label class="form-lbl">Nombre d\'habitants</label><input id="fosse-hab" class="form-inp" type="number" placeholder="6" oninput="calcFosse()"></div>'
+    +'<div id="fosse-result" class="alert alert-success" style="display:none"></div>'
+    +'</div></div>'
+    +'<div class="card"><div class="card-hdr"><span class="card-title">📋 Normes fosse septique</span></div><div class="card-body">'
+    +'<div style="font-size:12px;color:var(--txt2);line-height:2">'
+    +'<div>Volume minimal: <strong>3 m³ pour 5 personnes</strong></div>'
+    +'<div>+600L par personne supplémentaire</div>'
+    +'<div>Profondeur: 2-3m (jamais < 1.5m)</div>'
+    +'<div>Distance puits/source: > 35m</div>'
+    +'<div>Distance fondations: > 5m</div>'
+    +'<div>Distance clôture: > 3m</div>'
+    +'<div>Vidange: tous les 3-4 ans</div>'
+    +'</div></div></div>'
+    +'</div>'
+    +mkSVGFosse();
+  } else {
+    el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Matériau</th><th>Usage</th><th>Quantité estimée (villa 120m²)</th><th>Prix approx. (F)</th></tr></thead><tbody>'
+    +[['Tuyau PVC Ø 20mm','Distributions eau froide/chaude','80 ml','24 000 F'],
+      ['Tuyau PVC Ø 25mm','Douche, baignoire','30 ml','12 000 F'],
+      ['Tuyau PVC Ø 40mm','Évacuation lavabos','25 ml','10 000 F'],
+      ['Tuyau PVC Ø 100mm','Évacuation WC + collecteur','20 ml','20 000 F'],
+      ['Robinets (lavabo/cuisine)','Alimentation','8 unités','80 000 F'],
+      ['Ballons WC','WC à réservoir haut','3 unités','30 000 F'],
+      ['Chauffe-eau solaire 200L','Eau chaude sanitaire','1 unité','200 000 F'],
+      ['Regard de visite','Réseau évacuation','3 unités','18 000 F'],
+      ['Coudes, T, manchons','Raccorderie diverse','forfait','50 000 F'],
+      ['Fosse septique béton 5m³','Assainissement','1 unité','350 000 F'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    +'<tr style="background:rgba(59,130,246,.08)"><td colspan="3" style="text-align:right;font-weight:900">TOTAL PLOMBERIE:</td><td style="font-weight:900;color:var(--acc)">~794 000 F</td></tr>'
+    +'</tbody></table></div>';
+  }
+}
+
+function switchPlombTab(t,b){switchTab(t,b,'plomb');renderPlomberie(t);}
+
+function calcFosse(){
+  var hab=parseInt(document.getElementById('fosse-hab').value)||0;if(!hab)return;
+  var vol=Math.max(3,2+(hab*0.6));
+  var l=Math.round(vol*0.5*10)/10,la=Math.round(vol*0.33*10)/10,h=Math.round(vol/(l*la)*10)/10;
+  var el=document.getElementById('fosse-result');el.style.display='block';
+  el.innerHTML='Pour <strong>'+hab+' habitant(s)</strong>:<br>'
+    +'Volume min: <strong>'+vol.toFixed(1)+' m³</strong><br>'
+    +'Dimensions: <strong>'+l+'m × '+la+'m × '+h+'m</strong><br>'
+    +'Coût béton estimé: <strong>'+fmtNum(Math.round(vol*70000))+' F</strong>';
+}
+
+function mkSchemaPlomberie(type){
+  var col=type==='eau-froide'?'#60a5fa':'#ef4444';
+  var lbl=type==='eau-froide'?'EF':'EC';
+  return '<svg viewBox="0 0 280 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;background:var(--surf3);border-radius:8px">'
+  +'<text x="140" y="18" text-anchor="middle" font-size="11" fill="'+col+'" font-weight="bold">'+(type==='eau-froide'?'Eau Froide':'Eau Chaude')+'</text>'
+  +'<!-- Compteur/Chauffage -->'
+  +'<rect x="10" y="25" width="50" height="30" fill="rgba(59,130,246,.15)" stroke="'+col+'" stroke-width="1.5" rx="4"/>'
+  +'<text x="35" y="44" text-anchor="middle" font-size="8" fill="'+col+'">'+(type==='eau-froide'?'Compteur':'Chauffe-eau')+'</text>'
+  +'<!-- Colonne principale -->'
+  +'<line x1="60" y1="40" x2="260" y2="40" stroke="'+col+'" stroke-width="3"/>'
+  +'<!-- Dérivations -->'
+  +[80,140,200,240].map(function(x,i){
+    var lbl2=['Cuisine','SDB','Ch.1','WC'][i];
+    return '<line x1="'+x+'" y1="40" x2="'+x+'" y2="160" stroke="'+col+'" stroke-width="1.5" stroke-dasharray="4,2"/>'
+      +'<circle cx="'+x+'" cy="40" r="4" fill="'+col+'"/>'
+      +'<rect x="'+(x-15)+'" y="160" width="30" height="25" fill="rgba(59,130,246,.1)" stroke="'+col+'" stroke-width="1" rx="3"/>'
+      +'<text x="'+x+'" y="176" text-anchor="middle" font-size="8" fill="'+col+'">'+lbl2+'</text>';
+  }).join('')
+  +'<text x="140" y="196" text-anchor="middle" font-size="9" fill="rgba(128,144,184,.5)">'+lbl+' — Distribution par pièce</text>'
+  +'</svg>';
+}
+
+function mkSchemaEvacuation(){
+  return '<svg viewBox="0 0 500 160" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;background:var(--surf3);border-radius:8px">'
+  +'<!-- Points évacuation -->'
+  +[['WC Ø100',60,'#ef4444'],['Douche Ø50',140,'#f59e0b'],['Lavabo Ø40',220,'#60a5fa'],['Évier Ø40',300,'#60a5fa'],['Lave-linge Ø40',380,'#f59e0b']].map(function(item){
+    return '<line x1="'+item[1]+'" y1="20" x2="'+item[1]+'" y2="80" stroke="'+item[2]+'" stroke-width="2.5"/>'
+      +'<circle cx="'+item[1]+'" cy="20" r="6" fill="'+item[2]+'"/>'
+      +'<text x="'+item[1]+'" y="100" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.5)">'+item[0]+'</text>';
+  }).join('')
+  +'<!-- Collecteur principal -->'
+  +'<line x1="40" y1="80" x2="440" y2="80" stroke="#6b7280" stroke-width="5"/>'
+  +'<text x="250" y="120" text-anchor="middle" font-size="9" fill="rgba(128,144,184,.6)">Collecteur Ø150mm</text>'
+  +'<!-- Sortie fosse -->'
+  +'<line x1="440" y1="80" x2="480" y2="80" stroke="#6b7280" stroke-width="5"/>'
+  +'<rect x="460" y="66" width="30" height="28" fill="rgba(107,114,128,.3)" stroke="#6b7280" stroke-width="1.5" rx="4"/>'
+  +'<text x="475" y="84" text-anchor="middle" font-size="8" fill="#9ca3af">Fosse</text>'
+  +'<text x="250" y="155" text-anchor="middle" font-size="10" fill="rgba(128,144,184,.5)">Schéma évacuation — pente minimale 1.5% vers la fosse</text>'
+  +'</svg>';
+}
+
+function mkSVGFosse(){
+  return '<div class="card" style="margin-top:16px"><div class="card-hdr"><span class="card-title">📐 Schéma coupe fosse septique</span></div><div class="card-body">'
+  +'<svg viewBox="0 0 500 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:500px;background:var(--surf3);border-radius:8px">'
+  +'<!-- Sol -->'
+  +'<rect x="0" y="60" width="500" height="140" fill="rgba(120,80,20,.2)" stroke="rgba(120,80,20,.3)" stroke-width="1"/>'
+  +'<text x="250" y="80" text-anchor="middle" font-size="10" fill="rgba(120,80,20,.6)">SOL</text>'
+  +'<!-- Fosse -->'
+  +'<rect x="80" y="70" width="180" height="120" fill="rgba(59,130,246,.08)" stroke="#3b82f6" stroke-width="2" rx="4"/>'
+  +'<text x="170" y="130" text-anchor="middle" font-size="12" fill="#3b82f6" font-weight="bold">FOSSE SEPTIQUE</text>'
+  +'<text x="170" y="147" text-anchor="middle" font-size="9" fill="rgba(59,130,246,.6)">Compartiment 1 + 2</text>'
+  +'<!-- Regard -->'
+  +'<rect x="145" y="52" width="50" height="20" fill="rgba(107,114,128,.5)" stroke="#6b7280" stroke-width="1.5"/>'
+  +'<text x="170" y="65" text-anchor="middle" font-size="8" fill="#9ca3af">Regard visite</text>'
+  +'<!-- Arrivée -->'
+  +'<line x1="30" y1="100" x2="80" y2="100" stroke="#ef4444" stroke-width="4"/>'
+  +'<text x="30" y="95" font-size="9" fill="#ef4444">Arrivée</text>'
+  +'<!-- Sortie -->'
+  +'<line x1="260" y1="120" x2="340" y2="120" stroke="#22c55e" stroke-width="4"/>'
+  +'<text x="285" y="115" font-size="9" fill="#22c55e">Vers épandage</text>'
+  +'<!-- Drain épandage -->'
+  +'<line x1="340" y1="120" x2="460" y2="140" stroke="#22c55e" stroke-width="2" stroke-dasharray="5,3"/>'
+  +'<text x="390" y="158" font-size="8" fill="rgba(34,197,94,.6)">Tranchée drainage</text>'
+  +'<!-- Cote -->'
+  +'<line x1="80" y1="195" x2="260" y2="195" stroke="#f59e0b" stroke-width="1"/>'
+  +'<text x="170" y="188" text-anchor="middle" font-size="9" fill="#f59e0b">L = 2.5-3m</text>'
+  +'</svg></div></div>';
+}
+
+// ══ ÉLECTRICITÉ ══
+function renderElectricite(tab){
+  var el=document.getElementById('elec-content');
+  if(tab==='schema'){
+    el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'
+    +'<div class="card"><div class="card-hdr"><span class="card-title">💡 Circuit éclairage</span></div><div class="card-body">'+mkSchemaElec('eclairage')+'</div></div>'
+    +'<div class="card"><div class="card-hdr"><span class="card-title">🔌 Circuit prises</span></div><div class="card-body">'+mkSchemaElec('prises')+'</div></div>'
+    +'</div>';
+  } else if(tab==='calcul'){
+    el.innerHTML='<div class="card"><div class="card-body">'
+    +'<div class="form-grid">'
+    +'<div class="form-group"><label class="form-lbl">Surface (m²)</label><input id="elec-surf" class="form-inp" type="number" placeholder="120" oninput="calcElec()"></div>'
+    +'<div class="form-group"><label class="form-lbl">Nombre de pièces</label><input id="elec-pieces" class="form-inp" type="number" placeholder="6" oninput="calcElec()"></div>'
+    +'<div class="form-group"><label class="form-lbl">Climatisation</label><select id="elec-clim" class="form-inp" onchange="calcElec()"><option value="0">Non</option><option value="1">1 unité</option><option value="2">2 unités</option><option value="3">3 unités</option></select></div>'
+    +'<div class="form-group"><label class="form-lbl">Cuisine électrique</label><select id="elec-cuisine" class="form-inp" onchange="calcElec()"><option value="no">Non</option><option value="yes">Oui</option></select></div>'
+    +'</div>'
+    +'<div id="elec-result" style="margin-top:14px"></div>'
+    +'</div></div>';
+  } else if(tab==='tableau'){
+    el.innerHTML='<div class="alert alert-info" style="margin-bottom:16px">Le tableau électrique (armoire de distribution) est le cœur de l\'installation. Il doit être dimensionné pour toute la maison + 30% de réserve.</div>'
+    +mkSVGTableau()
+    +'<div class="table-wrap" style="margin-top:16px"><table><thead><tr><th>Disjoncteur</th><th>Calibre</th><th>Circuits protégés</th><th>Section câble</th></tr></thead><tbody>'
+    +[['Général (différentiel 30mA)','40A','Toute l\'installation','6mm² + PE'],
+      ['Éclairage Zone 1 (salon+entrée)','16A','3-4 points lumière','1.5mm²'],
+      ['Éclairage Zone 2 (chambres)','16A','4-6 points lumière','1.5mm²'],
+      ['Prises Zone 1 (salon)','20A','6-8 prises','2.5mm²'],
+      ['Prises Zone 2 (chambres)','20A','4-6 prises','2.5mm²'],
+      ['Cuisine (prises)','20A','Électroménager','2.5mm²'],
+      ['Climatisation (si présente)','20A × 1/clim','1 par unité','4mm²'],
+      ['Chauffe-eau','16A','1 point','2.5mm²'],
+      ['Prise extérieure','16A','Jardin, garage','2.5mm²'],
+      ['Réserve (vide)','—','Extensibilité future','—'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    +'</tbody></table></div>';
+  } else if(tab==='materiel'){
+    el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Matériau</th><th>Qté (villa 120m²)</th><th>Prix unit. (F)</th><th>Total (F)</th></tr></thead><tbody>'
+    +[['Câble 1.5mm² (éclairage)','200 ml','600','120 000'],
+      ['Câble 2.5mm² (prises)','300 ml','900','270 000'],
+      ['Câble 4mm² (clim/gros app.)','50 ml','1 500','75 000'],
+      ['Disjoncteurs 16A-20A','12 pièces','5 000','60 000'],
+      ['Différentiel 40A 30mA','1 pièce','35 000','35 000'],
+      ['Tableau électrique 18 modules','1 pièce','25 000','25 000'],
+      ['Prises 2P+T','20 pièces','2 500','50 000'],
+      ['Interrupteurs simples','15 pièces','2 000','30 000'],
+      ['Interrupteurs va-et-vient','6 pièces','3 000','18 000'],
+      ['Douilles/Plafoniers LED','12 pièces','5 000','60 000'],
+      ['Gaines ICTA 20mm','200 ml','400','80 000'],
+      ['Boîtes de dérivation','15 pièces','1 500','22 500'],
+      ['Câble extérieur armé','30 ml','3 000','90 000'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    +'<tr style="background:rgba(59,130,246,.08)"><td colspan="3" style="font-weight:900;text-align:right">TOTAL MATÉRIAUX ÉLEC:</td><td style="font-weight:900;color:var(--acc)">935 500 F</td></tr>'
+    +'</tbody></table></div>';
+  } else {
+    el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'+[
+      {titre:'Sections de câbles',rules:['1.5mm² : éclairage (max 16A)','2.5mm² : prises courant (max 20A)','4mm² : climatisation, gros appareils','6mm² : cuisinière électrique','10mm² : arrivée générale tableau']},
+      {titre:'Hauteurs d\'installation',rules:['Prises: 20-30 cm du sol (adultes)','Interrupteurs: 90-110 cm du sol','Tableau: 1.70-2.00 m du sol','Tableau: accessible, hors WC/bain','Prise salle de bain: > 60cm de l\'eau']},
+      {titre:'Règles de sécurité',rules:['1 circuit max 8 points lumineux','1 circuit max 8 prises courantes','Disjoncteur par circuit obligatoire','Différentiel 30mA avant toute prise','Tous câbles sous gaine ICTA']},
+      {titre:'Interdictions',rules:['Câble nu sans gaine','Splitter (multiprises) sans coupe-circuit','Utiliser alarme sans prise de terre','Tableau sans coupe-général','Câble 1.5mm² sur circuit prises']},
+    ].map(function(c){
+      return '<div class="card"><div class="card-hdr"><span class="card-title">'+c.titre+'</span></div><div class="card-body">'
+        +c.rules.map(function(r){return '<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--bdr);font-size:12px;color:var(--txt2)"><span style="color:var(--acc);flex-shrink:0">▸</span>'+r+'</div>';}).join('')
+      +'</div></div>';
+    }).join('')+'</div>';
+  }
+}
+
+function switchElecTab(t,b){switchTab(t,b,'elec');renderElectricite(t);}
+
+function calcElec(){
+  var s=parseFloat(document.getElementById('elec-surf').value)||0;if(!s)return;
+  var p=parseInt(document.getElementById('elec-pieces').value)||5;
+  var clim=parseInt(document.getElementById('elec-clim').value)||0;
+  var cuisine=document.getElementById('elec-cuisine').value==='yes';
+  var wLum=p*60,wPrises=p*500,wClim=clim*1200,wCuisine=cuisine?3000:0;
+  var wTotal=wLum+wPrises+wClim+wCuisine+200;
+  var amps=Math.round(wTotal/220*10)/10;
+  var disco=amps<=40?'Triphasé 40A':amps<=60?'Triphasé 60A':'Triphasé 80A';
+  var el=document.getElementById('elec-result');
+  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Usage</th><th>Puissance</th></tr></thead><tbody>'
+    +'<tr><td>Éclairage ('+p+' pièces × 60W)</td><td>'+wLum+' W</td></tr>'
+    +'<tr><td>Prises courantes</td><td>'+wPrises+' W</td></tr>'
+    +(clim>0?'<tr><td>Climatisation ('+clim+'× 1200W)</td><td>'+wClim+' W</td></tr>':'')
+    +(cuisine?'<tr><td>Cuisine électrique</td><td>'+wCuisine+' W</td></tr>':'')
+    +'<tr><td>Divers (TV, chargeurs...)</td><td>200 W</td></tr>'
+    +'<tr style="background:rgba(59,130,246,.08)"><td><strong>TOTAL PUISSANCE</strong></td><td><strong>'+wTotal+' W</strong></td></tr>'
+    +'<tr><td>Intensité max</td><td><strong>'+amps+' A</strong></td></tr>'
+    +'<tr><td>Disjoncteur général recommandé</td><td><strong style="color:var(--acc)">'+disco+'</strong></td></tr>'
+    +'</tbody></table></div>';
+}
+
+function mkSchemaElec(type){
+  var col=type==='eclairage'?'#f59e0b':'#60a5fa';
+  var sym=type==='eclairage'?'💡':'🔌';
+  return '<svg viewBox="0 0 280 180" xmlns="http://www.w3.org/2000/svg" style="width:100%;background:var(--surf3);border-radius:8px">'
+  +'<text x="140" y="18" text-anchor="middle" font-size="11" fill="'+col+'" font-weight="bold">'+(type==='eclairage'?'Circuit Éclairage':'Circuit Prises')+'</text>'
+  +'<!-- Tableau -->'
+  +'<rect x="10" y="28" width="40" height="30" fill="rgba(59,130,246,.15)" stroke="'+col+'" stroke-width="1.5" rx="4"/>'
+  +'<text x="30" y="47" text-anchor="middle" font-size="8" fill="'+col+'">Tableau</text>'
+  +'<!-- Lignes -->'
+  +'<line x1="50" y1="43" x2="260" y2="43" stroke="'+col+'" stroke-width="2.5"/>'
+  +[80,130,180,230].map(function(x,i){
+    var rooms=['Salon','SDB','Ch.1','Ch.2'][i];
+    return '<line x1="'+x+'" y1="43" x2="'+x+'" y2="130" stroke="'+col+'" stroke-width="1.5" stroke-dasharray="4,2"/>'
+      +'<circle cx="'+x+'" cy="43" r="4" fill="'+col+'"/>'
+      +'<text x="'+x+'" y="120" text-anchor="middle" font-size="16">'+sym+'</text>'
+      +'<text x="'+x+'" y="148" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.5)">'+rooms+'</text>';
+  }).join('')
+  +'<text x="140" y="170" text-anchor="middle" font-size="8" fill="rgba(128,144,184,.4)">'+(type==='eclairage'?'Disjoncteur 16A — Câble 1.5mm²':'Disjoncteur 20A — Câble 2.5mm²')+'</text>'
+  +'</svg>';
+}
+
+function mkSVGTableau(){
+  return '<div class="plan-svg-wrap"><svg viewBox="0 0 400 280" xmlns="http://www.w3.org/2000/svg" style="max-width:380px">'
+  +'<rect x="20" y="20" width="360" height="240" fill="rgba(28,34,48,.8)" stroke="#3b82f6" stroke-width="2" rx="6"/>'
+  +'<text x="200" y="44" text-anchor="middle" font-size="13" fill="#3b82f6" font-weight="bold">TABLEAU ÉLECTRIQUE</text>'
+  +'<rect x="40" y="55" width="70" height="40" fill="rgba(239,68,68,.2)" stroke="#ef4444" stroke-width="1.5" rx="4"/>'
+  +'<text x="75" y="79" text-anchor="middle" font-size="9" fill="#ef4444" font-weight="bold">DIFF. 40A 30mA</text>'
+  +[['Éclairage 1','16A','#f59e0b',120],['Éclairage 2','16A','#f59e0b',180],['Prises Salon','20A','#60a5fa',240],
+    ['Prises Ch.','20A','#60a5fa',300],['Cuisine','20A','#60a5fa',360],['Clim.','20A','#a78bfa',40],
+    ['Chauffe-eau','16A','#f59e0b',100],['Ext.','16A','#60a5fa',160],['Réserve','—','#374151',220]
+  ].map(function(c,i){
+    var row=Math.floor((i+5)/4);var col2=(i+1)%4||4;
+    var x=40+(col2-1)*90,y=105+row*50;
+    return '<rect x="'+x+'" y="'+y+'" width="80" height="35" fill="rgba('+
+      (c[2]==='#f59e0b'?'245,158,11':c[2]==='#60a5fa'?'59,130,246':'139,92,246')+',.15)" stroke="'+c[2]+'" stroke-width="1" rx="3"/>'
+      +'<text x="'+(x+40)+'" y="'+(y+14)+'" text-anchor="middle" font-size="8" fill="'+c[2]+'" font-weight="bold">'+c[0]+'</text>'
+      +'<text x="'+(x+40)+'" y="'+(y+26)+'" text-anchor="middle" font-size="8" fill="rgba(255,255,255,.5)">'+c[1]+'</text>';
+  }).join('')
+  +'</svg></div>';
+}
+
+// ══ STRUCTURE ══
+function renderStructure(tab){
+  var el=document.getElementById('struct-content');
+  if(tab==='fondation'){
+    el.innerHTML='<div class="alert alert-warn" style="margin-bottom:16px">Les fondations sont l\'élément le plus critique d\'une construction. Leur dimensionnement doit être adapté au type de sol.</div>'
+    +'<div class="form-grid" style="margin-bottom:16px">'
+    +'<div class="form-group"><label class="form-lbl">Surface bâtiment (m²)</label><input id="fond-surf" class="form-inp" type="number" placeholder="120" oninput="calcFond()"></div>'
+    +'<div class="form-group"><label class="form-lbl">Type de sol</label><select id="fond-sol" class="form-inp" onchange="calcFond()"><option value="bon">Sol rocheux/compact</option><option value="moyen">Sol sablo-argileux</option><option value="faible">Sol meuble/argileux</option></select></div>'
+    +'<div class="form-group"><label class="form-lbl">Nombre d\'étages</label><select id="fond-etages" class="form-inp" onchange="calcFond()"><option value="1">RDC</option><option value="2">R+1</option><option value="3">R+2</option></select></div>'
+    +'</div>'
+    +'<div id="fond-result"></div>'
+    +'<div class="table-wrap" style="margin-top:16px"><table><thead><tr><th>Type sol</th><th>Fondation recommandée</th><th>Profondeur</th><th>Semelle filante</th></tr></thead><tbody>'
+    +[['Sol rocheux','Semelles isolées ou filantes minces','0.5-0.8m','30×30 cm'],
+      ['Sol compact (latérite)','Semelles filantes','0.8-1.2m','40×40 cm'],
+      ['Sol sablo-argileux','Semelles filantes + radier','1.0-1.5m','50×50 cm'],
+      ['Sol argileux','Semelles profondes ou pieux','1.5-2.5m','60×60 cm'],
+      ['Sol très meuble (gonflement)','Radier général ou pieux','> 2.5m','Radier 15cm min'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    +'</tbody></table></div>';
+  } else if(tab==='colonnes'){
+    el.innerHTML='<div class="alert alert-info" style="margin-bottom:16px">Les colonnes (poteaux) transmettent les charges des dalles vers les fondations. Leur espacement max est de 5m dans chaque sens.</div>'
+    +'<div class="table-wrap"><table><thead><tr><th>Nombre d\'étages</th><th>Section minimale poteau</th><th>Ferraillage min.</th><th>Étriers</th></tr></thead><tbody>'
+    +[['RDC seul','20×20 cm','4 HA10','Ø6 tous les 20cm'],
+      ['R+1','25×25 cm','4 HA12','Ø8 tous les 15cm'],
+      ['R+2','30×30 cm','4 HA14 + 2HA12','Ø8 tous les 12cm'],
+      ['R+3 et plus','35×35 cm min','6 HA16','Ø10 tous les 10cm'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    +'</tbody></table></div>'
+    +'<div class="alert alert-warn">⚠️ Ces valeurs sont indicatives. Tout projet > RDC doit être validé par un ingénieur structure diplômé.</div>';
+  } else if(tab==='dalle'){
+    el.innerHTML='<div class="form-grid" style="margin-bottom:16px">'
+    +'<div class="form-group"><label class="form-lbl">Portée dalle (m)</label><input id="dalle-portee" class="form-inp" type="number" placeholder="4.0" step="0.5" oninput="calcDalle()"></div>'
+    +'<div class="form-group"><label class="form-lbl">Largeur (m)</label><input id="dalle-larg" class="form-inp" type="number" placeholder="4.0" step="0.5" oninput="calcDalle()"></div>'
+    +'<div class="form-group"><label class="form-lbl">Usage</label><select id="dalle-usage" class="form-inp" onchange="calcDalle()"><option value="hab">Habitation (charges normales)</option><option value="stock">Stockage (charges lourdes)</option></select></div>'
+    +'</div>'
+    +'<div id="dalle-result"></div>'
+    +'<div class="table-wrap" style="margin-top:16px"><table><thead><tr><th>Portée</th><th>Épaisseur dalle</th><th>Ferraillage inférieur</th><th>Ferraillage supérieur</th></tr></thead><tbody>'
+    +[['< 3m','10-12 cm','HA8 tous les 20cm','HA8 tous les 25cm'],
+      ['3-4m','12-14 cm','HA10 tous les 15cm','HA8 tous les 20cm'],
+      ['4-5m','14-16 cm','HA10 tous les 12cm','HA10 tous les 15cm'],
+      ['5-6m','16-18 cm','HA12 tous les 12cm','HA10 tous les 15cm'],
+      ['> 6m','> 18 cm + poutres','Calcul ingénieur requis','Calcul ingénieur requis'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    +'</tbody></table></div>';
+  } else {
+    el.innerHTML='<div class="alert alert-success" style="margin-bottom:16px">Le ferraillage transforme le béton ordinaire en béton armé capable de résister aux tractions et aux séismes.</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+[
+      {titre:'Règles de base du ferraillage',items:['Enrobage minimum: 3cm (extérieur), 2cm (intérieur)','Diamètre minimum barres: HA8','Longueur de recouvrement: 40× le diamètre','Ancrages: 10× le diamètre','Les étriers empêchent le flambement']},
+      {titre:'Dosage béton armé standard',items:['350 kg ciment / m³ béton (C25/30)','0.8 kg fer / 100kg béton (dalles habitation)','1.2 kg fer / 100kg béton (dalles stockage)','Eau/Ciment = 0.45 (rapport optimal)','Vibrage obligatoire pour éliminer les vides']},
+      {titre:'Contrôle qualité chantier',items:['Test affaissement (slump test): 8-12cm','Essai de résistance à 28 jours: > 25 MPa','Vérifier enrobage avant coulage','Interdire arrosage béton < 24h après coulage','Décoffrage dalle: minimum 21 jours']},
+      {titre:'Erreurs fatales à éviter',items:['Béton trop liquide (ajout eau = perte résistance)','Enrobage insuffisant (rouille et éclatement)','Couper les armatures pour "faciliter" le travail','Décoffrer trop tôt','Construire sans plans structuraux pour R+1 et +']},
+    ].map(function(c){
+      return '<div class="card"><div class="card-hdr"><span class="card-title">'+c.titre+'</span></div><div class="card-body">'
+        +c.items.map(function(i){return '<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--bdr);font-size:12px;color:var(--txt2)"><span style="color:var(--acc);flex-shrink:0">▸</span>'+i+'</div>';}).join('')
+      +'</div></div>';
+    }).join('')+'</div>';
+  }
+}
+
+function switchStructTab(t,b){switchTab(t,b,'struct');renderStructure(t);}
+function calcFond(){
+  var s=parseFloat(document.getElementById('fond-surf').value)||0;if(!s)return;
+  var sol=document.getElementById('fond-sol').value;
+  var et=parseInt(document.getElementById('fond-etages').value)||1;
+  var profMin=sol==='bon'?0.6:sol==='moyen'?1.0:1.5;
+  var larg=sol==='bon'?0.3:sol==='moyen'?0.4:0.5;
+  var perim=Math.round(Math.sqrt(s)*4+Math.sqrt(s/3)*8);
+  var volBeton=perim*profMin*larg*et*0.7;
+  var el=document.getElementById('fond-result');
+  el.innerHTML='<div class="alert alert-success">Pour '+s+'m² sur sol '+(sol==='bon'?'rocheux':sol==='moyen'?'moyen':'meuble')+':<br>'
+    +'Profondeur fondation: <strong>'+profMin.toFixed(1)+'m</strong> | '
+    +'Section semelle: <strong>'+Math.round(larg*100)+'×'+Math.round(larg*100)+' cm</strong><br>'
+    +'Volume béton fondations: <strong>~'+volBeton.toFixed(1)+' m³</strong> | '
+    +'Coût estimé fondations: <strong>'+fmtNum(Math.round(volBeton*120000))+' F</strong></div>';
+}
+function calcDalle(){
+  var p=parseFloat(document.getElementById('dalle-portee').value)||0;if(!p)return;
+  var l=parseFloat(document.getElementById('dalle-larg').value)||p;
+  var heavy=document.getElementById('dalle-usage').value==='stock';
+  var e=Math.max(10,Math.round(p*3.5+(heavy?2:0)));
+  var surf=p*l;
+  var volBeton=surf*e/100;
+  var kgFer=Math.round(surf*(heavy?12:8));
+  var el=document.getElementById('dalle-result');
+  el.innerHTML='<div class="alert alert-success">Dalle '+p+'m × '+l+'m:<br>'
+    +'Épaisseur recommandée: <strong>'+e+' cm</strong><br>'
+    +'Volume béton: <strong>'+volBeton.toFixed(2)+' m³</strong> ('+fmtNum(Math.round(volBeton*40000))+' F)<br>'
+    +'Ferraillage: <strong>'+kgFer+' kg</strong> ('+fmtNum(kgFer*600)+' F)<br>'
+    +'Total dalle: <strong>'+fmtNum(Math.round(volBeton*40000+kgFer*600+surf*5000))+' F</strong></div>';
+}
+
+// ══ DEVIS ══
+function renderDevis(){
+  var proj=DB.projets[0];
+  var surf=proj?proj.surface:120;
+  var el=document.getElementById('devis-content');
+  el.innerHTML='<div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">'
+    +'<div class="form-group"><label class="form-lbl">Projet</label><select id="devis-proj" class="form-inp" style="width:200px" onchange="updateDevis()">'
+    +DB.projets.map(function(p){return '<option value="'+p.id+'">'+p.nom+'</option>';}).join('')
+    +'<option value="nouveau">Nouveau projet...</option></select></div>'
+    +'<div class="form-group"><label class="form-lbl">Surface (m²)</label><input id="devis-surf" class="form-inp" type="number" value="'+surf+'" style="width:100px" onchange="updateDevis()"></div>'
+    +'<div class="form-group"><label class="form-lbl">Localité</label><select id="devis-loc" class="form-inp" style="width:150px" onchange="updateDevis()"><option value="1">Cotonou (+20%)</option><option value="0.9">Grand Cotonou</option><option value="0.8">Villes secondaires</option><option value="0.7">Rural</option></select></div>'
+    +'</div>'
+    +'<div id="devis-table"></div>';
+  updateDevis();
+}
+
+function updateDevis(){
+  var surf=parseFloat(document.getElementById('devis-surf').value)||120;
+  var coef=parseFloat(document.getElementById('devis-loc').value)||0.8;
+  var lignes=[
+    {cat:'Fondations',pct:8},
+    {cat:'Maçonnerie / Murs',pct:15},
+    {cat:'Charpente + Toiture',pct:10},
+    {cat:'Béton armé (dalles, colonnes)',pct:18},
+    {cat:'Plomberie',pct:8},
+    {cat:'Électricité',pct:7},
+    {cat:'Carrelage + Faïences',pct:8},
+    {cat:'Menuiserie (portes + fenêtres)',pct:8},
+    {cat:'Peinture + Enduits',pct:6},
+    {cat:'Plâtrerie + Faux-plafonds',pct:4},
+    {cat:'VRD + Assainissement',pct:4},
+    {cat:'Imprévus (5%)',pct:5},
+  ];
+  var base=surf*150000*coef;
+  var total=Math.round(base);
+  var el=document.getElementById('devis-table');
+  el.innerHTML='<div class="table-wrap"><table><thead><tr>'
+    +'<th>Poste</th><th>%</th><th>Montant (F CFA)</th></tr></thead><tbody>'
+    +lignes.map(function(l){
+      var mt=Math.round(base*l.pct/100);
+      return '<tr><td><strong>'+l.cat+'</strong></td><td>'+l.pct+'%</td><td style="font-weight:700;color:var(--acc)">'+fmtNum(mt)+'</td></tr>';
+    }).join('')
+    +'<tr style="background:rgba(59,130,246,.1)"><td colspan="2" style="font-weight:900;text-align:right">TOTAL GÉNÉRAL HT</td><td style="font-weight:900;color:var(--acc);font-size:16px">'+fmtNum(total)+'</td></tr>'
+    +'<tr><td colspan="2" style="text-align:right;color:var(--txt2)">TVA 18%</td><td style="color:var(--acc2);font-weight:700">'+fmtNum(Math.round(total*0.18))+'</td></tr>'
+    +'<tr style="background:rgba(16,185,129,.08)"><td colspan="2" style="font-weight:900;text-align:right">TOTAL TTC</td><td style="font-weight:900;color:var(--green);font-size:18px">'+fmtNum(Math.round(total*1.18))+'</td></tr>'
+    +'</tbody></table></div>'
+    +'<div class="alert alert-warn">⚠️ Devis estimatif basé sur '+surf+'m² à '+Math.round(150000*coef)+' F/m². Coûts réels variables selon finitions, accès chantier, disponibilité matériaux. Demandez 3 devis d\'entrepreneurs locaux.</div>';
+}
+
+function exportDevisPDF(){
+  var el=document.getElementById('devis-table');
+  var surf=document.getElementById('devis-surf').value;
+  var w=window.open('','_blank');
+  var today2=new Date().toLocaleDateString('fr-FR',{year:'numeric',month:'long',day:'numeric'});
+  var proj=DB.projets.find(function(p){return String(p.id)===document.getElementById('devis-proj').value;})||{nom:'Nouveau projet'};
+  w.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Devis '+proj.nom+'</title>'
+    +'<style>body{font-family:Arial;padding:30px;color:#1a1a2e}h1{color:#3b82f6}table{width:100%;border-collapse:collapse}th{background:#3b82f6;color:#fff;padding:8px 12px;text-align:left}td{padding:8px 12px;border-bottom:1px solid #e5e7eb}tr:nth-child(even) td{background:#f9fafb}.total{background:#ede9fe!important;font-weight:900}
+/* ── Fix modals: .modal.open → display ── */
+.modal.open,
+.modal-overlay.open {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+}
+.modal:not(.open),
+.modal-overlay:not(.open) {
+  display: none !important;
+}
+</style></head><body>'
+    +'<h1>DEVIS ESTIMATIF — ArchitecPro</h1>'
+    +'<p><strong>Projet:</strong> '+proj.nom+' | <strong>Surface:</strong> '+surf+' m² | <strong>Date:</strong> '+today2+'</p>'
+    +el.innerHTML
+    +'<p style="margin-top:20px;font-size:11px;color:#666">ArchitecPro — Estimation automatique. Validez auprès d\'un entrepreneur local.</p>'
+    +'<\\u003cscript>window.onload=function(){window.print();}<\\/script></body></html>');
+  w.document.close();
+}
+
+// ══ SUIVI CHANTIER ══
+function renderSuivi(){
+  var el=document.getElementById('suivi-content');
+  var phases=[
+    {nom:'Fondations',statut:'Terminé',prog:100,col:'#10b981'},
+    {nom:'Gros œuvre (murs)',statut:'En cours',prog:65,col:'#3b82f6'},
+    {nom:'Toiture',statut:'Non démarré',prog:0,col:'#6b7280'},
+    {nom:'Plomberie',statut:'Non démarré',prog:0,col:'#6b7280'},
+    {nom:'Électricité',statut:'Non démarré',prog:0,col:'#6b7280'},
+    {nom:'Finitions',statut:'Non démarré',prog:0,col:'#6b7280'},
+  ];
+  var totProg=Math.round(phases.reduce(function(s,p){return s+p.prog;},0)/phases.length);
+  el.innerHTML='<div class="stats-row">'
+    +mkStat(DB.projets.filter(function(p){return p.statut!=='Terminé';}).length,'En construction','#3b82f6')
+    +mkStat(totProg+'%','Avancement moyen','#10b981')
+    +'</div>'
+    +'<div class="card"><div class="card-hdr"><span class="card-title">📊 Avancement par phase</span></div><div class="card-body">'
+    +'<div style="display:flex;flex-direction:column;gap:14px">'
+    +phases.map(function(p){
+      return '<div><div style="display:flex;justify-content:space-between;margin-bottom:6px">'
+        +'<span style="font-weight:700;font-size:13px">'+p.nom+'</span>'
+        +'<div style="display:flex;align-items:center;gap:8px">'
+          +'<span style="font-size:11px;color:var(--txt2)">'+p.prog+'%</span>'
+          +badge(p.statut,p.prog===100?'green':p.prog>0?'yellow':'blue')
+        +'</div>'
+      +'</div>'
+      +'<div style="height:10px;background:rgba(255,255,255,.06);border-radius:5px;overflow:hidden">'
+        +'<div style="width:'+p.prog+'%;height:100%;background:'+p.col+';border-radius:5px;transition:width .5s"></div>'
+      +'</div></div>';
+    }).join('')
+    +'</div></div></div>';
+}
+
+function ouvrirSuivi(){toast('💡 Sélectionnez une phase et mettez à jour l\'avancement via la liste ci-dessus');}
+
+// ══ GUIDE CONSTRUCTION ══
+var ETAPES_CONSTR = {
+  'etapes':[
+    {n:1,titre:'Étude préliminaire & Permis',desc:'Analyse du terrain (topographie, nature du sol, accès). Constitution du dossier: plans, formulaires, justificatifs propriété. Dépôt à la Mairie pour permis de construire. Délai: 2-6 mois selon la mairie.',dur:'2-6 mois',col:'#8b5cf6'},
+    {n:2,titre:'Implantation & Terrassement',desc:'Implantation du bâtiment par un géomètre (bornes + niveaux). Terrassement: fouilles de fondations, décapage terre végétale. Compactage du fond de fouille. Évacuation des terres excédentaires.',dur:'1-2 semaines',col:'#3b82f6'},
+    {n:3,titre:'Fondations',desc:'Coulage des longrines et semelles (béton dosé à 350kg/m³). Pose des armatures de ferraillage (chaînages bas). Attente de durcissement: minimum 7 jours avant la suite. Test de résistance recommandé.',dur:'2-3 semaines',col:'#06b6d4'},
+    {n:4,titre:'Dallage sol + Remblai',desc:'Remblai compacté (latérite) entre les semelles. Sous-couche gravillon 10cm. Coulage dallage béton 12-15cm avec ferraillage (treillis soudé). Lissage et durcissement 7 jours.',dur:'1-2 semaines',col:'#10b981'},
+    {n:5,titre:'Élévation des murs (gros œuvre)',desc:'Montage des parpaings/briques couche par couche. Réservations pour portes, fenêtres, passages électricité/plomberie. Chaînages verticaux (poteaux) et horizontaux. Enduits extérieurs grossiers.',dur:'4-8 semaines',col:'#22c55e'},
+    {n:6,titre:'Linteaux, Poutres, Chaînage haut',desc:'Coffrage des linteaux au-dessus des ouvertures. Ferraillage des poutres et chaînage haut. Coulage béton armé. Attente durcissement 21 jours avant pose toiture.',dur:'1-2 semaines',col:'#f59e0b'},
+    {n:7,titre:'Charpente & Toiture',desc:'Pose des fermes ou arbalétriers en bois ou métal. Fixation des pannes et chevrons. Pose du bac acier, tuiles ou dalle béton. Fixation des gouttières et descentes pluviales.',dur:'1-3 semaines',col:'#f97316'},
+    {n:8,titre:'Plomberie (encastrée)',desc:'Pose des tuyaux avant les enduits (gaines sous dalle, encastrement dans murs). Pose des attentes pour WC, lavabos, douches. Test d\'étanchéité sous pression avant fermeture.',dur:'1-2 semaines',col:'#3b82f6'},
+    {n:9,titre:'Électricité (encastrée)',desc:'Passage des gaines ICTA dans les saignées. Pose des boîtes encastrées (interrupteurs, prises). Tirage des câbles. Pose du tableau électrique provisoire.',dur:'1-2 semaines',col:'#f59e0b'},
+    {n:10,titre:'Enduits intérieurs + Chapes',desc:'Enduit ciment sur murs intérieurs. Chape flottante sur dallage (si carrelage). Lissage et séchage complet: 2-3 semaines minimum. Pose des huisseries (châssis portes/fenêtres).',dur:'3-4 semaines',col:'#8b5cf6'},
+    {n:11,titre:'Carrelage + Faïences',desc:'Pose carrelage sol et murs SDB/cuisine. Jointement et finitions. Pose des équipements sanitaires (WC, lavabos, douches). Raccordements plomberie définitifs.',dur:'2-3 semaines',col:'#ec4899'},
+    {n:12,titre:'Peinture + Finitions',desc:'Enduit de finition gypse + ponçage. Peinture 2 couches intérieur. Enduit et peinture extérieur. Pose portes/fenêtres définitives. Pose des prises, interrupteurs, plafoniers.',dur:'2-4 semaines',col:'#10b981'},
+    {n:13,titre:'VRD + Clôture + Nettoyage',desc:'Raccordements eau, électricité au réseau public. Clôture périphérique. Aménagements extérieurs: dallage, allées. Grand nettoyage. Contrôles finaux. Réception des travaux.',dur:'2-4 semaines',col:'#22c55e'},
+  ]
+};
+
+function renderConstruction(tab){
+  var el=document.getElementById('constr-content');
+  if(tab==='etapes'){
+    var data=ETAPES_CONSTR.etapes;
+    var totalDur='12-24 mois selon envergure';
+    el.innerHTML='<div class="alert alert-info" style="margin-bottom:16px">📅 Durée totale estimée: <strong>'+totalDur+'</strong> | Superviser chaque étape et exiger un PV de réception avant de payer.</div>'
+      +'<div class="steps">'
+      +data.map(function(s){
+        return '<div class="step">'
+          +'<div class="step-num" style="border-color:'+s.col+';color:'+s.col+'">'+s.n+'</div>'
+          +'<div class="step-content">'
+            +'<div class="step-title">'+s.titre+'</div>'
+            +'<div class="step-body">'+s.desc+'</div>'
+            +'<div class="step-duration">⏱ Durée estimée: '+s.dur+'</div>'
+          +'</div>'
+        +'</div>';
+      }).join('')
+      +'</div>';
+  } else if(tab==='gros-oeuvre'){
+    el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+[
+      {titre:'Dosages béton recommandés',items:['Fondations C25/30: 350 kg ciment/m³','Dalles habitation C25/30: 350 kg','Dalles stockage C30/37: 400 kg','Béton de propreté: 150 kg','Mortier maçonnerie: 250 kg/m³','NE PAS dépasser E/C = 0.50']},
+      {titre:'Contrôle qualité maçonnerie',items:['Joints montants décalés d\'1/2 brique','Joints horizontaux: 1-1.5cm','Vérifier l\'aplomb chaque 3 rangs','Épaisseur mortier uniforme','Humidifier les briques en saison sèche','Protéger les murs de la pluie < 48h après']},
+    ].map(function(c){return '<div class="card"><div class="card-hdr"><span class="card-title">'+c.titre+'</span></div><div class="card-body">'+c.items.map(function(i){return '<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--bdr);font-size:12px;color:var(--txt2)"><span style="color:var(--acc)">▸</span>'+i+'</div>';}).join('')+'</div></div>';}).join('')+'</div>';
+  } else if(tab==='second-oeuvre'){
+    el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+[
+      {titre:'Isolation thermique (tropicale)',items:['Toit: isolation laine de verre 5cm sous le bac','Murs: crépis ciment épais (isolation naturelle)','Ventilation: large ouvertures N-S (vent dominant)','Débords de toit: 60-90cm (ombre murs)','Orientation: façades principales N-S (min. soleil direct)','Couleur claire toiture/murs = -5°C intérieur']},
+      {titre:'Conseils menuiserie tropicale',items:['Bois conseillé: iroko, teck, niangon (résistant termites)','Aluminium anodisé: meilleur durabilité que PVC sous UV','Vitrage double: coûteux mais isolant (AC obligatoire sinon)','Moustiquaires: intégrer dès la pose des fenêtres','Volets: indispensables pour intimité et sécurité','Portes blindées: investissement recommandé entrée']},
+    ].map(function(c){return '<div class="card"><div class="card-hdr"><span class="card-title">'+c.titre+'</span></div><div class="card-body">'+c.items.map(function(i){return '<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--bdr);font-size:12px;color:var(--txt2)"><span style="color:var(--acc)">▸</span>'+i+'</div>';}).join('')+'</div></div>';}).join('')+'</div>';
+  } else if(tab==='finitions'){
+    el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Finition</th><th>Matériau recommandé</th><th>Durabilité</th><th>Entretien</th></tr></thead><tbody>'
+    +[['Sol salon/chambres','Carrelage 60×60 poli','20-30 ans','Faible'],
+      ['Sol SDB/cuisine','Carrelage antidérapant 30×30','15-25 ans','Faible'],
+      ['Sol extérieur','Carrelage R11 (antidérapant)','20 ans','Moyen'],
+      ['Murs SDB/cuisine','Faïence jusqu\'à 1.8m','15-20 ans','Faible'],
+      ['Peinture intérieur','Vinylique acrylique 2 couches','5-8 ans','Faible'],
+      ['Peinture extérieur','Résine acrylique façade','8-12 ans','Moyen'],
+      ['Plafond','Plâtre lissé ou faux-plafond PVC','15+ ans','Faible'],
+      ['Clôture','Parpaings + grillage enduit','30+ ans','Faible'],
+    ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td style="font-size:12px'+(i===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';}).join('')
+    +'</tbody></table></div>';
+  } else {
+    // Planning
+    el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Phase</th><th>Durée min</th><th>Durée réaliste</th><th>Mois cumulés</th></tr></thead><tbody>'
+    +[['Permis + Étude','2 mois','4 mois','4'],
+      ['Terrassement + Fondations','3 semaines','6 semaines','5.5'],
+      ['Gros œuvre (murs, dalle)','6 semaines','10 semaines','8'],
+      ['Toiture','2 semaines','4 semaines','9'],
+      ['Corps d\'état (plomberie, élec)','4 semaines','6 semaines','10.5'],
+      ['Enduits + Chapes','3 semaines','5 semaines','12'],
+      ['Carrelage + Faïences','2 semaines','4 semaines','13'],
+      ['Peinture + Finitions','3 semaines','6 semaines','14.5'],
+      ['VRD + Clôture','2 semaines','4 semaines','15'],
+      ['TOTAL','~8 mois','~15 mois','—'],
+    ].map(function(r,i){
+      var isTotal=i===r.length-1;
+      return '<tr style="'+(i===9?'background:rgba(59,130,246,.1);font-weight:900':'')+'">'+r.map(function(c,j){return '<td style="font-size:12px'+(j===0?';font-weight:700':'')+'">'+ c+'</td>';}).join('')+'</tr>';
+    }).join('')
+    +'</tbody></table></div>';
+  }
+}
+
+function switchConstrTab(t,b){switchTab(t,b,'constr');renderConstruction(t);}
+
+// ══ NORMES ══
+function renderNormes(){
+  var el=document.getElementById('normes-content');
+  el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'+[
+    {titre:'📋 Réglementation Bénin',items:['Permis de construire obligatoire > 5m²','Retrait voirie: 6m minimum (axe rue)','Retrait limites parcelle: 3m minimum','Hauteur max RDC+2 sans étude structure','Déclaration achèvement travaux à la Mairie','Taxe foncière à régler avant réception']},
+    {titre:'🏗️ Normes structure',items:['Charge nominal plancher habitation: 250 kg/m²','Charge nominal plancher bureaux: 350 kg/m²','Résistance béton minimale: C20/25 (fck=20 MPa)','Acier HA: Fe500 (limite élastique 500 MPa)','Sismicité Bénin: faible (zone 0-I)','Vent: vitesse de référence 30-40 m/s']},
+    {titre:'💧 Normes plomberie',items:['Pression réseau: 2-5 bars (SONEB)','Ø min tuyau principal villa: 25mm','WC: 6L/chasse (économie eau)','Fosse septique obligatoire si pas réseau','Récupération eaux grises autorisée','Distance fosse/puits: min 35m'],},
+    {titre:'⚡ Normes électricité',items:['Tension réseau SBEE: 220V 50Hz','Compteur SBEE: démarche avant branchement','Section câble minimum: 1.5mm²','Protection par différentiel 30mA obligatoire','Prise de terre: piquet cuivre 2m minimum','Distance tableau/gaine eau: 60cm min']},
+    {titre:'🌡️ Confort tropical',items:['Orientez les façades principales N-S','Débords de toit: 80cm minimum','Hauteur sous plafond: 3m minimum','Surface fenêtres: 15-20% surface pièce','Ventilation traversante (brise nord-sud)','Toiture claire ou isolée obligatoire']},
+    {titre:'♿ Accessibilité PMR',items:['Pente max rampe: 5% (8% exceptionnel)','Portes min: 90cm de passage utile','Seuil: 2cm max sans ressaut','Interrupteurs: 90-130cm du sol','Prises: 40cm min du sol','WC adapté: espace libre 80×80cm'],},
+  ].map(function(c){
+    return '<div class="card"><div class="card-hdr"><span class="card-title">'+c.titre+'</span></div><div class="card-body">'
+      +c.items.map(function(i){return '<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--bdr);font-size:12px;color:var(--txt2)"><span style="color:var(--acc);flex-shrink:0">▸</span>'+i+'</div>';}).join('')
+    +'</div></div>';
+  }).join('')+'</div>';
+}
+
+// ══ ASSISTANT IA ══
+var IA_Q=[
+  'Combien coûte une villa 4 chambres à Azovè ?',
+  'Quelle section de fer pour ma dalle de 4m × 5m ?',
+  'Comment calculer ma fosse septique pour 8 personnes ?',
+  'Quelle épaisseur de dalle pour un RDC ?',
+  'Quels matériaux pour construire pas cher et solide ?',
+  'Comment orienter mon bâtiment pour le confort thermique ?',
+  'Quelle différence entre R+1 et RDC pour les fondations ?',
+  'Comment dimensionner mon tableau électrique ?',
+];
+
+var IA_REP={
+  'coût|prix|budget|combien|costa':'💰 Estimation coûts de construction au Bénin 2026:\n\n• Villa simple RDC: 80 000 - 120 000 F/m²\n• Villa finitions standard: 130 000 - 180 000 F/m²\n• Finitions premium: 200 000 - 300 000 F/m²\n\nPour une villa 4 chambres (~120m²):\n→ Budget minimal: 10 000 000 F\n→ Budget standard: 18 000 000 F\n→ Haut de gamme: 30 000 000 F\n\n💡 Utilisez l\'onglet Devis pour une estimation détaillée par poste.',
+  'dalle|plancher|slab':'🔲 Dimensionnement dalle béton armé:\n\n• Portée 3-4m: épaisseur 12-14cm, HA10 tous les 15cm\n• Portée 4-5m: épaisseur 14-16cm, HA10 tous les 12cm\n• Portée 5-6m: épaisseur 16-20cm, HA12 tous les 12cm\n\nRègle simplifiée: épaisseur = portée / 30 (en habitation)\n\n⚠️ Pour portée > 6m ou bâtiment R+2, consultez un ingénieur structure.',
+  'fosse|septique|assaini':'🪣 Calcul fosse septique:\n\nFormule: V = 2 + (0.6 × nombre habitants)\n\nExemples:\n• 4 personnes: V = 2 + 2.4 = 4.4 m³ → utiliser 5 m³\n• 6 personnes: V = 2 + 3.6 = 5.6 m³ → utiliser 6 m³\n• 8 personnes: V = 2 + 4.8 = 6.8 m³ → utiliser 7 m³\n\nRègles obligatoires:\n• Distance puits/source: > 35m\n• Distance fondations: > 5m\n• Profondeur: minimum 2m',
+  'fondation|fond':'🪨 Dimensionnement fondations:\n\n• Sol rocheux: semelle 30×30cm, profondeur 0.6m\n• Sol compact (latérite rouge): 40×40cm, profondeur 0.8-1m\n• Sol argileux: 50×50cm, profondeur 1.2-1.5m\n• Sol très meuble: radier général ou pieux\n\nDosage béton fondations: 350 kg ciment/m³\nFer: HA10 cadre + HA8 étriers tous les 20cm\n\nToujours creuser jusqu\'au sol stable (jamais sur terrain végétal).',
+  'matériaux|materiaux|pas cher':'🧱 Construction économique mais solide:\n\n1. Parpaings locaux vs briques importées (-30%)\n2. Tôle bac acier vs dalle béton toiture (-50% coût toit)\n3. Béton dosé à 350kg/m³ (pas plus, pas moins)\n4. Bois de récupération charpente (traité termites)\n5. Carrelage 40×40 local vs importé (-40%)\n6. Autoproduction agrégats si carrières proches\n\n💡 Économie principale: faire soi-même le suivi chantier.',
+  'orientation|thermique|chaleur|vent':'🌡️ Orientation optimale pour le confort tropical:\n\n• Façade principale: SUD ou NORD (soleil indirect)\n• Éviter façades EST/OUEST (soleil direct matin/soir)\n• Ventilation traversante: ouvrir N-S pour le vent dominant\n• Débords de toit: 80-100cm pour ombrager les murs\n• Hauteur sous plafond: 3m minimum (l\'air chaud monte)\n• Couleur toiture: blanc ou argent (-5°C sous la tôle)\n• Arbres au sud: ombrage naturel en saison chaude',
+  'r\+1|étage|plus|fondations.*étage':'🏗️ Différences fondations RDC vs R+1:\n\nRDC seulement:\n• Semelles 30×40cm suffisent\n• Fondations à 0.6-0.8m\n• Poteaux 20×20cm\n\nR+1 (réservation dès RDC):\n• Semelles 40×50cm minimum\n• Fondations à 0.8-1.2m (plus profondes)\n• Poteaux 25×25cm avec ferraillage renforcé\n• PRÉVOIR les fers qui dépassent au RDC !\n\n⚠️ Il faut TOUJOURS prévoir le R+1 dès les fondations pour économiser.',
+  'tableau.*électrique|electric|disjoncteur':'⚡ Dimensionnement tableau électrique:\n\n1. Calculer la puissance totale (W)\n2. Intensité = Puissance / Tension = W / 220V\n3. Choisir le disjoncteur général + 30%\n\nVilla standard 120m²:\n• Éclairage: ~400W\n• Prises: ~2 000W\n• Clim (2): ~2 400W\n• Cuisine: ~1 500W\n• Divers: ~500W\n→ TOTAL: ~6 800W = 31A → Disjoncteur général 40A\n\nTableau recommandé: 18 modules minimum + différentiel 30mA.',
+};
+
+function renderAssistant(){
+  var qEl=document.getElementById('ia-quick');
+  qEl.innerHTML=IA_Q.map(function(q){
+    return '<button class="ia-q-btn" data-q="'+q+'" onclick="poserQ(this.dataset.q)">'+q+'</button>';
+  }).join('');
+}
+
+function poserQ(q){document.getElementById('ia-inp').value=q;sendIA();}
+
+function sendIA(){
+  var inp=document.getElementById('ia-inp');
+  var q=(inp.value||'').trim();if(!q)return;inp.value='';
+  var msgs=document.getElementById('ia-msgs');
+  var u=document.createElement('div');u.className='ia-user';u.textContent=q;msgs.appendChild(u);
+  var t=document.createElement('div');t.className='ia-bot';
+  t.innerHTML='<div class="ia-typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(t);msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(function(){
+    var ql=q.toLowerCase();var rep=null;
+    for(var p in IA_REP){if(new RegExp(p,'i').test(ql)){rep=IA_REP[p];break;}}
+    if(!rep){
+      rep='🏛️ Je n\'ai pas de réponse précise pour cette question spécifique.\n\nExplorез les sections dédiées:\n• 🧱 Calcul matériaux pour les quantités\n• 🏗️ Calcul structure pour dimensionnement\n• 💰 Devis automatique pour les coûts\n• 📋 Normes & Conseils pour la réglementation\n• 👷 Guide construction pour les étapes\n\nOu reformulez: coût, fondation, dalle, fer, plomberie, électricité...';
+    }
+    t.innerHTML='';t.style.whiteSpace='pre-line';t.textContent=rep;
+    msgs.scrollTop=msgs.scrollHeight;
+  },800);
+}
+
+// ── Init ──
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('dash-date').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  renderDashboard();
+  // Init studio au chargement pour éviter canvas null
+  setTimeout(initStudio,100);
+});
+</script>
+</body>
+</html>

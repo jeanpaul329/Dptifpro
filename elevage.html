@@ -1,0 +1,1899 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DpGestPro — Élevage Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080f;--surf:#0f1118;--surf2:#161922;--surf3:#1c2030;
+  --acc:#10b981;--acc2:#f59e0b;--acc3:#3b82f6;--red:#ef4444;
+  --bdr:rgba(16,185,129,.18);--txt:#eeeef8;--txt2:#9090b8;--txt3:#555578;
+  --radius:14px;--shadow:0 8px 32px rgba(0,0,0,.45);
+}
+html,body{min-height:100vh;font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt)}
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ── Sidebar ── */
+.sidebar{width:240px;background:var(--surf);border-right:1px solid var(--bdr);
+  display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-logo{padding:20px 16px;border-bottom:1px solid var(--bdr)}
+.logo-title{font-size:18px;font-weight:900;color:var(--acc)}
+.logo-sub{font-size:11px;color:var(--txt3);margin-top:2px}
+.nav-sec{padding:12px 16px 4px;font-size:10px;font-weight:700;
+  color:var(--txt3);text-transform:uppercase;letter-spacing:.8px}
+.nav-item{width:100%;padding:9px 16px;border:none;background:transparent;
+  color:var(--txt2);text-align:left;cursor:pointer;font-size:13px;
+  font-weight:500;display:flex;align-items:center;gap:10px;
+  transition:all .2s;border-left:3px solid transparent}
+.nav-item:hover{background:rgba(16,185,129,.08);color:var(--txt)}
+.nav-item.active{background:rgba(16,185,129,.12);color:var(--acc);
+  border-left-color:var(--acc);font-weight:700}
+.nav-badge{margin-left:auto;background:var(--acc);color:#000;
+  font-size:10px;font-weight:800;padding:1px 6px;border-radius:10px}
+
+/* ── Contenu ── */
+.main{flex:1;overflow-y:auto;padding:24px}
+.page{display:none}
+.page.active{display:block}
+.page-hdr{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.page-title{font-size:20px;font-weight:900}
+.page-sub{font-size:13px;color:var(--txt3);margin-top:2px}
+
+/* ── Stats ── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--radius);
+  padding:16px;text-align:center;transition:transform .2s}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-val{font-size:26px;font-weight:900;margin-bottom:3px}
+.stat-lbl{font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px}
+
+/* ── Cards ── */
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--radius);
+  margin-bottom:16px;overflow:hidden}
+.card-hdr{padding:14px 18px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:14px;font-weight:800}
+.card-body{padding:16px 18px}
+
+/* ── Grille animaux ── */
+.animals-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.animal-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);
+  padding:16px;cursor:pointer;transition:all .2s;position:relative}
+.animal-card:hover{border-color:var(--acc);transform:translateY(-2px)}
+.animal-icon{font-size:36px;margin-bottom:10px}
+.animal-name{font-size:14px;font-weight:800}
+.animal-meta{font-size:12px;color:var(--txt2);margin-top:3px}
+.animal-badge{position:absolute;top:10px;right:10px;padding:3px 9px;
+  border-radius:20px;font-size:10px;font-weight:700}
+.badge-m{background:rgba(59,130,246,.15);color:#3b82f6}
+.badge-f{background:rgba(236,72,153,.15);color:#ec4899}
+.badge-alert{background:rgba(239,68,68,.15);color:#ef4444}
+.badge-ok{background:rgba(16,185,129,.15);color:#10b981}
+
+/* ── Tableau ── */
+.table-wrap{background:var(--surf);border:1px solid var(--bdr);
+  border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 14px;font-size:11px;font-weight:700;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:.4px;text-align:left;
+  background:var(--surf2);border-bottom:1px solid var(--bdr)}
+td{padding:10px 14px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+
+/* ── Forms ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-lbl{font-size:11px;font-weight:700;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:.4px}
+.form-inp{padding:10px 12px;background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:9px;color:var(--txt);font-size:13px;font-family:inherit;width:100%}
+.form-inp:focus{outline:none;border-color:var(--acc)}
+select.form-inp option{background:var(--surf)}
+
+/* ── Boutons ── */
+.btn{padding:9px 18px;border-radius:9px;border:none;cursor:pointer;
+  font-size:13px;font-weight:700;transition:opacity .2s;display:inline-flex;
+  align-items:center;gap:7px}
+.btn:hover{opacity:.85}
+.btn-primary{background:linear-gradient(135deg,var(--acc),#059669);color:#fff}
+.btn-secondary{background:rgba(16,185,129,.1);color:var(--acc);border:1px solid var(--bdr)}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.btn-warning{background:rgba(245,158,11,.1);color:var(--acc2);border:1px solid rgba(245,158,11,.2)}
+.btn-info{background:rgba(59,130,246,.1);color:var(--acc3);border:1px solid rgba(59,130,246,.2)}
+.btn-sm{padding:5px 12px;font-size:11px;border-radius:7px}
+
+/* ── Alertes ── */
+.alert-box{padding:14px 16px;border-radius:10px;margin-bottom:14px;font-size:13px}
+.alert-danger{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#ef4444}
+.alert-warning{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:#f59e0b}
+.alert-success{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:#10b981}
+.alert-info{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);color:#3b82f6}
+
+/* ── Modal ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);
+  z-index:1000;align-items:center;justify-content:center;padding:16px}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--surf);border-radius:18px;width:100%;max-width:580px;
+  max-height:90vh;overflow-y:auto;border:1px solid var(--bdr)}
+.modal-hdr{padding:18px 20px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--surf)}
+.modal-title{font-size:16px;font-weight:900}
+.modal-close{background:none;border:none;color:var(--txt3);font-size:20px;cursor:pointer}
+.modal-body{padding:20px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--bdr);
+  display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--surf)}
+
+/* ── Tutoriels ── */
+.tuto-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);
+  padding:16px;cursor:pointer;transition:all .2s}
+.tuto-card:hover{border-color:var(--acc);transform:translateY(-2px)}
+.tuto-icon{font-size:28px;margin-bottom:8px}
+.tuto-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.tuto-desc{font-size:12px;color:var(--txt2);line-height:1.5}
+.tuto-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;
+  font-weight:700;background:rgba(16,185,129,.15);color:var(--acc);margin-top:8px}
+
+/* ── IA Chat ── */
+.ia-panel{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);padding:16px}
+.ia-msgs{min-height:120px;max-height:280px;overflow-y:auto;margin-bottom:12px;display:flex;flex-direction:column;gap:8px}
+.ia-msg-user{align-self:flex-end;background:var(--acc);color:#000;padding:8px 12px;border-radius:12px 12px 3px 12px;font-size:13px;max-width:80%}
+.ia-msg-bot{align-self:flex-start;background:var(--surf3);color:var(--txt);padding:8px 12px;border-radius:12px 12px 12px 3px;font-size:13px;max-width:85%;line-height:1.6}
+.ia-input-row{display:flex;gap:8px}
+.ia-inp{flex:1;padding:10px 12px;background:var(--surf);border:1px solid var(--bdr);border-radius:9px;color:var(--txt);font-size:13px}
+.ia-inp:focus{outline:none;border-color:var(--acc)}
+
+/* ── Timeline saillie ── */
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:flex;gap:14px;padding:10px 0;border-left:2px solid var(--bdr);margin-left:8px;padding-left:16px;position:relative}
+.tl-item::before{content:'';width:10px;height:10px;border-radius:50%;background:var(--acc);position:absolute;left:-6px;top:14px}
+.tl-item.alert::before{background:var(--red)}
+.tl-date{font-size:11px;color:var(--txt3);min-width:80px}
+.tl-content{flex:1}
+.tl-title{font-size:13px;font-weight:700}
+.tl-sub{font-size:12px;color:var(--txt2)}
+
+/* ── Budget ── */
+.budget-bar{height:12px;background:rgba(255,255,255,.08);border-radius:6px;overflow:hidden;margin:6px 0}
+.budget-fill{height:100%;border-radius:6px;transition:width .5s}
+
+/* ── Tabs ── */
+.tabs{display:flex;gap:4px;background:var(--surf2);border-radius:10px;padding:4px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:7px 14px;border-radius:7px;border:none;background:transparent;
+  color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.tab.active{background:var(--acc);color:#000}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--surf);border:1px solid var(--bdr);padding:10px 20px;
+  border-radius:10px;font-size:13px;font-weight:600;z-index:9999;
+  transition:transform .3s;box-shadow:var(--shadow)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── Responsive ── */
+@media(max-width:700px){
+  .sidebar{width:200px}
+  .form-grid{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-title">🐄 Élevage Pro</div>
+    <div class="logo-sub">Gestion d'élevage — DpGestPro</div>
+  </div>
+
+  <div class="nav-sec">Tableau de bord</div>
+  <button class="nav-item active" onclick="showPage('dashboard',this)">🏠 Accueil</button>
+
+  <div class="nav-sec">Animaux</div>
+  <button class="nav-item" onclick="showPage('animaux',this)">
+    🐾 Mes animaux <span class="nav-badge" id="badge-animaux">0</span>
+  </button>
+  <button class="nav-item" onclick="showPage('reproduction',this)">
+    🐣 Reproduction & Saillie
+  </button>
+  <button class="nav-item" onclick="showPage('sante',this)">
+    🏥 Santé & Maladies
+  </button>
+
+  <div class="nav-sec">Gestion</div>
+  <button class="nav-item" onclick="showPage('stocks',this)">
+    🌾 Stocks & Provisions
+  </button>
+  <button class="nav-item" onclick="showPage('fournisseurs',this)">
+    🚚 Fournisseurs
+  </button>
+  <button class="nav-item" onclick="showPage('clients',this)">
+    👥 Clients
+  </button>
+  <button class="nav-item" onclick="showPage('finances',this)">
+    💰 Finances & Budget
+  </button>
+
+  <div class="nav-sec">Développement</div>
+  <button class="nav-item" onclick="showPage('tutoriels',this)">
+    📚 Tutoriels & Formation
+  </button>
+  <button class="nav-item" onclick="showPage('conseils',this)">
+    💡 Conseils & Orientations
+  </button>
+  <button class="nav-item" onclick="showPage('assistant',this)">
+    🤖 Assistant IA
+  </button>
+</div>
+
+<!-- ══ CONTENU PRINCIPAL ══ -->
+<div class="main">
+
+<!-- ══ DASHBOARD ══ -->
+<div class="page active" id="page-dashboard">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">🏠 Tableau de bord</div>
+      <div class="page-sub" id="dash-date"></div>
+    </div>
+    <button class="btn btn-primary" onclick="showPage('animaux',null);setTimeout(ouvrirNouvelAnimal,200)">+ Ajouter un animal</button>
+  </div>
+  <div class="stats-row" id="dash-stats"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">🚨 Alertes du jour</span></div>
+      <div class="card-body" id="dash-alertes"></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">📅 Événements à venir</span></div>
+      <div class="card-body" id="dash-events"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><span class="card-title">🐾 Animaux récents</span></div>
+    <div class="card-body" id="dash-recents"></div>
+  </div>
+</div>
+
+<!-- ══ ANIMAUX ══ -->
+<div class="page" id="page-animaux">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">🐾 Mes Animaux</div>
+      <div class="page-sub">Gérez tout votre cheptel</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="filter-categorie" onchange="renderAnimaux()" class="form-inp" style="width:160px">
+        <option value="">Toutes catégories</option>
+        <option>🐇 Lapin</option><option>🐐 Chèvre</option><option>🐖 Porc</option>
+        <option>🐄 Bovin</option><option>🐔 Poulet</option><option>🐟 Poisson</option>
+        <option>🐑 Mouton</option><option>🦆 Canard</option><option>🐇 Clapier</option>
+        <option>Autre</option>
+      </select>
+      <select id="filter-sexe" onchange="renderAnimaux()" class="form-inp" style="width:130px">
+        <option value="">Tout sexe</option>
+        <option value="M">Mâles</option>
+        <option value="F">Femelles</option>
+      </select>
+      <input id="search-animal" oninput="renderAnimaux()" placeholder="🔍 Rechercher..." class="form-inp" style="width:180px">
+      <button class="btn btn-primary" onclick="ouvrirNouvelAnimal()">+ Nouvel animal</button>
+    </div>
+  </div>
+  <div class="animals-grid" id="animaux-grid"></div>
+</div>
+
+<!-- ══ REPRODUCTION ══ -->
+<div class="page" id="page-reproduction">
+  <div class="page-hdr">
+    <div><div class="page-title">🐣 Reproduction & Saillie</div></div>
+    <button class="btn btn-primary" onclick="ouvrirSaillie()">+ Enregistrer saillie</button>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchReprodTab('saillies',this)">📅 Saillies</button>
+    <button class="tab" onclick="switchReprodTab('naissances',this)">🐣 Naissances</button>
+    <button class="tab" onclick="switchReprodTab('calendrier',this)">🗓 Calendrier</button>
+  </div>
+  <div id="reprod-content"></div>
+</div>
+
+<!-- ══ SANTÉ ══ -->
+<div class="page" id="page-sante">
+  <div class="page-hdr">
+    <div><div class="page-title">🏥 Santé & Maladies</div></div>
+    <button class="btn btn-primary" onclick="ouvrirMaladie()">+ Enregistrer cas</button>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchSanteTab('cas',this)">🏥 Cas en cours</button>
+    <button class="tab" onclick="switchSanteTab('maladies',this)">📚 Guide maladies</button>
+    <button class="tab" onclick="switchSanteTab('traitements',this)">💊 Traitements</button>
+  </div>
+  <div id="sante-content"></div>
+</div>
+
+<!-- ══ STOCKS ══ -->
+<div class="page" id="page-stocks">
+  <div class="page-hdr">
+    <div><div class="page-title">🌾 Stocks & Provisions</div></div>
+    <button class="btn btn-primary" onclick="ouvrirStock()">+ Ajouter stock</button>
+  </div>
+  <div class="stats-row" id="stocks-stats"></div>
+  <div class="table-wrap">
+    <table><thead><tr>
+      <th>Produit</th><th>Catégorie</th><th>Quantité</th><th>Unité</th><th>Seuil alerte</th><th>Fournisseur</th><th>Actions</th>
+    </tr></thead><tbody id="stocks-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- ══ FOURNISSEURS ══ -->
+<div class="page" id="page-fournisseurs">
+  <div class="page-hdr">
+    <div><div class="page-title">🚚 Fournisseurs</div></div>
+    <button class="btn btn-primary" onclick="ouvrirFournisseur()">+ Ajouter</button>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr><th>Nom</th><th>Spécialité</th><th>Téléphone</th><th>Localisation</th><th>Actions</th></tr></thead>
+    <tbody id="fournisseurs-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- ══ CLIENTS ══ -->
+<div class="page" id="page-clients">
+  <div class="page-hdr">
+    <div><div class="page-title">👥 Clients</div></div>
+    <button class="btn btn-primary" onclick="ouvrirClient()">+ Ajouter client</button>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchClientTab('grossistes',this)">🏭 Grossistes</button>
+    <button class="tab" onclick="switchClientTab('detail',this)">🛍 Détail</button>
+    <button class="tab" onclick="switchClientTab('ventes',this)">💰 Ventes</button>
+  </div>
+  <div id="clients-content"></div>
+</div>
+
+<!-- ══ FINANCES ══ -->
+<div class="page" id="page-finances">
+  <div class="page-hdr">
+    <div><div class="page-title">💰 Finances & Budget</div></div>
+    <button class="btn btn-primary" onclick="ouvrirDepense()">+ Opération</button>
+  </div>
+  <div class="stats-row" id="finances-stats"></div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchFinTab('operations',this)">📊 Opérations</button>
+    <button class="tab" onclick="switchFinTab('budget',this)">📈 Budget projet</button>
+    <button class="tab" onclick="switchFinTab('rentabilite',this)">🏆 Rentabilité</button>
+  </div>
+  <div id="finances-content"></div>
+</div>
+
+<!-- ══ TUTORIELS ══ -->
+<div class="page" id="page-tutoriels">
+  <div class="page-hdr">
+    <div><div class="page-title">📚 Tutoriels & Formation</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px" id="tutoriels-grid"></div>
+</div>
+
+<!-- ══ CONSEILS ══ -->
+<div class="page" id="page-conseils">
+  <div class="page-hdr">
+    <div><div class="page-title">💡 Conseils & Orientations</div></div>
+  </div>
+  <div id="conseils-content"></div>
+</div>
+
+<!-- ══ ASSISTANT IA ══ -->
+<div class="page" id="page-assistant">
+  <div class="page-hdr">
+    <div><div class="page-title">🤖 Assistant IA Élevage</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+    <div class="ia-panel">
+      <div class="ia-msgs" id="ia-msgs">
+        <div class="ia-msg-bot">👋 Bonjour ! Je suis votre assistant spécialisé en élevage. Posez-moi vos questions sur : maladies, alimentation, reproduction, rentabilité, traitements...</div>
+      </div>
+      <div class="ia-input-row">
+        <input class="ia-inp" id="ia-inp" placeholder="Posez votre question..." onkeydown="if(event.key==='Enter') envoyerIA()">
+        <button class="btn btn-primary" onclick="envoyerIA()">Envoyer</button>
+      </div>
+    </div>
+    <div>
+      <div class="card-title" style="margin-bottom:10px">Questions rapides</div>
+      <div style="display:flex;flex-direction:column;gap:6px" id="quick-questions"></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- fin .main -->
+</div><!-- fin .app -->
+
+<!-- ══ MODALS ══ -->
+
+<!-- Modal Nouvel Animal -->
+<div class="modal-bg" id="modal-animal">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title" id="modal-animal-title">🐾 Nouvel animal</div>
+      <button class="modal-close" onclick="closeModal('modal-animal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="animal-id">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-lbl">Catégorie *</label>
+          <select id="animal-categorie" class="form-inp" onchange="updateCategorieFields()">
+            <option value="">-- Choisir --</option>
+            <option>🐇 Lapin</option><option>🐐 Chèvre</option><option>🐖 Porc</option>
+            <option>🐄 Bovin</option><option>🐔 Poulet</option><option>🐟 Poisson</option>
+            <option>🐑 Mouton</option><option>🦆 Canard</option><option>🐰 Clapier</option>
+            <option>Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Espèce / Race</label>
+          <input id="animal-espece" class="form-inp" placeholder="Ex: Angora, Boer, Duroc...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Nom / Identifiant</label>
+          <input id="animal-nom" class="form-inp" placeholder="Ex: Lapin-01, Chèvre-Rosette...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Sexe *</label>
+          <select id="animal-sexe" class="form-inp">
+            <option value="M">🔵 Mâle</option>
+            <option value="F">🔴 Femelle</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Date de naissance</label>
+          <input type="date" id="animal-naissance" class="form-inp">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Âge (si inconnu)</label>
+          <input id="animal-age" class="form-inp" placeholder="Ex: 6 mois, 2 ans...">
+        </div>
+        <!-- Champs spécifiques lapins -->
+        <div class="form-group" id="champ-saillie-prev" style="display:none">
+          <label class="form-lbl">Date saillie prévue</label>
+          <input type="date" id="animal-saillie" class="form-inp">
+        </div>
+        <div class="form-group" id="champ-mise-bas" style="display:none">
+          <label class="form-lbl">Date mise bas prévue</label>
+          <input type="date" id="animal-mise-bas" class="form-inp">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Poids actuel (kg)</label>
+          <input type="number" id="animal-poids" class="form-inp" placeholder="0.0" step="0.1">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Statut sanitaire</label>
+          <select id="animal-statut" class="form-inp">
+            <option value="Sain">✅ Sain</option>
+            <option value="Malade">🔴 Malade</option>
+            <option value="Traitement">💊 En traitement</option>
+            <option value="Quarantaine">⚠️ Quarantaine</option>
+          </select>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Notes / Observations</label>
+          <textarea id="animal-notes" class="form-inp" rows="2" placeholder="Observations particulières..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-animal')">Annuler</button>
+      <button class="btn btn-primary" onclick="sauvegarderAnimal()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Saillie -->
+<div class="modal-bg" id="modal-saillie">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title">🐣 Enregistrer une saillie</div>
+      <button class="modal-close" onclick="closeModal('modal-saillie')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-lbl">Femelle *</label>
+          <select id="saillie-femelle" class="form-inp"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Mâle</label>
+          <select id="saillie-male" class="form-inp"><option value="">-- Sélectionner --</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Date de saillie *</label>
+          <input type="date" id="saillie-date" class="form-inp">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Mise bas prévue</label>
+          <input type="date" id="saillie-misebas" class="form-inp" readonly style="color:var(--acc)">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Catégorie animal</label>
+          <select id="saillie-cat" onchange="calculerMiseBas()" class="form-inp">
+            <option value="31">🐇 Lapin (31 jours)</option>
+            <option value="150">🐐 Chèvre (150 jours)</option>
+            <option value="114">🐖 Porc (114 jours)</option>
+            <option value="280">🐄 Bovin (280 jours)</option>
+            <option value="145">🐑 Mouton (145 jours)</option>
+            <option value="21">🐔 Poulet (21 jours incubation)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Notes</label>
+          <input id="saillie-notes" class="form-inp" placeholder="Observations...">
+        </div>
+      </div>
+      <div class="alert-box alert-info" id="saillie-info" style="display:none;margin-top:10px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-saillie')">Annuler</button>
+      <button class="btn btn-primary" onclick="sauvegarderSaillie()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Maladie -->
+<div class="modal-bg" id="modal-maladie">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title">🏥 Déclarer une maladie</div>
+      <button class="modal-close" onclick="closeModal('modal-maladie')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label class="form-lbl">Animal concerné *</label>
+          <select id="mal-animal" class="form-inp"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Maladie / Symptômes *</label>
+          <select id="mal-maladie" class="form-inp" onchange="afficherTraitement()">
+            <option value="">-- Sélectionner --</option>
+            <optgroup label="🐇 Lapins">
+              <option>Coccidiose</option><option>Myxomatose</option>
+              <option>Pasteurellose</option><option>Entérotoxémie</option>
+              <option>Gale auriculaire</option><option>Abcès</option>
+            </optgroup>
+            <optgroup label="🐐 Chèvres/Moutons">
+              <option>Fièvre aphteuse</option><option>Brucellose</option>
+              <option>Pneumonie</option><option>Mammite</option>
+              <option>Parasites intestinaux</option>
+            </optgroup>
+            <optgroup label="🐖 Porcs">
+              <option>Peste porcine</option><option>Rouget</option>
+              <option>Pneumonie enzootique</option><option>Parvovirose</option>
+            </optgroup>
+            <optgroup label="🐔 Volailles">
+              <option>Newcastle</option><option>Marek</option>
+              <option>Coccidiose aviaire</option><option>Bronchite infectieuse</option>
+            </optgroup>
+            <optgroup label="Général">
+              <option>Parasites externes</option><option>Diarrhée</option>
+              <option>Fièvre</option><option>Blessure/Plaie</option><option>Autre</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Date détection</label>
+          <input type="date" id="mal-date" class="form-inp">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Gravité</label>
+          <select id="mal-gravite" class="form-inp">
+            <option value="faible">🟡 Faible</option>
+            <option value="moyenne">🟠 Moyenne</option>
+            <option value="grave">🔴 Grave</option>
+          </select>
+        </div>
+        <div class="form-group form-full" id="traitement-suggere" style="display:none">
+          <div class="alert-box alert-success" id="traitement-text"></div>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Traitement appliqué</label>
+          <textarea id="mal-traitement" class="form-inp" rows="2" placeholder="Médicaments, dosage, durée..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-maladie')">Annuler</button>
+      <button class="btn btn-primary" onclick="sauvegarderMaladie()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Stock -->
+<div class="modal-bg" id="modal-stock">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title">🌾 Ajouter au stock</div>
+      <button class="modal-close" onclick="closeModal('modal-stock')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-lbl">Produit *</label>
+          <input id="stock-nom" class="form-inp" placeholder="Ex: Aliment volaille, Vermifuge...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Catégorie</label>
+          <select id="stock-cat" class="form-inp">
+            <option>Aliment/Fourrage</option><option>Médicament</option>
+            <option>Vaccin</option><option>Désinfectant</option>
+            <option>Matériel</option><option>Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Quantité</label>
+          <input type="number" id="stock-qty" class="form-inp" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Unité</label>
+          <select id="stock-unite" class="form-inp">
+            <option>kg</option><option>L</option><option>sac</option>
+            <option>boîte</option><option>flacon</option><option>pièce</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Seuil alerte</label>
+          <input type="number" id="stock-seuil" class="form-inp" placeholder="Ex: 5">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Prix unitaire (F)</label>
+          <input type="number" id="stock-prix" class="form-inp" placeholder="0">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-stock')">Annuler</button>
+      <button class="btn btn-primary" onclick="sauvegarderStock()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Budget Projet -->
+<div class="modal-bg" id="modal-budget">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title">📈 Budget de projet d'élevage</div>
+      <button class="modal-close" onclick="closeModal('modal-budget')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label class="form-lbl">Nom du projet *</label>
+          <input id="bgt-nom" class="form-inp" placeholder="Ex: Extension poulailler 200 têtes">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Catégorie d'élevage</label>
+          <select id="bgt-cat" class="form-inp">
+            <option>🐔 Aviculture</option><option>🐇 Cuniculture</option>
+            <option>🐐 Caprin</option><option>🐖 Porcin</option>
+            <option>🐄 Bovin</option><option>🐟 Pisciculture</option><option>Mixte</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Budget total (F CFA)</label>
+          <input type="number" id="bgt-total" class="form-inp" placeholder="0" oninput="calcBudget()">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Infrastructure/Bâtiment</label>
+          <input type="number" id="bgt-infra" class="form-inp" placeholder="0" oninput="calcBudget()">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Achat animaux</label>
+          <input type="number" id="bgt-animaux" class="form-inp" placeholder="0" oninput="calcBudget()">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Alimentation (3 mois)</label>
+          <input type="number" id="bgt-alim" class="form-inp" placeholder="0" oninput="calcBudget()">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Vétérinaire/Vaccins</label>
+          <input type="number" id="bgt-veto" class="form-inp" placeholder="0" oninput="calcBudget()">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Divers/Imprévus</label>
+          <input type="number" id="bgt-divers" class="form-inp" placeholder="0" oninput="calcBudget()">
+        </div>
+        <div class="form-group form-full" id="bgt-preview" style="display:none">
+          <div class="alert-box alert-info" id="bgt-result"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-budget')">Fermer</button>
+      <button class="btn btn-primary" onclick="sauvegarderBudget()">💾 Sauvegarder projet</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════
+// ÉLEVAGE PRO — DpGestPro v1.0
+// ══════════════════════════════════════════════════
+
+var DB = {
+  animaux       : JSON.parse(localStorage.getItem('elev_animaux')  || '[]'),
+  saillies      : JSON.parse(localStorage.getItem('elev_saillies') || '[]'),
+  maladies      : JSON.parse(localStorage.getItem('elev_maladies') || '[]'),
+  stocks        : JSON.parse(localStorage.getItem('elev_stocks')   || '[]'),
+  fournisseurs  : JSON.parse(localStorage.getItem('elev_fournisseurs') || '[]'),
+  clients       : JSON.parse(localStorage.getItem('elev_clients')  || '[]'),
+  finances      : JSON.parse(localStorage.getItem('elev_finances') || '[]'),
+  budgets       : JSON.parse(localStorage.getItem('elev_budgets')  || '[]'),
+};
+
+// Données démo si vide
+if(!DB.animaux.length) chargerDeDemo();
+
+function chargerDeDemo() {
+  DB.animaux = [
+    {id:1,categorie:'🐇 Lapin',espece:'Angora',nom:'Lapin-01',sexe:'F',naissance:'2025-06-15',poids:2.1,statut:'Sain',saillie:'2026-02-10',miseBas:'2026-03-13',notes:'Très bonne productrice'},
+    {id:2,categorie:'🐇 Lapin',espece:'Angora',nom:'Lapin-02',sexe:'M',naissance:'2025-05-20',poids:2.4,statut:'Sain',notes:'Reproducteur principal'},
+    {id:3,categorie:'🐔 Poulet',espece:'Cobb 500',nom:'Lot-Poulets',sexe:'F',naissance:'2026-01-01',poids:1.8,statut:'Sain',notes:'Lot de 50 poulets'},
+    {id:4,categorie:'🐐 Chèvre',espece:'Boer',nom:'Chèvre-Rosette',sexe:'F',naissance:'2024-03-10',poids:42,statut:'Sain',notes:'Bonne laitière'},
+    {id:5,categorie:'🐖 Porc',espece:'Landrace',nom:'Truie-Belle',sexe:'F',naissance:'2023-11-05',poids:180,statut:'Traitement',notes:'Traitement antibiotique en cours'},
+  ];
+  DB.stocks = [
+    {id:1,nom:'Aliment lapin granulé',categorie:'Aliment/Fourrage',qty:50,unite:'kg',seuil:10,prix:800},
+    {id:2,nom:'Vaccin Newcastle',categorie:'Vaccin',qty:2,unite:'flacon',seuil:3,prix:5000},
+    {id:3,nom:'Vermifuge',categorie:'Médicament',qty:1,unite:'flacon',seuil:2,prix:3500},
+    {id:4,nom:'Aliment volaille',categorie:'Aliment/Fourrage',qty:8,unite:'sac',seuil:5,prix:12000},
+  ];
+  DB.saillies = [
+    {id:1,femelle:1,femNom:'Lapin-01',dateSaillie:'2026-02-10',miseBas:'2026-03-13',cat:'Lapin',statut:'En attente',notes:'Saillie réussie'},
+  ];
+  DB.clients = [
+    {id:1,nom:'Marché Central',type:'grossiste',tel:'0197654321',localite:'Azovè',notes:'Commande hebdomadaire'},
+    {id:2,nom:'Restaurant Chez Paul',type:'detail',tel:'0191234567',localite:'Lokogba',notes:'Commande mensuelle'},
+  ];
+  saveAll();
+}
+
+function saveAll() {
+  Object.keys(DB).forEach(function(k) {
+    try { localStorage.setItem('elev_'+k, JSON.stringify(DB[k])); } catch(e){}
+  });
+}
+
+// ── Navigation ──────────────────────────────────
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(b){ b.classList.remove('active'); });
+  var pg = document.getElementById('page-'+id);
+  if(pg) pg.classList.add('active');
+  if(btn) btn.classList.add('active');
+
+  var renders = {
+    dashboard   : renderDashboard,
+    animaux     : renderAnimaux,
+    reproduction: function(){ renderReprod('saillies'); },
+    sante       : function(){ renderSante('cas'); },
+    stocks      : renderStocks,
+    fournisseurs: renderFournisseurs,
+    clients     : function(){ renderClients('grossistes'); },
+    finances    : function(){ renderFinances('operations'); },
+    tutoriels   : renderTutoriels,
+    conseils    : renderConseils,
+    assistant   : renderAssistant,
+  };
+  if(renders[id]) renders[id]();
+}
+
+// ── Utils ────────────────────────────────────────
+function fmtNum(n){ return Number(n||0).toLocaleString('fr-FR'); }
+function today(){ return new Date().toISOString().split('T')[0]; }
+function genId(){ return Date.now(); }
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+var _toastT;
+function toast(msg, dur) {
+  var el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(_toastT);
+  _toastT = setTimeout(function(){ el.classList.remove('show'); }, dur||3000);
+}
+
+function calcAge(dateNaissance) {
+  if(!dateNaissance) return '';
+  var d = new Date(dateNaissance), now = new Date();
+  var mois = (now - d) / (30*24*3600*1000);
+  if(mois < 1) return Math.floor(mois*30)+'j';
+  if(mois < 24) return Math.floor(mois)+'m';
+  return Math.floor(mois/12)+'a '+Math.floor(mois%12)+'m';
+}
+
+var EMOJI_CAT = {
+  '🐇 Lapin':'🐇','🐐 Chèvre':'🐐','🐖 Porc':'🐖','🐄 Bovin':'🐄',
+  '🐔 Poulet':'🐔','🐟 Poisson':'🐟','🐑 Mouton':'🐑','🦆 Canard':'🦆',
+  '🐰 Clapier':'🐰'
+};
+
+// ── DASHBOARD ────────────────────────────────────
+function renderDashboard() {
+  document.getElementById('dash-date').textContent =
+    new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  var alertes  = DB.stocks.filter(function(s){ return Number(s.qty||0) <= Number(s.seuil||0); });
+  var malades  = DB.animaux.filter(function(a){ return a.statut==='Malade'||a.statut==='Traitement'; });
+  var sailliesPrev = DB.saillies.filter(function(s){
+    var diff = (new Date(s.miseBas)-new Date())/86400000;
+    return diff >= 0 && diff <= 14;
+  });
+
+  // Stats
+  document.getElementById('dash-stats').innerHTML =
+    mkStat(DB.animaux.length,         '🐾 Total animaux', '#10b981')+
+    mkStat(malades.length,            '🔴 Malades',       '#ef4444')+
+    mkStat(alertes.length,            '⚠️ Alertes stock', '#f59e0b')+
+    mkStat(sailliesPrev.length,       '🐣 Mise bas <14j', '#3b82f6')+
+    mkStat(DB.clients.length,         '👥 Clients',       '#8b5cf6')+
+    mkStat(DB.fournisseurs.length,    '🚚 Fournisseurs',  '#06b6d4');
+
+  document.getElementById('badge-animaux').textContent = DB.animaux.length;
+
+  // Alertes
+  var altEl = document.getElementById('dash-alertes');
+  var altHtml = '';
+  malades.forEach(function(a){
+    altHtml += '<div class="alert-box alert-danger" style="margin-bottom:6px;padding:8px 12px">' +
+      '🔴 <strong>'+(a.nom||a.categorie)+'</strong> — '+a.statut+'</div>';
+  });
+  alertes.forEach(function(s){
+    altHtml += '<div class="alert-box alert-warning" style="margin-bottom:6px;padding:8px 12px">' +
+      '⚠️ <strong>'+s.nom+'</strong> — Stock bas: '+s.qty+' '+s.unite+'</div>';
+  });
+  altEl.innerHTML = altHtml || '<div style="color:var(--txt3);font-size:13px;text-align:center;padding:16px">✅ Aucune alerte</div>';
+
+  // Événements
+  var evEl = document.getElementById('dash-events');
+  var evHtml = '';
+  sailliesPrev.forEach(function(s){
+    var diff = Math.round((new Date(s.miseBas)-new Date())/86400000);
+    evHtml += '<div class="alert-box alert-info" style="margin-bottom:6px;padding:8px 12px">' +
+      '🐣 <strong>'+s.femNom+'</strong> — Mise bas dans '+diff+' jour(s) ('+s.miseBas+')</div>';
+  });
+  evEl.innerHTML = evHtml || '<div style="color:var(--txt3);font-size:13px;text-align:center;padding:16px">Aucun événement imminent</div>';
+
+  // Recents
+  var recEl = document.getElementById('dash-recents');
+  var recents = DB.animaux.slice(-4).reverse();
+  recEl.innerHTML = recents.length ?
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px">' +
+    recents.map(function(a){
+      var emoji = EMOJI_CAT[a.categorie]||'🐾';
+      return '<div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;padding:12px;text-align:center">' +
+        '<div style="font-size:28px">'+emoji+'</div>' +
+        '<div style="font-weight:700;font-size:13px;margin-top:6px">'+(a.nom||a.categorie)+'</div>' +
+        '<div style="font-size:11px;color:var(--txt2)">'+(a.espece||'')+(a.sexe?' · '+(a.sexe==='M'?'Mâle':'Femelle'):'')+' · '+(calcAge(a.naissance)||a.age||'')+'</div>' +
+      '</div>';
+    }).join('') + '</div>'
+  : '<div style="color:var(--txt3);font-size:13px;text-align:center;padding:20px">Aucun animal enregistré</div>';
+}
+
+function mkStat(val,lbl,col) {
+  return '<div class="stat-card"><div class="stat-val" style="color:'+col+'">'+val+'</div>' +
+    '<div class="stat-lbl">'+lbl+'</div></div>';
+}
+
+// ── ANIMAUX ──────────────────────────────────────
+function renderAnimaux() {
+  var cat    = document.getElementById('filter-categorie').value;
+  var sexe   = document.getElementById('filter-sexe').value;
+  var search = (document.getElementById('search-animal').value||'').toLowerCase();
+  var grid   = document.getElementById('animaux-grid');
+  var data   = DB.animaux.filter(function(a){
+    if(cat && a.categorie !== cat) return false;
+    if(sexe && a.sexe !== sexe) return false;
+    if(search && !(a.nom||'').toLowerCase().includes(search) &&
+       !(a.espece||'').toLowerCase().includes(search) &&
+       !(a.categorie||'').toLowerCase().includes(search)) return false;
+    return true;
+  });
+  document.getElementById('badge-animaux').textContent = DB.animaux.length;
+  if(!data.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--txt3)">' +
+      '<div style="font-size:48px;margin-bottom:12px">🐾</div>' +
+      '<div style="font-weight:700">Aucun animal trouvé</div>' +
+      '<button class="btn btn-primary" style="margin-top:14px" onclick="ouvrirNouvelAnimal()">+ Ajouter le premier animal</button></div>';
+    return;
+  }
+  grid.innerHTML = '';
+  data.forEach(function(a) {
+    var emoji = EMOJI_CAT[a.categorie]||'🐾';
+    var age   = calcAge(a.naissance) || a.age || '?';
+    var statCls = a.statut==='Sain'?'badge-ok':'badge-alert';
+    var sexCls  = a.sexe==='M'?'badge-m':'badge-f';
+    var card = document.createElement('div');
+    card.className = 'animal-card';
+    card.innerHTML =
+      '<span class="animal-badge '+sexCls+'">'+(a.sexe==='M'?'♂ Mâle':'♀ Femelle')+'</span>'+
+      '<div class="animal-icon">'+emoji+'</div>'+
+      '<div class="animal-name">'+(a.nom||a.categorie)+'</div>'+
+      '<div class="animal-meta">'+(a.espece||a.categorie)+' · '+age+' · '+(a.poids||'?')+' kg</div>'+
+      '<div class="animal-meta" style="margin-top:4px">'+
+        '<span class="animal-badge '+statCls+'" style="position:static;font-size:10px">'+a.statut+'</span>'+
+      '</div>'+
+      (a.miseBas?'<div class="animal-meta" style="color:var(--acc3);margin-top:4px">🐣 Mise bas: '+a.miseBas+'</div>':'')+
+      '<div style="display:flex;gap:6px;margin-top:10px">'+
+        '<button class="btn btn-secondary btn-sm" data-id="'+a.id+'" onclick="editerAnimal(this.dataset.id)">✏️</button>'+
+        '<button class="btn btn-warning btn-sm" data-id="'+a.id+'" onclick="ajouterSaillieAnimal(this.dataset.id)">🐣</button>'+
+        '<button class="btn btn-info btn-sm" data-id="'+a.id+'" onclick="ajouterMaladieAnimal(this.dataset.id)">🏥</button>'+
+        '<button class="btn btn-danger btn-sm" data-id="'+a.id+'" onclick="supprimerAnimal(this.dataset.id)">🗑</button>'+
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+
+function ouvrirNouvelAnimal() {
+  document.getElementById('animal-id').value = '';
+  document.getElementById('modal-animal-title').textContent = '🐾 Nouvel animal';
+  ['animal-categorie','animal-espece','animal-nom','animal-age','animal-notes'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('animal-sexe').value='M';
+  document.getElementById('animal-statut').value='Sain';
+  document.getElementById('animal-naissance').value='';
+  document.getElementById('animal-poids').value='';
+  document.getElementById('animal-saillie').value='';
+  document.getElementById('animal-mise-bas').value='';
+  openModal('modal-animal');
+}
+
+function editerAnimal(id) {
+  var a = DB.animaux.find(function(x){ return String(x.id)===String(id); });
+  if(!a) return;
+  document.getElementById('animal-id').value        = a.id;
+  document.getElementById('modal-animal-title').textContent = '✏️ Modifier '+a.nom;
+  document.getElementById('animal-categorie').value = a.categorie||'';
+  document.getElementById('animal-espece').value    = a.espece||'';
+  document.getElementById('animal-nom').value       = a.nom||'';
+  document.getElementById('animal-sexe').value      = a.sexe||'M';
+  document.getElementById('animal-naissance').value = a.naissance||'';
+  document.getElementById('animal-age').value       = a.age||'';
+  document.getElementById('animal-poids').value     = a.poids||'';
+  document.getElementById('animal-statut').value    = a.statut||'Sain';
+  document.getElementById('animal-notes').value     = a.notes||'';
+  document.getElementById('animal-saillie').value   = a.saillie||'';
+  document.getElementById('animal-mise-bas').value  = a.miseBas||'';
+  updateCategorieFields();
+  openModal('modal-animal');
+}
+
+function updateCategorieFields() {
+  var cat = document.getElementById('animal-categorie').value;
+  var isLapin = cat.includes('Lapin') || cat.includes('Clapier');
+  var sexe = document.getElementById('animal-sexe').value;
+  document.getElementById('champ-saillie-prev').style.display = (isLapin && sexe==='F') ? 'block' : 'none';
+  document.getElementById('champ-mise-bas').style.display     = (isLapin && sexe==='F') ? 'block' : 'none';
+}
+
+function sauvegarderAnimal() {
+  var cat = document.getElementById('animal-categorie').value;
+  if(!cat) { toast('Choisissez une catégorie'); return; }
+  var id_val = document.getElementById('animal-id').value;
+  var obj = {
+    id         : id_val ? Number(id_val) : genId(),
+    categorie  : cat,
+    espece     : document.getElementById('animal-espece').value.trim(),
+    nom        : document.getElementById('animal-nom').value.trim(),
+    sexe       : document.getElementById('animal-sexe').value,
+    naissance  : document.getElementById('animal-naissance').value,
+    age        : document.getElementById('animal-age').value.trim(),
+    poids      : parseFloat(document.getElementById('animal-poids').value)||0,
+    statut     : document.getElementById('animal-statut').value,
+    saillie    : document.getElementById('animal-saillie').value,
+    miseBas    : document.getElementById('animal-mise-bas').value,
+    notes      : document.getElementById('animal-notes').value.trim(),
+    dateEnreg  : today(),
+  };
+  if(id_val) {
+    var idx = DB.animaux.findIndex(function(x){ return String(x.id)===String(id_val); });
+    if(idx>=0) DB.animaux[idx]=obj; else DB.animaux.push(obj);
+  } else {
+    DB.animaux.push(obj);
+  }
+  saveAll(); closeModal('modal-animal'); renderAnimaux();
+  if(document.getElementById('page-dashboard').classList.contains('active')) renderDashboard();
+  toast('✅ Animal enregistré: '+(obj.nom||obj.categorie));
+}
+
+function supprimerAnimal(id) {
+  if(!confirm('Supprimer cet animal ?')) return;
+  DB.animaux = DB.animaux.filter(function(a){ return String(a.id)!==String(id); });
+  saveAll(); renderAnimaux();
+  toast('🗑 Animal supprimé');
+}
+
+// ── REPRODUCTION ─────────────────────────────────
+function switchReprodTab(tab, btn) {
+  document.querySelectorAll('#page-reproduction .tab').forEach(function(b){ b.classList.remove('active'); });
+  if(btn) btn.classList.add('active');
+  renderReprod(tab);
+}
+
+function ouvrirSaillie() {
+  var selF = document.getElementById('saillie-femelle');
+  var selM = document.getElementById('saillie-male');
+  selF.innerHTML = '<option value="">-- Choisir femelle --</option>';
+  selM.innerHTML = '<option value="">-- Choisir mâle --</option>';
+  DB.animaux.filter(function(a){return a.sexe==='F';}).forEach(function(a){
+    var o=document.createElement('option'); o.value=a.id; o.textContent=(a.nom||a.categorie)+' ('+a.espece+')'; selF.appendChild(o);
+  });
+  DB.animaux.filter(function(a){return a.sexe==='M';}).forEach(function(a){
+    var o=document.createElement('option'); o.value=a.id; o.textContent=(a.nom||a.categorie)+' ('+a.espece+')'; selM.appendChild(o);
+  });
+  document.getElementById('saillie-date').value = today();
+  calculerMiseBas();
+  openModal('modal-saillie');
+}
+
+function ajouterSaillieAnimal(id) {
+  ouvrirSaillie();
+  setTimeout(function(){
+    document.getElementById('saillie-femelle').value = id;
+  },100);
+}
+
+function ajouterMaladieAnimal(id) {
+  ouvrirMaladie();
+  setTimeout(function(){
+    document.getElementById('mal-animal').value = id;
+  },100);
+}
+
+function calculerMiseBas() {
+  var dateSaillie = document.getElementById('saillie-date').value;
+  var gestation   = parseInt(document.getElementById('saillie-cat').value)||31;
+  if(!dateSaillie) return;
+  var d = new Date(dateSaillie);
+  d.setDate(d.getDate() + gestation);
+  var miseBas = d.toISOString().split('T')[0];
+  document.getElementById('saillie-misebas').value = miseBas;
+  var info = document.getElementById('saillie-info');
+  info.textContent = '📅 Mise bas prévue le ' + d.toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'}) + ' (J+'+gestation+')';
+  info.style.display = 'block';
+}
+
+function sauvegarderSaillie() {
+  var femId = document.getElementById('saillie-femelle').value;
+  var date  = document.getElementById('saillie-date').value;
+  if(!femId || !date) { toast('Femelle et date obligatoires'); return; }
+  var fem = DB.animaux.find(function(a){ return String(a.id)===String(femId); });
+  var malId = document.getElementById('saillie-male').value;
+  var saillie = {
+    id:genId(), femelle:femId, femNom:fem?fem.nom:femId,
+    male:malId, dateSaillie:date,
+    miseBas:document.getElementById('saillie-misebas').value,
+    cat:document.getElementById('saillie-cat').options[document.getElementById('saillie-cat').selectedIndex].text.split(' ')[1],
+    statut:'En attente',
+    notes:document.getElementById('saillie-notes').value.trim(),
+  };
+  DB.saillies.push(saillie);
+  // Mettre à jour l'animal
+  if(fem) { fem.saillie = date; fem.miseBas = saillie.miseBas; }
+  saveAll(); closeModal('modal-saillie');
+  toast('✅ Saillie enregistrée — Mise bas: '+saillie.miseBas);
+  renderReprod('saillies');
+}
+
+function renderReprod(tab) {
+  var el = document.getElementById('reprod-content');
+  if(tab === 'saillies') {
+    var data = DB.saillies.slice().sort(function(a,b){return (b.dateSaillie||'').localeCompare(a.dateSaillie||'');});
+    el.innerHTML = data.length ? '<div class="table-wrap"><table><thead><tr>' +
+      '<th>Femelle</th><th>Date saillie</th><th>Mise bas prévue</th><th>Jours restants</th><th>Statut</th><th>Actions</th>' +
+      '</tr></thead><tbody>' +
+      data.map(function(s){
+        var diff = Math.round((new Date(s.miseBas)-new Date())/86400000);
+        var col  = diff<0?'var(--red)':diff<=7?'var(--acc2)':'var(--acc)';
+        var diffTxt = diff<0?'Passé ('+Math.abs(diff)+'j)':diff===0?'Aujourd\'hui !':diff+' jours';
+        return '<tr><td><strong>'+s.femNom+'</strong></td>' +
+          '<td>'+s.dateSaillie+'</td><td>'+s.miseBas+'</td>' +
+          '<td style="font-weight:700;color:'+col+'">'+diffTxt+'</td>' +
+          '<td><span style="padding:2px 8px;border-radius:10px;font-size:11px;background:rgba(16,185,129,.1);color:var(--acc)">'+s.statut+'</span></td>' +
+          '<td><button class="btn btn-success btn-sm" data-id="'+s.id+'" onclick="confirmerNaissance(this.dataset.id)" style="background:rgba(16,185,129,.1);color:var(--acc);border:1px solid var(--bdr)">✅ Naissance</button></td></tr>';
+      }).join('') + '</tbody></table></div>'
+    : '<div style="text-align:center;padding:40px;color:var(--txt3)">🐣 Aucune saillie enregistrée</div>';
+  } else if(tab === 'naissances') {
+    var nees = DB.saillies.filter(function(s){return s.statut==='Née';});
+    el.innerHTML = nees.length ? '<div class="table-wrap"><table><thead><tr><th>Mère</th><th>Date naissance</th><th>Portée</th></tr></thead><tbody>' +
+      nees.map(function(s){ return '<tr><td>'+s.femNom+'</td><td>'+(s.dateNaissance||s.miseBas)+'</td><td>'+(s.portee||'N/A')+'</td></tr>'; }).join('') +
+      '</tbody></table></div>'
+    : '<div style="text-align:center;padding:40px;color:var(--txt3)">Aucune naissance enregistrée</div>';
+  } else {
+    // Calendrier
+    el.innerHTML = '<div class="timeline">'+
+      DB.saillies.map(function(s){
+        var diff = Math.round((new Date(s.miseBas)-new Date())/86400000);
+        return '<div class="tl-item '+(diff<=0?'alert':'')+'">'+
+          '<span class="tl-date">'+s.miseBas+'</span>'+
+          '<div class="tl-content"><div class="tl-title">🐣 Mise bas — '+s.femNom+'</div>'+
+          '<div class="tl-sub">'+(diff>0?'Dans '+diff+' jours':diff===0?'Aujourd\'hui !':'Passé de '+Math.abs(diff)+' jours')+'</div></div>'+
+        '</div>';
+      }).join('')+
+    '</div>';
+  }
+}
+
+function confirmerNaissance(id) {
+  var portee = parseInt(window.prompt&&window.prompt('Petits nés ?','1')||'1')||1;
+  var idx = DB.saillies.findIndex(function(s){return String(s.id)===String(id);});
+  if(idx>=0){
+    DB.saillies[idx].statut='Née';
+    DB.saillies[idx].portee=portee;
+    DB.saillies[idx].dateNaissance=today();
+  }
+  saveAll(); toast('🎉 Naissance confirmée — '+portee+' petits !');
+  renderReprod('saillies');
+}
+
+// ── SANTÉ ────────────────────────────────────────
+var TRAITEMENTS = {
+  'Coccidiose'          : '💊 Traitement: Amprolium 1g/L eau pendant 5 jours. Nettoyer les cages. Isoler les malades. Désinfection à la soude.',
+  'Myxomatose'          : '💉 Vaccin préventif obligatoire. Pas de traitement curatif. Abattage sanitaire recommandé. Désinfection totale.',
+  'Pasteurellose'       : '💊 Antibiotiques: Enrofloxacine ou Tylosine pendant 7-10 jours. Améliorer la ventilation.',
+  'Entérotoxémie'       : '💊 Pénicilline + rééquilibrage alimentaire. Donner du foin sec. Réduire les granulés.',
+  'Gale auriculaire'    : '💊 Ivermectine injectable 0.2ml/kg. Nettoyer les oreilles à l\'huile de paraffine. 2 injections à 15j.',
+  'Newcastle'           : '💉 Vaccin La Sota préventif. Pas de traitement curatif. Biosécurité renforcée.',
+  'Coccidiose aviaire'  : '💊 Amprolium ou Toltrazuril dans l\'eau. Assainir la litière. Vitamine K contre saignements.',
+  'Fièvre aphteuse'     : '🚨 Maladie à déclaration obligatoire! Appeler vétérinaire d\'urgence. Isolement strict.',
+  'Brucellose'          : '🚨 Maladie zoonotique! Abattage sanitaire. Déclaration obligatoire. Pas de traitement.',
+  'Pneumonie'           : '💊 Tylosine ou Oxytétracycline IM pendant 3-5 jours. Améliorer ventilation et litière.',
+  'Mammite'             : '💊 Traitement intramammaire + antibiotique systémique. Traire régulièrement.',
+  'Parasites intestinaux': '💊 Albendazole ou Ivermectine. Rotation des pâturages. Traitement 2x/an.',
+  'Parasites externes'  : '💊 Deltaméthrine ou Cyperméthrine. Traiter aussi les locaux. Répéter après 15j.',
+  'Diarrhée'            : '💊 Réhydratation orale. Kaolin-pectine. Identifier la cause (alimentaire vs infectieuse).',
+  'Fièvre'              : '💊 Paracétamol vétérinaire. Identifier la cause primaire. Consulter vétérinaire si persistant.',
+  'Blessure/Plaie'      : '💊 Nettoyer à l\'eau oxygénée. Cicatrisant (violet de gentiane). Isoler pour éviter cannibalisme.',
+};
+
+function afficherTraitement() {
+  var mal = document.getElementById('mal-maladie').value;
+  var div = document.getElementById('traitement-suggere');
+  var txt = document.getElementById('traitement-text');
+  if(mal && TRAITEMENTS[mal]) {
+    txt.innerHTML = '💡 <strong>Traitement suggéré:</strong><br>' + TRAITEMENTS[mal];
+    div.style.display = 'block';
+    document.getElementById('mal-traitement').value = TRAITEMENTS[mal].replace(/<[^>]+>/g,'');
+  } else {
+    div.style.display = 'none';
+  }
+}
+
+function ouvrirMaladie() {
+  var sel = document.getElementById('mal-animal');
+  sel.innerHTML = '<option value="">-- Choisir animal --</option>';
+  DB.animaux.forEach(function(a){
+    var o=document.createElement('option'); o.value=a.id;
+    o.textContent=(a.nom||a.categorie)+' ('+a.espece+')';
+    sel.appendChild(o);
+  });
+  document.getElementById('mal-date').value = today();
+  document.getElementById('traitement-suggere').style.display='none';
+  document.getElementById('mal-traitement').value='';
+  openModal('modal-maladie');
+}
+
+function sauvegarderMaladie() {
+  var animalId = document.getElementById('mal-animal').value;
+  var maladie  = document.getElementById('mal-maladie').value;
+  if(!animalId||!maladie){ toast('Animal et maladie obligatoires'); return; }
+  var animal = DB.animaux.find(function(a){return String(a.id)===String(animalId);});
+  var cas = {
+    id:genId(), animalId, animalNom:animal?(animal.nom||animal.categorie):'?',
+    maladie, date:document.getElementById('mal-date').value,
+    gravite:document.getElementById('mal-gravite').value,
+    traitement:document.getElementById('mal-traitement').value.trim(),
+    statut:'En cours',
+  };
+  DB.maladies.push(cas);
+  // Mettre à jour le statut de l'animal
+  if(animal) animal.statut = cas.gravite==='grave' ? 'Malade' : 'Traitement';
+  saveAll(); closeModal('modal-maladie');
+  toast('🏥 Cas enregistré: '+maladie+' — '+animal.nom);
+  renderSante('cas');
+}
+
+function switchSanteTab(tab, btn) {
+  document.querySelectorAll('#page-sante .tab').forEach(function(b){b.classList.remove('active');});
+  if(btn) btn.classList.add('active');
+  renderSante(tab);
+}
+
+function renderSante(tab) {
+  var el = document.getElementById('sante-content');
+  if(tab === 'cas') {
+    var data = DB.maladies.filter(function(m){return m.statut==='En cours';});
+    el.innerHTML = data.length ? '<div class="table-wrap"><table><thead><tr><th>Animal</th><th>Maladie</th><th>Date</th><th>Gravité</th><th>Traitement</th><th>Actions</th></tr></thead><tbody>' +
+      data.map(function(m){
+        var col = m.gravite==='grave'?'#ef4444':m.gravite==='moyenne'?'#f59e0b':'#10b981';
+        return '<tr><td><strong>'+m.animalNom+'</strong></td><td>'+m.maladie+'</td><td>'+m.date+'</td>' +
+          '<td style="color:'+col+';font-weight:700">'+m.gravite+'</td>' +
+          '<td style="font-size:11px;max-width:200px;overflow:hidden;text-overflow:ellipsis">'+m.traitement+'</td>' +
+          '<td><button class="btn btn-secondary btn-sm" data-id="'+m.id+'" onclick="guerirAnimal(this.dataset.id)">✅ Guéri</button></td></tr>';
+      }).join('')+'</tbody></table></div>'
+    : '<div class="alert-box alert-success">✅ Aucun animal malade actuellement</div>';
+  } else if(tab === 'maladies') {
+    el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">' +
+      Object.entries(TRAITEMENTS).map(function(e){
+        return '<div class="card" style="padding:14px">' +
+          '<div style="font-weight:800;font-size:14px;margin-bottom:8px">🔴 '+e[0]+'</div>' +
+          '<div style="font-size:12px;color:var(--txt2);line-height:1.6">'+e[1]+'</div>' +
+        '</div>';
+      }).join('')+
+    '</div>';
+  } else {
+    var hist = DB.maladies.slice().reverse().slice(0,20);
+    el.innerHTML = hist.length ? '<div class="table-wrap"><table><thead><tr><th>Date</th><th>Animal</th><th>Maladie</th><th>Statut</th></tr></thead><tbody>' +
+      hist.map(function(m){ return '<tr><td>'+m.date+'</td><td>'+m.animalNom+'</td><td>'+m.maladie+'</td>' +
+        '<td><span style="color:'+(m.statut==='Guéri'?'var(--acc)':'var(--acc2)')+'">'+m.statut+'</span></td></tr>'; }).join('') +
+      '</tbody></table></div>'
+    : '<div style="text-align:center;padding:40px;color:var(--txt3)">Aucun historique</div>';
+  }
+}
+
+function guerirAnimal(id) {
+  var idx = DB.maladies.findIndex(function(m){return String(m.id)===String(id);});
+  if(idx>=0){
+    DB.maladies[idx].statut = 'Guéri';
+    // Remettre le statut animal à Sain
+    var anId = DB.maladies[idx].animalId;
+    var an   = DB.animaux.find(function(a){return String(a.id)===String(anId);});
+    if(an) an.statut='Sain';
+  }
+  saveAll(); renderSante('cas'); toast('✅ Animal marqué comme guéri');
+}
+
+// ── STOCKS ───────────────────────────────────────
+function renderStocks() {
+  var data   = DB.stocks;
+  var alertes= data.filter(function(s){return Number(s.qty||0)<=Number(s.seuil||0);});
+  var valTot = data.reduce(function(sm,s){return sm+Number(s.qty||0)*Number(s.prix||0);},0);
+  document.getElementById('stocks-stats').innerHTML =
+    mkStat(data.length,'Produits',     '#10b981')+
+    mkStat(alertes.length,'Alertes',   '#ef4444')+
+    mkStat(fmtNum(valTot)+' F','Valeur stock','#3b82f6');
+  var tb = document.getElementById('stocks-tbody');
+  tb.innerHTML = data.length ? data.map(function(s){
+    var isAlert = Number(s.qty||0)<=Number(s.seuil||0);
+    return '<tr style="background:'+(isAlert?'rgba(239,68,68,.05)':'')+'">'+
+      '<td><strong>'+s.nom+'</strong></td><td>'+s.categorie+'</td>'+
+      '<td style="font-weight:700;color:'+(isAlert?'var(--red)':'var(--acc)')+'">'+s.qty+'</td>'+
+      '<td>'+s.unite+'</td><td>'+s.seuil+'</td><td>'+( s.fournisseur||'---')+'</td>'+
+      '<td>'+
+        '<button class="btn btn-secondary btn-sm" data-id="'+s.id+'" onclick="modifStock(this.dataset.id,1)">+</button> '+
+        '<button class="btn btn-danger btn-sm" data-id="'+s.id+'" onclick="modifStock(this.dataset.id,-1)">−</button>'+
+      '</td></tr>';
+  }).join('')
+  : '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--txt3)">Aucun stock enregistré</td></tr>';
+}
+
+function ouvrirStock() {
+  ['stock-nom','stock-qty','stock-seuil','stock-prix'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  openModal('modal-stock');
+}
+
+function sauvegarderStock() {
+  var nom = document.getElementById('stock-nom').value.trim();
+  if(!nom){ toast('Nom obligatoire'); return; }
+  DB.stocks.push({
+    id:genId(), nom,
+    categorie : document.getElementById('stock-cat').value,
+    qty       : parseFloat(document.getElementById('stock-qty').value)||0,
+    unite     : document.getElementById('stock-unite').value,
+    seuil     : parseFloat(document.getElementById('stock-seuil').value)||5,
+    prix      : parseFloat(document.getElementById('stock-prix').value)||0,
+  });
+  saveAll(); closeModal('modal-stock'); renderStocks();
+  toast('✅ Stock ajouté: '+nom);
+}
+
+function modifStock(id, delta) {
+  var s = DB.stocks.find(function(x){return String(x.id)===String(id);});
+  if(s){ s.qty = Math.max(0, Number(s.qty||0)+delta); saveAll(); renderStocks(); }
+}
+
+// ── FOURNISSEURS ─────────────────────────────────
+function renderFournisseurs() {
+  var tb = document.getElementById('fournisseurs-tbody');
+  tb.innerHTML = DB.fournisseurs.length ? DB.fournisseurs.map(function(f){
+    return '<tr><td><strong>'+f.nom+'</strong></td><td>'+f.specialite+'</td>' +
+      '<td style="color:var(--acc3)">'+f.tel+'</td><td>'+f.localite+'</td>' +
+      '<td><button class="btn btn-danger btn-sm" data-id="'+f.id+'" onclick="suppFournisseur(this.dataset.id)">🗑</button></td></tr>';
+  }).join('') : '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--txt3)">Aucun fournisseur</td></tr>';
+}
+
+function ouvrirFournisseur() {
+  var modal=document.getElementById('modal-fourn-elev');
+  if(!modal){
+    modal=document.createElement('div');modal.id='modal-fourn-elev';
+    modal.style.cssText='display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.75);align-items:center;justify-content:center';
+    modal.innerHTML='<div style="background:#0d2010;border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px;width:380px;max-width:95vw"><div style="font-size:15px;font-weight:700;color:#c8e8b8;margin-bottom:14px">🏪 Nouveau fournisseur</div>'
+      +'<div style="margin-bottom:8px"><label style="font-size:11px;color:#8a9a8a">Nom *</label><input id="f-nom" type="text" placeholder="Nom du fournisseur" style="width:100%;padding:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#e8f4e8;margin-top:3px"></div>'
+      +'<div style="margin-bottom:8px"><label style="font-size:11px;color:#8a9a8a">Spécialité</label><input id="f-spe" type="text" placeholder="aliments, médicaments..." style="width:100%;padding:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#e8f4e8;margin-top:3px"></div>'
+      +'<div style="margin-bottom:8px"><label style="font-size:11px;color:#8a9a8a">Téléphone</label><input id="f-tel" type="tel" placeholder="+229..." style="width:100%;padding:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#e8f4e8;margin-top:3px"></div>'
+      +'<div style="margin-bottom:14px"><label style="font-size:11px;color:#8a9a8a">Localisation</label><input id="f-loc" type="text" placeholder="Ville, quartier..." style="width:100%;padding:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#e8f4e8;margin-top:3px"></div>'
+      +'<div style="display:flex;gap:8px;justify-content:flex-end"><button onclick="document.getElementById(\'modal-fourn-elev\').style.display=\'none\'" style="padding:7px 14px;background:transparent;border:1px solid rgba(255,255,255,.15);border-radius:7px;color:#6a8a6a;cursor:pointer">Annuler</button>'
+      +'<button onclick="confirmerFournisseur()" style="padding:7px 16px;background:#2d6e24;border:none;border-radius:7px;color:#fff;font-weight:700;cursor:pointer">💾 Enregistrer</button></div></div>';
+    document.body.appendChild(modal);
+  }
+  modal.style.display='flex';
+}
+function confirmerFournisseur(){
+  var nom=document.getElementById('f-nom').value.trim();if(!nom){toast('Nom obligatoire');return;}
+  var spe=document.getElementById('f-spe').value.trim();
+  var tel=document.getElementById('f-tel').value.trim();
+  var loc=document.getElementById('f-loc').value.trim();
+  document.getElementById('modal-fourn-elev').style.display='none';
+  DB.fournisseurs.push({id:genId(),nom,specialite:spe||'',tel:tel||'',localite:loc||''});
+  saveAll(); renderFournisseurs(); toast('✅ Fournisseur ajouté');
+}
+
+function suppFournisseur(id) {
+  if(!confirm('Supprimer ce fournisseur ?')) return;
+  DB.fournisseurs = DB.fournisseurs.filter(function(f){return String(f.id)!==String(id);});
+  saveAll(); renderFournisseurs();
+}
+
+// ── CLIENTS ──────────────────────────────────────
+function switchClientTab(tab,btn) {
+  document.querySelectorAll('#page-clients .tab').forEach(function(b){b.classList.remove('active');});
+  if(btn) btn.classList.add('active');
+  renderClients(tab);
+}
+
+function renderClients(tab) {
+  var el = document.getElementById('clients-content');
+  var data = tab==='ventes' ? DB.finances.filter(function(f){return f.type==='vente';})
+           : DB.clients.filter(function(c){return c.type===(tab==='grossistes'?'grossiste':'detail');});
+  if(tab==='ventes') {
+    el.innerHTML = data.length ? '<div class="table-wrap"><table><thead><tr><th>Date</th><th>Client</th><th>Produit</th><th>Montant</th></tr></thead><tbody>' +
+      data.map(function(v){return '<tr><td>'+v.date+'</td><td>'+(v.client||'---')+'</td><td>'+(v.description||'---')+'</td><td style="font-weight:700;color:var(--acc)">'+fmtNum(v.montant)+' F</td></tr>';}).join('') +
+      '</tbody></table></div>'
+    : '<div style="text-align:center;padding:40px;color:var(--txt3)">Aucune vente enregistrée</div>';
+    return;
+  }
+  el.innerHTML = data.length ? '<div class="table-wrap"><table><thead><tr><th>Nom</th><th>Type</th><th>Téléphone</th><th>Localité</th><th>Notes</th><th></th></tr></thead><tbody>' +
+    data.map(function(c){
+      return '<tr><td><strong>'+c.nom+'</strong></td>' +
+        '<td><span style="padding:2px 8px;border-radius:10px;font-size:11px;background:rgba(16,185,129,.1);color:var(--acc)">'+c.type+'</span></td>' +
+        '<td>'+c.tel+'</td><td>'+c.localite+'</td><td style="font-size:12px;color:var(--txt2)">'+c.notes+'</td>' +
+        '<td><button class="btn btn-danger btn-sm" data-id="'+c.id+'" onclick="suppClient(this.dataset.id)">🗑</button></td></tr>';
+    }).join('')+'</tbody></table></div>'
+  : '<div style="text-align:center;padding:40px;color:var(--txt3)">Aucun '+(tab==='grossistes'?'grossiste':'client détail')+'</div>';
+}
+
+// ouvrirClient defini avec modal ci-dessus
+
+
+function suppClient(id) {
+  if(!confirm('Supprimer ce client ?')) return;
+  DB.clients = DB.clients.filter(function(c){return String(c.id)!==String(id);});
+  saveAll(); renderClients('grossistes');
+}
+
+// ── FINANCES ─────────────────────────────────────
+function switchFinTab(tab,btn){
+  document.querySelectorAll('#page-finances .tab').forEach(function(b){b.classList.remove('active');});
+  if(btn) btn.classList.add('active');
+  renderFinances(tab);
+}
+
+function renderFinances(tab) {
+  var tot_entrees = DB.finances.filter(function(f){return f.type==='vente'||f.type==='entree';}).reduce(function(s,f){return s+Number(f.montant||0);},0);
+  var tot_sorties = DB.finances.filter(function(f){return f.type==='depense';}).reduce(function(s,f){return s+Number(f.montant||0);},0);
+  var solde = tot_entrees - tot_sorties;
+  document.getElementById('finances-stats').innerHTML =
+    mkStat(fmtNum(tot_entrees)+' F','Recettes','#10b981')+
+    mkStat(fmtNum(tot_sorties)+' F','Dépenses','#ef4444')+
+    mkStat(fmtNum(solde)+' F','Solde net',solde>=0?'#10b981':'#ef4444');
+
+  var el = document.getElementById('finances-content');
+  if(tab==='operations') {
+    el.innerHTML = DB.finances.length ? '<div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th><th>Description</th><th>Montant</th></tr></thead><tbody>' +
+      DB.finances.slice().reverse().map(function(f){
+        var isE = f.type==='vente'||f.type==='entree';
+        return '<tr><td>'+f.date+'</td>' +
+          '<td><span style="color:'+(isE?'var(--acc)':'var(--red)')+'">'+( isE?'↑ Recette':'↓ Dépense')+'</span></td>' +
+          '<td>'+f.description+'</td>' +
+          '<td style="font-weight:700;color:'+(isE?'var(--acc)':'var(--red)')+'">'+( isE?'+':'-')+fmtNum(f.montant)+' F</td></tr>';
+      }).join('')+'</tbody></table></div>'
+    : '<div style="text-align:center;padding:40px;color:var(--txt3)">Aucune opération financière</div>';
+  } else if(tab==='budget') {
+    var bgtHtml = '<button class="btn btn-primary" style="margin-bottom:16px" onclick="openModal(\'modal-budget\')">+ Nouveau projet budgétaire</button>';
+    bgtHtml += DB.budgets.length ? DB.budgets.map(function(b){
+      var pct = b.total>0?Math.min(100,Math.round(b.depense/b.total*100)):0;
+      return '<div class="card" style="margin-bottom:12px;padding:16px">' +
+        '<div style="display:flex;justify-content:space-between;margin-bottom:8px">' +
+          '<div><div style="font-weight:800">'+b.nom+'</div><div style="font-size:12px;color:var(--txt2)">'+b.categorie+'</div></div>' +
+          '<div style="font-size:18px;font-weight:900;color:var(--acc)">'+fmtNum(b.total)+' F</div>' +
+        '</div>' +
+        '<div class="budget-bar"><div class="budget-fill" style="width:'+pct+'%;background:var(--acc)"></div></div>' +
+        '<div style="font-size:12px;color:var(--txt3)">Utilisé: '+pct+'% ('+fmtNum(b.depense||0)+' F)</div>' +
+        '<div style="font-size:12px;margin-top:6px;color:var(--txt2)">'+b.notes+'</div>' +
+      '</div>';
+    }).join('') : '<div style="text-align:center;padding:20px;color:var(--txt3)">Aucun projet budgétaire</div>';
+    el.innerHTML = bgtHtml;
+  } else {
+    // Rentabilité
+    var nbAnimaux = DB.animaux.length;
+    el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">' +
+      '<div class="card" style="padding:16px">' +
+        '<div style="font-weight:800;margin-bottom:12px">📊 Analyse de rentabilité</div>' +
+        '<div style="font-size:13px;line-height:2">' +
+          '<div>Recettes totales: <strong style="color:var(--acc)">'+fmtNum(tot_entrees)+' F</strong></div>' +
+          '<div>Dépenses totales: <strong style="color:var(--red)">'+fmtNum(tot_sorties)+' F</strong></div>' +
+          '<div>Bénéfice net: <strong style="color:'+(solde>=0?'var(--acc)':'var(--red)')+'">'+fmtNum(solde)+' F</strong></div>' +
+          '<div>Coût par animal: <strong>'+(nbAnimaux>0?fmtNum(Math.round(tot_sorties/nbAnimaux)):0)+' F</strong></div>' +
+          '<div>Recette par animal: <strong>'+(nbAnimaux>0?fmtNum(Math.round(tot_entrees/nbAnimaux)):0)+' F</strong></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="card" style="padding:16px">' +
+        '<div style="font-weight:800;margin-bottom:12px">💡 Recommandations IA</div>' +
+        '<div style="font-size:13px;color:var(--txt2);line-height:1.7">' +
+          (solde>=0 ? '✅ Votre élevage est rentable. Envisagez d\'étendre votre production.' :
+                      '⚠️ Vos charges dépassent vos recettes. Réduisez les coûts ou augmentez les ventes.') +
+          '<br><br>📈 Conseil: Diversifiez vos espèces pour répartir les risques.' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+}
+
+// ouvrirFinance definie ci-dessus
+
+
+function calcBudget() {
+  var infra  = parseFloat(document.getElementById('bgt-infra').value)||0;
+  var anim   = parseFloat(document.getElementById('bgt-animaux').value)||0;
+  var alim   = parseFloat(document.getElementById('bgt-alim').value)||0;
+  var veto   = parseFloat(document.getElementById('bgt-veto').value)||0;
+  var divers = parseFloat(document.getElementById('bgt-divers').value)||0;
+  var total  = parseFloat(document.getElementById('bgt-total').value)||0;
+  var calcule= infra+anim+alim+veto+divers;
+  var prev   = document.getElementById('bgt-preview');
+  var res    = document.getElementById('bgt-result');
+  if(calcule>0){
+    prev.style.display='block';
+    res.innerHTML = '📊 Total calculé: <strong>'+fmtNum(calcule)+' F CFA</strong><br>' +
+      (total>0 ? '💰 Budget saisi: <strong>'+fmtNum(total)+' F</strong><br>' +
+        (total>=calcule ? '✅ Budget suffisant (excédent: '+fmtNum(total-calcule)+' F)' :
+          '⚠️ Budget insuffisant (manque: '+fmtNum(calcule-total)+' F)') : '') +
+      '<br>🏗 Infra: '+fmtNum(infra)+' F | 🐾 Animaux: '+fmtNum(anim)+' F | 🌾 Alim: '+fmtNum(alim)+' F | 💊 Véto: '+fmtNum(veto)+' F | 📦 Divers: '+fmtNum(divers)+' F';
+  }
+}
+
+function sauvegarderBudget() {
+  var nom = document.getElementById('bgt-nom').value.trim();
+  if(!nom){ toast('Nom du projet obligatoire'); return; }
+  var infra  = parseFloat(document.getElementById('bgt-infra').value)||0;
+  var anim   = parseFloat(document.getElementById('bgt-animaux').value)||0;
+  var alim   = parseFloat(document.getElementById('bgt-alim').value)||0;
+  var veto   = parseFloat(document.getElementById('bgt-veto').value)||0;
+  var divers = parseFloat(document.getElementById('bgt-divers').value)||0;
+  DB.budgets.push({
+    id:genId(), nom, categorie:document.getElementById('bgt-cat').value,
+    total:infra+anim+alim+veto+divers, depense:0,
+    infra,animaux:anim,alim,veto,divers,
+    notes:'Infrastructure:'+fmtNum(infra)+' F | Animaux:'+fmtNum(anim)+' F',
+  });
+  saveAll(); closeModal('modal-budget');
+  toast('✅ Projet budgétaire sauvegardé: '+nom);
+}
+
+// ── TUTORIELS ─────────────────────────────────────
+var TUTORIELS = [
+  {icon:'🐇',titre:'Élevage du lapin',desc:'Guide complet cuniculture: logement, alimentation, reproduction, maladies courantes.',tag:'Débutant',url:'https://www.fao.org/3/t1690f/t1690f.pdf'},
+  {icon:'🐔',titre:'Aviculture moderne',desc:'Poulets de chair et poules pondeuses: gestion d\'un poulailler de 200 à 1000 têtes.',tag:'Intermédiaire',url:'https://www.fao.org/3/y5059f/y5059f.pdf'},
+  {icon:'🐐',titre:'Élevage caprin',desc:'Chèvres et moutons: sélection, alimentation, prophylaxie, valorisation du lait.',tag:'Intermédiaire',url:'https://www.fao.org/3/x6509f/x6509f.pdf'},
+  {icon:'🐟',titre:'Pisciculture en étang',desc:'Production de tilapia et carpe en étang: aménagement, nourrissage, récolte.',tag:'Avancé',url:'https://www.fao.org/3/i1650f/i1650f.pdf'},
+  {icon:'🌾',titre:'Fabrication d\'aliments',desc:'Fabriquer ses propres aliments pour réduire les coûts: formulations pratiques.',tag:'Économie',url:'#'},
+  {icon:'💊',titre:'Santé animale de base',desc:'Reconnaître et traiter les maladies courantes sans vétérinaire sur place.',tag:'Santé',url:'#'},
+  {icon:'💰',titre:'Rentabilité de l\'élevage',desc:'Calculer ses coûts, fixer ses prix de vente, maximiser ses bénéfices.',tag:'Gestion',url:'#'},
+  {icon:'🌱',titre:'Alimentation naturelle',desc:'Utiliser les plantes locales et sous-produits agricoles pour nourrir les animaux.',tag:'Économie',url:'#'},
+  {icon:'🏗',titre:'Construction d\'enclos',desc:'Plans et conseils pour construire des enclos adaptés avec peu de moyens.',tag:'Pratique',url:'#'},
+];
+
+function renderTutoriels() {
+  var grid = document.getElementById('tutoriels-grid');
+  grid.innerHTML = TUTORIELS.map(function(t){
+    return '<div class="tuto-card" onclick="ouvrirTutoriel(this)" data-url="'+t.url+'" data-titre="'+t.titre+'">' +
+      '<div class="tuto-icon">'+t.icon+'</div>' +
+      '<div class="tuto-title">'+t.titre+'</div>' +
+      '<div class="tuto-desc">'+t.desc+'</div>' +
+      '<span class="tuto-tag">'+t.tag+'</span>' +
+    '</div>';
+  }).join('');
+}
+
+function ouvrirTutoriel(el) {
+  var url = el.dataset.url;
+  if(url && url !== '#') { window.open(url,'_blank'); }
+  else toast('📚 '+el.dataset.titre+' — Document en cours d\'intégration');
+}
+
+// ── CONSEILS ──────────────────────────────────────
+function renderConseils() {
+  var el = document.getElementById('conseils-content');
+  var conseils = [
+    {cat:'🐣 Reproduction',icon:'💡',titre:'Optimiser la saillie des lapines',
+     contenu:'Attendre 10-15 jours après la mise bas pour la prochaine saillie. Une lapine peut produire 6-8 portées par an. Le soir est le meilleur moment pour la saillie. Vérifier que le mâle est en bonne santé.'},
+    {cat:'🌾 Alimentation',icon:'💡',titre:'Ration alimentaire équilibrée',
+     contenu:'Lapins: 80% foin + 15% granulés + 5% légumes verts frais. Éviter les choux et légumineuses en excès. Toujours de l\'eau fraîche disponible. Chèvres: 1kg concentré pour 3L de lait produit.'},
+    {cat:'🏥 Prévention',icon:'⚕️',titre:'Calendrier vaccinal obligatoire',
+     contenu:'Lapins: Myxomatose (2x/an) + VHD (2x/an). Poulets: Newcastle (J7, J21, puis tous les 3 mois). Chèvres: Pasteurellose (avant saison froide). Porcs: Rouget + Parvovirose (2x/an).'},
+    {cat:'💰 Rentabilité',icon:'📈',titre:'Maximiser ses profits',
+     contenu:'Vendre en circuit court (marchés locaux) pour de meilleurs prix. Diversifier avec 2-3 espèces. Valoriser les sous-produits (fumier = engrais à vendre). Grouper les achats avec d\'autres éleveurs.'},
+    {cat:'🏗 Infrastructure',icon:'🔧',titre:'Aménagement optimal des enclos',
+     contenu:'Orientation est-ouest pour profiter du soleil matin. Ventilation naturelle sans courants d\'air. Densité maximale: lapins 6/m², poulets 8/m², chèvres 1.5/m². Sol facile à nettoyer et désinfecter.'},
+    {cat:'🌱 Développement',icon:'🚀',titre:'Élargir sa production',
+     contenu:'Commencer petit (50 têtes) avant d\'agrandir. Maîtriser une espèce avant d\'en ajouter une autre. Investir les bénéfices dans l\'amélioration génétique. Rejoindre une coopérative d\'éleveurs.'},
+  ];
+  el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px">' +
+    conseils.map(function(c){
+      return '<div class="card" style="padding:0;overflow:hidden">' +
+        '<div style="background:rgba(16,185,129,.08);border-bottom:1px solid var(--bdr);padding:12px 16px">' +
+          '<div style="font-size:11px;color:var(--acc);font-weight:700;text-transform:uppercase;letter-spacing:.4px">'+c.cat+'</div>' +
+          '<div style="font-size:14px;font-weight:800;margin-top:3px">'+c.icon+' '+c.titre+'</div>' +
+        '</div>' +
+        '<div style="padding:14px 16px;font-size:13px;color:var(--txt2);line-height:1.7">'+c.contenu+'</div>' +
+      '</div>';
+    }).join('') + '</div>';
+}
+
+// ── ASSISTANT IA ──────────────────────────────────
+var QUICK_QUESTIONS = [
+  'Mon lapin ne mange plus, que faire ?',
+  'Comment calculer ma rentabilité ?',
+  'Quelle dose de vaccin pour 50 poulets ?',
+  'Comment détecter la coccidiose ?',
+  'Quel aliment pour mes lapines allaitantes ?',
+  'Comment construire un clapier pas cher ?',
+  'Quand sevrer les lapereaux ?',
+  'Comment traiter les parasites externes ?',
+];
+
+var IA_REPONSES = {
+  'lapin ne mange': '🐇 Si votre lapin ne mange plus:\n• Vérifier la qualité du foin (moisissures?)\n• Température des locaux (>28°C = stress)\n• Coccidiose possible: selles molles/diarrhée?\n• Traitement: Amprolium 1g/L eau pendant 5j\n• Isoler l\'animal et consulter un vétérinaire si ça persiste 48h',
+  'rentabilit': '📊 Pour calculer la rentabilité:\n• Charges = Alimentation + Santé + Amortissement bâtiment\n• Recettes = Ventes animaux + sous-produits\n• Marge = Recettes - Charges\n• Ratio idéal: charges alimentaires < 70% des recettes\n• Utilisez l\'onglet Finances > Rentabilité dans l\'app',
+  'vaccin.*poulet': '💉 Pour 50 poulets Newcastle:\n• La Sota (oculonasal): 1 dose/oiseau\n• Programme: J7, J21, puis tous les 3 mois\n• Conserve au frigo (2-8°C)\n• Utiliser tôt le matin (fraîcheur)\n• Ne pas vacciner des oiseaux malades',
+  'coccidiose': '🔴 Signes de coccidiose:\n• Diarrhée sanglante ou mousseuse\n• Amaigrissement rapide\n• Animal prostré, poils/plumes hérissés\n• Traitement: Amprolium 1g/L ou Toltrazuril\n• Durée: 5-7 jours + désinfection litière',
+  'lapin.*allait': '🍼 Alimentation lapines allaitantes:\n• Augmenter les granulés de 20-30%\n• Foin à volonté (essentiel pour la digestion)\n• Eau fraîche en permanence (consomment 3x plus)\n• Éviter les choux et légumineuses\n• Carottes et betteraves = bons compléments',
+  'clapier': '🏗 Construction clapier économique:\n• Bois local ou bambou + toiture en tôle\n• Dimensions: 60x80cm par lapin adulte\n• Plancher en grillage 1cm² (déjections tombent)\n• Orientation: à l\'abri des courants d\'air\n• Budget indicatif: 15 000-30 000 F par case',
+  'sevrer': '🐣 Sevrage des lapereaux:\n• Âge idéal: 28-35 jours\n• Séparer les mâles et femelles\n• Garder la même alimentation 2 semaines\n• Eviter le stress: même enclos, mêmes soins\n• Peser chaque semaine pour suivre la croissance',
+  'parasites': '🐛 Traitement parasites externes:\n• Ivermectine: 0.2ml/kg en sous-cutané\n• Traiter TOUS les animaux en même temps\n• Traiter aussi les locaux (pulvérisation)\n• Répéter à 14 jours d\'intervalle\n• Pour les oreilles: huile de paraffine + Ivermectine locale',
+};
+
+function renderAssistant() {
+  var qEl = document.getElementById('quick-questions');
+  qEl.innerHTML = QUICK_QUESTIONS.map(function(q){
+    return '<button class="btn btn-secondary" style="text-align:left;font-size:12px;padding:8px 12px;width:100%" data-q="'+q+'" onclick="poserQuestion(this.dataset.q)">'+q+'</button>';
+  }).join('');
+}
+
+function poserQuestion(q) {
+  document.getElementById('ia-inp').value = q;
+  envoyerIA();
+}
+
+function envoyerIA() {
+  var inp = document.getElementById('ia-inp');
+  var q   = (inp.value||'').trim(); if(!q) return;
+  inp.value = '';
+  var msgs = document.getElementById('ia-msgs');
+
+  var userDiv = document.createElement('div');
+  userDiv.className = 'ia-msg-user';
+  userDiv.textContent = q;
+  msgs.appendChild(userDiv);
+
+  // Chercher une réponse dans la base
+  var rep = null;
+  var ql  = q.toLowerCase();
+  for(var pattern in IA_REPONSES) {
+    if(new RegExp(pattern).test(ql)) { rep = IA_REPONSES[pattern]; break; }
+  }
+
+  // Réponse contextuelle avec données réelles
+  if(!rep) {
+    var nbAnimaux = DB.animaux.length;
+    var malades   = DB.animaux.filter(function(a){return a.statut==='Malade'||a.statut==='Traitement';}).length;
+    var stocks    = DB.stocks.filter(function(s){return Number(s.qty||0)<=Number(s.seuil||0);}).length;
+
+    if(ql.includes('stock') || ql.includes('provision')) {
+      rep = '📦 État de vos stocks:\n• '+DB.stocks.length+' produits en stock\n• '+stocks+' alerte(s) de stock bas\nConsultez l\'onglet Stocks pour les détails.';
+    } else if(ql.includes('animaux') || ql.includes('cheptel')) {
+      rep = '🐾 Votre cheptel:\n• '+nbAnimaux+' animal(x) enregistré(s)\n• '+malades+' malade(s) ou en traitement\n• '+DB.saillies.length+' saillie(s) enregistrée(s)\nConsultez l\'onglet Animaux pour les détails.';
+    } else if(ql.includes('rentab') || ql.includes('profit') || ql.includes('benefice')) {
+      var r = DB.finances.filter(function(f){return f.type==='vente'||f.type==='entree';}).reduce(function(s,f){return s+Number(f.montant||0);},0);
+      var d = DB.finances.filter(function(f){return f.type==='depense';}).reduce(function(s,f){return s+Number(f.montant||0);},0);
+      rep = '💰 Situation financière:\n• Recettes: '+fmtNum(r)+' F\n• Dépenses: '+fmtNum(d)+' F\n• Solde net: '+fmtNum(r-d)+' F\n• '+( r>d ? '✅ Rentable !' : '⚠️ Déficitaire — réduisez les coûts');
+    } else {
+      rep = '🤖 Je n\'ai pas de réponse précise pour cette question.\n\nEssayez de consulter:\n• L\'onglet Santé > Guide maladies\n• L\'onglet Tutoriels\n• L\'onglet Conseils & Orientations\n\nOu reformulez votre question avec des mots-clés comme: maladie, vaccin, alimentation, rentabilité, saillie...';
+    }
+  }
+
+  setTimeout(function(){
+    var botDiv = document.createElement('div');
+    botDiv.className = 'ia-msg-bot';
+    botDiv.style.whiteSpace = 'pre-line';
+    botDiv.textContent = rep;
+    msgs.appendChild(botDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 600);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// ── Init ──────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function(){
+  renderDashboard();
+});
+</script>
+
+<script>
+// DPTIF Pro — Identification app
+window.DPTIF_APP_ID   = 'elevage';
+window.DPTIF_APP_NAME = 'Élevage Pro';
+</script>
+<script>
+// DPTIF Pro — Callback démarrage (doit être AVANT le module licence)
+window.dptifOnLicenceOk = function() {
+  var lic = document.getElementById('dptif-lic-screen');
+  if(lic) lic.remove();
+  try { renderDashboard(); }
+  catch(e) {
+    var n = document.querySelector('.nav-item:first-child,[onclick*="showPage"],[onclick*="showSection"],[onclick*="showView"]');
+    if(n) n.click();
+  }
+};
+</script>
+<script>
+
+// ══════════════════════════════════════════════════════════════
+// DPTIF PRO — Module de vérification de licence v2
+// Contact: jeanpaulbognon3@gmail.com
+// ══════════════════════════════════════════════════════════════
+
+(function() {
+  var APP_ID    = window.DPTIF_APP_ID    || 'dptif-app';
+  var APP_NAME  = window.DPTIF_APP_NAME  || 'DPTIF Pro';
+  var DEMO_DAYS = 30;
+  var ADMIN_WA  = '22901970000';
+
+  function storageGet(k)  { try { return localStorage.getItem(k);       } catch(e){ return null; } }
+  function storageSet(k,v){ try { localStorage.setItem(k,v);            } catch(e){} }
+
+  function getLic()   { try{ return JSON.parse(storageGet('dptif_lic_'+APP_ID)||'null'); } catch(e){ return null; } }
+  function saveLic(l) { storageSet('dptif_lic_'+APP_ID, JSON.stringify(l)); }
+
+  function getFirstRun() {
+    var key = 'dptif_first_'+APP_ID;
+    var d = storageGet(key);
+    if(!d){ d=new Date().toISOString().slice(0,10); storageSet(key,d); }
+    return d;
+  }
+
+  function joursRestants(fin) {
+    return Math.ceil((new Date(fin)-new Date())/86400000);
+  }
+
+  function validerCle(cle) {
+    cle = (cle||'').trim().toUpperCase();
+    if(!cle) return {ok:false, msg:'Entrez votre clé'};
+    if(cle === 'DPTIF-MASTER-2026-JP') return {ok:true, jours:9999};
+    var parts = cle.split('-');
+    if(parts.length < 4) return {ok:false, msg:'Format invalide (ex: APP-CLI-XXXX-XXXX-XXXX)'};
+    // Vérifier si déjà stockée
+    var stored = getLic();
+    if(stored && stored.cle===cle) {
+      var j = joursRestants(stored.fin);
+      if(j < 0) return {ok:false, msg:'Licence expirée le '+stored.fin};
+      return {ok:true, jours:j, fin:stored.fin};
+    }
+    // Nouvelle clé — valider le format et stocker
+    var allValid = parts.every(function(p){ return /^[A-Z0-9]{3,}$/.test(p); });
+    if(!allValid) return {ok:false, msg:'Clé invalide — contactez Jean Paul BOGNON'};
+    var fin = new Date(); fin.setFullYear(fin.getFullYear()+1);
+    var finStr = fin.toISOString().slice(0,10);
+    saveLic({cle:cle, debut:new Date().toISOString().slice(0,10), fin:finStr});
+    return {ok:true, jours:365, fin:finStr};
+  }
+
+  function afficherBanniere(msg, color) {
+    var old = document.getElementById('dptif-banner');
+    if(old) old.remove();
+    var b = document.createElement('div');
+    b.id = 'dptif-banner';
+    b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9998;'
+      + 'background:'+color+';padding:9px 16px;display:flex;align-items:center;'
+      + 'justify-content:space-between;font-size:12px;font-weight:600;color:#000';
+    b.innerHTML = msg
+      + '<button onclick="this.parentNode.remove()" '
+      + 'style="background:rgba(0,0,0,.15);border:none;padding:4px 10px;'
+      + 'border-radius:6px;cursor:pointer;font-size:11px">✕</button>';
+    document.body.insertBefore(b, document.body.firstChild);
+  }
+
+  function afficherEcranLicence(msgTop, demoRestants) {
+    var old = document.getElementById('dptif-lic-screen');
+    if(old) old.remove();
+
+    var screen = document.createElement('div');
+    screen.id = 'dptif-lic-screen';
+    screen.style.cssText = 'position:fixed;inset:0;z-index:99999;'
+      + 'background:linear-gradient(135deg,#05060e,#0e0a2e);'
+      + 'display:flex;align-items:center;justify-content:center;padding:20px;'
+      + 'font-family:Arial,sans-serif';
+    document.body.appendChild(screen);
+
+    // Construire l'UI avec createElement
+    var box = document.createElement('div');
+    box.style.cssText = 'width:460px;max-width:100%;text-align:center';
+
+    // Logo
+    var logo = document.createElement('div');
+    logo.style.cssText = 'width:64px;height:64px;border-radius:18px;margin:0 auto 16px;'
+      + 'background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;'
+      + 'align-items:center;justify-content:center;font-size:28px';
+    logo.textContent = '⚡';
+
+    var title = document.createElement('div');
+    title.style.cssText = 'font-size:22px;font-weight:800;color:#fff;margin-bottom:4px';
+    title.textContent = 'DPTIF Pro';
+
+    var sub = document.createElement('div');
+    sub.style.cssText = 'font-size:13px;color:#9090c0;margin-bottom:24px';
+    sub.textContent = APP_NAME;
+
+    // Carte
+    var card = document.createElement('div');
+    card.style.cssText = 'background:#0f1118;border:1px solid rgba(99,102,241,.3);'
+      + 'border-radius:18px;padding:24px';
+
+    // Message statut
+    if(msgTop) {
+      var msgEl = document.createElement('div');
+      msgEl.style.cssText = 'background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);'
+        + 'border-radius:8px;padding:10px 14px;color:#f87171;font-size:13px;margin-bottom:16px';
+      msgEl.textContent = msgTop;
+      card.appendChild(msgEl);
+    } else if(demoRestants > 0) {
+      var demoEl = document.createElement('div');
+      demoEl.style.cssText = 'background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);'
+        + 'border-radius:8px;padding:10px 14px;color:#fbbf24;font-size:13px;margin-bottom:16px';
+      demoEl.textContent = '⏳ Mode démo — '+demoRestants+' jour(s) restant(s) sur '+DEMO_DAYS;
+      card.appendChild(demoEl);
+    }
+
+    // Label
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'text-align:left;font-size:11px;font-weight:700;color:#9090c0;'
+      + 'text-transform:uppercase;letter-spacing:1px;margin-bottom:6px';
+    lbl.textContent = 'Clé de licence';
+
+    // Input
+    var inp = document.createElement('input');
+    inp.id = 'dptif-lic-input';
+    inp.placeholder = 'APP-CLI-XXXX-XXXX-XXXX';
+    inp.style.cssText = 'width:100%;background:#161922;border:1px solid rgba(99,102,241,.3);'
+      + 'border-radius:10px;padding:12px 16px;color:#fff;font-size:14px;'
+      + 'font-family:monospace;letter-spacing:1px;box-sizing:border-box;margin-bottom:8px';
+    inp.addEventListener('input', function(){ this.value=this.value.toUpperCase(); });
+    inp.addEventListener('keydown', function(e){ if(e.key==='Enter') btn.click(); });
+
+    // Erreur
+    var errEl = document.createElement('div');
+    errEl.id = 'dptif-lic-err';
+    errEl.style.cssText = 'color:#f87171;font-size:12px;margin-bottom:10px;display:none;text-align:left';
+
+    // Bouton activer
+    var btn = document.createElement('button');
+    btn.style.cssText = 'width:100%;padding:13px;background:linear-gradient(135deg,#6366f1,#8b5cf6);'
+      + 'border:none;border-radius:11px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px';
+    btn.textContent = '🔑 Activer la licence';
+    btn.addEventListener('click', function() {
+      var cle = inp.value.trim();
+      var r = validerCle(cle);
+      if(r.ok) {
+        screen.remove();
+        if(r.jours <= 7) afficherBanniere('⚠️ Licence expire dans '+r.jours+' jour(s).','rgba(245,158,11,.9)');
+        if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+      } else {
+        errEl.style.display='block';
+        errEl.textContent = '❌ '+r.msg;
+      }
+    });
+
+    // Bouton démo
+    if(demoRestants > 0) {
+      var btnDemo = document.createElement('button');
+      btnDemo.style.cssText = 'width:100%;padding:11px;background:rgba(245,158,11,.12);'
+        + 'border:1px solid rgba(245,158,11,.3);border-radius:10px;color:#fbbf24;'
+        + 'font-size:13px;font-weight:600;cursor:pointer;margin-bottom:14px';
+      btnDemo.textContent = '⏳ Continuer en mode démo ('+demoRestants+'j)';
+      btnDemo.addEventListener('click', function() {
+        screen.remove();
+        if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+      });
+      card.appendChild(lbl);
+      card.appendChild(inp);
+      card.appendChild(errEl);
+      card.appendChild(btn);
+      card.appendChild(btnDemo);
+    } else {
+      card.appendChild(lbl);
+      card.appendChild(inp);
+      card.appendChild(errEl);
+      card.appendChild(btn);
+    }
+
+    // Footer contact
+    var footer = document.createElement('div');
+    footer.style.cssText = 'border-top:1px solid rgba(99,102,241,.15);padding-top:14px;'
+      + 'font-size:12px;color:#505080;margin-top:4px';
+    footer.innerHTML = 'Obtenir une licence: '
+      + '<a href="https://wa.me/'+ADMIN_WA+'" target="_blank" style="color:#6366f1">WhatsApp</a>'
+      + ' · jeanpaulbognon3@gmail.com';
+    card.appendChild(footer);
+
+    box.appendChild(logo);
+    box.appendChild(title);
+    box.appendChild(sub);
+    box.appendChild(card);
+    screen.appendChild(box);
+
+    setTimeout(function(){ inp.focus(); }, 200);
+  }
+
+  function init() {
+    var stored = getLic();
+    if(stored && stored.cle) {
+      var j = joursRestants(stored.fin);
+      if(j >= 0) {
+        if(j <= 7) afficherBanniere('⚠️ Licence expire dans '+j+' jour(s) — Contactez: wa.me/'+ADMIN_WA,'rgba(245,158,11,.9)');
+        if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+        return;
+      }
+      afficherEcranLicence('⏰ Licence expirée le '+stored.fin+' — Renouvelez pour continuer', 0);
+      return;
+    }
+    var firstRun = getFirstRun();
+    var joursDemo = Math.floor((new Date()-new Date(firstRun))/86400000);
+    var restants  = DEMO_DAYS - joursDemo;
+    if(restants > 5) {
+      if(restants <= DEMO_DAYS) {
+        afficherBanniere('⏳ Mode démo — '+restants+' jour(s) restants. <a href="https://wa.me/'+ADMIN_WA+'" target="_blank" style="color:#000;font-weight:700">Obtenir une licence</a>', 'rgba(245,158,11,.85)');
+      }
+      if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+    } else {
+      afficherEcranLicence(restants>0?null:'🔒 Démo expirée — Entrez votre clé de licence', restants>0?restants:0);
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
+  else setTimeout(init, 200);
+
+})();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<!-- DPTIF-v3-28032026-1800 -->
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DPTIF Pro - Taxi &amp; Transport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0f1a; --surface:#111827; --surface2:#1a2234; --surface3:#1f2d44;
+  --border:rgba(245,158,11,.14); --accent:#f59e0b; --accent2:#fbbf24;
+  --green:#10b981; --red:#ef4444; --blue:#3b82f6; --purple:#a855f7;
+  --text:#f0f6ff; --text2:#94a3b8; --text3:#475569; --radius:14px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
+
+/* ── Login ── */
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:48px 40px;text-align:center;width:380px;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.login-logo{font-size:32px;font-weight:900;color:var(--accent);letter-spacing:-1px;margin-bottom:4px}
+.login-sub{font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:28px}
+.btn-google{width:100%;padding:13px;background:#fff;color:#1a1a2e;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:opacity .2s}
+.btn-google:hover{opacity:.9}
+.btn-demo{width:100%;padding:10px;margin-top:8px;background:transparent;color:var(--accent);border:1px solid var(--border);border-radius:10px;font-size:13px;cursor:pointer;transition:all .2s}
+.btn-demo:hover{background:rgba(245,158,11,.1)}
+
+/* ── Layout ── */
+#app{display:flex;height:100vh;opacity:0;transition:opacity .4s}
+#app.visible{opacity:1}
+
+/* ── Sidebar ── */
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-logo{padding:20px 16px 12px}
+.sidebar-logo-txt{font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.5px}
+.sidebar-logo-txt span{color:var(--accent)}
+.sidebar-tag{font-size:9px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.nav-sec{font-size:9px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--text3);padding:16px 16px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 14px;margin:2px 8px;border-radius:8px;background:none;border:none;color:var(--text2);font-size:13px;font-weight:500;cursor:pointer;width:calc(100% - 16px);text-align:left;transition:all .15s}
+.nav-item:hover{background:rgba(245,158,11,.1);color:var(--accent)}
+.nav-item.active{background:rgba(245,158,11,.15);color:var(--accent);border-left:3px solid var(--accent)}
+.nav-badge{margin-left:auto;background:var(--accent);color:var(--bg);font-size:10px;font-weight:900;padding:1px 7px;border-radius:10px}
+.sidebar-footer{margin-top:auto;padding:12px;border-top:1px solid var(--border)}
+.user-info{display:flex;align-items:center;gap:8px}
+.user-av{width:32px;height:32px;border-radius:50%;background:var(--accent);color:var(--bg);font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.user-name{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
+.btn-logout{margin-left:auto;background:none;border:1px solid var(--border);color:var(--text3);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:14px;flex-shrink:0}
+.btn-logout:hover{color:var(--red);border-color:var(--red)}
+
+/* ── Main ── */
+.main-content{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{padding:0 24px;height:52px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--surface);flex-shrink:0}
+.topbar-title{font-size:16px;font-weight:800}
+.topbar-sub{font-size:11px;color:var(--text3)}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px}
+.topbar-action{padding:7px 16px;background:var(--accent);color:var(--bg);border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;transition:opacity .2s}
+.topbar-action:hover{opacity:.85}
+#sync-badge{font-size:10px;padding:3px 10px;border-radius:10px;font-weight:700;border:1px solid rgba(245,158,11,.3);background:rgba(245,158,11,.1);color:var(--accent)}
+
+/* ── Pages ── */
+.pages{flex:1;overflow-y:auto;padding:24px}
+.page{display:none}
+.page.active{display:block}
+
+/* ── Btn retour ── */
+.btn-back{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--text2);font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer;margin-bottom:16px;font-weight:500;transition:all .2s}
+.btn-back:hover{background:rgba(245,158,11,.15);color:var(--accent)}
+
+/* ── Stat cards ── */
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;transition:transform .2s}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-icon{font-size:26px;margin-bottom:8px}
+.stat-val{font-size:24px;font-weight:900;letter-spacing:-1px;line-height:1}
+.stat-lbl{font-size:11px;color:var(--text3);margin-top:4px}
+
+/* ── Tables ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;background:rgba(255,255,255,.01)}
+.card-title{font-size:14px;font-weight:700}
+table{width:100%;border-collapse:collapse}
+thead th{padding:10px 16px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);background:rgba(255,255,255,.02);border-bottom:1px solid var(--border);text-align:left}
+tbody td{padding:11px 16px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04);vertical-align:middle}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+tbody tr:last-child td{border-bottom:none}
+.empty-row td{text-align:center;padding:40px;opacity:.4;font-size:13px}
+
+/* ── Badges ── */
+.badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:700}
+.bg{background:rgba(16,185,129,.15);color:#10b981}
+.bo{background:rgba(245,158,11,.15);color:#f59e0b}
+.br{background:rgba(239,68,68,.15);color:#ef4444}
+.bb{background:rgba(59,130,246,.15);color:#3b82f6}
+
+/* ── Boutons inline ── */
+.btn-sm{padding:4px 10px;font-size:11px;border-radius:6px;border:none;cursor:pointer;font-weight:600;transition:all .15s}
+.btn-edit{background:rgba(245,158,11,.12);color:var(--accent)}
+.btn-edit:hover{background:rgba(245,158,11,.25)}
+.btn-del{background:rgba(239,68,68,.12);color:#ef4444}
+.btn-del:hover{background:rgba(239,68,68,.25)}
+.btn-pdf{background:rgba(59,130,246,.12);color:#3b82f6}
+
+/* ── Inputs ── */
+input,select,textarea{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:9px 12px;font-size:13px;width:100%;transition:border-color .2s;font-family:inherit}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 3px rgba(245,158,11,.15)}
+label{font-size:11px;color:var(--text3);display:block;margin-bottom:4px;font-weight:600;letter-spacing:.3px}
+
+/* ── Modals ── */
+.modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center}
+.modal-backdrop.open{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;width:90%;max-width:540px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.modal-hdr{padding:20px 24px;border-bottom:1px solid var(--border);font-size:16px;font-weight:800}
+.modal-bdy{padding:24px}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ff{grid-column:1/-1}
+.modal-ftr{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end}
+.btn-cancel{padding:8px 16px;background:transparent;border:1px solid var(--border);color:var(--text2);border-radius:8px;font-size:13px;cursor:pointer}
+.btn-save{padding:8px 20px;background:var(--accent);color:var(--bg);border:none;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer}
+
+/* ── Rooms grid ── */
+.rooms-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px}
+.room-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+
+/* ── Dashboard ── */
+.dash-grid{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+.recentes{display:flex;flex-direction:column;gap:8px}
+.recente{display:flex;align-items:center;gap:12px;padding:10px;background:var(--surface2);border-radius:10px}
+
+/* ── Toast ── */
+#toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border);padding:12px 20px;border-radius:10px;font-size:13px;z-index:99999;transform:translateY(80px);transition:transform .3s;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:300px}
+#toast.show{transform:translateY(0)}
+
+@media print{.sidebar,.topbar,#toast,.modal-backdrop,.btn-back{display:none!important}.pages{padding:0}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">DPTIF<span style="color:var(--bg)">Pro</span></div>
+    <div class="login-sub">Taxi &middot; Moto &middot; Hotel</div>
+    <button class="btn-google" onclick="loginGoogle()">
+      <svg width="18" height="18" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      Se connecter avec Google
+    </button>
+    <button class="btn-demo" onclick="loginDemo()">Mode demo (sans compte)</button>
+    <p style="font-size:10px;color:var(--text3);margin-top:14px">Donnees securisees par Firebase</p>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-txt">DPTIF<span>Pro</span></div>
+      <div class="sidebar-tag">Taxi &middot; Moto &middot; Auto</div>
+    </div>
+
+    <div class="nav-sec">Principal</div>
+    <button class="nav-item active" onclick="showPage('dashboard',this)">&#8984; Tableau de bord</button>
+
+    <div class="nav-sec">Flotte</div>
+    <button class="nav-item" onclick="showPage('vehicules',this)">
+      &#128663; Vehicules <span class="nav-badge" id="badge-veh">0</span>
+    </button>
+    <button class="nav-item" onclick="showPage('courses',this)">
+      &#128739; Courses <span class="nav-badge" id="badge-crs">0</span>
+    </button>
+    <button class="nav-item" onclick="showPage('chauffeurs',this)">
+      &#128100; Chauffeurs <span class="nav-badge" id="badge-chauf">0</span>
+    </button>
+
+
+    <div class="nav-sec">Public</div>
+    <button class="nav-item" onclick="window.open('ride.html','_blank')" style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2)">
+      &#9995; Page Ride publique
+    </button>
+
+    <div class="nav-sec">Suivi & Alertes</div>
+    <button class="nav-item" onclick="showPage('maintenance',this)">&#128295; Maintenance
+      <span class="nav-badge" id="badge-alerte" style="background:#ef4444">0</span>
+    </button>
+    <button class="nav-item" onclick="showPage('stats_chauf',this)">&#128202; Stats chauffeurs</button>
+
+    <div class="nav-sec">Finance</div>
+    <button class="nav-item" onclick="showPage('depenses',this)">&#128176; Depenses</button>
+    <button class="nav-item" onclick="showPage('rapports',this)">&#128202; Rapports</button>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="user-av" id="user-avatar">?</div>
+        <div style="min-width:0">
+          <div class="user-name" id="user-name">---</div>
+          <div style="font-size:10px;color:var(--text3)">Transport</div>
+        </div>
+        <button class="btn-logout" onclick="logoutApp()" title="Deconnexion">&#9211;</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="main-content">
+    <div class="topbar">
+      <div>
+        <span class="topbar-title" id="topbar-title">Tableau de bord</span>
+        <span class="topbar-sub" id="topbar-sub"> &mdash; Vue complete</span>
+      </div>
+      <div class="topbar-right">
+        <span id="sync-badge">&#127760; En ligne</span>
+        <button class="topbar-action" id="topbar-btn" onclick="topbarAdd()">+ Ajouter</button>
+      </div>
+    </div>
+
+    <div class="pages">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="stat-row" id="dash-kpis"></div>
+        <div class="dash-grid">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Dernieres courses</span></div>
+            <div id="dash-courses" style="padding:16px"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Sejours en cours</span></div>
+            <div id="dash-hotel" style="padding:16px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VEHICULES -->
+      <div class="page" id="page-vehicules">
+        <button class="btn-back" onclick="showPage('dashboard',null)">&#8592; Tableau de bord</button>
+        <div class="stat-row" id="veh-kpis"></div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Flotte de vehicules</span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <input type="text" id="veh-search" placeholder="Rechercher..." oninput="renderVehicules()" style="width:180px">
+              <select id="veh-type-filter" onchange="renderVehicules()" style="width:140px">
+                <option value="">Tous types</option>
+                <option>Taxi</option><option>Moto-taxi</option><option>VTC</option>
+                <option>Camion</option><option>Bus</option>
+              </select>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Immatriculation</th><th>Type</th><th>Chauffeur</th><th>Tel</th><th>Statut</th><th>Recettes/mois</th><th>Actions</th></tr></thead>
+            <tbody id="veh-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- COURSES -->
+      <div class="page" id="page-courses">
+        <button class="btn-back" onclick="showPage('dashboard',null)">&#8592; Tableau de bord</button>
+        <div class="stat-row" id="crs-kpis"></div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Historique des courses</span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <input type="date" id="crs-date-filter" onchange="renderCourses()" style="width:155px">
+              <select id="crs-veh-filter" onchange="renderCourses()" style="width:160px">
+                <option value="">Tous vehicules</option>
+              </select>
+            </div>
+          </div>
+          <table>
+            <thead><tr><th>Date</th><th>Vehicule</th><th>Chauffeur</th><th>Trajet</th><th>Montant</th><th>Paiement</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="crs-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CHAUFFEURS -->
+      <div class="page" id="page-chauffeurs">
+        <button class="btn-back" onclick="showPage('dashboard',null)">&#8592; Tableau de bord</button>
+        <div class="stat-row" id="chauf-kpis"></div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Gestion des chauffeurs</span>
+            <input type="text" id="chauf-search" placeholder="Rechercher..." oninput="renderChauffeurs()" style="width:200px">
+          </div>
+          <table>
+            <thead><tr><th>Nom</th><th>Telephone</th><th>Permis</th><th>Vehicule</th><th>Statut</th><th>Recettes total</th><th>Actions</th></tr></thead>
+            <tbody id="chauf-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      
+      <!-- CONTRATS CHAUFFEURS -->
+      <div class="page" id="page-contrats_chauf">
+        <button class="btn-back" onclick="showPage('dashboard',null)">&#8592; Tableau de bord</button>
+        <div class="stat-row" id="contrats-kpis"></div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">&#128203; Contrats propriétaire ↔ chauffeur</span>
+            <button class="topbar-action" onclick="ouvrirNouveauContrat()" style="font-size:12px;padding:6px 14px">+ Nouveau contrat</button>
+          </div>
+          <table>
+            <thead><tr><th>Chauffeur</th><th>Véhicule</th><th>Quota</th><th>Fréquence</th><th>Total à payer</th><th>Payé</th><th>Reste</th><th>Fin prévue</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="contrats-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- CAISSE CHAUFFEURS -->
+      <div class="page" id="page-caisse_chauf">
+        <button class="btn-back" onclick="showPage('dashboard',null)">&#8592; Tableau de bord</button>
+        <div class="stat-row" id="caisse-kpis"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">&#128180; Encaisser une course</span>
+            </div>
+            <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+              <div><label>Chauffeur</label><select id="caisse-chauf-sel" class="route-inp" style="padding:9px 12px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text);width:100%;font-size:13px"></select></div>
+              <div><label>Montant encaissé (F)</label><input type="number" id="caisse-montant" placeholder="0" class="route-inp" style="padding:9px 12px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text);width:100%;font-size:13px"></div>
+              <div><label>Description</label><input id="caisse-desc" placeholder="Ex: Course Cotonou-Calavi" class="route-inp" style="padding:9px 12px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text);width:100%;font-size:13px"></div>
+              <div><label>Date</label><input type="date" id="caisse-date" class="route-inp" style="padding:9px 12px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text);width:100%;font-size:13px"></div>
+              <button onclick="encaisserCourse()" style="width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer">&#9989; Encaisser</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">&#128176; Enregistrer une dépense</span>
+            </div>
+            <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+              <div><label>Chauffeur / Véhicule</label><select id="dep-chauf-sel" class="route-inp" style="padding:9px 12px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text);width:100%;font-size:13px"></select></div>
+              <div><label>Catégorie</label>
+                <select id="dep-cat-sel" class="route-inp" style="padding:9px 12px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text);width:100%;font-size:13px">
+                  <option>Carburant</option><option>Réparation</option><option>Assurance</option>
+                  <option>Taxe / Vignette</option><option>Entretien</option><option>Amende</option><option>Autre</option>
+                </select>
+              </div>
+              <div><label>Montant (F)</label><input type="number" id="dep-montant-caisse" placeholder="0" class="route-inp" style="padding:9px 12px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text);width:100%;font-size:13px"></div>
+              <div><label>Description</label><input id="dep-desc-caisse" placeholder="Ex: Vidange moteur" class="route-inp" style="padding:9px 12px;border-radius:9px;background:var(--surface2);border:1px solid var(--border);color:var(--text);width:100%;font-size:13px"></div>
+              <button onclick="enregistrerDepenseChauf()" style="width:100%;padding:11px;background:var(--red);color:#fff;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer">&#128178; Enregistrer dépense</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">&#128203; Historique caisse</span>
+            <select id="caisse-filter-chauf" onchange="renderCaisseChauf()" style="width:180px;padding:6px 10px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:12px">
+              <option value="">Tous les chauffeurs</option>
+            </select>
+          </div>
+          <table>
+            <thead><tr><th>Date</th><th>Chauffeur</th><th>Type</th><th>Catégorie</th><th>Description</th><th>Montant</th></tr></thead>
+            <tbody id="caisse-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- DEPENSES -->
+      <div class="page" id="page-depenses">
+        <button class="btn-back" onclick="showPage('dashboard',null)">&#8592; Tableau de bord</button>
+        <div class="stat-row" id="dep-kpis"></div>
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Depenses et entretien</span>
+            <select id="dep-cat-filter" onchange="renderDepenses()" style="width:160px">
+              <option value="">Toutes categories</option>
+              <option>Carburant</option><option>Reparation</option><option>Assurance</option>
+              <option>Entretien</option><option>Amende</option><option>Autre</option>
+            </select>
+          </div>
+          <table>
+            <thead><tr><th>Date</th><th>Vehicule</th><th>Categorie</th><th>Description</th><th>Montant</th><th>Actions</th></tr></thead>
+            <tbody id="dep-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- RAPPORTS -->
+      <div class="page" id="page-rapports">
+        <button class="btn-back" onclick="showPage('dashboard',null)">&#8592; Tableau de bord</button>
+        <div class="stat-row" id="rpt-kpis"></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px" id="rpt-cards"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+      <!-- PAGE MAINTENANCE -->
+      <div class="page" id="page-maintenance">
+        <button class="btn-back" onclick="showPage('dashboard',null)">&#8592; Tableau de bord</button>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-size:20px;font-weight:800">&#128295; Maintenance & Alertes</div>
+            <div style="font-size:12px;color:var(--text3)">Contrôle technique · Assurance · Vidange · Kilométrage</div>
+          </div>
+          <button class="btn-add" onclick="renderMaintenance()">&#8635; Actualiser</button>
+        </div>
+
+        <!-- Alertes critiques -->
+        <div id="maint-alertes" style="margin-bottom:16px"></div>
+
+        <!-- KPIs -->
+        <div class="stat-row" id="maint-kpis" style="margin-bottom:16px"></div>
+
+        <!-- Table maintenance -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">&#128663; État de la flotte</span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <select id="maint-filter" onchange="renderMaintenance()" style="padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px">
+                <option value="">Tous les véhicules</option>
+                <option value="ct">CT à renouveler</option>
+                <option value="assurance">Assurance expirée</option>
+                <option value="vidange">Vidange proche</option>
+              </select>
+            </div>
+          </div>
+          <table>
+            <thead><tr>
+              <th>Véhicule</th><th>Km actuel</th><th>Contrôle Technique</th>
+              <th>Assurance</th><th>Vidange</th><th>Score état</th><th>Actions</th>
+            </tr></thead>
+            <tbody id="maint-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Calculateur distance / itinéraire -->
+        <div class="card" style="margin-top:16px">
+          <div class="card-header"><span class="card-title">&#128205; Calculateur de trajet</span></div>
+          <div style="padding:16px;display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end">
+            <div>
+              <label style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;display:block;margin-bottom:4px">Départ</label>
+              <input id="calc-depart" style="width:100%;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px" placeholder="Ex: Cotonou centre">
+            </div>
+            <div>
+              <label style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;display:block;margin-bottom:4px">Arrivée</label>
+              <input id="calc-arrivee" style="width:100%;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px" placeholder="Ex: Azovè marché">
+            </div>
+            <button onclick="calculerTrajet()" style="padding:8px 16px;background:var(--accent);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:12px;white-space:nowrap">
+              &#128205; Voir sur Maps
+            </button>
+          </div>
+          <div id="calc-result" style="padding:0 16px 16px;font-size:13px;color:var(--text2)"></div>
+        </div>
+      </div>
+
+      <!-- PAGE STATS CHAUFFEURS -->
+      <div class="page" id="page-stats_chauf">
+        <button class="btn-back" onclick="showPage('dashboard',null)">&#8592; Tableau de bord</button>
+        <div style="font-size:20px;font-weight:800;margin-bottom:4px">&#128200; Performance des chauffeurs</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:16px">Courses · Revenus · Ponctualité · Classement</div>
+
+        <div class="stat-row" id="stats-chauf-kpis" style="margin-bottom:16px"></div>
+
+        <!-- Podium top 3 -->
+        <div id="stats-podium" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px"></div>
+
+        <!-- Table complète -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">&#128100; Classement complet</span>
+            <select id="stats-periode" onchange="renderStatsChauf()" style="padding:6px 10px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:12px">
+              <option value="mois">Ce mois</option>
+              <option value="trim">Ce trimestre</option>
+              <option value="tout">Tout</option>
+            </select>
+          </div>
+          <table>
+            <thead><tr>
+              <th>Rang</th><th>Chauffeur</th><th>Véhicule</th>
+              <th>Courses</th><th>Revenus</th><th>Moy/course</th><th>Note</th>
+            </tr></thead>
+            <tbody id="stats-chauf-tbody"></tbody>
+          </table>
+        </div>
+
+        <!-- Bulletin chauffeur -->
+        <div class="card" style="margin-top:16px">
+          <div class="card-header"><span class="card-title">&#128196; Bulletin mensuel chauffeur</span></div>
+          <div style="padding:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+            <div>
+              <label style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;display:block;margin-bottom:4px">Chauffeur</label>
+              <select id="bul-chauf" style="padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;min-width:180px"></select>
+            </div>
+            <div>
+              <label style="font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;display:block;margin-bottom:4px">Mois</label>
+              <input type="month" id="bul-mois" style="padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px">
+            </div>
+            <button onclick="genBulletinChauffeur()" style="padding:8px 16px;background:var(--accent);color:white;border:none;border-radius:8px;font-weight:700;cursor:pointer;font-size:12px">
+              &#128196; Générer bulletin PDF
+            </button>
+          </div>
+        </div>
+      </div>
+
+<!-- MODALS -->
+<div class="modal-backdrop" id="modal-veh">
+  <div class="modal-box">
+    <div class="modal-hdr" id="modal-veh-title">Nouveau vehicule</div>
+    <div class="modal-bdy">
+      <div class="fg">
+        <div><label>Immatriculation *</label><input id="v-immat" placeholder="Ex: RBTJ-1234 BJ"></div>
+        <div><label>Type *</label><select id="v-type"><option>Taxi</option><option>Moto-taxi</option><option>VTC</option><option>Camion</option><option>Bus</option><option>Pickup</option></select></div>
+        <div><label>Marque / Modele</label><input id="v-modele" placeholder="Ex: Toyota Corolla"></div>
+        <div><label>Annee</label><input type="number" id="v-annee" placeholder="2020"></div>
+        <div><label>Chauffeur assigne</label><input id="v-chauffeur" placeholder="Nom du chauffeur"></div>
+        <div><label>Telephone</label><input id="v-tel" placeholder="0X XX XX XX"></div>
+        <div><label>Statut</label><select id="v-statut"><option>Actif</option><option>Inactif</option><option>En panne</option><option>En entretien</option></select></div>
+        <div><label>Date acquisition</label><input type="date" id="v-date"></div>
+        <div><label>Kilometrage actuel</label><input type="number" id="v-km" placeholder="Ex: 45000 km"></div>
+        <div><label>Date controle technique</label><input type="date" id="v-ct-date"></div>
+        <div><label>Date exp. assurance</label><input type="date" id="v-assurance-date"></div>
+        <div><label>Date derniere vidange</label><input type="date" id="v-vidange-date"></div>
+        <div><label>Km vidange suivante</label><input type="number" id="v-km-vidange" placeholder="Ex: 50000"></div>
+        <div class="ff"><label>Notes</label><textarea id="v-notes" style="height:55px;resize:none" placeholder="Remarques..."></textarea></div>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-cancel" onclick="closeModal('modal-veh')">Annuler</button>
+      <button class="btn-save" onclick="saveVehicule()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-course">
+  <div class="modal-box">
+    <div class="modal-hdr">Enregistrer une course</div>
+    <div class="modal-bdy">
+      <div class="fg">
+        <div><label>Vehicule *</label><select id="c-veh"></select></div>
+        <div><label>Date *</label><input type="date" id="c-date"></div>
+        <div><label>Depart</label><input id="c-depart" placeholder="Lieu de depart"></div>
+        <div><label>Arrivee</label><input id="c-arrivee" placeholder="Lieu d arrivee"></div>
+        <div><label>Montant (F) *</label><input type="number" id="c-montant" placeholder="0"></div>
+        <div><label>Mode paiement</label><select id="c-pmt"><option>Especes</option><option>MTN MoMo</option><option>Moov Money</option><option>Orange Money</option></select></div>
+        <div><label>Statut</label><select id="c-statut"><option>Effectuee</option><option>En cours</option><option>Annulee</option></select></div>
+        <div><label>Distance (km)</label><input type="number" id="c-km" placeholder="0"></div>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-cancel" onclick="closeModal('modal-course')">Annuler</button>
+      <button class="btn-save" onclick="saveCourse()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-chauffeur">
+  <div class="modal-box">
+    <div class="modal-hdr" id="modal-chauf-title">Nouveau chauffeur</div>
+    <div class="modal-bdy">
+      <div class="fg">
+        <div><label>Nom complet *</label><input id="ch-nom" placeholder="Prenom Nom"></div>
+        <div><label>Telephone *</label><input id="ch-tel" placeholder="0X XX XX XX"></div>
+        <div><label>N Permis</label><input id="ch-permis" placeholder="Numero de permis"></div>
+        <div><label>Type permis</label><select id="ch-type-permis"><option>B (Voiture)</option><option>A (Moto)</option><option>C (Camion)</option><option>D (Bus)</option></select></div>
+        <div><label>Vehicule assigne</label><select id="ch-veh-id"></select></div>
+        <div><label>Statut</label><select id="ch-statut"><option>Actif</option><option>Inactif</option><option>Suspendu</option></select></div>
+        <div><label>Date embauche</label><input type="date" id="ch-date"></div>
+        <div><label>Commission (%)</label><input type="number" id="ch-com" placeholder="0" min="0" max="100"></div>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-cancel" onclick="closeModal('modal-chauffeur')">Annuler</button>
+      <button class="btn-save" onclick="saveChauffeur()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-chambre">
+  <div class="modal-box">
+    <div class="modal-hdr" id="modal-ch-title">Nouvelle chambre</div>
+    <div class="modal-bdy">
+      <div class="fg">
+        <div><label>N Chambre *</label><input id="h-num" placeholder="Ex: 101"></div>
+        <div><label>Type *</label><select id="h-type"><option>Simple</option><option>Double</option><option>Suite</option><option>Appartement</option><option>Studio</option></select></div>
+        <div><label>Prix / nuit (F) *</label><input type="number" id="h-prix" placeholder="0"></div>
+        <div><label>Capacite (pers.)</label><input type="number" id="h-cap" value="2" min="1"></div>
+        <div><label>Etage</label><input id="h-etage" placeholder="Ex: RDC, 1er..."></div>
+        <div><label>Statut</label><select id="h-statut"><option>Libre</option><option>Occupee</option><option>Maintenance</option></select></div>
+        <div class="ff"><label>Equipements</label><input id="h-equip" placeholder="TV, Clim, WiFi..."></div>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-cancel" onclick="closeModal('modal-chambre')">Annuler</button>
+      <button class="btn-save" onclick="saveChambre()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-resa">
+  <div class="modal-box">
+    <div class="modal-hdr">Nouvelle reservation</div>
+    <div class="modal-bdy">
+      <div class="fg">
+        <div class="ff"><label>Chambre *</label><select id="r-chambre" onchange="calcResa()"></select></div>
+        <div><label>Client (nom) *</label><input id="r-client" placeholder="Nom complet"></div>
+        <div><label>Telephone</label><input id="r-tel" placeholder="0X XX XX XX"></div>
+        <div><label>Date arrivee *</label><input type="date" id="r-arrivee" onchange="calcResa()"></div>
+        <div><label>Date depart *</label><input type="date" id="r-depart" onchange="calcResa()"></div>
+        <div><label>Mode paiement</label><select id="r-pmt"><option>Especes</option><option>MTN MoMo</option><option>Moov Money</option><option>Virement</option></select></div>
+        <div><label>Statut</label><select id="r-statut"><option>Confirmee</option><option>En cours</option><option>Terminee</option></select></div>
+        <div class="ff" id="r-preview" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:8px;padding:12px;text-align:center;font-weight:700;color:var(--accent)">Selectionnez chambre et dates</div>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-cancel" onclick="closeModal('modal-resa')">Annuler</button>
+      <button class="btn-save" onclick="saveReservation()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-depense">
+  <div class="modal-box">
+    <div class="modal-hdr" id="modal-dep-title">Nouvelle depense</div>
+    <div class="modal-bdy">
+      <div class="fg">
+        <div><label>Vehicule</label><select id="d-veh"></select></div>
+        <div><label>Date *</label><input type="date" id="d-date"></div>
+        <div><label>Categorie *</label><select id="d-cat"><option>Carburant</option><option>Reparation</option><option>Assurance</option><option>Entretien</option><option>Amende</option><option>Autre</option></select></div>
+        <div><label>Montant (F) *</label><input type="number" id="d-montant" placeholder="0"></div>
+        <div class="ff"><label>Description</label><input id="d-desc" placeholder="Details de la depense"></div>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-cancel" onclick="closeModal('modal-depense')">Annuler</button>
+      <button class="btn-save" onclick="saveDepense()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal nouveau contrat chauffeur -->
+<div class="modal-backdrop" id="modal-contrat-chauf">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-hdr">&#128203; Nouveau contrat chauffeur</div>
+    <div class="modal-bdy">
+      <div class="fg">
+        <div class="ff"><label>Chauffeur *</label><select id="cc-chauf" class="form-inp" style="width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:13px"></select></div>
+        <div class="ff"><label>Véhicule *</label><select id="cc-veh" class="form-inp" style="width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:13px"></select></div>
+        <div><label>Quota (F) *</label><input type="number" id="cc-quota" placeholder="Ex: 5000" style="width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:13px"></div>
+        <div><label>Fréquence *</label>
+          <select id="cc-freq" onchange="calcContrat()" style="width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:13px">
+            <option value="jour">Par jour</option>
+            <option value="semaine">Par semaine</option>
+            <option value="mois">Par mois</option>
+          </select>
+        </div>
+        <div><label>Montant total du véhicule (F) *</label><input type="number" id="cc-total" placeholder="Ex: 3000000" oninput="calcContrat()" style="width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:13px"></div>
+        <div><label>Date début *</label><input type="date" id="cc-debut" oninput="calcContrat()" style="width:100%;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;font-size:13px"></div>
+        <div class="ff" id="cc-preview" style="background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:10px;padding:14px;display:none">
+          <div style="font-size:13px;font-weight:700;color:var(--accent)" id="cc-preview-text"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn-cancel" onclick="closeModal('modal-contrat-chauf')">Annuler</button>
+      <button class="btn-save" onclick="saveContratChauf()">&#128203; Enregistrer contrat</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+
+
+<script>
+// ════════════════════════════════════════════════
+// DPTIF Pro Transport v2.0
+// ════════════════════════════════════════════════
+var DB = { user:null, vehicules:[], courses:[], chauffeurs:[], depenses:[], contrats_chauf:[], caisse_chauf:[] };
+var _editId = null, _curPage = 'dashboard';
+
+// ── Utils ────────────────────────────────────────
+function genId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+function fmtNum(n){ return Number(n||0).toLocaleString('fr-FR'); }
+function fmtDate(d){ return d ? new Date(d+'T00:00').toLocaleDateString('fr-FR') : '---'; }
+function toast(msg, dur){
+  var t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(function(){ t.classList.remove('show'); }, dur||3000);
+}
+function closeModal(id){ var el=document.getElementById(id); if(el) el.classList.remove('open'); _editId=null; }
+function openModal(id){ var el=document.getElementById(id); if(el) el.classList.add('open'); }
+function val(id){ var el=document.getElementById(id); return el ? el.value : ''; }
+function setVal(id,v){ var el=document.getElementById(id); if(el) el.value = v||''; }
+
+// ── Sync badge ───────────────────────────────────
+function showSync(s){
+  var el=document.getElementById('sync-badge'); if(!el) return;
+  var m={online:['&#127760; En ligne','#f59e0b'],offline:['&#128276; Hors ligne','#ef4444'],
+         syncing:['&#128260; Sync...','#3b82f6'],saved:['&#10003; Sauve','#10b981']}[s]||['&#127760;','#f59e0b'];
+  el.innerHTML=m[0]; el.style.color=m[1];
+  if(s==='saved') setTimeout(function(){ showSync('online'); },2500);
+}
+window.addEventListener('online',  function(){ showSync('online'); });
+window.addEventListener('offline', function(){ showSync('offline'); });
+
+// ── IDB Engine ───────────────────────────────────
+var _TIDB = null;
+var _TSTORES = ['vehicules','courses','chauffeurs','depenses','contrats_chauf','caisse_chauf'];
+
+function openTDB(){
+  return new Promise(function(resolve,reject){
+    if(_TIDB){ resolve(_TIDB); return; }
+    var req = indexedDB.open('DPTIFTransportDB_v2',1);
+    req.onupgradeneeded = function(e){
+      var db=e.target.result;
+      _TSTORES.forEach(function(s){ if(!db.objectStoreNames.contains(s)) db.createObjectStore(s,{keyPath:'_k',autoIncrement:true}); });
+    };
+    req.onsuccess = function(e){ _TIDB=e.target.result; resolve(_TIDB); };
+    req.onerror   = function(e){ reject(e.target.error); };
+  });
+}
+
+function tIdbSave(store,items){
+  openTDB().then(function(db){
+    var uid=(DB.user&&DB.user.uid)||'local';
+    var arr=Array.isArray(items)?items:(items?[items]:[]);
+    var tx=db.transaction(store,'readwrite'); var st=tx.objectStore(store);
+    st.clear();
+    arr.forEach(function(item){
+      if(!item) return;
+      var r=Object.assign({},item);
+      r._k=uid+'_'+store+'_'+(item.id||Date.now()+Math.random());
+      r._uid=uid;
+      try{st.put(r);}catch(e){}
+    });
+  }).catch(function(e){ console.warn('tIdbSave:',e); });
+}
+
+function tIdbLoad(store,cb){
+  openTDB().then(function(db){
+    var uid=(DB.user&&DB.user.uid)||'local';
+    var req=db.transaction(store,'readonly').objectStore(store).getAll();
+    req.onsuccess=function(){
+      var items=(req.result||[]).filter(function(r){ return r._uid===uid; })
+        .map(function(r){ var c=Object.assign({},r); delete c._k; delete c._uid; return c; });
+      cb(items);
+    };
+  }).catch(function(){ cb([]); });
+}
+
+// ── Firebase CRUD ────────────────────────────────
+function fbSave(col,id,data){
+  var FB=window.DPTIF_FB; if(!FB||!DB.user) return;
+  var base='dptif_taxi_'+DB.user.uid+'/data/'+col;
+  var payload=Object.assign({},data,{_upd:new Date().toISOString()});
+  try{
+    if(id) FB.setDoc(FB.doc(FB.db,base,String(id)),payload,{merge:true}).catch(function(){});
+    else   FB.addDoc(FB.collection(FB.db,base),payload).catch(function(){});
+    showSync('saved');
+  }catch(e){ console.warn('fbSave:',e); }
+}
+function fbDelete(col,id){
+  var FB=window.DPTIF_FB; if(!FB||!DB.user||!id) return;
+  FB.deleteDoc(FB.doc(FB.db,'dptif_taxi_'+DB.user.uid+'/data/'+col,String(id))).catch(function(){});
+}
+
+// ── Auth ─────────────────────────────────────────
+function loginGoogle(){
+  var FB=window.DPTIF_FB;
+  if(!FB){ toast('Firebase non disponible'); return; }
+  FB.signInWithPopup(FB.auth,FB.googleProvider)
+    .then(function(r){ initApp(r.user); })
+    .catch(function(e){ toast('Erreur: '+e.message); });
+}
+
+function loginDemo(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('user-avatar').textContent='D';
+  document.getElementById('user-name').textContent='Mode Demo';
+  loadDemoData(); showPage('dashboard',null);
+}
+
+function logoutApp(){
+  var FB=window.DPTIF_FB;
+  if(FB&&FB.signOut) FB.signOut(FB.auth).catch(function(){});
+  location.reload();
+}
+
+function initApp(user){
+  DB.user=user;
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('user-avatar').textContent=(user.displayName||'?').charAt(0).toUpperCase();
+  document.getElementById('user-name').textContent=user.displayName||user.email;
+  loadAllData();
+}
+
+window.addEventListener('DOMContentLoaded',function(){
+  setTimeout(function(){
+    var FB=window.DPTIF_FB;
+    if(FB&&FB.onAuthStateChanged) FB.onAuthStateChanged(FB.auth,function(u){ if(u&&!DB.user) initApp(u); });
+    showPage('dashboard',null);
+  },500);
+});
+
+// ── Data loading ─────────────────────────────────
+function loadAllData(){
+  // 1. IDB d abord
+  _TSTORES.forEach(function(s){
+    tIdbLoad(s,function(items){
+      if(items&&items.length){ DB[s]=items; refreshAll(); }
+    });
+  });
+  // 2. Firestore en arriere-plan
+  var FB=window.DPTIF_FB;
+  if(!FB||!DB.user) return;
+  showSync('syncing');
+  var base='dptif_taxi_'+DB.user.uid+'/data/';
+  _TSTORES.forEach(function(s){
+    FB.getDocs(FB.collection(FB.db,base+s)).then(function(snap){
+      if(!snap.empty){
+        DB[s]=snap.docs.map(function(d){ return Object.assign({id:d.id},d.data()); });
+        tIdbSave(s,DB[s]);
+        refreshAll();
+      }
+    }).catch(function(){});
+  });
+  showSync('saved');
+}
+
+function loadDemoData(){
+  DB.vehicules=[
+    {id:'v1',immat:'ABJ-2025-BJ',type:'Taxi',modele:'Toyota Corolla',chauffeur:'AGOSSOU Senan',tel:'0191234567',statut:'Actif',dateAcq:'2023-01-15',notes:''},
+    {id:'v2',immat:'MTX-001-BJ', type:'Moto-taxi',modele:'Yamaha DT', chauffeur:'GODO Jean',    tel:'0197654321',statut:'Actif',dateAcq:'2022-06-10',notes:''},
+    {id:'v3',immat:'VTC-2024-BJ',type:'VTC',modele:'Toyota Land Cruiser',chauffeur:'HOUNGANME Eric',tel:'0193456789',statut:'En entretien',dateAcq:'2024-01-01',notes:''},
+  ];
+  DB.chauffeurs=[
+    {id:'c1',nom:'AGOSSOU Senan',tel:'0191234567',permis:'BJ-2020-001',typePermis:'B (Voiture)',vehiculeId:'v1',statut:'Actif',commission:20},
+    {id:'c2',nom:'GODO Jean',    tel:'0197654321',permis:'BJ-2019-045',typePermis:'A (Moto)',  vehiculeId:'v2',statut:'Actif',commission:25},
+  ];
+  var today=new Date().toISOString().split('T')[0];
+  var hier=new Date(Date.now()-86400000).toISOString().split('T')[0];
+  DB.courses=[
+    {id:'cr1',vehiculeId:'v1',vehicule:'ABJ-2025-BJ',chauffeur:'AGOSSOU Senan',date:today,depart:'Cotonou Centre',arrivee:'Calavi',montant:3500,paiement:'MTN MoMo',statut:'Effectuee',km:18},
+    {id:'cr2',vehiculeId:'v2',vehicule:'MTX-001-BJ', chauffeur:'GODO Jean',    date:today,depart:'Akpakpa',     arrivee:'Fidjrosse',montant:1200,paiement:'Especes',statut:'Effectuee',km:8},
+    {id:'cr3',vehiculeId:'v1',vehicule:'ABJ-2025-BJ',chauffeur:'AGOSSOU Senan',date:hier, depart:'Jonquet',     arrivee:'Aeroport', montant:5000,paiement:'Especes',statut:'Effectuee',km:25},
+  ];
+  var dep1=new Date(Date.now()-3*86400000).toISOString().split('T')[0];
+  DB.depenses=[
+    {id:'d1',vehiculeId:'v1',vehicule:'ABJ-2025-BJ',date:hier,categorie:'Carburant',description:'Plein essence',montant:25000},
+    {id:'d2',vehiculeId:'v3',vehicule:'VTC-2024-BJ',date:hier,categorie:'Entretien',description:'Vidange + filtres',montant:45000},
+  ];
+  refreshAll();
+}
+
+// ── Navigation ────────────────────────────────────
+var PAGE_ACTIONS={vehicules:'+ Vehicule',courses:'+ Course',chauffeurs:'+ Chauffeur',depenses:'+ Depense'};
+var PAGE_TITLES={
+  dashboard:{t:'Tableau de bord',s:'Vue complete'},
+  vehicules:{t:'Flotte de vehicules',s:'Gestion des vehicules'},
+  courses:{t:'Courses et trajets',s:'Historique et suivi'},
+  chauffeurs:{t:'Chauffeurs',s:'Personnel de conduite'},
+  
+  depenses:{t:'Depenses',s:'Charges et entretien'},
+  rapports:{t:'Rapports financiers',s:'Analyses et statistiques'},
+};
+
+// ══════════════════════════════════════════════════
+// CONTRATS CHAUFFEURS
+// ══════════════════════════════════════════════════
+function ouvrirNouveauContrat() {
+  // Peupler selects
+  var selC = document.getElementById('cc-chauf');
+  var selV = document.getElementById('cc-veh');
+  if(selC) selC.innerHTML = '<option value="">-- Choisir --</option>' +
+    (DB.chauffeurs||[]).map(function(c){ return '<option value="'+c.id+'">'+c.nom+'</option>'; }).join('');
+  if(selV) selV.innerHTML = '<option value="">-- Choisir --</option>' +
+    (DB.vehicules||[]).map(function(v){ return '<option value="'+v.id+'">'+v.immat+' — '+v.type+'</option>'; }).join('');
+  // Date par défaut
+  var dEl = document.getElementById('cc-debut');
+  if(dEl) dEl.value = new Date().toISOString().split('T')[0];
+  document.getElementById('cc-preview').style.display = 'none';
+  openModal('modal-contrat-chauf');
+}
+
+function calcContrat() {
+  var total = parseFloat(document.getElementById('cc-total').value)||0;
+  var quota = parseFloat(document.getElementById('cc-quota').value)||0;
+  var freq  = document.getElementById('cc-freq').value;
+  var debut = document.getElementById('cc-debut').value;
+  var prev  = document.getElementById('cc-preview');
+  var txt   = document.getElementById('cc-preview-text');
+  if(!total || !quota || !debut) { if(prev) prev.style.display='none'; return; }
+
+  // Calculer la durée
+  var nbPeriodes = Math.ceil(total / quota);
+  var msParPeriode = freq==='jour' ? 86400000 : freq==='semaine' ? 604800000 : 2592000000;
+  var dateFin = new Date(new Date(debut).getTime() + nbPeriodes * msParPeriode);
+  var dateFinStr = dateFin.toLocaleDateString('fr-FR',{year:'numeric',month:'long',day:'numeric'});
+
+  if(txt) txt.innerHTML =
+    '<div style="margin-bottom:6px">📅 <b>'+nbPeriodes+'</b> '+(freq==='jour'?'jours':freq==='semaine'?'semaines':'mois')+' de paiements</div>' +
+    '<div style="margin-bottom:6px">💰 <b>'+fmtNum(quota)+' F</b> par '+(freq==='jour'?'jour':freq==='semaine'?'semaine':'mois')+'</div>' +
+    '<div style="margin-bottom:6px">🏁 Fin estimée : <b>'+dateFinStr+'</b></div>' +
+    '<div style="color:var(--green)">✅ À cette date, le chauffeur devient propriétaire légitime du véhicule</div>';
+  if(prev) prev.style.display = 'block';
+}
+
+function peuplerSelectsContrat() {
+  // Select chauffeur
+  var selC = document.getElementById('cc-chauf');
+  if(selC) {
+    var chauffeurs = DB.chauffeurs||[];
+    if(!chauffeurs.length) {
+      selC.innerHTML = '<option value="">⏳ Chargement... (ou saisir manuellement)</option>';
+    } else {
+      selC.innerHTML = '<option value="">-- Choisir chauffeur --</option>' +
+        chauffeurs.map(function(c){
+          return '<option value="'+c.id+'">'+c.nom+(c.tel?' — '+c.tel:'')+'</option>';
+        }).join('');
+    }
+  }
+  // Select véhicule
+  var selV = document.getElementById('cc-veh');
+  if(selV) {
+    var vehicules = DB.vehicules||[];
+    if(!vehicules.length) {
+      selV.innerHTML = '<option value="">⏳ Chargement... (ou saisir manuellement)</option>';
+    } else {
+      selV.innerHTML = '<option value="">-- Choisir véhicule --</option>' +
+        vehicules.map(function(v){
+          return '<option value="'+v.id+'">'+v.immat+' — '+v.type+(v.marque?' ('+v.marque+')':'')+'</option>';
+        }).join('');
+    }
+  }
+}
+
+function saveContratChauf() {
+  // Lire chauffeur depuis select ou saisie manuelle
+  var chaufId  = document.getElementById('cc-chauf').value;
+  var chaufNomManuel = (document.getElementById('cc-chauf-nom-manual')||{}).value;
+  var chaufNom = '';
+  if(chaufId) {
+    var ch = (DB.chauffeurs||[]).find(function(c){return String(c.id)===String(chaufId);});
+    chaufNom = ch ? ch.nom : chaufId;
+  } else if(chaufNomManuel && chaufNomManuel.trim()) {
+    chaufId  = 'man_'+Date.now();
+    chaufNom = chaufNomManuel.trim();
+    // Ajouter en DB locale
+    if(!DB.chauffeurs) DB.chauffeurs=[];
+    DB.chauffeurs.push({id:chaufId, nom:chaufNom});
+  }
+  if(!chaufId){toast('Chauffeur obligatoire'); return;}
+  var vehId   = document.getElementById('cc-veh').value;
+  var quota   = parseFloat(document.getElementById('cc-quota').value)||0;
+  var freq    = document.getElementById('cc-freq').value;
+  var total   = parseFloat(document.getElementById('cc-total').value)||0;
+  var debut   = document.getElementById('cc-debut').value;
+  if(!chaufId||!vehId||!quota||!total||!debut){ toast('Tous les champs sont obligatoires'); return; }
+
+  var chauf = (DB.chauffeurs||[]).find(function(c){ return c.id===chaufId; })||{};
+  var veh   = (DB.vehicules||[]).find(function(v){ return v.id===vehId; })||{};
+  var nbPer = Math.ceil(total/quota);
+  var ms    = freq==='jour'?86400000:freq==='semaine'?604800000:2592000000;
+  var dateFin = new Date(new Date(debut).getTime() + nbPer*ms).toISOString().split('T')[0];
+
+  var contrat = {
+    id: genId(), chaufId, chaufNom: chauf.nom||'',
+    vehId, vehImmat: veh.immat||'', vehType: veh.type||'',
+    quota, freq, totalVehicule: total, paye: 0, debut, dateFin,
+    statut: 'En cours', nbPeriodes: nbPer,
+    createdAt: new Date().toISOString()
+  };
+  contrat.chaufNom = chaufNom || contrat.chaufNom || chaufId;
+  if(!DB.contrats_chauf) DB.contrats_chauf=[];
+  DB.contrats_chauf.push(contrat);
+  fbSave('contrats_chauf', contrat.id, contrat);
+  tIdbSave('contrats_chauf', DB.contrats_chauf);
+  closeModal('modal-contrat-chauf');
+  renderContratsChauf();
+  updateBadges();
+  toast('✅ Contrat créé — Fin prévue: '+new Date(dateFin).toLocaleDateString('fr-FR'));
+}
+
+function renderContratsChauf() {
+  var el = document.getElementById('contrats-tbody'); if(!el) return;
+  var data = DB.contrats_chauf||[];
+  var se   = document.getElementById('contrats-kpis');
+  if(se) se.innerHTML =
+    kpi('Contrats actifs','&#128203;',data.filter(function(c){return c.statut==='En cours';}).length,'var(--accent)')+
+    kpi('Soldés','&#9989;',data.filter(function(c){return c.statut==='Soldé';}).length,'var(--green)')+
+    kpi('Total engagé','&#128176;',fmtNum(data.reduce(function(s,c){return s+Number(c.totalVehicule||0);},0))+' F','var(--blue)');
+
+  if(!data.length){ el.innerHTML='<tr class="empty-row"><td colspan="10">Aucun contrat enregistré</td></tr>'; return; }
+
+  el.innerHTML = data.map(function(c) {
+    var pct   = c.totalVehicule>0?Math.round(c.paye/c.totalVehicule*100):0;
+    var reste = Math.max(0, c.totalVehicule - c.paye);
+    var sc    = c.statut==='Soldé'?'bg':c.statut==='En retard'?'br':'bo';
+    return '<tr>'+
+      '<td><strong>'+c.chaufNom+'</strong></td>'+
+      '<td>'+c.vehImmat+'</td>'+
+      '<td style="font-weight:700;color:var(--accent)">'+fmtNum(c.quota)+' F</td>'+
+      '<td>'+c.freq+'</td>'+
+      '<td>'+fmtNum(c.totalVehicule)+' F</td>'+
+      '<td style="color:var(--green)">'+fmtNum(c.paye)+' F ('+pct+'%)</td>'+
+      '<td style="color:var(--red)">'+fmtNum(reste)+' F</td>'+
+      '<td style="font-size:11px">'+c.dateFin+'</td>'+
+      '<td><span class="badge '+sc+'">'+c.statut+'</span></td>'+
+      '<td>'+
+        '<button class="btn-sm btn-edit" data-id="'+c.id+'" onclick="payerQuotaContrat(this.dataset.id)">💳 Payer</button> '+
+        (c.statut!=='Soldé'?'<button class="btn-sm btn-del" data-id="'+c.id+'" onclick="solderContrat(this.dataset.id)">Solder</button>':
+          '<span style="font-size:16px" title="Propriété transférée">🏆</span>')+
+      '</td>'+
+    '</tr>';
+  }).join('');
+}
+
+function payerQuotaContrat(id) {
+  var c = (DB.contrats_chauf||[]).find(function(x){return x.id===id;});
+  if(!c){ toast('Contrat introuvable'); return; }
+    var mont = c.quota||c.prix||0;
+  if(!mont) return;
+  var c2 = Object.assign({},c,{montantPaye:(c.montantPaye||0)+mont, statut:'paye', datePaiement:new Date().toLocaleDateString('fr-FR')});
+  var idx = DB.contrats_chauf.findIndex(function(x){return x.id===id;});
+  if(idx>=0) DB.contrats_chauf[idx]=c2;
+  renderContratsChauffeurs&&renderContratsChauffeurs();
+  toast('✅ Paiement de '+fmtNum(mont)+' F enregistré');
+}
+
+
+// ═══════════════════════════════════════════════════════════
+// TRANSPORT APP — Fonctions principales
+// ═══════════════════════════════════════════════════════════
+
+// ── Navigation ──
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(function(p){ p.style.display='none'; });
+  var el = document.getElementById('page-'+id);
+  if(el) el.style.display='block';
+  document.querySelectorAll('.nav-item').forEach(function(b){ b.classList.remove('active'); });
+  if(btn) btn.classList.add('active');
+  // Déclencher le renderer
+  var renders = {
+    'dashboard':      renderDashboard,
+    'courses':        renderCourses,
+    'vehicules':      renderVehicules,
+    'chauffeurs':     renderChauffeurs,
+    'depenses':       renderDepenses,
+    'rapports':       renderRapports,
+    'maintenance':    renderMaintenance,
+    'contrats_chauf': renderContratsChauf,
+    'caisse_chauf':   renderCaisseChauffeur,
+    'stats_chauf':    renderStatsChauffeur,
+  };
+  if(renders[id]) setTimeout(renders[id], 50);
+}
+
+// ── Dashboard ──
+function renderDashboard() {
+  var now   = new Date();
+  var month = now.toISOString().slice(0,7);
+  var crsM  = (DB.courses||[]).filter(function(c){ return (c.date||'').startsWith(month); });
+  var depM  = (DB.depenses||[]).filter(function(d){ return (d.date||'').startsWith(month); });
+  var ca    = crsM.reduce(function(s,c){ return s+(c.montant||0); }, 0);
+  var dep   = depM.reduce(function(s,d){ return s+(d.montant||0); }, 0);
+
+  var kpis = document.getElementById('dash-kpis');
+  if(kpis) kpis.innerHTML =
+    kpi('🚖','Courses ce mois', crsM.length,'') +
+    kpi('💰','CA ce mois', fmtNum(ca),'F CFA') +
+    kpi('🚗','Véhicules', (DB.vehicules||[]).filter(function(v){return v.statut==='Actif';}).length, 'actifs') +
+    kpi('👤','Chauffeurs', (DB.chauffeurs||[]).filter(function(c){return c.statut==='Actif';}).length,'actifs');
+
+  var el = document.getElementById('dash-courses');
+  if(el) {
+    var last = (DB.courses||[]).slice(0,8);
+    if(!last.length) { el.innerHTML='<div style="text-align:center;padding:20px;opacity:.5">Aucune course</div>'; return; }
+    el.innerHTML = '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
+      '<thead><tr style="border-bottom:1px solid var(--border)">' +
+      '<th style="padding:6px 8px;text-align:left">Date</th><th style="padding:6px 8px;text-align:left">Véhicule</th>' +
+      '<th style="padding:6px 8px;text-align:left">Trajet</th><th style="padding:6px 8px;text-align:right">Montant</th>' +
+      '</tr></thead><tbody>' +
+      last.map(function(c) {
+        return '<tr style="border-bottom:1px solid var(--border)">' +
+          '<td style="padding:6px 8px">'+(c.date||'')+'</td>' +
+          '<td style="padding:6px 8px">'+(c.veh||c.vehicule||'')+'</td>' +
+          '<td style="padding:6px 8px">'+(c.depart||'')+(c.arrivee?' → '+c.arrivee:'')+'</td>' +
+          '<td style="padding:6px 8px;text-align:right;font-weight:700;color:var(--ok)">'+fmtNum(c.montant||0)+' F</td>' +
+          '</tr>';
+      }).join('') + '</tbody></table>';
+  }
+}
+
+function kpi(icon, label, val, unit) {
+  return '<div class="stat-card" style="background:var(--card);border-radius:12px;padding:16px;flex:1;min-width:120px">' +
+    '<div style="font-size:22px;margin-bottom:6px">'+icon+'</div>' +
+    '<div style="font-size:22px;font-weight:800;color:var(--accent)">'+val+'</div>' +
+    '<div style="font-size:11px;color:var(--text2)">'+label+(unit?' ('+unit+')':'')+'</div>' +
+    '</div>';
+}
+
+// ── Courses ──
+function renderCourses() {
+  var filterDate = (document.getElementById('crs-date-filter')||{}).value||'';
+  var filterVeh  = (document.getElementById('crs-veh-filter')||{}).value||'';
+  var data = (DB.courses||[]).filter(function(c) {
+    if(filterDate && (c.date||'').slice(0,7) !== filterDate.slice(0,7)) return false;
+    if(filterVeh  && c.vehiculeId !== filterVeh) return false;
+    return true;
+  });
+
+  // KPIs courses
+  var ca   = data.reduce(function(s,c){return s+(c.montant||0);},0);
+  var kpis = document.getElementById('crs-kpis');
+  if(kpis) kpis.innerHTML =
+    kpi('🚖','Courses',data.length,'') +
+    kpi('💰','Total',fmtNum(ca),'F CFA') +
+    kpi('📊','Moyenne',data.length?fmtNum(Math.round(ca/data.length)):0,'F/course');
+
+  // Filtre véhicule
+  var selV = document.getElementById('crs-veh-filter');
+  if(selV && selV.options.length < 2) {
+    selV.innerHTML = '<option value="">Tous véhicules</option>' +
+      (DB.vehicules||[]).map(function(v){return '<option value="'+v.id+'">'+v.immat+'</option>';}).join('');
+  }
+
+  var tbody = document.getElementById('crs-tbody');
+  if(!tbody) return;
+  if(!data.length) {
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;opacity:.5">Aucune course</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.slice().reverse().map(function(c) {
+    var veh = (DB.vehicules||[]).find(function(v){return v.id===c.vehiculeId;})||{};
+    var chf = (DB.chauffeurs||[]).find(function(x){return x.id===c.chauffeurId;})||{};
+    var statColor = c.statut==='effectuee'?'var(--ok)':c.statut==='annulee'?'var(--err)':'var(--warn)';
+    return '<tr>' +
+      '<td>'+(c.date||'').slice(0,10)+'</td>' +
+      '<td>'+(veh.immat||c.veh||'')+'</td>' +
+      '<td>'+(chf.nom||c.chauffeur||'—')+'</td>' +
+      '<td style="font-size:12px">'+(c.depart||'')+(c.arrivee?' → '+c.arrivee:'')+'</td>' +
+      '<td style="font-weight:700;color:var(--ok)">'+fmtNum(c.montant||0)+' F</td>' +
+      '<td>'+(c.paiement||'—')+'</td>' +
+      '<td><span style="padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;background:'+statColor+'22;color:'+statColor+'">'+(c.statut||'en-attente')+'</span></td>' +
+      '<td style="display:flex;gap:4px">' +
+        '<button onclick="editCourse(\''+c.id+'\')" style="padding:3px 8px;background:var(--accent1);border:none;border-radius:5px;color:#fff;font-size:11px;cursor:pointer">✏️</button>' +
+        '<button onclick="deleteCourse(\''+c.id+'\')" style="padding:3px 8px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:5px;color:#ef4444;font-size:11px;cursor:pointer">🗑</button>' +
+      '</td></tr>';
+  }).join('');
+}
+
+function openNewCourse() {
+  _editId=null;
+  document.getElementById('modal-veh-title').textContent='Nouvelle course';
+  ['c-veh','c-date','c-depart','c-arrivee','c-montant','c-client','c-paiement','c-statut','c-notes'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('c-date').value=fmtDate(new Date());
+  // Peupler select véhicule
+  var sel=document.getElementById('c-veh');
+  if(sel) sel.innerHTML='<option value="">-- Véhicule --</option>'+(DB.vehicules||[]).map(function(v){return '<option value="'+v.id+'">'+v.immat+' ('+v.type+')</option>';}).join('');
+  openModal('modal-course');
+}
+
+function editCourse(id) {
+  var c=(DB.courses||[]).find(function(x){return x.id===id;}); if(!c) return;
+  _editId=id;
+  var sel=document.getElementById('c-veh');
+  if(sel) sel.innerHTML='<option value="">-- Véhicule --</option>'+(DB.vehicules||[]).map(function(v){return '<option value="'+v.id+'">'+v.immat+'</option>';}).join('');
+  setVal('c-veh',c.vehiculeId); setVal('c-date',c.date); setVal('c-depart',c.depart);
+  setVal('c-arrivee',c.arrivee); setVal('c-montant',c.montant); setVal('c-client',c.client);
+  setVal('c-paiement',c.paiement); setVal('c-notes',c.notes);
+  openModal('modal-course');
+}
+
+function saveCourse() {
+  var vehId=val('c-veh'); var date=val('c-date'); var montant=parseFloat(val('c-montant'))||0;
+  if(!date||!montant){toast('Date et montant obligatoires');return;}
+  var veh=(DB.vehicules||[]).find(function(v){return v.id===vehId;})||{};
+  var obj={
+    id:_editId||genId(), vehiculeId:vehId, veh:veh.immat||'',
+    date, depart:val('c-depart'), arrivee:val('c-arrivee'),
+    montant, client:val('c-client')||'', paiement:val('c-paiement')||'Cash',
+    statut:val('c-statut')||'effectuee', notes:val('c-notes')||'',
+  };
+  if(!DB.courses) DB.courses=[];
+  var idx=DB.courses.findIndex(function(x){return x.id===obj.id;});
+  if(idx>=0) DB.courses[idx]=obj; else DB.courses.unshift(obj);
+  fbSave('courses',obj);
+  closeModal('modal-course');
+  renderCourses(); renderDashboard();
+  toast('✅ Course enregistrée');
+}
+
+function deleteCourse(id) {
+  if(!confirm('Supprimer cette course ?')) return;
+  DB.courses=(DB.courses||[]).filter(function(x){return x.id!==id;});
+  fbDelete('courses',id);
+  renderCourses(); renderDashboard();
+  toast('Course supprimée');
+}
+
+// ── Véhicules ──
+function renderVehicules() {
+  var kpis=document.getElementById('veh-kpis');
+  if(kpis){
+    var actifs=(DB.vehicules||[]).filter(function(v){return v.statut==='Actif';}).length;
+    kpis.innerHTML=kpi('🚗','Total',(DB.vehicules||[]).length,'')+kpi('✅','Actifs',actifs,'')+kpi('⚠️','Autres',(DB.vehicules||[]).length-actifs,'');
+  }
+  var tbody=document.getElementById('veh-tbody'); if(!tbody) return;
+  if(!(DB.vehicules||[]).length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:20px;opacity:.5">Aucun véhicule</td></tr>';return;}
+  tbody.innerHTML=(DB.vehicules||[]).map(function(v){
+    var sc=v.statut==='Actif'?'var(--ok)':v.statut==='En panne'?'var(--err)':'var(--warn)';
+    return '<tr>'+
+      '<td style="font-weight:700">'+v.immat+'</td><td>'+v.type+'</td><td>'+(v.modele||'—')+'</td>'+
+      '<td><span style="padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;background:'+sc+'22;color:'+sc+'">'+v.statut+'</span></td>'+
+      '<td>'+(v.chauffeur||'—')+'</td><td>'+(v.km?fmtNum(v.km)+' km':'—')+'</td>'+
+      '<td style="font-size:11px">'+(v.assuranceDate||'—')+'</td>'+
+      '<td style="display:flex;gap:4px">'+
+        '<button onclick="editVehicule(\''+v.id+'\')" style="padding:3px 8px;background:var(--accent1);border:none;border-radius:5px;color:#fff;font-size:11px;cursor:pointer">✏️</button>'+
+        '<button onclick="deleteVehicule(\''+v.id+'\')" style="padding:3px 8px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:5px;color:#ef4444;font-size:11px;cursor:pointer">🗑</button>'+
+      '</td></tr>';
+  }).join('');
+}
+
+function openNewVehicule(){
+  _editId=null;
+  document.getElementById('modal-veh-title').textContent='Nouveau véhicule';
+  ['v-immat','v-modele','v-annee','v-chauffeur','v-tel','v-km','v-ct-date','v-assurance-date','v-vidange-date','v-km-vidange','v-notes'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('v-date').value=fmtDate(new Date());
+  openModal('modal-veh');
+}
+
+function editVehicule(id){
+  var v=(DB.vehicules||[]).find(function(x){return x.id===id;}); if(!v) return;
+  _editId=id;
+  setVal('v-immat',v.immat); setVal('v-type',v.type); setVal('v-modele',v.modele);
+  setVal('v-annee',v.annee); setVal('v-chauffeur',v.chauffeur); setVal('v-tel',v.tel);
+  setVal('v-statut',v.statut); setVal('v-date',v.date); setVal('v-km',v.km);
+  setVal('v-ct-date',v.ctDate); setVal('v-assurance-date',v.assuranceDate);
+  setVal('v-vidange-date',v.vidangeDate); setVal('v-km-vidange',v.kmVidange);
+  setVal('v-notes',v.notes);
+  document.getElementById('modal-veh-title').textContent='Modifier véhicule';
+  openModal('modal-veh');
+}
+
+function saveVehicule(){
+  var immat=val('v-immat'); if(!immat){toast('Immatriculation obligatoire');return;}
+  var obj={
+    id:_editId||genId(), immat, type:val('v-type'), modele:val('v-modele'),
+    annee:val('v-annee'), chauffeur:val('v-chauffeur'), tel:val('v-tel'),
+    statut:val('v-statut')||'Actif', date:val('v-date'), km:parseInt(val('v-km'))||0,
+    ctDate:val('v-ct-date'), assuranceDate:val('v-assurance-date'),
+    vidangeDate:val('v-vidange-date'), kmVidange:parseInt(val('v-km-vidange'))||0,
+    notes:val('v-notes'),
+  };
+  if(!DB.vehicules) DB.vehicules=[];
+  var idx=DB.vehicules.findIndex(function(x){return x.id===obj.id;});
+  if(idx>=0) DB.vehicules[idx]=obj; else DB.vehicules.push(obj);
+  fbSave('vehicules',obj);
+  closeModal('modal-veh'); renderVehicules(); renderDashboard();
+  toast('✅ Véhicule enregistré');
+}
+
+function deleteVehicule(id){
+  if(!confirm('Supprimer ce véhicule ?')) return;
+  DB.vehicules=(DB.vehicules||[]).filter(function(x){return x.id!==id;});
+  fbDelete('vehicules',id); renderVehicules();
+  toast('Véhicule supprimé');
+}
+
+// ── Chauffeurs ──
+function renderChauffeurs(){
+  var kpis=document.getElementById('chauf-kpis');
+  if(kpis){
+    var actifs=(DB.chauffeurs||[]).filter(function(c){return c.statut==='Actif';}).length;
+    kpis.innerHTML=kpi('👤','Total',(DB.chauffeurs||[]).length,'')+kpi('✅','Actifs',actifs,'');
+  }
+  var tbody=document.getElementById('chauf-tbody'); if(!tbody) return;
+  if(!(DB.chauffeurs||[]).length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;opacity:.5">Aucun chauffeur</td></tr>';return;}
+  tbody.innerHTML=(DB.chauffeurs||[]).map(function(c){
+    var veh=(DB.vehicules||[]).find(function(v){return v.id===c.vehId;})||{};
+    var sc=c.statut==='Actif'?'var(--ok)':'var(--warn)';
+    return '<tr>'+
+      '<td style="font-weight:700">'+c.nom+'</td><td>'+c.tel+'</td>'+
+      '<td>'+(veh.immat||'—')+'</td><td>'+c.permis+'</td>'+
+      '<td><span style="padding:2px 8px;border-radius:10px;font-size:11px;font-weight:700;background:'+sc+'22;color:'+sc+'">'+c.statut+'</span></td>'+
+      '<td>'+(c.com?c.com+'%':'0%')+'</td>'+
+      '<td style="display:flex;gap:4px">'+
+        '<button onclick="editChauffeur(\''+c.id+'\')" style="padding:3px 8px;background:var(--accent1);border:none;border-radius:5px;color:#fff;font-size:11px;cursor:pointer">✏️</button>'+
+        '<button onclick="deleteChauffeur(\''+c.id+'\')" style="padding:3px 8px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:5px;color:#ef4444;font-size:11px;cursor:pointer">🗑</button>'+
+      '</td></tr>';
+  }).join('');
+}
+
+function openNewChauffeur(){
+  _editId=null;
+  document.getElementById('modal-chauf-title').textContent='Nouveau chauffeur';
+  ['ch-nom','ch-tel','ch-permis','ch-date','ch-com'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  var sel=document.getElementById('ch-veh-id');
+  if(sel) sel.innerHTML='<option value="">-- Aucun --</option>'+(DB.vehicules||[]).map(function(v){return '<option value="'+v.id+'">'+v.immat+'</option>';}).join('');
+  openModal('modal-chauffeur');
+}
+
+function editChauffeur(id){
+  var c=(DB.chauffeurs||[]).find(function(x){return x.id===id;}); if(!c) return;
+  _editId=id;
+  setVal('ch-nom',c.nom); setVal('ch-tel',c.tel); setVal('ch-permis',c.permis);
+  setVal('ch-type-permis',c.typePermis); setVal('ch-statut',c.statut);
+  setVal('ch-date',c.date); setVal('ch-com',c.com);
+  var sel=document.getElementById('ch-veh-id');
+  if(sel){ sel.innerHTML='<option value="">-- Aucun --</option>'+(DB.vehicules||[]).map(function(v){return '<option value="'+v.id+'">'+v.immat+'</option>';}).join(''); sel.value=c.vehId||''; }
+  document.getElementById('modal-chauf-title').textContent='Modifier chauffeur';
+  openModal('modal-chauffeur');
+}
+
+function saveChauffeur(){
+  var nom=val('ch-nom'); if(!nom){toast('Nom obligatoire');return;}
+  var obj={
+    id:_editId||genId(), nom, tel:val('ch-tel'), permis:val('ch-permis'),
+    typePermis:val('ch-type-permis'), vehId:val('ch-veh-id'),
+    statut:val('ch-statut')||'Actif', date:val('ch-date'), com:parseFloat(val('ch-com'))||0,
+  };
+  if(!DB.chauffeurs) DB.chauffeurs=[];
+  var idx=DB.chauffeurs.findIndex(function(x){return x.id===obj.id;});
+  if(idx>=0) DB.chauffeurs[idx]=obj; else DB.chauffeurs.push(obj);
+  fbSave('chauffeurs',obj);
+  closeModal('modal-chauffeur'); renderChauffeurs(); renderDashboard();
+  toast('✅ Chauffeur enregistré');
+}
+
+function deleteChauffeur(id){
+  if(!confirm('Supprimer ce chauffeur ?')) return;
+  DB.chauffeurs=(DB.chauffeurs||[]).filter(function(x){return x.id!==id;});
+  fbDelete('chauffeurs',id); renderChauffeurs();
+  toast('Chauffeur supprimé');
+}
+
+// ── Dépenses ──
+function renderDepenses(){
+  var data=DB.depenses||[];
+  var total=data.reduce(function(s,d){return s+(d.montant||0);},0);
+  var tbody=document.getElementById('dep-tbody'); if(!tbody) return;
+  if(!data.length){tbody.innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;opacity:.5">Aucune dépense</td></tr>';return;}
+  tbody.innerHTML=data.slice().reverse().map(function(d){
+    var veh=(DB.vehicules||[]).find(function(v){return v.id===d.vehId;})||{};
+    return '<tr>'+
+      '<td>'+(d.date||'')+'</td><td>'+d.categorie+'</td>'+
+      '<td>'+(veh.immat||d.veh||'—')+'</td><td>'+(d.desc||'')+'</td>'+
+      '<td style="font-weight:700;color:var(--err)">'+fmtNum(d.montant||0)+' F</td>'+
+      '<td style="display:flex;gap:4px">'+
+        '<button onclick="deleteDepense(\''+d.id+'\')" style="padding:3px 8px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:5px;color:#ef4444;font-size:11px;cursor:pointer">🗑</button>'+
+      '</td></tr>';
+  }).join('');
+}
+
+function openNewDepense(){
+  _editId=null;
+  document.getElementById('modal-dep-title').textContent='Nouvelle dépense';
+  ['d-date','d-desc','d-montant','d-notes'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('d-date').value=fmtDate(new Date());
+  var sel=document.getElementById('d-veh');
+  if(sel) sel.innerHTML='<option value="">-- Aucun --</option>'+(DB.vehicules||[]).map(function(v){return '<option value="'+v.id+'">'+v.immat+'</option>';}).join('');
+  openModal('modal-depense');
+}
+
+function saveDepense(){
+  var date=val('d-date'); var montant=parseFloat(val('d-montant'))||0;
+  if(!date||!montant){toast('Date et montant obligatoires');return;}
+  var vehId=val('d-veh'); var veh=(DB.vehicules||[]).find(function(v){return v.id===vehId;})||{};
+  var obj={
+    id:genId(), vehId, veh:veh.immat||'', date,
+    categorie:val('d-cat')||'Carburant',
+    desc:val('d-desc')||'', montant,
+    notes:val('d-notes')||'',
+  };
+  if(!DB.depenses) DB.depenses=[];
+  DB.depenses.unshift(obj);
+  fbSave('depenses',obj);
+  closeModal('modal-depense'); renderDepenses(); renderDashboard();
+  toast('✅ Dépense enregistrée');
+}
+
+function deleteDepense(id){
+  if(!confirm('Supprimer cette dépense ?')) return;
+  DB.depenses=(DB.depenses||[]).filter(function(x){return x.id!==id;});
+  fbDelete('depenses',id); renderDepenses();
+  toast('Dépense supprimée');
+}
+
+// ── Rapports ──
+function renderRapports(){
+  var now=new Date(); var month=now.toISOString().slice(0,7);
+  var crsM=(DB.courses||[]).filter(function(c){return (c.date||'').startsWith(month);});
+  var depM=(DB.depenses||[]).filter(function(d){return (d.date||'').startsWith(month);});
+  var ca=crsM.reduce(function(s,c){return s+(c.montant||0);},0);
+  var dep=depM.reduce(function(s,d){return s+(d.montant||0);},0);
+  var kpis=document.getElementById('rpt-kpis');
+  if(kpis) kpis.innerHTML=
+    kpi('💰','CA mois',fmtNum(ca),'F')+
+    kpi('🔴','Dépenses mois',fmtNum(dep),'F')+
+    kpi('✅','Bénéfice',fmtNum(ca-dep),'F')+
+    kpi('🚖','Courses mois',crsM.length,'');
+  var cards=document.getElementById('rpt-cards');
+  if(cards){
+    // Par véhicule
+    var byVeh={};
+    (DB.courses||[]).forEach(function(c){if(!byVeh[c.veh||'?'])byVeh[c.veh||'?']=0;byVeh[c.veh||'?']+=(c.montant||0);});
+    cards.innerHTML=Object.keys(byVeh).map(function(v){
+      return '<div style="background:var(--card);border-radius:12px;padding:16px"><div style="font-weight:700;margin-bottom:6px">🚗 '+v+'</div>'+
+        '<div style="font-size:18px;font-weight:800;color:var(--accent)">'+fmtNum(byVeh[v])+' F</div>'+
+        '<div style="font-size:11px;color:var(--text2)">Total courses</div></div>';
+    }).join('');
+  }
+}
+
+// ── Maintenance ──
+function renderMaintenance(){
+  var el=document.getElementById('page-maintenance');
+  if(!el) return;
+  var tbody=el.querySelector('tbody');
+  if(!tbody) return;
+  var today=fmtDate(new Date());
+  var vehs=DB.vehicules||[];
+  if(!vehs.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;opacity:.5">Aucun véhicule</td></tr>';return;}
+  tbody.innerHTML=vehs.map(function(v){
+    var ctOk=!v.ctDate||v.ctDate>=today;
+    var assOk=!v.assuranceDate||v.assuranceDate>=today;
+    var vidOk=!v.kmVidange||v.km<v.kmVidange;
+    return '<tr>'+
+      '<td style="font-weight:700">'+v.immat+'</td>'+
+      '<td style="color:'+(ctOk?'var(--ok)':'var(--err)')+'">'+( v.ctDate||'—')+(ctOk?'':' ⚠️')+'</td>'+
+      '<td style="color:'+(assOk?'var(--ok)':'var(--err)')+'">'+( v.assuranceDate||'—')+(assOk?'':' ⚠️')+'</td>'+
+      '<td style="color:'+(vidOk?'var(--ok)':'var(--err)')+'">'+( v.kmVidange?fmtNum(v.kmVidange)+' km':'—')+(vidOk?'':' ⚠️')+'</td>'+
+      '<td>'+(v.km?fmtNum(v.km)+' km':'—')+'</td>'+
+      '</tr>';
+  }).join('');
+}
+
+// ── Caisse chauffeur ──
+function renderCaisseChauffeur(){
+  var el=document.getElementById('page-caisse_chauf');
+  if(!el) return;
+  var tbody=el.querySelector('tbody');
+  if(!tbody) return;
+  var data=DB.caisse_chauf||[];
+  if(!data.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;opacity:.5">Aucune opération</td></tr>';return;}
+  tbody.innerHTML=data.slice().reverse().map(function(op){
+    return '<tr><td>'+op.date+'</td><td>'+op.chauffeur+'</td><td>'+op.type+'</td><td>'+fmtNum(op.montant)+' F</td><td>'+( op.notes||'')+'</td></tr>';
+  }).join('');
+}
+
+// ── Stats chauffeur ──
+function renderStatsChauffeur(){
+  var el=document.getElementById('page-stats_chauf'); if(!el) return;
+  var cont=el.querySelector('.stats-content')||el;
+  var stats={};
+  (DB.courses||[]).forEach(function(c){
+    var k=c.chauffeur||c.chauffeurId||'Inconnu';
+    if(!stats[k]) stats[k]={courses:0,ca:0};
+    stats[k].courses++; stats[k].ca+=(c.montant||0);
+  });
+  var html='<table style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr>'+
+    '<th style="padding:8px;text-align:left">Chauffeur</th><th>Courses</th><th>CA</th></tr></thead><tbody>';
+  Object.keys(stats).forEach(function(k){
+    html+='<tr><td style="padding:7px 8px;font-weight:600">'+k+'</td>'+
+      '<td style="text-align:center">'+stats[k].courses+'</td>'+
+      '<td style="text-align:right;color:var(--ok)">'+fmtNum(stats[k].ca)+' F</td></tr>';
+  });
+  html+='</tbody></table>';
+  cont.innerHTML=html||'<div style="padding:20px;opacity:.5;text-align:center">Aucune donnée</div>';
+}
+
+// ── Gestion contrats chauffeurs ──
+function renderContratsChauffeurs() { renderContratsChauf(); }
+
+</script>
+</body>
+</html>

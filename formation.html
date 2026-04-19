@@ -1,0 +1,2446 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centre de Formation Professionnelle — DpGestPro</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080f;--surf:#0f1118;--surf2:#161922;--surf3:#1c2030;
+  --acc:#6c63ff;--green:#10b981;--red:#ef4444;--yellow:#f59e0b;--blue:#3b82f6;
+  --bdr:rgba(108,99,255,.18);--txt:#eeeef8;--txt2:#9090b8;--txt3:#555578;
+  --radius:14px;
+}
+html,body{min-height:100vh;font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt)}
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* Sidebar */
+.sidebar{width:240px;background:var(--surf);border-right:1px solid var(--bdr);
+  display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-logo{padding:20px 16px;border-bottom:1px solid var(--bdr)}
+.logo-title{font-size:17px;font-weight:900;color:var(--acc)}
+.logo-sub{font-size:11px;color:var(--txt3);margin-top:2px}
+.nav-sec{padding:12px 16px 4px;font-size:10px;font-weight:700;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:.8px}
+.nav-item{width:100%;padding:9px 16px;border:none;background:transparent;
+  color:var(--txt2);text-align:left;cursor:pointer;font-size:13px;
+  display:flex;align-items:center;gap:10px;transition:all .2s;
+  border-left:3px solid transparent}
+.nav-item:hover{background:rgba(108,99,255,.08);color:var(--txt)}
+.nav-item.active{background:rgba(108,99,255,.12);color:var(--acc);
+  border-left-color:var(--acc);font-weight:700}
+.nav-badge{margin-left:auto;background:var(--acc);color:#fff;font-size:10px;
+  font-weight:800;padding:1px 6px;border-radius:10px}
+
+/* Main */
+.main{flex:1;overflow-y:auto;padding:24px}
+.page{display:none}.page.active{display:block}
+.page-hdr{display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.page-title{font-size:20px;font-weight:900}
+.page-sub{font-size:13px;color:var(--txt3);margin-top:2px}
+
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--radius);
+  padding:16px;text-align:center;transition:transform .2s}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-val{font-size:24px;font-weight:900;margin-bottom:3px}
+.stat-lbl{font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px}
+
+/* Cards */
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--radius);margin-bottom:16px}
+.card-hdr{padding:14px 18px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:14px;font-weight:800}
+.card-body{padding:16px 18px}
+
+/* Grille formations */
+.formations-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.formation-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);
+  overflow:hidden;transition:all .2s;cursor:pointer}
+.formation-card:hover{border-color:var(--acc);transform:translateY(-3px)}
+.formation-banner{height:120px;display:flex;align-items:center;justify-content:center;
+  font-size:52px;position:relative}
+.formation-body{padding:14px}
+.formation-cat{font-size:10px;font-weight:700;color:var(--acc);
+  text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.formation-title{font-size:14px;font-weight:800;margin-bottom:6px}
+.formation-meta{font-size:12px;color:var(--txt2);display:flex;gap:10px;flex-wrap:wrap}
+.formation-footer{padding:10px 14px;border-top:1px solid var(--bdr);
+  display:flex;gap:6px;justify-content:flex-end}
+
+/* Apprenants */
+.apprenant-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;
+  padding:14px;display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.apprenant-av{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--acc),#8b7fff);
+  display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:900;color:#fff;flex-shrink:0}
+.apprenant-name{font-size:14px;font-weight:700}
+.apprenant-meta{font-size:12px;color:var(--txt2)}
+
+/* Progression */
+.progress-bar{height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;margin:6px 0}
+.progress-fill{height:100%;border-radius:4px;transition:width .5s}
+
+/* Tableau */
+.table-wrap{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 14px;font-size:11px;font-weight:700;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:.4px;text-align:left;
+  background:var(--surf2);border-bottom:1px solid var(--bdr)}
+td{padding:10px 14px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+
+/* Forms */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-lbl{font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px}
+.form-inp{padding:10px 12px;background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:9px;color:var(--txt);font-size:13px;font-family:inherit;width:100%}
+.form-inp:focus{outline:none;border-color:var(--acc)}
+
+/* Boutons */
+.btn{padding:9px 16px;border-radius:9px;border:none;cursor:pointer;font-size:13px;
+  font-weight:700;display:inline-flex;align-items:center;gap:6px;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn-primary{background:linear-gradient(135deg,var(--acc),#8b7fff);color:#fff}
+.btn-secondary{background:rgba(108,99,255,.1);color:var(--acc);border:1px solid var(--bdr)}
+.btn-success{background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2)}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.btn-sm{padding:5px 11px;font-size:11px;border-radius:7px}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;background:var(--surf2);border-radius:10px;padding:4px;margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:7px 14px;border-radius:7px;border:none;background:transparent;
+  color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.tab.active{background:var(--acc);color:#fff}
+
+/* Badges */
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.badge-acc{background:rgba(108,99,255,.15);color:var(--acc)}
+.badge-green{background:rgba(16,185,129,.15);color:var(--green)}
+.badge-yellow{background:rgba(245,158,11,.15);color:var(--yellow)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+.badge-blue{background:rgba(59,130,246,.15);color:var(--blue)}
+
+/* Calendrier */
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px}
+.cal-day{background:var(--surf2);border:1px solid var(--bdr);border-radius:7px;
+  padding:8px;text-align:center;font-size:12px;min-height:60px}
+.cal-day.has-event{border-color:var(--acc);background:rgba(108,99,255,.08)}
+.cal-day-num{font-weight:700;margin-bottom:4px}
+.cal-event{font-size:10px;color:var(--acc);background:rgba(108,99,255,.12);
+  padding:2px 5px;border-radius:4px;margin-bottom:2px}
+
+/* Attestation */
+.attestation{background:#fff;border-radius:var(--radius);padding:32px;color:#1a1a2e;max-width:600px}
+.att-header{text-align:center;border-bottom:3px solid #6c63ff;padding-bottom:16px;margin-bottom:20px}
+.att-logo{font-size:22px;font-weight:900;color:#6c63ff}
+
+/* Modal */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);
+  z-index:1000;align-items:center;justify-content:center;padding:16px}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--surf);border-radius:18px;width:100%;max-width:560px;
+  max-height:90vh;overflow-y:auto;border:1px solid var(--bdr)}
+.modal-hdr{padding:18px 20px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:var(--surf);z-index:1}
+.modal-title{font-size:16px;font-weight:900}
+.modal-close{background:none;border:none;color:var(--txt3);font-size:20px;cursor:pointer}
+.modal-body{padding:20px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--bdr);
+  display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--surf)}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--surf);border:1px solid var(--bdr);padding:10px 20px;
+  border-radius:10px;font-size:13px;font-weight:600;z-index:9999;
+  transition:transform .3s;box-shadow:0 8px 32px rgba(0,0,0,.4)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+@media(max-width:700px){.sidebar{width:200px}.form-grid{grid-template-columns:1fr}}
+
+/* Fix modals CFP */
+.modal{display:none;position:fixed;inset:0;z-index:9000;background:rgba(0,0,0,.75);
+  align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.modal.open{display:flex!important}
+.modal-box{background:var(--surface,#1a1a2e);border-radius:14px;padding:24px;
+  width:100%;max-width:520px;max-height:90vh;overflow-y:auto;position:relative}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:16px;color:var(--text,#e0e6ff)}
+.mf{margin-bottom:11px}
+.mf label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;
+  color:var(--text2,#8892b0);margin-bottom:3px}
+.mf input,.mf select,.mf textarea{width:100%;padding:9px 12px;
+  background:var(--surface2,#0d1117);border:1px solid var(--border,#2d3748);
+  border-radius:8px;color:var(--text,#e0e6ff);font-size:13px}
+.mf textarea{resize:vertical;min-height:70px}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.btn-cancel{padding:8px 18px;background:transparent;border:1px solid var(--border,#2d3748);
+  border-radius:8px;color:var(--text2,#8892b0);cursor:pointer}
+.btn-save{padding:8px 18px;background:linear-gradient(135deg,#6c63ff,#8b5cf6);
+  border:none;border-radius:8px;color:#fff;font-weight:700;cursor:pointer}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-title">🎓 CFP Pro</div>
+    <div class="logo-sub">Centre de Formation — DpGestPro</div>
+  </div>
+
+  <div class="nav-sec">Principal</div>
+  <button class="nav-item active" onclick="showPage('dashboard',this)">🏠 Tableau de bord</button>
+
+  <div class="nav-sec">Formations</div>
+  <button class="nav-item" onclick="showPage('formations',this)">
+    📚 Formations <span class="nav-badge" id="badge-formations">0</span>
+  </button>
+  <button class="nav-item" onclick="showPage('planning',this)">📅 Planning & Calendrier</button>
+  <button class="nav-item" onclick="showPage('modules',this)">📖 Modules & Contenus</button>
+  <button class="nav-item" onclick="showPage('ressources',this)">📄 Ressources / Docs</button>
+
+  <div class="nav-sec">Apprenants</div>
+  <button class="nav-item" onclick="showPage('apprenants',this)">
+    👥 Apprenants <span class="nav-badge" id="badge-apprenants">0</span>
+  </button>
+  <button class="nav-item" onclick="showPage('presences',this)">📋 Présences</button>
+  <button class="nav-item" onclick="showPage('evaluations',this)">📊 Évaluations & Notes</button>
+  <button class="nav-item" onclick="showPage('attestations',this)">🏆 Attestations</button>
+
+  <div class="nav-sec">Personnel</div>
+  <button class="nav-item" onclick="showPage('formateurs',this)">
+    👨‍🏫 Formateurs <span class="nav-badge" id="badge-formateurs">0</span>
+  </button>
+  <button class="nav-item" onclick="showPage('partenaires',this)">🤝 Partenaires</button>
+
+  <div class="nav-sec">Finances</div>
+  <button class="nav-item" onclick="showPage('inscriptions',this)">💰 Inscriptions & Frais</button>
+  <button class="nav-item" onclick="showPage('finances',this)">📊 Rapports financiers</button>
+  <div class="nav-sec">Enseignement</div>
+  <button class="nav-item" onclick="showPage('medias',this)">🎬 Médias & Cours</button>
+  <button class="nav-item" onclick="showPage('classe-virtuelle',this)">🎥 Classe virtuelle</button>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="page-hdr">
+    <div><div class="page-title">🏠 Tableau de bord</div>
+      <div class="page-sub" id="dash-date"></div></div>
+    <button class="btn btn-primary" onclick="showPage('formations',null);setTimeout(ouvrirNouvelleFormation,200)">+ Nouvelle formation</button>
+  </div>
+  <div class="stats-row" id="dash-stats"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">🔔 Alertes & Rappels</span></div>
+      <div class="card-body" id="dash-alertes"></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">📅 Sessions à venir</span></div>
+      <div class="card-body" id="dash-sessions"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><span class="card-title">📚 Formations actives</span></div>
+    <div class="card-body" id="dash-formations"></div>
+  </div>
+</div>
+
+<!-- FORMATIONS -->
+<div class="page" id="page-formations">
+  <div class="page-hdr">
+    <div><div class="page-title">📚 Catalogue de Formations</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="filter-domaine" onchange="renderFormations()" class="form-inp" style="width:160px">
+        <option value="">Tous domaines</option>
+        <option>Informatique</option><option>Agriculture</option><option>Élevage</option>
+        <option>Commerce</option><option>Artisanat</option><option>Santé</option>
+        <option>Management</option><option>Langue</option><option>Autre</option>
+      </select>
+      <button class="btn btn-primary" onclick="ouvrirNouvelleFormation()">+ Nouvelle formation</button>
+    </div>
+  </div>
+  <div class="formations-grid" id="formations-grid"></div>
+</div>
+
+<!-- PLANNING -->
+<div class="page" id="page-planning">
+  <div class="page-hdr">
+    <div><div class="page-title">📅 Planning des Sessions</div></div>
+    <button class="btn btn-primary" onclick="ouvrirSession()">+ Planifier session</button>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('semaine',this,'planning')">Semaine</button>
+    <button class="tab" onclick="switchTab('liste',this,'planning')">Liste</button>
+  </div>
+  <div id="planning-content"></div>
+</div>
+
+<!-- MODULES -->
+<div class="page" id="page-modules">
+  <div class="page-hdr">
+    <div><div class="page-title">📖 Modules & Contenus</div></div>
+    <button class="btn btn-primary" onclick="ouvrirModule()">+ Nouveau module</button>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr>
+      <th>Module</th><th>Formation</th><th>Durée</th><th>Formateur</th><th>Statut</th><th>Actions</th>
+    </tr></thead><tbody id="modules-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- RESSOURCES -->
+<div class="page" id="page-ressources">
+  <div class="page-hdr">
+    <div><div class="page-title">📄 Ressources Pédagogiques</div></div>
+    <button class="btn btn-primary" onclick="ouvrirRessource()">+ Ajouter ressource</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px" id="ressources-grid"></div>
+</div>
+
+<!-- APPRENANTS -->
+<div class="page" id="page-apprenants">
+  <div class="page-hdr">
+    <div><div class="page-title">👥 Apprenants</div></div>
+    <div style="display:flex;gap:8px">
+      <input id="search-apprenant" oninput="renderApprenants()" placeholder="🔍 Rechercher..." class="form-inp" style="width:200px">
+      <button class="btn btn-primary" onclick="ouvrirNouvelApprenant()">+ Nouvel apprenant</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('tous',this,'apprenants')">Tous</button>
+    <button class="tab" onclick="switchTab('actifs',this,'apprenants')">En formation</button>
+    <button class="tab" onclick="switchTab('diplomes',this,'apprenants')">Diplômés</button>
+  </div>
+  <div id="apprenants-content"></div>
+</div>
+
+<!-- PRÉSENCES -->
+<div class="page" id="page-presences">
+  <div class="page-hdr">
+    <div><div class="page-title">📋 Feuilles de Présence</div></div>
+    <button class="btn btn-primary" onclick="ouvrirFeuillePresence()">+ Nouvelle feuille</button>
+  </div>
+  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <select id="pres-formation" onchange="renderPresences()" class="form-inp" style="width:200px">
+      <option value="">Toutes formations</option>
+    </select>
+    <input type="date" id="pres-date" onchange="renderPresences()" class="form-inp" style="width:160px">
+  </div>
+  <div id="presences-content"></div>
+</div>
+
+<!-- ÉVALUATIONS -->
+<div class="page" id="page-evaluations">
+  <div class="page-hdr">
+    <div><div class="page-title">📊 Évaluations & Notes</div></div>
+    <button class="btn btn-primary" onclick="ouvrirEvaluation()">+ Nouvelle évaluation</button>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr>
+      <th>Apprenant</th><th>Formation</th><th>Module</th><th>Note/20</th><th>Mention</th><th>Date</th>
+    </tr></thead><tbody id="eval-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- ATTESTATIONS -->
+<div class="page" id="page-attestations">
+  <div class="page-hdr">
+    <div><div class="page-title">🏆 Attestations & Diplômes</div></div>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr>
+      <th>Apprenant</th><th>Formation</th><th>Date obtention</th><th>Mention</th><th>Actions</th>
+    </tr></thead><tbody id="att-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- FORMATEURS -->
+<div class="page" id="page-formateurs">
+  <div class="page-hdr">
+    <div><div class="page-title">👨‍🏫 Formateurs & Intervenants</div></div>
+    <button class="btn btn-primary" onclick="ouvrirFormateur()">+ Ajouter formateur</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px" id="formateurs-grid"></div>
+</div>
+
+<!-- PARTENAIRES -->
+<div class="page" id="page-partenaires">
+  <div class="page-hdr">
+    <div><div class="page-title">🤝 Partenaires & Financeurs</div></div>
+    <button class="btn btn-primary" onclick="ouvrirPartenaire()">+ Ajouter partenaire</button>
+  </div>
+  <div class="table-wrap">
+    <table><thead><tr><th>Nom</th><th>Type</th><th>Domaine</th><th>Contact</th><th>Contribution</th><th></th></tr></thead>
+    <tbody id="partenaires-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- INSCRIPTIONS -->
+<div class="page" id="page-inscriptions">
+  <div class="page-hdr">
+    <div><div class="page-title">💰 Inscriptions & Frais</div></div>
+    <button class="btn btn-primary" onclick="ouvrirInscription()">+ Enregistrer inscription</button>
+  </div>
+  <div class="stats-row" id="insc-stats"></div>
+  <div class="table-wrap">
+    <table><thead><tr>
+      <th>Apprenant</th><th>Formation</th><th>Frais</th><th>Payé</th><th>Reste</th><th>Statut</th><th>Actions</th>
+    </tr></thead><tbody id="insc-tbody"></tbody></table>
+  </div>
+</div>
+
+<!-- FINANCES -->
+<div class="page" id="page-finances">
+  <div class="page-hdr">
+    <div><div class="page-title">📊 Rapports Financiers</div></div>
+  </div>
+  <div class="stats-row" id="fin-stats"></div>
+  <div id="fin-content"></div>
+</div>
+
+</div><!-- fin .main -->
+</div><!-- fin .app -->
+
+<!-- MODALS -->
+<!-- Modal Formation -->
+<div class="modal-bg" id="modal-formation">
+  <div class="modal-box">
+    <div class="modal-hdr"><div class="modal-title" id="modal-form-title">📚 Nouvelle Formation</div>
+      <button class="modal-close" onclick="closeModal('modal-formation')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="form-id">
+      <div class="form-grid">
+        <div class="form-group form-full">
+          <label class="form-lbl">Titre de la formation *</label>
+          <input id="form-titre" class="form-inp" placeholder="Ex: Formation en Informatique de base">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Domaine *</label>
+          <select id="form-domaine" class="form-inp">
+            <option>Informatique</option><option>Agriculture</option><option>Élevage</option>
+            <option>Commerce</option><option>Artisanat</option><option>Santé</option>
+            <option>Management</option><option>Langue</option><option>Couture</option>
+            <option>Cuisine</option><option>Électricité</option><option>Maçonnerie</option><option>Autre</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Niveau</label>
+          <select id="form-niveau" class="form-inp">
+            <option>Débutant</option><option>Intermédiaire</option><option>Avancé</option><option>Tous niveaux</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Durée totale</label>
+          <input id="form-duree" class="form-inp" placeholder="Ex: 3 mois, 60h...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Capacité max (apprenants)</label>
+          <input type="number" id="form-capacite" class="form-inp" placeholder="Ex: 20">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Frais d'inscription (F)</label>
+          <input type="number" id="form-frais" class="form-inp" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Date de début</label>
+          <input type="date" id="form-debut" class="form-inp">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Date de fin</label>
+          <input type="date" id="form-fin" class="form-inp">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Formateur principal</label>
+          <input id="form-formateur" class="form-inp" placeholder="Nom du formateur">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Lieu / Salle</label>
+          <input id="form-lieu" class="form-inp" placeholder="Salle A, En ligne...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Statut</label>
+          <select id="form-statut" class="form-inp">
+            <option>En cours</option><option>Planifiée</option><option>Terminée</option><option>Suspendue</option>
+          </select>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Description / Objectifs</label>
+          <textarea id="form-desc" class="form-inp" rows="3" placeholder="Objectifs, contenu, compétences visées..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-formation')">Annuler</button>
+      <button class="btn btn-primary" onclick="sauvegarderFormation()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Apprenant -->
+<div class="modal-bg" id="modal-apprenant">
+  <div class="modal-box">
+    <div class="modal-hdr"><div class="modal-title">👥 Nouvel Apprenant</div>
+      <button class="modal-close" onclick="closeModal('modal-apprenant')">✕</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="app-id">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-lbl">Nom *</label>
+          <input id="app-nom" class="form-inp" placeholder="Nom de famille">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Prénom *</label>
+          <input id="app-prenom" class="form-inp" placeholder="Prénom">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Sexe</label>
+          <select id="app-sexe" class="form-inp"><option value="M">Masculin</option><option value="F">Féminin</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Date naissance</label>
+          <input type="date" id="app-ddn" class="form-inp">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Téléphone *</label>
+          <input id="app-tel" class="form-inp" placeholder="0197...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Email</label>
+          <input id="app-email" class="form-inp" type="email" placeholder="email@...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Localité</label>
+          <input id="app-localite" class="form-inp" placeholder="Ville, quartier...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Niveau scolaire</label>
+          <select id="app-niveau" class="form-inp">
+            <option>Sans diplôme</option><option>CEPE</option><option>BEPC</option>
+            <option>BAC</option><option>BTS/DUT</option><option>Licence</option><option>Master+</option>
+          </select>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Formation inscrite</label>
+          <select id="app-formation" class="form-inp"></select>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Notes / Observations</label>
+          <textarea id="app-notes" class="form-inp" rows="2" placeholder="Motivations, besoins spéciaux..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-apprenant')">Annuler</button>
+      <button class="btn btn-primary" onclick="sauvegarderApprenant()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Évaluation -->
+<div class="modal-bg" id="modal-eval">
+  <div class="modal-box">
+    <div class="modal-hdr"><div class="modal-title">📊 Saisir une note</div>
+      <button class="modal-close" onclick="closeModal('modal-eval')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-lbl">Apprenant *</label>
+          <select id="eval-apprenant" class="form-inp"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Formation</label>
+          <select id="eval-formation" class="form-inp"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Module / Matière</label>
+          <input id="eval-module" class="form-inp" placeholder="Ex: Module 1 — Bases...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Note /20 *</label>
+          <input type="number" id="eval-note" class="form-inp" min="0" max="20" step="0.5" oninput="calcMention()">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Mention</label>
+          <input id="eval-mention" class="form-inp" readonly style="color:var(--acc)">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Date</label>
+          <input type="date" id="eval-date" class="form-inp">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Observations</label>
+          <textarea id="eval-obs" class="form-inp" rows="2" placeholder="Commentaires sur la performance..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-eval')">Annuler</button>
+      <button class="btn btn-primary" onclick="sauvegarderEvaluation()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PAGE: MÉDIAS & COURS ══ -->
+<div class="page" id="page-medias">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">🎬 Médias & Cours en ligne</div>
+      <div class="page-sub">Publiez vidéos et PDF — Accessible aux apprenants inscrits</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <label class="btn btn-primary" style="cursor:pointer">
+        📹 Ajouter vidéo
+        <input type="file" accept="video/*" id="form-upload-video" style="display:none" onchange="formUploadMedia(this,'video')">
+      </label>
+      <label class="btn btn-outline" style="cursor:pointer">
+        📄 Ajouter PDF
+        <input type="file" accept=".pdf" id="form-upload-pdf" style="display:none" onchange="formUploadMedia(this,'pdf')">
+      </label>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+    <div class="card">
+      <div class="card-title">📹 Détails vidéo</div>
+      <div class="form-row">
+        <div class="form-g"><label class="lbl">Titre *</label><input id="form-vid-titre" class="inp" placeholder="Titre de la vidéo"></div>
+        <div class="form-g"><label class="lbl">Formation</label>
+          <select id="form-vid-formation" class="sel"></select>
+        </div>
+      </div>
+      <div class="form-g"><label class="lbl">Accès</label>
+        <select id="form-vid-acces" class="sel">
+          <option value="inscrit">Apprenants inscrits seulement</option>
+          <option value="gratuit">Extrait gratuit (public)</option>
+        </select>
+      </div>
+      <div style="margin-top:14px">
+        <button class="btn btn-primary" onclick="publierMedia('video')" style="width:100%">
+          📤 Publier la vidéo
+        </button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📄 Détails PDF</div>
+      <div class="form-row">
+        <div class="form-g"><label class="lbl">Titre *</label><input id="form-pdf-titre" class="inp" placeholder="Titre du document"></div>
+        <div class="form-g"><label class="lbl">Formation</label>
+          <select id="form-pdf-formation" class="sel"></select>
+        </div>
+      </div>
+      <div class="form-g"><label class="lbl">Accès</label>
+        <select id="form-pdf-acces" class="sel">
+          <option value="inscrit">Apprenants inscrits</option>
+          <option value="gratuit">Gratuit (public)</option>
+        </select>
+      </div>
+      <div style="margin-top:14px">
+        <button class="btn btn-primary" onclick="publierMedia('pdf')" style="width:100%">
+          📤 Publier le PDF
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:14px">📁 Médias publiés</div>
+    <div id="medias-list"><div style="text-align:center;padding:24px;color:var(--txt3)">Aucun média publié. Cliquez "Ajouter vidéo" ou "Ajouter PDF".</div></div>
+  </div>
+</div>
+
+<!-- ══ PAGE: CLASSE VIRTUELLE ══ -->
+<div class="page" id="page-classe-virtuelle">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">🎥 Classe Virtuelle</div>
+      <div class="page-sub">Organisez et planifiez vos cours en direct</div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px">📅 Planifier une session</div>
+      <div class="form-g"><label class="lbl">Titre de la session *</label><input id="cv-titre" class="inp" placeholder="Ex: Cours JavaScript — Module 2"></div>
+      <div class="form-row">
+        <div class="form-g"><label class="lbl">Date *</label><input id="cv-date" type="date" class="inp"></div>
+        <div class="form-g"><label class="lbl">Heure *</label><input id="cv-heure" type="time" class="inp" value="09:00"></div>
+      </div>
+      <div class="form-g"><label class="lbl">Formation concernée</label>
+        <select id="cv-formation" class="sel"></select>
+      </div>
+      <div class="form-g"><label class="lbl">Plateforme</label>
+        <select id="cv-plateforme" class="sel">
+          <option value="meet">📹 Google Meet</option>
+          <option value="zoom">🎥 Zoom</option>
+        </select>
+      </div>
+      <div class="form-g"><label class="lbl">Lien de réunion</label><input id="cv-lien" class="inp" placeholder="https://meet.google.com/... ou https://zoom.us/j/..."></div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn btn-primary" onclick="planifierSessionCV()">📅 Planifier</button>
+        <button class="btn" style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#ef4444" onclick="demarrerSessionCV()">🔴 Démarrer LIVE</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:14px">📡 Session en cours</div>
+      <div id="cv-session-display"><div style="text-align:center;padding:20px;color:var(--txt3)">Aucune session planifiée</div></div>
+      <div class="card-title" style="margin-top:16px;margin-bottom:10px">🔗 Liens permanents</div>
+      <div class="form-g"><label class="lbl">Google Meet permanent</label><input id="cv-meet-perm" class="inp" placeholder="https://meet.google.com/xxx-xxx-xxx"></div>
+      <div class="form-g"><label class="lbl">Zoom permanent</label><input id="cv-zoom-perm" class="inp" placeholder="https://zoom.us/j/..."></div>
+      <button class="btn btn-outline" style="margin-top:10px" onclick="sauvegarderLiensCV_form()">💾 Sauvegarder liens</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title" style="margin-bottom:12px">📋 Sessions planifiées</div>
+    <div id="cv-sessions-list"><div style="text-align:center;padding:16px;color:var(--txt3)">Aucune session</div></div>
+  </div>
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════
+// CENTRE DE FORMATION PROFESSIONNELLE — DpGestPro
+// ══════════════════════════════════════════════════
+
+var DB = {
+  formations  : JSON.parse(localStorage.getItem('cfp_formations')   || '[]'),
+  apprenants  : JSON.parse(localStorage.getItem('cfp_apprenants')   || '[]'),
+  sessions    : JSON.parse(localStorage.getItem('cfp_sessions')     || '[]'),
+  modules     : JSON.parse(localStorage.getItem('cfp_modules')      || '[]'),
+  ressources  : JSON.parse(localStorage.getItem('cfp_ressources')   || '[]'),
+  presences   : JSON.parse(localStorage.getItem('cfp_presences')    || '[]'),
+  evaluations : JSON.parse(localStorage.getItem('cfp_evaluations')  || '[]'),
+  formateurs  : JSON.parse(localStorage.getItem('cfp_formateurs')   || '[]'),
+  partenaires : JSON.parse(localStorage.getItem('cfp_partenaires')  || '[]'),
+  inscriptions: JSON.parse(localStorage.getItem('cfp_inscriptions') || '[]'),
+};
+
+if(!DB.formations.length) chargerDemo();
+
+function chargerDemo() {
+  DB.formations = [
+    {id:1,titre:'Informatique de base',domaine:'Informatique',niveau:'Débutant',
+     duree:'3 mois',capacite:20,frais:25000,debut:'2026-01-15',fin:'2026-04-15',
+     formateur:'Prof. ADEWALE',lieu:'Salle A',statut:'En cours',
+     desc:'Word, Excel, Internet, messagerie électronique'},
+    {id:2,titre:'Couture & Stylisme',domaine:'Artisanat',niveau:'Tous niveaux',
+     duree:'6 mois',capacite:15,frais:35000,debut:'2026-02-01',fin:'2026-08-01',
+     formateur:'Mme ADJOVI',lieu:'Atelier B',statut:'En cours',
+     desc:'Coupe, couture traditionnelle et moderne, création de modèles'},
+    {id:3,titre:'Élevage avicole moderne',domaine:'Élevage',niveau:'Débutant',
+     duree:'2 mois',capacite:25,frais:15000,debut:'2026-03-01',fin:'2026-05-01',
+     formateur:'M. GNIMAVO',lieu:'Terrain pratique',statut:'Planifiée',
+     desc:'Gestion de poulailler, alimentation, santé animale, commercialisation'},
+    {id:4,titre:'Anglais des affaires',domaine:'Langue',niveau:'Intermédiaire',
+     duree:'4 mois',capacite:18,frais:30000,debut:'2025-09-01',fin:'2025-12-31',
+     formateur:'M. JOHNSON',lieu:'Salle B',statut:'Terminée',
+     desc:'Business English, communication professionnelle internationale'},
+  ];
+  DB.apprenants = [
+    {id:1,nom:'AGOSSOU',prenom:'Sénan',sexe:'M',tel:'0197654321',localite:'Azovè',formation:1,statut:'Actif',fraisPaye:15000,notes:''},
+    {id:2,nom:'GODO',prenom:'Mariam',sexe:'F',tel:'0191234567',localite:'Lokogba',formation:1,statut:'Actif',fraisPaye:25000,notes:'Très motivée'},
+    {id:3,nom:'HOUNGANME',prenom:'Eric',sexe:'M',tel:'0193456789',localite:'Azovè',formation:2,statut:'Actif',fraisPaye:20000,notes:''},
+    {id:4,nom:'KEKE',prenom:'Ines',sexe:'F',tel:'0194567890',localite:'Toviklin',formation:4,statut:'Diplômé',fraisPaye:30000,notes:'Excellente'},
+  ];
+  DB.formateurs = [
+    {id:1,nom:'Prof. ADEWALE Kofi',specialite:'Informatique',tel:'0197001122',email:'adewale@cfp.bj',modules:3,actif:true},
+    {id:2,nom:'Mme ADJOVI Rosine',specialite:'Couture & Stylisme',tel:'0191003344',email:'',modules:2,actif:true},
+    {id:3,nom:'M. GNIMAVO René',specialite:'Agriculture & Élevage',tel:'0193005566',email:'',modules:4,actif:true},
+  ];
+  DB.evaluations = [
+    {id:1,apprenantId:1,apprenantNom:'AGOSSOU Sénan',formationId:1,module:'Module 1 — Word',note:14,mention:'Bien',date:'2026-02-10',obs:'Bon travail'},
+    {id:2,apprenantId:2,apprenantNom:'GODO Mariam',formationId:1,module:'Module 1 — Word',note:18,mention:'Très Bien',date:'2026-02-10',obs:'Excellent'},
+    {id:3,apprenantId:4,apprenantNom:'KEKE Ines',formationId:4,module:'Final exam',note:17,mention:'Très Bien',date:'2025-12-20',obs:'Remarquable'},
+  ];
+  DB.inscriptions = [
+    {id:1,apprenantId:1,apprenantNom:'AGOSSOU Sénan',formationId:1,formationNom:'Informatique de base',fraisTotal:25000,fraisPaye:15000,dateInsc:'2026-01-15'},
+    {id:2,apprenantId:2,apprenantNom:'GODO Mariam',formationId:1,formationNom:'Informatique de base',fraisTotal:25000,fraisPaye:25000,dateInsc:'2026-01-15'},
+    {id:3,apprenantId:3,apprenantNom:'HOUNGANME Eric',formationId:2,formationNom:'Couture & Stylisme',fraisTotal:35000,fraisPaye:20000,dateInsc:'2026-02-01'},
+  ];
+  saveAll();
+}
+
+function saveAll() {
+  Object.keys(DB).forEach(function(k){
+    try{localStorage.setItem('cfp_'+k, JSON.stringify(DB[k]));}catch(e){}
+  });
+}
+
+// ── Navigation ──
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(b){b.classList.remove('active');});
+  var pg=document.getElementById('page-'+id); if(pg) pg.classList.add('active');
+  if(btn) btn.classList.add('active');
+  var map={
+    dashboard:renderDashboard, formations:renderFormations, planning:renderPlanning,
+    modules:renderModules, ressources:renderRessources, apprenants:function(){renderApprenants('tous');},
+    presences:renderPresences, evaluations:renderEvaluations, attestations:renderAttestations,
+    formateurs:renderFormateurs, partenaires:renderPartenaires,
+    inscriptions:renderInscriptions, finances:renderFinances,
+  };
+  if(map[id]) map[id]();
+}
+
+// ── Utils ──
+function fmtNum(n){return Number(n||0).toLocaleString('fr-FR');}
+function today(){return new Date().toISOString().split('T')[0];}
+function genId(){return Date.now();}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+var _tt;
+function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){el.classList.remove('show');},3000);}
+
+function mention(n){n=Number(n||0);return n>=16?'Très Bien':n>=14?'Bien':n>=12?'Assez Bien':n>=10?'Passable':'Insuffisant';}
+function mentionCol(n){n=Number(n||0);return n>=16?'var(--green)':n>=10?'var(--acc)':'var(--red)';}
+function calcMention(){
+  var n=parseFloat(document.getElementById('eval-note').value)||0;
+  document.getElementById('eval-mention').value=mention(n);
+}
+
+function mkStat(val,lbl,col){
+  return '<div class="stat-card"><div class="stat-val" style="color:'+col+'">'+val+'</div><div class="stat-lbl">'+lbl+'</div></div>';
+}
+function mkBadge(txt,cls){return '<span class="badge badge-'+cls+'">'+txt+'</span>';}
+
+var DOMAINE_COLORS = {
+  Informatique:'#3b82f6',Agriculture:'#10b981',Élevage:'#f59e0b',Commerce:'#8b5cf6',
+  Artisanat:'#ec4899',Santé:'#06b6d4',Management:'#6c63ff',Langue:'#f97316',
+  Couture:'#e11d48',Cuisine:'#84cc16',Électricité:'#f59e0b',Maçonnerie:'#78716c',Autre:'#6b7280'
+};
+var DOMAINE_EMOJI = {
+  Informatique:'💻',Agriculture:'🌾',Élevage:'🐄',Commerce:'🏪',Artisanat:'🛠',
+  Santé:'🏥',Management:'📊',Langue:'🗣',Couture:'🧵',Cuisine:'🍳',
+  Électricité:'⚡',Maçonnerie:'🏗',Autre:'📚'
+};
+
+// ── DASHBOARD ──
+function renderDashboard() {
+  document.getElementById('dash-date').textContent =
+    new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  var actives = DB.formations.filter(function(f){return f.statut==='En cours';});
+  var totalApp= DB.apprenants.length;
+  var appActif= DB.apprenants.filter(function(a){return a.statut==='Actif';}).length;
+  var diplomes= DB.apprenants.filter(function(a){return a.statut==='Diplômé';}).length;
+  var totalFr = DB.inscriptions.reduce(function(s,i){return s+Number(i.fraisTotal||0);},0);
+  var totalPay= DB.inscriptions.reduce(function(s,i){return s+Number(i.fraisPaye||0);},0);
+  var tauxRec = totalFr>0?Math.round(totalPay/totalFr*100):0;
+
+  document.getElementById('dash-stats').innerHTML =
+    mkStat(DB.formations.length,'Formations',    '#6c63ff')+
+    mkStat(appActif,            'Apprenants actifs','#10b981')+
+    mkStat(diplomes,            'Diplômés',       '#f59e0b')+
+    mkStat(DB.formateurs.length,'Formateurs',     '#3b82f6')+
+    mkStat(fmtNum(totalPay)+' F','Frais perçus',  '#10b981')+
+    mkStat(tauxRec+'%',          'Recouvrement',  tauxRec>=70?'#10b981':'#ef4444');
+
+  document.getElementById('badge-formations').textContent = actives.length;
+  document.getElementById('badge-apprenants').textContent = appActif;
+  document.getElementById('badge-formateurs').textContent = DB.formateurs.length;
+
+  // Impayés
+  var impayesEl = document.getElementById('dash-alertes');
+  var impayes = DB.inscriptions.filter(function(i){return Number(i.fraisPaye||0)<Number(i.fraisTotal||0);});
+  impayesEl.innerHTML = impayes.length ?
+    impayes.slice(0,4).map(function(i){
+      var reste=Number(i.fraisTotal)-Number(i.fraisPaye);
+      return '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bdr);font-size:13px">' +
+        '<span>'+i.apprenantNom+'</span>' +
+        '<span style="color:var(--red);font-weight:700">'+fmtNum(reste)+' F</span></div>';
+    }).join('') +
+    (impayes.length>4?'<div style="font-size:12px;color:var(--txt3);margin-top:6px">+ '+(impayes.length-4)+' autre(s)</div>':'')
+  : '<div style="color:var(--green);font-size:13px;text-align:center;padding:16px">✅ Aucun impayé en cours</div>';
+
+  // Sessions à venir
+  var seEl = document.getElementById('dash-sessions');
+  var now  = today();
+  var prochaines = actives.filter(function(f){return f.debut>now;}).slice(0,3);
+  seEl.innerHTML = prochaines.length ?
+    prochaines.map(function(f){
+      return '<div style="padding:8px 0;border-bottom:1px solid var(--bdr)">' +
+        '<div style="font-size:13px;font-weight:700">'+f.titre+'</div>' +
+        '<div style="font-size:11px;color:var(--acc)">Début: '+f.debut+'</div></div>';
+    }).join('')
+  : '<div style="color:var(--txt3);font-size:13px;text-align:center;padding:16px">Aucune session planifiée</div>';
+
+  // Formations actives
+  var dfEl = document.getElementById('dash-formations');
+  dfEl.innerHTML = actives.length ?
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px">' +
+    actives.map(function(f){
+      var nb=DB.apprenants.filter(function(a){return String(a.formation)===String(f.id);}).length;
+      var col=DOMAINE_COLORS[f.domaine]||'#6c63ff';
+      var emoji=DOMAINE_EMOJI[f.domaine]||'📚';
+      return '<div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;padding:12px">' +
+        '<div style="font-size:24px;margin-bottom:6px">'+emoji+'</div>' +
+        '<div style="font-weight:700;font-size:13px">'+f.titre+'</div>' +
+        '<div style="font-size:11px;color:var(--txt2);margin-top:4px">'+nb+'/'+f.capacite+' apprenants · '+f.duree+'</div>' +
+        '<div class="progress-bar"><div class="progress-fill" style="width:'+Math.round(nb/(f.capacite||1)*100)+'%;background:'+col+'"></div></div>' +
+      '</div>';
+    }).join('')+'</div>'
+  : '<div style="color:var(--txt3);font-size:13px;text-align:center;padding:20px">Aucune formation active</div>';
+}
+
+// ── FORMATIONS ──
+function renderFormations() {
+  var filtre  = document.getElementById('filter-domaine').value;
+  var data    = DB.formations.filter(function(f){return !filtre||f.domaine===filtre;});
+  document.getElementById('badge-formations').textContent = DB.formations.filter(function(f){return f.statut==='En cours';}).length;
+  var grid    = document.getElementById('formations-grid');
+  if(!data.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--txt3)"><div style="font-size:48px;margin-bottom:12px">📚</div><div style="font-weight:700">Aucune formation</div><button class="btn btn-primary" style="margin-top:14px" onclick="ouvrirNouvelleFormation()">+ Créer la première formation</button></div>';
+    return;
+  }
+  grid.innerHTML='';
+  data.forEach(function(f){
+    var nb   = DB.apprenants.filter(function(a){return String(a.formation)===String(f.id);}).length;
+    var col  = DOMAINE_COLORS[f.domaine]||'#6c63ff';
+    var emoji= DOMAINE_EMOJI[f.domaine]||'📚';
+    var sCls = f.statut==='En cours'?'badge-green':f.statut==='Planifiée'?'badge-yellow':f.statut==='Terminée'?'badge-acc':'badge-red';
+    var card = document.createElement('div');
+    card.className='formation-card';
+    card.innerHTML=
+      '<div class="formation-banner" style="background:linear-gradient(135deg,'+col+'22,'+col+'44)">'+emoji+'</div>'+
+      '<div class="formation-body">'+
+        '<div class="formation-cat">'+f.domaine+' · '+f.niveau+'</div>'+
+        '<div class="formation-title">'+f.titre+'</div>'+
+        '<div class="formation-meta">'+
+          '<span>⏱ '+f.duree+'</span>'+
+          '<span>👥 '+nb+'/'+f.capacite+'</span>'+
+          '<span>💰 '+fmtNum(f.frais)+' F</span>'+
+        '</div>'+
+        '<div style="margin-top:8px">'+mkBadge(f.statut,sCls)+'</div>'+
+        '<div class="progress-bar"><div class="progress-fill" style="width:'+Math.round(nb/(f.capacite||1)*100)+'%;background:'+col+'"></div></div>'+
+        '<div style="font-size:11px;color:var(--txt3);margin-top:4px">'+f.formateur+' · '+f.lieu+'</div>'+
+      '</div>'+
+      '<div class="formation-footer">'+
+        '<button class="btn btn-secondary btn-sm" data-id="'+f.id+'" onclick="editerFormation(this.dataset.id)">✏️</button>'+
+        '<button class="btn btn-primary btn-sm" data-id="'+f.id+'" onclick="voirApprenants(this.dataset.id)">👥 Apprenants</button>'+
+        '<button class="btn btn-danger btn-sm" data-id="'+f.id+'" onclick="supprimerFormation(this.dataset.id)">🗑</button>'+
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+
+function ouvrirNouvelleFormation(){
+  document.getElementById('form-id').value='';
+  document.getElementById('modal-form-title').textContent='📚 Nouvelle Formation';
+  ['form-titre','form-duree','form-formateur','form-lieu','form-desc'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('form-capacite').value='20';
+  document.getElementById('form-frais').value='0';
+  document.getElementById('form-debut').value=today();
+  document.getElementById('form-fin').value='';
+  document.getElementById('form-statut').value='En cours';
+  openModal('modal-formation');
+}
+
+function editerFormation(id){
+  var f=DB.formations.find(function(x){return String(x.id)===String(id);});
+  if(!f)return;
+  document.getElementById('form-id').value=f.id;
+  document.getElementById('modal-form-title').textContent='✏️ Modifier — '+f.titre;
+  document.getElementById('form-titre').value=f.titre||'';
+  document.getElementById('form-domaine').value=f.domaine||'';
+  document.getElementById('form-niveau').value=f.niveau||'';
+  document.getElementById('form-duree').value=f.duree||'';
+  document.getElementById('form-capacite').value=f.capacite||20;
+  document.getElementById('form-frais').value=f.frais||0;
+  document.getElementById('form-debut').value=f.debut||'';
+  document.getElementById('form-fin').value=f.fin||'';
+  document.getElementById('form-formateur').value=f.formateur||'';
+  document.getElementById('form-lieu').value=f.lieu||'';
+  document.getElementById('form-statut').value=f.statut||'En cours';
+  document.getElementById('form-desc').value=f.desc||'';
+  openModal('modal-formation');
+}
+
+function sauvegarderFormation(){
+  var titre=document.getElementById('form-titre').value.trim();
+  if(!titre){toast('Titre obligatoire');return;}
+  var id_val=document.getElementById('form-id').value;
+  var obj={
+    id:id_val?Number(id_val):genId(),
+    titre,
+    domaine   :document.getElementById('form-domaine').value,
+    niveau    :document.getElementById('form-niveau').value,
+    duree     :document.getElementById('form-duree').value.trim(),
+    capacite  :parseInt(document.getElementById('form-capacite').value)||20,
+    frais     :parseFloat(document.getElementById('form-frais').value)||0,
+    debut     :document.getElementById('form-debut').value,
+    fin       :document.getElementById('form-fin').value,
+    formateur :document.getElementById('form-formateur').value.trim(),
+    lieu      :document.getElementById('form-lieu').value.trim(),
+    statut    :document.getElementById('form-statut').value,
+    desc      :document.getElementById('form-desc').value.trim(),
+  };
+  if(id_val){var i=DB.formations.findIndex(function(x){return String(x.id)===String(id_val);});if(i>=0)DB.formations[i]=obj;else DB.formations.push(obj);}
+  else DB.formations.push(obj);
+  saveAll();closeModal('modal-formation');renderFormations();
+  if(document.getElementById('page-dashboard').classList.contains('active')) renderDashboard();
+  toast('✅ Formation enregistrée: '+titre);
+}
+
+function supprimerFormation(id){
+  if(!confirm('Supprimer cette formation ?'))return;
+  DB.formations=DB.formations.filter(function(f){return String(f.id)!==String(id);});
+  saveAll();renderFormations();toast('🗑 Formation supprimée');
+}
+
+function voirApprenants(formId){
+  showPage('apprenants',null);
+  document.querySelectorAll('.nav-item').forEach(function(b){if(b.textContent.includes('Apprenants'))b.classList.add('active');});
+  setTimeout(function(){
+    var data=DB.apprenants.filter(function(a){return String(a.formation)===String(formId);});
+    renderApprenants('tous',formId);
+  },100);
+}
+
+// ── APPRENANTS ──
+function switchTab(tab,btn,page){
+  var pg=document.getElementById('page-'+page);
+  if(pg) pg.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+  if(btn) btn.classList.add('active');
+  if(page==='apprenants') renderApprenants(tab);
+}
+
+function renderApprenants(filtre, formId){
+  var search=(document.getElementById('search-apprenant')||{}).value||'';
+  var el=document.getElementById('apprenants-content');
+  document.getElementById('badge-apprenants').textContent=DB.apprenants.filter(function(a){return a.statut==='Actif';}).length;
+  var data=DB.apprenants.filter(function(a){
+    if(filtre==='actifs' && a.statut!=='Actif') return false;
+    if(filtre==='diplomes' && a.statut!=='Diplômé') return false;
+    if(formId && String(a.formation)!==String(formId)) return false;
+    if(search){ var full=(a.nom+' '+a.prenom).toLowerCase(); if(!full.includes(search.toLowerCase())) return false; }
+    return true;
+  });
+  if(!data.length){
+    el.innerHTML='<div style="text-align:center;padding:60px;color:var(--txt3)"><div style="font-size:48px;margin-bottom:12px">👥</div><div style="font-weight:700">Aucun apprenant</div><button class="btn btn-primary" style="margin-top:14px" onclick="ouvrirNouvelApprenant()">+ Inscrire le premier apprenant</button></div>';
+    return;
+  }
+  el.innerHTML='<div class="table-wrap"><table><thead><tr><th>Apprenant</th><th>Sexe</th><th>Téléphone</th><th>Localité</th><th>Formation</th><th>Statut</th><th>Frais payés</th><th>Actions</th></tr></thead><tbody>'+
+    data.map(function(a){
+      var form=DB.formations.find(function(f){return String(f.id)===String(a.formation);});
+      var insc=DB.inscriptions.find(function(i){return String(i.apprenantId)===String(a.id);});
+      var paye=insc?Number(insc.fraisPaye||0):0;
+      var total=insc?Number(insc.fraisTotal||0):(form?Number(form.frais||0):0);
+      var sCls=a.statut==='Actif'?'badge-green':a.statut==='Diplômé'?'badge-acc':'badge-yellow';
+      return '<tr>'+
+        '<td><strong>'+a.nom+' '+a.prenom+'</strong></td>'+
+        '<td>'+(a.sexe==='M'?'♂ M':'♀ F')+'</td>'+
+        '<td style="color:var(--acc3)">'+a.tel+'</td>'+
+        '<td>'+a.localite+'</td>'+
+        '<td style="font-size:12px">'+(form?form.titre:'---')+'</td>'+
+        '<td>'+mkBadge(a.statut,sCls)+'</td>'+
+        '<td style="font-weight:700;color:'+(paye>=total&&total>0?'var(--green)':'var(--yellow)')+'">'+fmtNum(paye)+'/'+fmtNum(total)+' F</td>'+
+        '<td style="display:flex;gap:4px">'+
+          '<button class="btn btn-secondary btn-sm" data-id="'+a.id+'" onclick="editerApprenant(this.dataset.id)">✏️</button>'+
+          '<button class="btn btn-success btn-sm" data-id="'+a.id+'" onclick="genererAttestation(this.dataset.id)">🏆</button>'+
+          '<button class="btn btn-danger btn-sm" data-id="'+a.id+'" onclick="supprimerApprenant(this.dataset.id)">🗑</button>'+
+        '</td></tr>';
+    }).join('')+'</tbody></table></div>';
+}
+
+function ouvrirNouvelApprenant(){
+  document.getElementById('app-id').value='';
+  ['app-nom','app-prenom','app-tel','app-email','app-localite','app-notes'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('app-ddn').value='';
+  var sel=document.getElementById('app-formation');
+  sel.innerHTML='<option value="">-- Choisir formation --</option>'+
+    DB.formations.filter(function(f){return f.statut==='En cours'||f.statut==='Planifiée';}).map(function(f){
+      return '<option value="'+f.id+'">'+f.titre+'</option>';
+    }).join('');
+  openModal('modal-apprenant');
+}
+
+function editerApprenant(id){
+  var a=DB.apprenants.find(function(x){return String(x.id)===String(id);});if(!a)return;
+  document.getElementById('app-id').value=a.id;
+  document.getElementById('app-nom').value=a.nom||'';
+  document.getElementById('app-prenom').value=a.prenom||'';
+  document.getElementById('app-sexe').value=a.sexe||'M';
+  document.getElementById('app-ddn').value=a.ddn||'';
+  document.getElementById('app-tel').value=a.tel||'';
+  document.getElementById('app-email').value=a.email||'';
+  document.getElementById('app-localite').value=a.localite||'';
+  document.getElementById('app-niveau').value=a.niveau||'BEPC';
+  document.getElementById('app-notes').value=a.notes||'';
+  var sel=document.getElementById('app-formation');
+  sel.innerHTML='<option value="">-- Choisir --</option>'+DB.formations.map(function(f){return '<option value="'+f.id+'" '+(String(f.id)===String(a.formation)?'selected':'')+'>'+f.titre+'</option>';}).join('');
+  openModal('modal-apprenant');
+}
+
+function sauvegarderApprenant(){
+  var nom=document.getElementById('app-nom').value.trim();
+  var prenom=document.getElementById('app-prenom').value.trim();
+  if(!nom||!prenom){toast('Nom et prénom obligatoires');return;}
+  var id_val=document.getElementById('app-id').value;
+  var formId=document.getElementById('app-formation').value;
+  var obj={
+    id:id_val?Number(id_val):genId(),
+    nom,prenom,sexe:document.getElementById('app-sexe').value,
+    ddn:document.getElementById('app-ddn').value,
+    tel:document.getElementById('app-tel').value.trim(),
+    email:document.getElementById('app-email').value.trim(),
+    localite:document.getElementById('app-localite').value.trim(),
+    niveau:document.getElementById('app-niveau').value,
+    formation:formId?Number(formId):null,
+    notes:document.getElementById('app-notes').value.trim(),
+    statut:'Actif', dateInsc:today(),
+  };
+  if(id_val){var i=DB.apprenants.findIndex(function(x){return String(x.id)===String(id_val);});if(i>=0)DB.apprenants[i]=obj;else DB.apprenants.push(obj);}
+  else{
+    DB.apprenants.push(obj);
+    // Créer inscription auto
+    if(formId){
+      var form=DB.formations.find(function(f){return String(f.id)===String(formId);});
+      if(form) DB.inscriptions.push({id:genId(),apprenantId:obj.id,apprenantNom:nom+' '+prenom,formationId:Number(formId),formationNom:form.titre,fraisTotal:form.frais||0,fraisPaye:0,dateInsc:today()});
+    }
+  }
+  saveAll();closeModal('modal-apprenant');renderApprenants('tous');
+  if(document.getElementById('page-dashboard').classList.contains('active'))renderDashboard();
+  toast('✅ Apprenant enregistré: '+nom+' '+prenom);
+}
+
+function supprimerApprenant(id){if(!confirm('Supprimer ?'))return;DB.apprenants=DB.apprenants.filter(function(a){return String(a.id)!==String(id);});saveAll();renderApprenants('tous');toast('🗑 Apprenant supprimé');}
+
+// ── ÉVALUATIONS ──
+function renderEvaluations(){
+  var tb=document.getElementById('eval-tbody');
+  var data=DB.evaluations.slice().reverse();
+  tb.innerHTML=data.length?data.map(function(e){
+    var col=mentionCol(e.note);
+    return '<tr><td><strong>'+e.apprenantNom+'</strong></td>'+
+      '<td style="font-size:12px">'+(DB.formations.find(function(f){return String(f.id)===String(e.formationId);})?.titre||'---')+'</td>'+
+      '<td style="font-size:12px">'+e.module+'</td>'+
+      '<td style="font-weight:800;font-size:16px;color:'+col+'">'+e.note+'/20</td>'+
+      '<td>'+mkBadge(e.mention,e.note>=10?'green':'red')+'</td>'+
+      '<td style="font-size:12px;color:var(--txt3)">'+e.date+'</td></tr>';
+  }).join(''):'<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--txt3)">Aucune note enregistrée</td></tr>';
+}
+
+function ouvrirEvaluation(){
+  var selA=document.getElementById('eval-apprenant');
+  var selF=document.getElementById('eval-formation');
+  selA.innerHTML='<option value="">-- Apprenant --</option>'+DB.apprenants.map(function(a){return '<option value="'+a.id+'">'+a.nom+' '+a.prenom+'</option>';}).join('');
+  selF.innerHTML='<option value="">-- Formation --</option>'+DB.formations.map(function(f){return '<option value="'+f.id+'">'+f.titre+'</option>';}).join('');
+  document.getElementById('eval-date').value=today();
+  document.getElementById('eval-module').value='';
+  document.getElementById('eval-note').value='';
+  document.getElementById('eval-mention').value='';
+  document.getElementById('eval-obs').value='';
+  openModal('modal-eval');
+}
+
+function sauvegarderEvaluation(){
+  var appId=document.getElementById('eval-apprenant').value;
+  var note=parseFloat(document.getElementById('eval-note').value);
+  if(!appId||isNaN(note)){toast('Apprenant et note obligatoires');return;}
+  var app=DB.apprenants.find(function(a){return String(a.id)===String(appId);});
+  var formId=document.getElementById('eval-formation').value;
+  DB.evaluations.push({
+    id:genId(),apprenantId:Number(appId),apprenantNom:app?app.nom+' '+app.prenom:'?',
+    formationId:formId?Number(formId):null,
+    module:document.getElementById('eval-module').value.trim(),
+    note,mention:mention(note),
+    date:document.getElementById('eval-date').value,
+    obs:document.getElementById('eval-obs').value.trim(),
+  });
+  saveAll();closeModal('modal-eval');renderEvaluations();toast('✅ Note enregistrée: '+note+'/20 — '+mention(note));
+}
+
+// ── ATTESTATIONS ──
+function renderAttestations(){
+  var diplomes=DB.apprenants.filter(function(a){return a.statut==='Diplômé';});
+  var tb=document.getElementById('att-tbody');
+  tb.innerHTML=diplomes.length?diplomes.map(function(a){
+    var form=DB.formations.find(function(f){return String(f.id)===String(a.formation);});
+    var evals=DB.evaluations.filter(function(e){return String(e.apprenantId)===String(a.id);});
+    var moy=evals.length?(evals.reduce(function(s,e){return s+e.note;},0)/evals.length).toFixed(1):0;
+    return '<tr><td><strong>'+a.nom+' '+a.prenom+'</strong></td>'+
+      '<td>'+(form?form.titre:'---')+'</td>'+
+      '<td>'+(a.dateDiplome||a.dateInsc||'---')+'</td>'+
+      '<td>'+mkBadge(mention(moy),'green')+'</td>'+
+      '<td><button class="btn btn-primary btn-sm" data-id="'+a.id+'" onclick="genererAttestation(this.dataset.id)">🖨 Imprimer</button></td></tr>';
+  }).join(''):'<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--txt3)">Aucun diplômé pour l\'instant</td></tr>';
+}
+
+function genererAttestation(appId){
+  var a=DB.apprenants.find(function(x){return String(x.id)===String(appId);});
+  if(!a)return;
+  var form=DB.formations.find(function(f){return String(f.id)===String(a.formation);});
+  var evals=DB.evaluations.filter(function(e){return String(e.apprenantId)===String(appId);});
+  var moy=evals.length?(evals.reduce(function(s,e){return s+e.note;},0)/evals.length).toFixed(1):0;
+  var today2=new Date().toLocaleDateString('fr-FR',{year:'numeric',month:'long',day:'numeric'});
+  var ref='ATT-'+Date.now().toString(36).toUpperCase();
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Attestation '+a.nom+'</title>'+
+    '<style>body{font-family:Arial,sans-serif;padding:40px;color:#1a1a2e;max-width:700px;margin:0 auto}'+
+    '.border{border:3px solid #6c63ff;border-radius:14px;padding:32px;min-height:500px}'+
+    '.header{text-align:center;border-bottom:2px solid #6c63ff;padding-bottom:20px;margin-bottom:24px}'+
+    '.logo{font-size:24px;font-weight:900;color:#6c63ff}'+
+    '.titre{font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:2px;margin:12px 0}'+
+    '.corps{font-size:15px;line-height:2;text-align:center;margin:24px 0}'+
+    '.nom{font-size:22px;font-weight:900;color:#6c63ff;text-transform:uppercase}'+
+    '.formation{font-style:italic;font-size:17px;color:#374151}'+
+    '.details{display:flex;justify-content:space-around;margin:20px 0;font-size:13px;background:#f9fafb;padding:14px;border-radius:8px}'+
+    '.detail{text-align:center}.detail-val{font-size:16px;font-weight:900;color:#6c63ff}'+
+    '.sign{display:flex;justify-content:space-between;margin-top:40px}'+
+    '.sign-box{text-align:center;width:200px}.sign-line{border-top:1px solid #1a1a2e;margin-top:50px;padding-top:6px;font-size:12px}'+
+    'footer{text-align:center;margin-top:20px;font-size:11px;color:#9ca3af}'+
+    '<\/style><\/head><body><div class="border">'+
+    '<div class="header"><div class="logo">Centre de Formation Professionnelle</div>'+
+    '<div class="titre">Attestation de Formation</div></div>'+
+    '<div class="corps">'+
+      'Nous, soussignés, certifions que<br>'+
+      '<span class="nom">'+a.nom+' '+a.prenom+'</span><br>'+
+      'a suivi avec succès la formation<br>'+
+      '<span class="formation">'+(form?form.titre:'Formation Professionnelle')+'</span><br>'+
+      'd\'une durée de <strong>'+(form?form.duree:'---')+'</strong>'+
+    '</div>'+
+    '<div class="details">'+
+      '<div class="detail"><div class="detail-val">'+moy+'/20</div><div>Moyenne générale</div></div>'+
+      '<div class="detail"><div class="detail-val">'+mention(moy)+'</div><div>Mention</div></div>'+
+      '<div class="detail"><div class="detail-val">'+ref+'</div><div>Référence</div></div>'+
+    '</div>'+
+    '<p style="text-align:center;font-size:13px">Délivrée le '+today2+'</p>'+
+    '<div class="sign">'+
+      '<div class="sign-box"><div class="sign-line">Le Directeur du Centre</div></div>'+
+      '<div class="sign-box"><div class="sign-line">Cachet & Signature</div></div>'+
+      '<div class="sign-box"><div class="sign-line">L\'apprenant(e)</div></div>'+
+    '</div></div>'+
+    '<footer>DpGestPro — Centre de Formation Professionnelle | jeanpaulbognon3@gmail.com</footer>'+
+    '<\u003cscript>window.onload=function(){window.print();}<\/script>';
+  // Marquer diplômé automatiquement
+  if(a.statut!=='Diplômé'){a.statut='Diplômé';a.dateDiplome=today();saveAll();}
+  var w = window.open('','_blank','width=900,height=700');
+  if(w){w.document.write(html);w.document.close();}
+  toast('🏆 Attestation générée pour '+a.nom+' '+(a.prenom||''));
+}
+
+
+// ══ MÉDIAS & COURS — Upload et publication ══
+var _pendingMedia = { video: null, pdf: null };
+
+function formUploadMedia(input, type) {
+  var file = input.files[0];
+  if(!file) return;
+  _pendingMedia[type] = file;
+  var label = type === 'video' ? '📹 Vidéo' : '📄 PDF';
+  toast(label + ' sélectionné: ' + file.name);
+  // Pré-remplir le titre avec le nom du fichier (sans extension)
+  var titre_id = type === 'video' ? 'form-vid-titre' : 'form-pdf-titre';
+  var el = document.getElementById(titre_id);
+  if(el && !el.value) {
+    el.value = file.name.replace(/\.\w+$/, '').replace(/[-_]/g,' ');
+  }
+}
+
+function publierMedia(type) {
+  var titre_id    = type === 'video' ? 'form-vid-titre'    : 'form-pdf-titre';
+  var form_id     = type === 'video' ? 'form-vid-formation' : 'form-pdf-formation';
+  var acces_id    = type === 'video' ? 'form-vid-acces'    : 'form-pdf-acces';
+  var titre       = (document.getElementById(titre_id)?.value || '').trim();
+  var formationId = document.getElementById(form_id)?.value || '';
+  var acces       = document.getElementById(acces_id)?.value || 'inscrit';
+  var file        = _pendingMedia[type];
+
+  if(!titre) { toast('⚠️ Veuillez saisir un titre', 'error'); return; }
+  if(!file && type !== 'lien') {
+    toast('⚠️ Veuillez d\'abord sélectionner un fichier', 'error'); return;
+  }
+
+  // Lire le fichier en base64 pour stockage local (Firebase Storage non dispo)
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var media = {
+      id          : 'med_' + Date.now(),
+      titre       : titre,
+      type        : type,
+      formationId : formationId,
+      acces       : acces,
+      nom_fichier : file.name,
+      taille      : Math.round(file.size / 1024) + ' KB',
+      data        : type === 'pdf' ? e.target.result : null,
+      url_video   : type === 'video' ? e.target.result : null,
+      datePubli   : new Date().toLocaleDateString('fr-FR'),
+      publie      : true
+    };
+    if(!DB.medias) DB.medias = [];
+    DB.medias.push(media);
+    // Sauvegarder
+    if(window.fbSave) fbSave('medias', media.id, {
+      titre, type, formationId, acces,
+      nom_fichier: file.name, taille: media.taille,
+      datePubli: media.datePubli, publie: true
+    });
+    // Réinitialiser
+    _pendingMedia[type] = null;
+    document.getElementById(titre_id).value = '';
+    var file_input_id = type === 'video' ? 'form-upload-video' : 'form-upload-pdf';
+    var inp = document.getElementById(file_input_id);
+    if(inp) inp.value = '';
+    renderMedias();
+    toast('✅ ' + (type==='video'?'Vidéo':'PDF') + ' publié: ' + titre);
+  };
+  reader.onerror = function() { toast('❌ Erreur lecture fichier', 'error'); };
+  if(type === 'video') {
+    // Vidéo: ne pas stocker en base64 (trop lourd) — juste les métadonnées
+    var media = {
+      id: 'med_'+Date.now(), titre, type: 'video', formationId, acces,
+      nom_fichier: file.name, taille: Math.round(file.size/1024)+' KB',
+      datePubli: new Date().toLocaleDateString('fr-FR'), publie: true,
+      url_video: URL.createObjectURL(file)
+    };
+    if(!DB.medias) DB.medias = [];
+    DB.medias.push(media);
+    if(window.fbSave) fbSave('medias', media.id, {
+      titre, type: 'video', formationId, acces, nom_fichier: file.name,
+      taille: media.taille, datePubli: media.datePubli, publie: true
+    });
+    _pendingMedia[type] = null;
+    document.getElementById(titre_id).value = '';
+    var inp2 = document.getElementById('form-upload-video');
+    if(inp2) inp2.value = '';
+    renderMedias();
+    toast('✅ Vidéo publiée: ' + titre);
+  } else {
+    reader.readAsDataURL(file);
+  }
+}
+
+function renderMedias() {
+  var el = document.getElementById('medias-list');
+  if(!el) return;
+  var list = DB.medias || [];
+  if(!list.length) {
+    el.innerHTML = '<div style="text-align:center;padding:24px;color:var(--txt3)">Aucun média publié.</div>';
+    return;
+  }
+  el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">' +
+    list.map(function(m) {
+      var icon = m.type==='video' ? '📹' : '📄';
+      var accesBadge = m.acces==='gratuit'
+        ? '<span style="background:rgba(16,185,129,.15);color:#10b981;padding:2px 8px;border-radius:10px;font-size:10px">Gratuit</span>'
+        : '<span style="background:rgba(99,102,241,.15);color:#6366f1;padding:2px 8px;border-radius:10px;font-size:10px">Inscrit</span>';
+      var formation = DB.formations ? (DB.formations.find(function(f){return f.id===m.formationId;}) || {}).titre || '' : '';
+      var previewBtn = m.type==='pdf' && m.data
+        ? '<button onclick="ouvrirPdfMedia(\''+m.id+'\')" style="padding:4px 10px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:6px;color:#ef4444;font-size:11px;cursor:pointer">👁 Voir</button>'
+        : (m.type==='video' && m.url_video
+          ? '<button onclick="ouvrirVideoMedia(\''+m.id+'\')" style="padding:4px 10px;background:rgba(99,102,241,.1);border:1px solid rgba(99,102,241,.3);border-radius:6px;color:#6366f1;font-size:11px;cursor:pointer">▶ Lire</button>'
+          : '');
+      return '<div style="background:var(--card-bg,#fff);border:1px solid var(--brd,#e5e7eb);border-radius:10px;padding:14px">'
+        + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+        + '<span style="font-size:22px">' + icon + '</span>'
+        + '<div style="flex:1"><div style="font-weight:700;font-size:13px">' + m.titre + '</div>'
+        + '<div style="font-size:11px;color:var(--txt3,#888)">' + m.nom_fichier + ' · ' + m.taille + '</div></div></div>'
+        + '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'
+        + accesBadge
+        + (formation ? '<span style="font-size:10px;color:var(--txt3,#888)">📚 '+formation+'</span>' : '')
+        + '<span style="font-size:10px;color:var(--txt3,#888);margin-left:auto">' + m.datePubli + '</span></div>'
+        + '<div style="display:flex;gap:6px;margin-top:8px">'
+        + previewBtn
+        + '<button onclick="supprimerMedia(\''+m.id+'\')" style="padding:4px 10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:6px;color:#ef4444;font-size:11px;cursor:pointer;margin-left:auto">🗑</button>'
+        + '</div></div>';
+    }).join('') + '</div>';
+}
+
+function ouvrirPdfMedia(id) {
+  var m = (DB.medias||[]).find(function(x){return x.id===id;});
+  if(!m || !m.data) return;
+  var w = window.open('','_blank');
+  if(w) {
+    w.document.write('<iframe src="'+m.data+'" style="width:100%;height:100vh;border:none"></iframe>');
+    w.document.close();
+  }
+}
+
+function ouvrirVideoMedia(id) {
+  var m = (DB.medias||[]).find(function(x){return x.id===id;});
+  if(!m) return;
+  var w = window.open('','_blank','width=800,height=500');
+  if(w) {
+    w.document.write('<video src="'+m.url_video+'" controls autoplay style="width:100%;max-height:90vh"></video>');
+    w.document.close();
+  }
+}
+
+function supprimerMedia(id) {
+  if(!confirm('Supprimer ce média ?')) return;
+  DB.medias = (DB.medias||[]).filter(function(x){return x.id!==id;});
+  renderMedias();
+  toast('Média supprimé');
+}
+
+
+
+// ══ CLASSE VIRTUELLE — Planification sessions ══
+function planifierSessionCV() {
+  var titre = (document.getElementById('cv-titre')?.value||'').trim();
+  var date  = document.getElementById('cv-date')?.value;
+  var heure = document.getElementById('cv-heure')?.value||'09:00';
+  var form  = document.getElementById('cv-formation')?.value||'';
+  var plat  = document.getElementById('cv-plateforme')?.value||'meet';
+  var lien  = (document.getElementById('cv-lien')?.value||'').trim();
+  if(!titre){ toast('Titre obligatoire','error'); return; }
+  if(!date){  toast('Date obligatoire','error');  return; }
+  var session = {
+    id: 'sess_'+Date.now(), titre, date, heure,
+    formationId: form, plateforme: plat, lien,
+    dateCreation: new Date().toLocaleDateString('fr-FR'),
+    statut: 'planifiee'
+  };
+  if(!DB.sessionsCV) DB.sessionsCV = [];
+  DB.sessionsCV.push(session);
+  if(window.fbSave) fbSave('sessionsCV', session.id, session);
+  // Vider le formulaire
+  ['cv-titre','cv-date','cv-lien'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('cv-heure').value='09:00';
+  renderSessionsCV();
+  toast('✅ Session planifiée: '+titre);
+}
+
+function sauvegarderLiensCV_form() {
+  var meet = (document.getElementById('cv-meet-lien')?.value||'').trim();
+  var zoom = (document.getElementById('cv-zoom-lien')?.value||'').trim();
+  DB.liensCV = { meet, zoom };
+  if(window.fbSave) fbSave('settings', 'liensCV', { meet, zoom });
+  toast('✅ Liens sauvegardés');
+}
+
+function renderSessionsCV() {
+  var el = document.getElementById('sessions-cv-list');
+  if(!el) return;
+  var list = (DB.sessionsCV||[]).sort(function(a,b){ return (a.date>b.date)?1:-1; });
+  if(!list.length){ el.innerHTML='<div style="text-align:center;padding:20px;color:var(--txt3)">Aucune session planifiée</div>'; return; }
+  var platIcons = {meet:'📹',zoom:'🎥'};
+  el.innerHTML = list.map(function(s){
+    var f = (DB.formations||[]).find(function(x){return x.id===s.formationId;})||{};
+    var lienBtn = s.lien ? '<a href="'+s.lien+'" target="_blank" style="padding:4px 10px;background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.3);border-radius:6px;color:#6366f1;font-size:11px;text-decoration:none">'+(platIcons[s.plateforme]||'🔗')+' Rejoindre</a>' : '';
+    return '<div style="background:var(--card-bg,#f9f9f9);border:1px solid var(--brd,#e5e7eb);border-radius:8px;padding:12px;display:flex;align-items:center;gap:12px">'
+      +'<div style="background:rgba(99,102,241,.12);border-radius:8px;padding:10px;text-align:center;min-width:50px">'
+      +'<div style="font-size:11px;color:#6366f1;font-weight:700">'+s.date.split('-').reverse().slice(0,2).join('/')+'</div>'
+      +'<div style="font-size:10px;color:#888">'+s.heure+'</div></div>'
+      +'<div style="flex:1"><div style="font-weight:700;font-size:13px">'+s.titre+'</div>'
+      +'<div style="font-size:11px;color:var(--txt3,#888)">'+(f.titre||'')+(s.plateforme?' · '+(platIcons[s.plateforme]||'')+' '+s.plateforme:'')+'</div></div>'
+      +lienBtn
+      +'<button onclick="supprimerSessionCV(\\x27\'+s.id+\'\\x27)" style="padding:4px 8px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:5px;color:var(--danger);font-size:11px;cursor:pointer">🗑 Suppr.</button>'
+      +'</div>';
+  }).join('');
+}
+
+function supprimerSessionCV(id) {
+  if(!confirm('Supprimer cette session ?')) return;
+  DB.sessionsCV = (DB.sessionsCV||[]).filter(function(s){ return s.id!==id; });
+  renderSessionsCV();
+  toast('Session supprimée');
+}
+
+
+
+// ════════════════════════════════════════════════════════════
+// FONCTIONS RENDER* MANQUANTES — formation.html
+// ════════════════════════════════════════════════════════════
+
+// ── Utilitaires ──
+function fmtDate(d) {
+  if(!d) return '—';
+  try { return new Date(d).toLocaleDateString('fr-FR'); } catch(e){ return d; }
+}
+
+function populateFormSelects() {
+  // Remplir tous les selects de formation
+  ['sess-form','pres-formation','cv-formation','form-vid-formation','form-pdf-formation'].forEach(function(id) {
+    var sel = document.getElementById(id);
+    if(!sel) return;
+    var val = sel.value;
+    var opts = '<option value="">-- Toutes --</option>'
+      + DB.formations.map(function(f){ return '<option value="'+f.id+'">'+f.titre+'</option>'; }).join('');
+    sel.innerHTML = opts;
+    sel.value = val;
+  });
+}
+
+// ── Planning ──
+function renderPlanning() {
+  var el = document.getElementById('planning-content');
+  if(!el) return;
+  populateFormSelects();
+
+  var sessions = (DB.sessions || []).slice().sort(function(a,b){
+    return (a.date||'').localeCompare(b.date||'');
+  });
+
+  var filtre = document.getElementById('planning-filtre')?.value || '';
+  if(filtre) sessions = sessions.filter(function(s){ return s.formationId===filtre; });
+
+  if(!sessions.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--txt3)">'
+      + '<div style="font-size:36px;margin-bottom:12px">📅</div>'
+      + '<div>Aucune session planifiée. Cliquez sur <b>+ Planifier session</b>.</div></div>';
+    return;
+  }
+
+  // Vue semaine / liste selon onglet actif
+  var activeTab = document.querySelector('#page-planning .tab.active')?.textContent||'';
+  var isList = activeTab.includes('Liste') || activeTab.includes('list');
+
+  if(isList) {
+    el.innerHTML = '<div class="table-wrap"><table><thead><tr>'
+      + '<th>Date</th><th>Horaire</th><th>Formation</th><th>Formateur</th><th>Salle</th><th>Statut</th><th></th>'
+      + '</tr></thead><tbody>'
+      + sessions.map(function(s) {
+          var f = DB.formations.find(function(x){ return x.id===s.formationId; });
+          var fmt = DB.formateurs ? DB.formateurs.find(function(x){ return x.id===s.formateurId; }) : null;
+          var sc = s.statut==='planifiee'?'badge-warn':s.statut==='terminee'?'badge-ok':'badge-info';
+          return '<tr>'
+            + '<td>'+fmtDate(s.date)+'</td>'
+            + '<td>'+( s.horaire||s.heure||'—')+'</td>'
+            + '<td><b>'+(f?f.titre:s.formationId||'—')+'</b></td>'
+            + '<td>'+(fmt?fmt.nom:s.formateur||'—')+'</td>'
+            + '<td>'+(s.salle||s.lieu||'—')+'</td>'
+            + '<td><span class="badge '+sc+'">'+(s.statut||'planifiée')+'</span></td>'
+            + '<td><button class="btn-sm btn-danger" onclick="supprimerSession(\x27'+s.id+'\x27)">🗑</button></td>'
+            + '</tr>';
+        }).join('')
+      + '</tbody></table></div>';
+  } else {
+    // Vue calendrier — grouper par semaine
+    var today = new Date(); today.setHours(0,0,0,0);
+    var futur = sessions.filter(function(s){ return !s.date || new Date(s.date) >= today; });
+    var passe = sessions.filter(function(s){ return s.date && new Date(s.date) < today; });
+    var html2 = '';
+
+    if(futur.length) {
+      html2 += '<div style="margin-bottom:20px">'
+        + '<div style="font-weight:600;color:var(--accent);margin-bottom:10px">📅 Sessions à venir ('+futur.length+')</div>'
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px">'
+        + futur.map(function(s) {
+            var f = DB.formations.find(function(x){ return x.id===s.formationId; });
+            return '<div class="card" style="border-left:3px solid var(--accent);padding:14px">'
+              + '<div style="font-size:11px;color:var(--txt2);margin-bottom:4px">'+fmtDate(s.date)+'</div>'
+              + '<div style="font-weight:600;margin-bottom:4px">'+(f?f.titre:s.titre||'Session')+'</div>'
+              + '<div style="font-size:12px;color:var(--txt3)">'+(s.horaire||s.heure||'')+'</div>'
+              + '<div style="font-size:12px;color:var(--txt3)">'+(s.salle||s.lieu||'')+'</div>'
+              + '</div>';
+          }).join('')
+        + '</div></div>';
+    }
+    if(passe.length) {
+      html2 += '<div><div style="font-weight:600;color:var(--txt2);margin-bottom:10px">✅ Sessions passées ('+passe.length+')</div>'
+        + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px">'
+        + passe.slice(-6).map(function(s) {
+            var f = DB.formations.find(function(x){ return x.id===s.formationId; });
+            return '<div class="card" style="border-left:3px solid var(--txt3);opacity:.7;padding:14px">'
+              + '<div style="font-size:11px;color:var(--txt2);margin-bottom:4px">'+fmtDate(s.date)+'</div>'
+              + '<div style="font-weight:600;margin-bottom:4px">'+(f?f.titre:s.titre||'Session')+'</div>'
+              + '<div style="font-size:12px;color:var(--txt3)">'+(s.horaire||s.heure||'')+'</div>'
+              + '</div>';
+          }).join('')
+        + '</div></div>';
+    }
+    el.innerHTML = html2 || '<div style="text-align:center;padding:40px;color:var(--txt3)">Aucune session</div>';
+  }
+}
+
+// ── Modules ──
+function renderModules() {
+  var tbody = document.getElementById('modules-tbody');
+  if(!tbody) return;
+  var mods = DB.modules || [];
+  tbody.innerHTML = mods.length ? mods.map(function(m) {
+    var f = DB.formations.find(function(x){ return x.id===m.formationId; });
+    return '<tr>'
+      + '<td><b>'+m.titre+'</b><div style="font-size:11px;color:var(--txt3)">'+( m.description||'')+'</div></td>'
+      + '<td>'+(f?f.titre:'—')+'</td>'
+      + '<td>'+(m.duree||'—')+'</td>'
+      + '<td>'+(m.formateur||'—')+'</td>'
+      + '<td><span class="badge '+(m.statut==='Actif'?'badge-ok':'badge-warn')+'">'+(m.statut||'Actif')+'</span></td>'
+      + '<td><button class="btn-sm btn-outline" onclick="ouvrirModule(\x27'+m.id+'\x27)">✏️</button>'
+      + ' <button class="btn-sm btn-danger" onclick="supprimerModule(\x27'+m.id+'\x27)">🗑</button></td>'
+      + '</tr>';
+  }).join('') : '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--txt3)">Aucun module</td></tr>';
+}
+
+function supprimerModule(id) {
+  if(!confirm('Supprimer ce module ?')) return;
+  DB.modules = DB.modules.filter(function(m){ return m.id!==id; });
+  saveAll(); renderModules();
+}
+
+// ── Ressources ──
+function renderRessources() {
+  var el = document.getElementById('ressources-grid');
+  if(!el) return;
+  var list = DB.ressources || [];
+  if(!list.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--txt3)">Aucune ressource</div>';
+    return;
+  }
+  var icons = {pdf:'📄',video:'📹',lien:'🔗',document:'📝',autre:'📎'};
+  el.innerHTML = list.map(function(r) {
+    return '<div class="card" style="padding:14px">'
+      + '<div style="font-size:28px;margin-bottom:8px">'+(icons[r.type]||'📎')+'</div>'
+      + '<div style="font-weight:600;margin-bottom:4px">'+r.titre+'</div>'
+      + '<div style="font-size:12px;color:var(--txt3);margin-bottom:8px">'+(r.description||'')+'</div>'
+      + '<div style="display:flex;gap:6px;flex-wrap:wrap">'
+      + '<span class="badge badge-info">'+( r.type||'—')+'</span>'
+      + (r.url?'<a href="'+r.url+'" target="_blank" class="btn-sm btn-outline" style="font-size:11px">🔗 Ouvrir</a>':'')
+      + '<button class="btn-sm btn-danger" onclick="supprimerRessource(\x27'+r.id+'\x27)" style="margin-left:auto">🗑</button>'
+      + '</div></div>';
+  }).join('');
+}
+
+function supprimerRessource(id) {
+  if(!confirm('Supprimer cette ressource ?')) return;
+  DB.ressources = DB.ressources.filter(function(r){ return r.id!==id; });
+  saveAll(); renderRessources();
+}
+
+// ── Présences ──
+function renderPresences() {
+  var el = document.getElementById('presences-content');
+  if(!el) return;
+  populateFormSelects();
+  var list = DB.presences || [];
+  var filtre = document.getElementById('pres-formation')?.value||'';
+  var dateF  = document.getElementById('pres-date')?.value||'';
+  if(filtre) list = list.filter(function(p){ return p.formationId===filtre; });
+  if(dateF)  list = list.filter(function(p){ return p.date===dateF; });
+
+  if(!list.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--txt3)">Aucune feuille de présence</div>';
+    return;
+  }
+  el.innerHTML = '<div class="table-wrap"><table><thead><tr>'
+    + '<th>Date</th><th>Formation</th><th>Présents</th><th>Absents</th><th></th>'
+    + '</tr></thead><tbody>'
+    + list.slice().reverse().map(function(p) {
+        var f = DB.formations.find(function(x){ return x.id===p.formationId; });
+        return '<tr>'
+          + '<td>'+fmtDate(p.date)+'</td>'
+          + '<td>'+(f?f.titre:p.formationId||'—')+'</td>'
+          + '<td style="color:var(--success)">'+(p.presents||0)+'</td>'
+          + '<td style="color:var(--danger)">'+(p.absents||0)+'</td>'
+          + '<td><button class="btn-sm btn-danger" onclick="supprimerPresence(\x27'+p.id+'\x27)">🗑</button></td>'
+          + '</tr>';
+      }).join('')
+    + '</tbody></table></div>';
+}
+
+function supprimerPresence(id) {
+  if(!confirm('Supprimer cette feuille ?')) return;
+  DB.presences = DB.presences.filter(function(p){ return p.id!==id; });
+  saveAll(); renderPresences();
+}
+
+function ouvrirFeuillePresence() {
+  var f = DB.formations.find(function(x){ return x.statut==='En cours'; }) || DB.formations[0];
+  var presents = parseInt(prompt('Nombre de présents:')||'0');
+  var total    = parseInt(prompt('Total apprenants:')||'0');
+  if(isNaN(presents)||presents<0) return;
+  var p = { id: genId(), formationId: f?f.id:'', formationTitre: f?f.titre:'',
+    date: today(), presents, absents: Math.max(0,total-presents),
+    createdAt: new Date().toISOString() };
+  if(!DB.presences) DB.presences = [];
+  DB.presences.push(p);
+  saveAll(); renderPresences();
+  toast('✅ Feuille de présence enregistrée');
+}
+
+// ── Formateurs ──
+function renderFormateurs() {
+  var el = document.getElementById('formateurs-grid');
+  if(!el) return;
+  var list = DB.formateurs || [];
+  if(!list.length) {
+    el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--txt3)">Aucun formateur</div>';
+    return;
+  }
+  el.innerHTML = list.map(function(f) {
+    return '<div class="card" style="padding:16px;text-align:center">'
+      + '<div style="font-size:40px;margin-bottom:8px">👨‍🏫</div>'
+      + '<div style="font-weight:700;margin-bottom:4px">'+f.nom+'</div>'
+      + '<div style="font-size:12px;color:var(--txt2);margin-bottom:6px">'+(f.specialite||'—')+'</div>'
+      + '<div style="font-size:11px;color:var(--txt3)">'+(f.telephone||'')+'</div>'
+      + '<div style="font-size:11px;color:var(--txt3);margin-bottom:10px">'+(f.email||'')+'</div>'
+      + '<div style="display:flex;gap:6px;justify-content:center">'
+      + '<button class="btn-sm btn-outline" onclick="ouvrirFormateur(\x27'+f.id+'\x27)">✏️</button>'
+      + '<button class="btn-sm btn-danger" onclick="supprimerFormateur(\x27'+f.id+'\x27)">🗑</button>'
+      + '</div></div>';
+  }).join('');
+}
+
+function supprimerFormateur(id) {
+  if(!confirm('Supprimer ce formateur ?')) return;
+  DB.formateurs = DB.formateurs.filter(function(f){ return f.id!==id; });
+  saveAll(); renderFormateurs();
+}
+
+// ── Partenaires ──
+function renderPartenaires() {
+  var tbody = document.getElementById('partenaires-tbody');
+  if(!tbody) return;
+  var list = DB.partenaires || [];
+  tbody.innerHTML = list.length ? list.map(function(p) {
+    return '<tr>'
+      + '<td><b>'+p.nom+'</b></td>'
+      + '<td>'+(p.type||'—')+'</td>'
+      + '<td>'+(p.domaine||'—')+'</td>'
+      + '<td>'+(p.contact||'—')+'</td>'
+      + '<td style="color:var(--success);font-weight:600">'+(p.contribution||'—')+'</td>'
+      + '<td><button class="btn-sm btn-outline" onclick="ouvrirPartenaire(\x27'+p.id+'\x27)">✏️</button>'
+      + ' <button class="btn-sm btn-danger" onclick="supprimerPartenaire(\x27'+p.id+'\x27)">🗑</button></td>'
+      + '</tr>';
+  }).join('') : '<tr><td colspan="6" style="text-align:center;padding:24px;color:var(--txt3)">Aucun partenaire</td></tr>';
+}
+
+function supprimerPartenaire(id) {
+  if(!confirm('Supprimer ce partenaire ?')) return;
+  DB.partenaires = DB.partenaires.filter(function(p){ return p.id!==id; });
+  saveAll(); renderPartenaires();
+}
+
+// ── Inscriptions & Frais ──
+function renderInscriptions() {
+  var tbody = document.getElementById('insc-tbody');
+  if(!tbody) return;
+  populateFormSelects();
+  var list = DB.inscriptions || [];
+  // Stats
+  var totalFrais = list.reduce(function(s,i){ return s+(i.frais||0); }, 0);
+  var totalPaye  = list.reduce(function(s,i){ return s+(i.paye||0); }, 0);
+  var statsEl = document.getElementById('insc-stats');
+  if(statsEl) {
+    statsEl.innerHTML =
+      '<div class="stat-card">'+mkStat(list.length,'Inscriptions')+'</div>'
+      +'<div class="stat-card">'+mkStat(fmtNum(totalFrais)+' F','Total frais')+'</div>'
+      +'<div class="stat-card">'+mkStat(fmtNum(totalPaye)+' F','Encaissé','success')+'</div>'
+      +'<div class="stat-card">'+mkStat(fmtNum(totalFrais-totalPaye)+' F','Reste dû','danger')+'</div>';
+  }
+  tbody.innerHTML = list.length ? list.map(function(i) {
+    var a = DB.apprenants.find(function(x){ return x.id===i.apprenantId; });
+    var f = DB.formations.find(function(x){ return x.id===i.formationId; });
+    var reste = (i.frais||0)-(i.paye||0);
+    var sc = reste<=0?'badge-ok':reste<(i.frais||1)?'badge-warn':'badge-danger';
+    return '<tr>'
+      + '<td><b>'+(a?a.nom:i.apprenantNom||'—')+'</b></td>'
+      + '<td>'+(f?f.titre:i.formationTitre||'—')+'</td>'
+      + '<td>'+fmtNum(i.frais||0)+' F</td>'
+      + '<td style="color:var(--success);font-weight:600">'+fmtNum(i.paye||0)+' F</td>'
+      + '<td style="color:'+(reste>0?'var(--danger)':'var(--success)')+';font-weight:600">'+fmtNum(reste)+' F</td>'
+      + '<td><span class="badge '+sc+'">'+(reste<=0?'✅ Soldé':reste<(i.frais||1)?'⏳ Partiel':'❌ Impayé')+'</span></td>'
+      + '<td><button class="btn-sm btn-outline" onclick="ouvrirInscription(\x27'+i.id+'\x27)">✏️</button>'
+      + ' <button class="btn-sm btn-danger" onclick="supprimerInscription(\x27'+i.id+'\x27)">🗑</button></td>'
+      + '</tr>';
+  }).join('') : '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--txt3)">Aucune inscription</td></tr>';
+}
+
+function supprimerInscription(id) {
+  if(!confirm('Supprimer cette inscription ?')) return;
+  DB.inscriptions = DB.inscriptions.filter(function(i){ return i.id!==id; });
+  saveAll(); renderInscriptions();
+}
+
+// ── Finances ──
+function renderFinances() {
+  var el = document.getElementById('fin-content');
+  if(!el) return;
+  var inscs = DB.inscriptions || [];
+  var total  = inscs.reduce(function(s,i){ return s+(i.frais||0); }, 0);
+  var paye   = inscs.reduce(function(s,i){ return s+(i.paye||0); }, 0);
+  var reste  = total - paye;
+  var txRecouvrement = total>0 ? Math.round(paye/total*100) : 0;
+
+  var statEl = document.getElementById('fin-stats');
+  if(statEl) {
+    statEl.innerHTML =
+      '<div class="stat-card">'+mkStat(fmtNum(total)+' F','CA total prévu')+'</div>'
+      +'<div class="stat-card">'+mkStat(fmtNum(paye)+' F','Encaissé','success')+'</div>'
+      +'<div class="stat-card">'+mkStat(fmtNum(reste)+' F','Reste à recouvrer','danger')+'</div>'
+      +'<div class="stat-card">'+mkStat(txRecouvrement+'%','Taux recouvrement')+'</div>';
+  }
+
+  // Répartition par formation
+  var byForm = {};
+  inscs.forEach(function(i) {
+    var k = i.formationId||'autre';
+    if(!byForm[k]) byForm[k] = {frais:0,paye:0,nb:0};
+    byForm[k].frais += i.frais||0;
+    byForm[k].paye  += i.paye||0;
+    byForm[k].nb++;
+  });
+
+  el.innerHTML = '<div class="table-wrap"><table><thead><tr>'
+    + '<th>Formation</th><th>Inscrits</th><th>Total frais</th><th>Encaissé</th><th>Reste</th><th>Taux</th>'
+    + '</tr></thead><tbody>'
+    + Object.keys(byForm).map(function(k) {
+        var f = DB.formations.find(function(x){ return x.id===k; });
+        var d = byForm[k];
+        var tx = d.frais>0?Math.round(d.paye/d.frais*100):0;
+        return '<tr>'
+          + '<td><b>'+(f?f.titre:k)+'</b></td>'
+          + '<td>'+d.nb+'</td>'
+          + '<td>'+fmtNum(d.frais)+' F</td>'
+          + '<td style="color:var(--success);font-weight:600">'+fmtNum(d.paye)+' F</td>'
+          + '<td style="color:var(--danger);font-weight:600">'+fmtNum(d.frais-d.paye)+' F</td>'
+          + '<td><div style="display:flex;align-items:center;gap:8px">'
+          + '<div style="flex:1;height:6px;background:var(--card-bg,#eee);border-radius:3px;overflow:hidden">'
+          + '<div style="height:100%;width:'+tx+'%;background:var(--success);border-radius:3px"></div></div>'
+          + tx+'%</div></td>'
+          + '</tr>';
+      }).join('')
+    + '</tbody></table></div>';
+}
+
+// ── Session planning générique ──
+function planifierSession() {
+  ouvrirSession();
+}
+
+function supprimerSession(id) {
+  if(!confirm('Supprimer cette session ?')) return;
+  DB.sessions = (DB.sessions||[]).filter(function(s){ return s.id!==id; });
+  saveAll(); renderPlanning();
+}
+</script>
+<script>
+// DPTIF Pro — Identification app
+window.DPTIF_APP_ID   = 'formation';
+window.DPTIF_APP_NAME = 'Centre de Formation';
+</script>
+<script>
+// DPTIF Pro — Callback démarrage (doit être AVANT le module licence)
+window.dptifOnLicenceOk = function() {
+  var lic = document.getElementById('dptif-lic-screen');
+  if(lic) lic.remove();
+  try { showPage('dashboard', null); }
+  catch(e) {
+    var n = document.querySelector('.nav-item:first-child,[onclick*="showPage"],[onclick*="showSection"],[onclick*="showView"]');
+    if(n) n.click();
+  }
+};
+</script>
+<script>
+
+// ══════════════════════════════════════════════════════════════
+// DPTIF PRO — Module de vérification de licence v2
+// Contact: jeanpaulbognon3@gmail.com
+// ══════════════════════════════════════════════════════════════
+
+(function() {
+  var APP_ID    = window.DPTIF_APP_ID    || 'dptif-app';
+  var APP_NAME  = window.DPTIF_APP_NAME  || 'DPTIF Pro';
+  var DEMO_DAYS = 30;
+  var ADMIN_WA  = '22901970000';
+
+  function storageGet(k)  { try { return localStorage.getItem(k);       } catch(e){ return null; } }
+  function storageSet(k,v){ try { localStorage.setItem(k,v);            } catch(e){} }
+
+  function getLic()   { try{ return JSON.parse(storageGet('dptif_lic_'+APP_ID)||'null'); } catch(e){ return null; } }
+  function saveLic(l) { storageSet('dptif_lic_'+APP_ID, JSON.stringify(l)); }
+
+  function getFirstRun() {
+    var key = 'dptif_first_'+APP_ID;
+    var d = storageGet(key);
+    if(!d){ d=new Date().toISOString().slice(0,10); storageSet(key,d); }
+    return d;
+  }
+
+  function joursRestants(fin) {
+    return Math.ceil((new Date(fin)-new Date())/86400000);
+  }
+
+  function validerCle(cle) {
+    cle = (cle||'').trim().toUpperCase();
+    if(!cle) return {ok:false, msg:'Entrez votre clé'};
+    if(cle === 'DPTIF-MASTER-2026-JP') return {ok:true, jours:9999};
+    var parts = cle.split('-');
+    if(parts.length < 4) return {ok:false, msg:'Format invalide (ex: APP-CLI-XXXX-XXXX-XXXX)'};
+    // Vérifier si déjà stockée
+    var stored = getLic();
+    if(stored && stored.cle===cle) {
+      var j = joursRestants(stored.fin);
+      if(j < 0) return {ok:false, msg:'Licence expirée le '+stored.fin};
+      return {ok:true, jours:j, fin:stored.fin};
+    }
+    // Nouvelle clé — valider le format et stocker
+    var allValid = parts.every(function(p){ return /^[A-Z0-9]{3,}$/.test(p); });
+    if(!allValid) return {ok:false, msg:'Clé invalide — contactez Jean Paul BOGNON'};
+    var fin = new Date(); fin.setFullYear(fin.getFullYear()+1);
+    var finStr = fin.toISOString().slice(0,10);
+    saveLic({cle:cle, debut:new Date().toISOString().slice(0,10), fin:finStr});
+    return {ok:true, jours:365, fin:finStr};
+  }
+
+  function afficherBanniere(msg, color) {
+    var old = document.getElementById('dptif-banner');
+    if(old) old.remove();
+    var b = document.createElement('div');
+    b.id = 'dptif-banner';
+    b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9998;'
+      + 'background:'+color+';padding:9px 16px;display:flex;align-items:center;'
+      + 'justify-content:space-between;font-size:12px;font-weight:600;color:#000';
+    b.innerHTML = msg
+      + '<button onclick="this.parentNode.remove()" '
+      + 'style="background:rgba(0,0,0,.15);border:none;padding:4px 10px;'
+      + 'border-radius:6px;cursor:pointer;font-size:11px">✕</button>';
+    document.body.insertBefore(b, document.body.firstChild);
+  }
+
+  function afficherEcranLicence(msgTop, demoRestants) {
+    var old = document.getElementById('dptif-lic-screen');
+    if(old) old.remove();
+
+    var screen = document.createElement('div');
+    screen.id = 'dptif-lic-screen';
+    screen.style.cssText = 'position:fixed;inset:0;z-index:99999;'
+      + 'background:linear-gradient(135deg,#05060e,#0e0a2e);'
+      + 'display:flex;align-items:center;justify-content:center;padding:20px;'
+      + 'font-family:Arial,sans-serif';
+    document.body.appendChild(screen);
+
+    // Construire l'UI avec createElement
+    var box = document.createElement('div');
+    box.style.cssText = 'width:460px;max-width:100%;text-align:center';
+
+    // Logo
+    var logo = document.createElement('div');
+    logo.style.cssText = 'width:64px;height:64px;border-radius:18px;margin:0 auto 16px;'
+      + 'background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;'
+      + 'align-items:center;justify-content:center;font-size:28px';
+    logo.textContent = '⚡';
+
+    var title = document.createElement('div');
+    title.style.cssText = 'font-size:22px;font-weight:800;color:#fff;margin-bottom:4px';
+    title.textContent = 'DPTIF Pro';
+
+    var sub = document.createElement('div');
+    sub.style.cssText = 'font-size:13px;color:#9090c0;margin-bottom:24px';
+    sub.textContent = APP_NAME;
+
+    // Carte
+    var card = document.createElement('div');
+    card.style.cssText = 'background:#0f1118;border:1px solid rgba(99,102,241,.3);'
+      + 'border-radius:18px;padding:24px';
+
+    // Message statut
+    if(msgTop) {
+      var msgEl = document.createElement('div');
+      msgEl.style.cssText = 'background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);'
+        + 'border-radius:8px;padding:10px 14px;color:#f87171;font-size:13px;margin-bottom:16px';
+      msgEl.textContent = msgTop;
+      card.appendChild(msgEl);
+    } else if(demoRestants > 0) {
+      var demoEl = document.createElement('div');
+      demoEl.style.cssText = 'background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);'
+        + 'border-radius:8px;padding:10px 14px;color:#fbbf24;font-size:13px;margin-bottom:16px';
+      demoEl.textContent = '⏳ Mode démo — '+demoRestants+' jour(s) restant(s) sur '+DEMO_DAYS;
+      card.appendChild(demoEl);
+    }
+
+    // Label
+    var lbl = document.createElement('div');
+    lbl.style.cssText = 'text-align:left;font-size:11px;font-weight:700;color:#9090c0;'
+      + 'text-transform:uppercase;letter-spacing:1px;margin-bottom:6px';
+    lbl.textContent = 'Clé de licence';
+
+    // Input
+    var inp = document.createElement('input');
+    inp.id = 'dptif-lic-input';
+    inp.placeholder = 'APP-CLI-XXXX-XXXX-XXXX';
+    inp.style.cssText = 'width:100%;background:#161922;border:1px solid rgba(99,102,241,.3);'
+      + 'border-radius:10px;padding:12px 16px;color:#fff;font-size:14px;'
+      + 'font-family:monospace;letter-spacing:1px;box-sizing:border-box;margin-bottom:8px';
+    inp.addEventListener('input', function(){ this.value=this.value.toUpperCase(); });
+    inp.addEventListener('keydown', function(e){ if(e.key==='Enter') btn.click(); });
+
+    // Erreur
+    var errEl = document.createElement('div');
+    errEl.id = 'dptif-lic-err';
+    errEl.style.cssText = 'color:#f87171;font-size:12px;margin-bottom:10px;display:none;text-align:left';
+
+    // Bouton activer
+    var btn = document.createElement('button');
+    btn.style.cssText = 'width:100%;padding:13px;background:linear-gradient(135deg,#6366f1,#8b5cf6);'
+      + 'border:none;border-radius:11px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:10px';
+    btn.textContent = '🔑 Activer la licence';
+    btn.addEventListener('click', function() {
+      var cle = inp.value.trim();
+      var r = validerCle(cle);
+      if(r.ok) {
+        screen.remove();
+        if(r.jours <= 7) afficherBanniere('⚠️ Licence expire dans '+r.jours+' jour(s).','rgba(245,158,11,.9)');
+        if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+      } else {
+        errEl.style.display='block';
+        errEl.textContent = '❌ '+r.msg;
+      }
+    });
+
+    // Bouton démo
+    if(demoRestants > 0) {
+      var btnDemo = document.createElement('button');
+      btnDemo.style.cssText = 'width:100%;padding:11px;background:rgba(245,158,11,.12);'
+        + 'border:1px solid rgba(245,158,11,.3);border-radius:10px;color:#fbbf24;'
+        + 'font-size:13px;font-weight:600;cursor:pointer;margin-bottom:14px';
+      btnDemo.textContent = '⏳ Continuer en mode démo ('+demoRestants+'j)';
+      btnDemo.addEventListener('click', function() {
+        screen.remove();
+        if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+      });
+      card.appendChild(lbl);
+      card.appendChild(inp);
+      card.appendChild(errEl);
+      card.appendChild(btn);
+      card.appendChild(btnDemo);
+    } else {
+      card.appendChild(lbl);
+      card.appendChild(inp);
+      card.appendChild(errEl);
+      card.appendChild(btn);
+    }
+
+    // Footer contact
+    var footer = document.createElement('div');
+    footer.style.cssText = 'border-top:1px solid rgba(99,102,241,.15);padding-top:14px;'
+      + 'font-size:12px;color:#505080;margin-top:4px';
+    footer.innerHTML = 'Obtenir une licence: '
+      + '<a href="https://wa.me/'+ADMIN_WA+'" target="_blank" style="color:#6366f1">WhatsApp</a>'
+      + ' · jeanpaulbognon3@gmail.com';
+    card.appendChild(footer);
+
+    box.appendChild(logo);
+    box.appendChild(title);
+    box.appendChild(sub);
+    box.appendChild(card);
+    screen.appendChild(box);
+
+    setTimeout(function(){ inp.focus(); }, 200);
+  }
+
+  function init() {
+    var stored = getLic();
+    if(stored && stored.cle) {
+      var j = joursRestants(stored.fin);
+      if(j >= 0) {
+        if(j <= 7) afficherBanniere('⚠️ Licence expire dans '+j+' jour(s) — Contactez: wa.me/'+ADMIN_WA,'rgba(245,158,11,.9)');
+        if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+        return;
+      }
+      afficherEcranLicence('⏰ Licence expirée le '+stored.fin+' — Renouvelez pour continuer', 0);
+      return;
+    }
+    var firstRun = getFirstRun();
+    var joursDemo = Math.floor((new Date()-new Date(firstRun))/86400000);
+    var restants  = DEMO_DAYS - joursDemo;
+    if(restants > 5) {
+      if(restants <= DEMO_DAYS) {
+        afficherBanniere('⏳ Mode démo — '+restants+' jour(s) restants. <a href="https://wa.me/'+ADMIN_WA+'" target="_blank" style="color:#000;font-weight:700">Obtenir une licence</a>', 'rgba(245,158,11,.85)');
+      }
+      if(typeof window.dptifOnLicenceOk === 'function') window.dptifOnLicenceOk();
+    } else {
+      afficherEcranLicence(restants>0?null:'🔒 Démo expirée — Entrez votre clé de licence', restants>0?restants:0);
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
+  else setTimeout(init, 200);
+
+})();
+
+</script>
+<script>
+
+// ── Remplacement des prompt() par vrais modals ──
+
+function ouvrirFormateur(id) {
+  document.getElementById('fmt-id').value    = id || '';
+  document.getElementById('fmt-nom').value   = '';
+  document.getElementById('fmt-spe').value   = '';
+  document.getElementById('fmt-tel').value   = '';
+  document.getElementById('fmt-email').value = '';
+  if(id) {
+    var f = DB.formateurs.find(function(x){return x.id===id;});
+    if(f) {
+      document.getElementById('fmt-nom').value   = f.nom||'';
+      document.getElementById('fmt-spe').value   = f.specialite||'';
+      document.getElementById('fmt-tel').value   = f.tel||'';
+      document.getElementById('fmt-email').value = f.email||'';
+    }
+  }
+  openModal('modal-formateur');
+}
+
+function sauvegarderFormateur() {
+  var nom = document.getElementById('fmt-nom').value.trim();
+  if(!nom){ toast('Nom obligatoire'); return; }
+  var id  = document.getElementById('fmt-id').value || genId();
+  var obj = { id, nom, specialite:document.getElementById('fmt-spe').value,
+    tel:document.getElementById('fmt-tel').value, email:document.getElementById('fmt-email').value, modules:0 };
+  var idx = DB.formateurs.findIndex(function(x){return x.id===id;});
+  if(idx>=0) DB.formateurs[idx]=obj; else DB.formateurs.push(obj);
+  saveAll(); closeModal('modal-formateur'); renderFormateurs();
+  toast('✅ Formateur enregistré');
+}
+
+function ouvrirModule(id) {
+  // Remplir le select formations
+  var sel = document.getElementById('mod-form');
+  if(sel){ sel.innerHTML='<option value="">-- Toutes --</option>'+
+    DB.formations.map(function(f){return '<option value="'+f.id+'">'+f.titre+'</option>';}).join(''); }
+  document.getElementById('mod-id').value       = id||'';
+  document.getElementById('mod-titre').value    = '';
+  document.getElementById('mod-duree').value    = '';
+  document.getElementById('mod-formateur').value= '';
+  document.getElementById('mod-desc').value     = '';
+  if(id){
+    var m = DB.modules.find(function(x){return x.id===id;});
+    if(m){
+      document.getElementById('mod-titre').value    = m.titre||'';
+      document.getElementById('mod-form').value     = m.formationId||'';
+      document.getElementById('mod-duree').value    = m.duree||'';
+      document.getElementById('mod-formateur').value= m.formateur||'';
+      document.getElementById('mod-desc').value     = m.description||'';
+    }
+  }
+  openModal('modal-module');
+}
+
+function sauvegarderModule() {
+  var titre = document.getElementById('mod-titre').value.trim();
+  if(!titre){ toast('Titre obligatoire'); return; }
+  var id = document.getElementById('mod-id').value || genId();
+  var obj = { id, titre, formationId:document.getElementById('mod-form').value,
+    duree:document.getElementById('mod-duree').value,
+    formateur:document.getElementById('mod-formateur').value,
+    description:document.getElementById('mod-desc').value };
+  var idx = DB.modules.findIndex(function(x){return x.id===id;});
+  if(idx>=0) DB.modules[idx]=obj; else DB.modules.push(obj);
+  saveAll(); closeModal('modal-module'); renderModules();
+  toast('✅ Module enregistré');
+}
+
+function ouvrirRessource(id) {
+  var sel = document.getElementById('res-form');
+  if(sel){ sel.innerHTML='<option value="">-- Toutes --</option>'+
+    DB.formations.map(function(f){return '<option value="'+f.id+'">'+f.titre+'</option>';}).join(''); }
+  document.getElementById('res-id').value    = id||'';
+  document.getElementById('res-titre').value = '';
+  document.getElementById('res-type').value  = 'pdf';
+  document.getElementById('res-desc').value  = '';
+  document.getElementById('res-url').value   = '';
+  if(id){
+    var r = DB.ressources.find(function(x){return x.id===id;});
+    if(r){
+      document.getElementById('res-titre').value = r.titre||'';
+      document.getElementById('res-type').value  = r.type||'pdf';
+      document.getElementById('res-form').value  = r.formationId||'';
+      document.getElementById('res-desc').value  = r.description||'';
+      document.getElementById('res-url').value   = r.url||'';
+    }
+  }
+  openModal('modal-ressource');
+}
+
+function sauvegarderRessource() {
+  var titre = document.getElementById('res-titre').value.trim();
+  if(!titre){ toast('Titre obligatoire'); return; }
+  var id = document.getElementById('res-id').value || genId();
+  var obj = { id, titre, type:document.getElementById('res-type').value,
+    formationId:document.getElementById('res-form').value,
+    description:document.getElementById('res-desc').value,
+    url:document.getElementById('res-url').value };
+  var idx = DB.ressources.findIndex(function(x){return x.id===id;});
+  if(idx>=0) DB.ressources[idx]=obj; else DB.ressources.push(obj);
+  saveAll(); closeModal('modal-ressource'); renderRessources();
+  toast('✅ Ressource enregistrée');
+}
+
+function ouvrirSession(id) {
+  var sel = document.getElementById('sess-form');
+  if(sel){ sel.innerHTML='<option value="">-- Choisir --</option>'+
+    DB.formations.map(function(f){return '<option value="'+f.id+'">'+f.titre+'</option>';}).join(''); }
+  document.getElementById('sess-id').value      = id||'';
+  document.getElementById('sess-date').value    = today();
+  document.getElementById('sess-horaire').value = '08h00-12h00';
+  document.getElementById('sess-salle').value   = '';
+  document.getElementById('sess-form2').value   = '';
+  if(id){
+    var s = DB.planning.find(function(x){return x.id===id;});
+    if(s){
+      document.getElementById('sess-form').value    = s.formationId||'';
+      document.getElementById('sess-date').value    = s.date||'';
+      document.getElementById('sess-horaire').value = s.horaire||'';
+      document.getElementById('sess-salle').value   = s.salle||'';
+      document.getElementById('sess-form2').value   = s.formateur||'';
+    }
+  }
+  openModal('modal-session');
+}
+
+function sauvegarderSession() {
+  var date = document.getElementById('sess-date').value;
+  if(!date){ toast('Date obligatoire'); return; }
+  var id = document.getElementById('sess-id').value || genId();
+  var obj = { id, formationId:document.getElementById('sess-form').value,
+    date, horaire:document.getElementById('sess-horaire').value,
+    salle:document.getElementById('sess-salle').value,
+    formateur:document.getElementById('sess-form2').value };
+  var idx = (DB.planning||[]).findIndex(function(x){return x.id===id;});
+  if(!DB.planning) DB.planning=[];
+  if(idx>=0) DB.planning[idx]=obj; else DB.planning.push(obj);
+  saveAll(); closeModal('modal-session'); renderPlanning();
+  toast('✅ Session planifiée');
+}
+
+function ouvrirPartenaire(id) {
+  document.getElementById('part-id').value      = id||'';
+  document.getElementById('part-nom').value     = '';
+  document.getElementById('part-domaine').value = '';
+  document.getElementById('part-contact').value = '';
+  document.getElementById('part-contrib').value = '';
+  document.getElementById('part-notes').value   = '';
+  if(id){
+    var p = DB.partenaires.find(function(x){return x.id===id;});
+    if(p){
+      document.getElementById('part-nom').value     = p.nom||'';
+      document.getElementById('part-type').value    = p.type||'ONG';
+      document.getElementById('part-domaine').value = p.domaine||'';
+      document.getElementById('part-contact').value = p.contact||'';
+      document.getElementById('part-contrib').value = p.contribution||'';
+      document.getElementById('part-notes').value   = p.notes||'';
+    }
+  }
+  openModal('modal-partenaire');
+}
+
+function sauvegarderPartenaire() {
+  var nom = document.getElementById('part-nom').value.trim();
+  if(!nom){ toast('Nom obligatoire'); return; }
+  var id = document.getElementById('part-id').value || genId();
+  var obj = { id, nom, type:document.getElementById('part-type').value,
+    domaine:document.getElementById('part-domaine').value,
+    contact:document.getElementById('part-contact').value,
+    contribution:parseFloat(document.getElementById('part-contrib').value)||0,
+    notes:document.getElementById('part-notes').value };
+  var idx = DB.partenaires.findIndex(function(x){return x.id===id;});
+  if(idx>=0) DB.partenaires[idx]=obj; else DB.partenaires.push(obj);
+  saveAll(); closeModal('modal-partenaire'); renderPartenaires();
+  toast('✅ Partenaire enregistré');
+}
+
+function ouvrirInscription(id) {
+  // Remplir selects
+  var selA = document.getElementById('insc-app');
+  var selF = document.getElementById('insc-form');
+  if(selA) selA.innerHTML='<option value="">-- Choisir apprenant --</option>'+
+    DB.apprenants.map(function(a){return '<option value="'+a.id+'">'+a.nom+'</option>';}).join('');
+  if(selF) selF.innerHTML='<option value="">-- Choisir formation --</option>'+
+    DB.formations.map(function(f){return '<option value="'+f.id+'">'+f.titre+'</option>';}).join('');
+  document.getElementById('insc-id').value     = id||'';
+  document.getElementById('insc-frais').value  = '';
+  document.getElementById('insc-paye').value   = '';
+  document.getElementById('insc-statut').value = 'en-cours';
+  document.getElementById('insc-date').value   = today();
+  if(id){
+    var ins = DB.inscriptions.find(function(x){return x.id===id;});
+    if(ins){
+      document.getElementById('insc-app').value    = ins.apprenantId||'';
+      document.getElementById('insc-form').value   = ins.formationId||'';
+      document.getElementById('insc-frais').value  = ins.frais||'';
+      document.getElementById('insc-paye').value   = ins.paye||'';
+      document.getElementById('insc-statut').value = ins.statut||'en-cours';
+      document.getElementById('insc-date').value   = ins.date||'';
+    }
+  }
+  openModal('modal-inscription-cfp');
+}
+
+function sauvegarderInscription() {
+  var appId  = document.getElementById('insc-app').value;
+  var formId = document.getElementById('insc-form').value;
+  if(!appId||!formId){ toast('Apprenant et formation obligatoires'); return; }
+  var id = document.getElementById('insc-id').value || genId();
+  var frais = parseFloat(document.getElementById('insc-frais').value)||0;
+  var paye  = parseFloat(document.getElementById('insc-paye').value)||0;
+  var obj = { id, apprenantId:appId, formationId:formId, frais, paye,
+    reste:frais-paye, statut:document.getElementById('insc-statut').value,
+    date:document.getElementById('insc-date').value };
+  var idx = (DB.inscriptions||[]).findIndex(function(x){return x.id===id;});
+  if(!DB.inscriptions) DB.inscriptions=[];
+  if(idx>=0) DB.inscriptions[idx]=obj; else DB.inscriptions.push(obj);
+  saveAll(); closeModal('modal-inscription-cfp'); renderInscriptions();
+  toast('✅ Inscription enregistrée');
+}
+</script>
+<!-- MODALS CFP PRO -->
+
+<!-- Modal Formateur -->
+<div id="modal-formateur" class="modal">
+  <div class="modal-box">
+    <button onclick="closeModal('modal-formateur')" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#8892b0;font-size:18px;cursor:pointer">✕</button>
+    <div class="modal-title">👨‍🏫 Formateur</div>
+    <input type="hidden" id="fmt-id">
+    <div class="mf"><label>Nom complet *</label><input id="fmt-nom" type="text" placeholder="Prénom Nom"></div>
+    <div class="mf"><label>Spécialité</label><input id="fmt-spe" type="text" placeholder="Ex: Informatique, Comptabilité..."></div>
+    <div class="mf"><label>Téléphone</label><input id="fmt-tel" type="text" placeholder="+229 ..."></div>
+    <div class="mf"><label>Email</label><input id="fmt-email" type="email" placeholder="email@..."></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-formateur')">Annuler</button>
+      <button class="btn-save" onclick="sauvegarderFormateur()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Module -->
+<div id="modal-module" class="modal">
+  <div class="modal-box">
+    <button onclick="closeModal('modal-module')" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#8892b0;font-size:18px;cursor:pointer">✕</button>
+    <div class="modal-title">📖 Module / Contenu</div>
+    <input type="hidden" id="mod-id">
+    <div class="mf"><label>Titre du module *</label><input id="mod-titre" type="text" placeholder="Ex: Introduction à Word"></div>
+    <div class="mf"><label>Formation associée</label>
+      <select id="mod-form"><option value="">-- Toutes formations --</option></select>
+    </div>
+    <div class="mf"><label>Durée</label><input id="mod-duree" type="text" placeholder="Ex: 3h, 2 jours"></div>
+    <div class="mf"><label>Formateur responsable</label><input id="mod-formateur" type="text" placeholder="Nom du formateur"></div>
+    <div class="mf"><label>Description</label><textarea id="mod-desc" placeholder="Contenu du module..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-module')">Annuler</button>
+      <button class="btn-save" onclick="sauvegarderModule()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Ressource -->
+<div id="modal-ressource" class="modal">
+  <div class="modal-box">
+    <button onclick="closeModal('modal-ressource')" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#8892b0;font-size:18px;cursor:pointer">✕</button>
+    <div class="modal-title">📄 Ressource / Document</div>
+    <input type="hidden" id="res-id">
+    <div class="mf"><label>Titre *</label><input id="res-titre" type="text" placeholder="Nom de la ressource"></div>
+    <div class="mf"><label>Type</label>
+      <select id="res-type">
+        <option value="pdf">PDF</option><option value="video">Vidéo</option>
+        <option value="lien">Lien Web</option><option value="document">Document</option><option value="autre">Autre</option>
+      </select>
+    </div>
+    <div class="mf"><label>Formation associée</label>
+      <select id="res-form"><option value="">-- Toutes --</option></select>
+    </div>
+    <div class="mf"><label>Description</label><textarea id="res-desc" placeholder="Description..."></textarea></div>
+    <div class="mf"><label>Lien URL (optionnel)</label><input id="res-url" type="url" placeholder="https://..."></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-ressource')">Annuler</button>
+      <button class="btn-save" onclick="sauvegarderRessource()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Session (Planning) -->
+<div id="modal-session" class="modal">
+  <div class="modal-box">
+    <button onclick="closeModal('modal-session')" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#8892b0;font-size:18px;cursor:pointer">✕</button>
+    <div class="modal-title">📅 Planifier une session</div>
+    <input type="hidden" id="sess-id">
+    <div class="mf"><label>Formation *</label>
+      <select id="sess-form"><option value="">-- Choisir --</option></select>
+    </div>
+    <div class="mf"><label>Date *</label><input id="sess-date" type="date"></div>
+    <div class="mf"><label>Horaire</label><input id="sess-horaire" type="text" placeholder="Ex: 08h-12h"></div>
+    <div class="mf"><label>Salle / Lieu</label><input id="sess-salle" type="text" placeholder="Ex: Salle A, En ligne..."></div>
+    <div class="mf"><label>Formateur</label><input id="sess-form2" type="text" placeholder="Nom du formateur"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-session')">Annuler</button>
+      <button class="btn-save" onclick="sauvegarderSession()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Partenaire -->
+<div id="modal-partenaire" class="modal">
+  <div class="modal-box">
+    <button onclick="closeModal('modal-partenaire')" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#8892b0;font-size:18px;cursor:pointer">✕</button>
+    <div class="modal-title">🤝 Partenaire / Financeur</div>
+    <input type="hidden" id="part-id">
+    <div class="mf"><label>Nom *</label><input id="part-nom" type="text" placeholder="Nom de l'organisation"></div>
+    <div class="mf"><label>Type</label>
+      <select id="part-type">
+        <option>ONG</option><option>Entreprise</option><option>Gouvernement</option><option>Autre</option>
+      </select>
+    </div>
+    <div class="mf"><label>Domaine d'activité</label><input id="part-domaine" type="text" placeholder="Ex: Education, Santé..."></div>
+    <div class="mf"><label>Contact (tél ou email)</label><input id="part-contact" type="text" placeholder="+229 / email@..."></div>
+    <div class="mf"><label>Contribution financière (F CFA)</label><input id="part-contrib" type="number" placeholder="0"></div>
+    <div class="mf"><label>Notes</label><textarea id="part-notes" placeholder="Informations complémentaires..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-partenaire')">Annuler</button>
+      <button class="btn-save" onclick="sauvegarderPartenaire()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Inscription -->
+<div id="modal-inscription-cfp" class="modal">
+  <div class="modal-box">
+    <button onclick="closeModal('modal-inscription-cfp')" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#8892b0;font-size:18px;cursor:pointer">✕</button>
+    <div class="modal-title">💰 Enregistrer inscription</div>
+    <input type="hidden" id="insc-id">
+    <div class="mf"><label>Apprenant *</label>
+      <select id="insc-app"><option value="">-- Choisir apprenant --</option></select>
+    </div>
+    <div class="mf"><label>Formation *</label>
+      <select id="insc-form"><option value="">-- Choisir formation --</option></select>
+    </div>
+    <div class="mf"><label>Frais d'inscription (F CFA) *</label><input id="insc-frais" type="number" placeholder="0"></div>
+    <div class="mf"><label>Montant payé (F CFA)</label><input id="insc-paye" type="number" placeholder="0"></div>
+    <div class="mf"><label>Statut</label>
+      <select id="insc-statut">
+        <option value="en-cours">En cours</option>
+        <option value="solde">Soldé ✅</option>
+        <option value="annule">Annulé ❌</option>
+      </select>
+    </div>
+    <div class="mf"><label>Date</label><input id="insc-date" type="date"></div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('modal-inscription-cfp')">Annuler</button>
+      <button class="btn-save" onclick="sauvegarderInscription()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ── FORMATEURS ──
+</script>
+<script>
+// ── Redirections vers les fonctions modals (remplacent les anciennes versions prompt) ──
+function ouvrirFormateur(id)       { if(typeof sauvegarderFormateur !== 'undefined' && document.getElementById('modal-formateur')) { document.getElementById('fmt-id').value=id||''; if(id){var f=DB.formateurs.find(function(x){return x.id===id;});if(f){document.getElementById('fmt-nom').value=f.nom||'';document.getElementById('fmt-spe').value=f.specialite||'';document.getElementById('fmt-tel').value=f.tel||'';document.getElementById('fmt-email').value=f.email||'';}} openModal('modal-formateur'); } }
+function ouvrirModule(id)          { if(document.getElementById('modal-module'))      { var sel=document.getElementById('mod-form');if(sel)sel.innerHTML='<option value="">-- Toutes --</option>'+DB.formations.map(function(f){return '<option value="'+f.id+'">'+f.titre+'</option>';}).join('');document.getElementById('mod-id').value=id||'';if(id){var mo=DB.modules.find(function(x){return x.id===id;});if(mo){document.getElementById('mod-titre').value=mo.titre||'';if(sel)sel.value=mo.formationId||'';document.getElementById('mod-duree').value=mo.duree||'';document.getElementById('mod-formateur').value=mo.formateur||'';document.getElementById('mod-desc').value=mo.description||'';}} openModal('modal-module'); } }
+function ouvrirRessource(id)       { if(document.getElementById('modal-ressource'))   { var sel=document.getElementById('res-form');if(sel)sel.innerHTML='<option value="">-- Toutes --</option>'+DB.formations.map(function(f){return '<option value="'+f.id+'">'+f.titre+'</option>';}).join('');document.getElementById('res-id').value=id||'';if(id){var r=DB.ressources.find(function(x){return x.id===id;});if(r){document.getElementById('res-titre').value=r.titre||'';document.getElementById('res-type').value=r.type||'pdf';if(sel)sel.value=r.formationId||'';document.getElementById('res-desc').value=r.description||'';document.getElementById('res-url').value=r.url||'';}} openModal('modal-ressource'); } }
+function ouvrirSession(id)         { if(document.getElementById('modal-session'))     { var sel=document.getElementById('sess-form');if(sel)sel.innerHTML='<option value="">-- Choisir --</option>'+DB.formations.map(function(f){return '<option value="'+f.id+'">'+f.titre+'</option>';}).join('');document.getElementById('sess-id').value=id||'';document.getElementById('sess-date').value=id&&DB.planning?((DB.planning.find(function(x){return x.id===id;})||{}).date||today()):today();openModal('modal-session'); } }
+function ouvrirPartenaire(id)      { if(document.getElementById('modal-partenaire'))  { document.getElementById('part-id').value=id||'';if(id){var p=DB.partenaires.find(function(x){return x.id===id;});if(p){document.getElementById('part-nom').value=p.nom||'';if(document.getElementById('part-type'))document.getElementById('part-type').value=p.type||'ONG';document.getElementById('part-domaine').value=p.domaine||'';document.getElementById('part-contact').value=p.contact||'';document.getElementById('part-contrib').value=p.contribution||'';document.getElementById('part-notes').value=p.notes||'';}} openModal('modal-partenaire'); } }
+function ouvrirInscription(id)     { if(document.getElementById('modal-inscription-cfp')) { var selA=document.getElementById('insc-app');var selF=document.getElementById('insc-form');if(selA)selA.innerHTML='<option value="">-- Apprenant --</option>'+DB.apprenants.map(function(a){return '<option value="'+a.id+'">'+a.nom+'</option>';}).join('');if(selF)selF.innerHTML='<option value="">-- Formation --</option>'+DB.formations.map(function(f){return '<option value="'+f.id+'">'+f.titre+'</option>';}).join('');document.getElementById('insc-id').value=id||'';document.getElementById('insc-date').value=today();openModal('modal-inscription-cfp'); } }
+function paiementPartiel(inscId)   { var ins=(DB.inscriptions||[]).find(function(x){return x.id===inscId;});if(!ins)return;var reste=ins.frais-(ins.paye||0);var mont=parseFloat(window.prompt&&window.prompt('Montant à payer (Reste: '+fmtNum(reste)+' F):',reste)||'0')||0;if(!mont)return;ins.paye=(ins.paye||0)+mont;ins.reste=ins.frais-ins.paye;if(ins.reste<=0)ins.statut='solde';saveAll();renderInscriptions();toast('✅ Paiement de '+fmtNum(mont)+' F enregistré'); }
+function ouvrirFeuillePresence()   { var formId=DB.formations[0]&&DB.formations[0].id;if(!formId){toast('Aucune formation');return;}var date=today();var presences=DB.apprenants.map(function(a){return {appId:a.id,nom:a.nom,present:false,date,formationId:formId};});if(!DB.presences)DB.presences=[];DB.presences=DB.presences.concat(presences);saveAll();renderPresences();toast('✅ Feuille de présence créée pour le '+date); }
+function suppFormateur(id)         { if(!confirm('Supprimer ce formateur ?'))return;DB.formateurs=DB.formateurs.filter(function(x){return x.id!==id;});saveAll();renderFormateurs();toast('Formateur supprimé'); }
+function suppPartenaire(id)        { if(!confirm('Supprimer ce partenaire ?'))return;DB.partenaires=DB.partenaires.filter(function(x){return x.id!==id;});saveAll();renderPartenaires();toast('Partenaire supprimé'); }
+function suppModule(id)            { if(!confirm('Supprimer ce module ?'))return;DB.modules=DB.modules.filter(function(x){return x.id!==id;});saveAll();renderModules();toast('Module supprimé'); }
+function suppRessource(id)         { if(!confirm('Supprimer cette ressource ?'))return;DB.ressources=DB.ressources.filter(function(x){return x.id!==id;});saveAll();renderRessources();toast('Ressource supprimée'); }
+function suppSession(id)           { if(!confirm('Supprimer cette session ?'))return;if(!DB.planning)DB.planning=[];DB.planning=DB.planning.filter(function(x){return x.id!==id;});saveAll();renderPlanning();toast('Session supprimée'); }
+</script>
+</body>
+</html>

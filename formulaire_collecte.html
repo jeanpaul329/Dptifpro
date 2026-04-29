@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulaire de Collecte — Multi-Activités</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --eglise:#7C3AED;--eglise-l:#EDE9FE;
+    --ong:#059669;--ong-l:#D1FAE5;
+    --commerce:#D97706;--commerce-l:#FEF3C7;
+    --ecole:#2563EB;--ecole-l:#DBEAFE;
+    --evenement:#DB2777;--evenement-l:#FCE7F3;
+    --sante:#0891B2;--sante-l:#CFFAFE;
+    --bg:#F0F4F8;--white:#FFFFFF;--dark:#0F172A;--mid:#475569;--light:#94A3B8;--border:#CBD5E1;
+    --radius:14px;--shadow:0 4px 24px rgba(15,23,42,.08);--shadow-lg:0 12px 40px rgba(15,23,42,.14);
+    --active:#7C3AED;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--dark);min-height:100vh}
+
+  /* BANNER */
+  .top-banner{background:linear-gradient(135deg,#0F172A 0%,#1E3A5F 50%,#0F172A 100%);padding:28px 32px 22px;position:relative;overflow:hidden}
+  .top-banner::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E")}
+  .banner-inner{position:relative;max-width:960px;margin:0 auto}
+  .banner-title{font-family:'Syne',sans-serif;font-size:clamp(20px,4vw,32px);font-weight:800;color:#fff;letter-spacing:-.5px}
+  .banner-sub{font-size:13px;color:#94A3B8;margin-top:6px;font-weight:500}
+  .banner-dots{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+  .banner-dot{padding:4px 12px;border-radius:20px;font-size:10.5px;font-weight:700;text-transform:uppercase;color:#fff;opacity:.9}
+
+  /* LAYOUT */
+  .container{max-width:960px;margin:0 auto;padding:24px 16px 60px}
+
+  /* STEPS */
+  .steps{display:flex;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:20px}
+  .step{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:13px 8px;cursor:pointer;transition:all .2s;font-size:12px;font-weight:600;color:var(--light);border-bottom:3px solid transparent}
+  .step.active{color:var(--active);border-bottom-color:var(--active);background:#fafafe}
+  .step.done{color:var(--active);opacity:.65}
+  .step-num{width:21px;height:21px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;background:var(--border);color:var(--mid);transition:all .2s;flex-shrink:0}
+  .step.active .step-num,.step.done .step-num{background:var(--active);color:#fff}
+  .step-label{display:none}
+  @media(min-width:520px){.step-label{display:inline}}
+
+  /* SECTION TITLES */
+  .sec-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--dark);margin-bottom:14px;display:flex;align-items:center;gap:9px}
+
+  /* CAT GRID */
+  .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:11px;margin-bottom:26px}
+  .cat-card{background:var(--white);border:2.5px solid var(--border);border-radius:12px;padding:15px 11px;text-align:center;cursor:pointer;transition:all .2s;user-select:none}
+  .cat-card:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+  .cat-card.selected{border-color:var(--c);background:var(--cl)}
+  .cat-icon{font-size:28px;margin-bottom:7px}
+  .cat-name{font-size:11.5px;font-weight:700;color:var(--dark);line-height:1.3}
+
+  /* FORM PAGE */
+  .form-page{display:none}
+  .form-page.active{display:block;animation:fadeUp .28s ease}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+  /* CARD */
+  .card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px;margin-bottom:18px}
+  .card-header{display:flex;align-items:center;gap:11px;margin-bottom:18px;padding-bottom:13px;border-bottom:1.5px solid var(--bg)}
+  .card-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+  .card-title{font-family:'Syne',sans-serif;font-size:14.5px;font-weight:700}
+  .card-sub{font-size:11.5px;color:var(--mid);margin-top:2px}
+
+  /* FORM GRID */
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+  @media(max-width:580px){.form-grid{grid-template-columns:1fr}}
+  .field{display:flex;flex-direction:column;gap:5px}
+  .field.span2{grid-column:span 2}
+  @media(max-width:580px){.field.span2{grid-column:span 1}}
+
+  label{font-size:11.5px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:.4px}
+  label .req{color:#EF4444;margin-left:2px}
+  input,select,textarea{border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;font-family:inherit;font-size:13.5px;color:var(--dark);background:#FAFCFF;transition:all .2s;outline:none;width:100%}
+  input:focus,select:focus,textarea:focus{border-color:var(--active);background:var(--white);box-shadow:0 0 0 3px color-mix(in srgb,var(--active) 12%,transparent)}
+  textarea{resize:vertical;min-height:75px}
+  select{cursor:pointer}
+
+  /* RADIO / CHECK */
+  .check-group,.radio-group{display:flex;flex-wrap:wrap;gap:7px;margin-top:2px}
+  .check-label,.radio-label{display:flex;align-items:center;gap:6px;padding:6px 13px;border:1.5px solid var(--border);border-radius:20px;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--mid);transition:all .2s;user-select:none}
+  .check-label:has(input:checked),.radio-label:has(input:checked){border-color:var(--active);color:var(--active);background:color-mix(in srgb,var(--active) 8%,transparent)}
+  .check-label input,.radio-label input{display:none}
+
+  /* OBJ TABS */
+  .obj-tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+  .obj-tab{padding:8px 16px;border-radius:8px;background:var(--white);border:2px solid var(--border);font-size:12.5px;font-weight:700;cursor:pointer;transition:all .2s;color:var(--mid)}
+  .obj-tab.active{border-color:var(--active);color:var(--active);background:color-mix(in srgb,var(--active) 8%,transparent)}
+
+  /* SUMMARY */
+  .summary-table{width:100%;border-collapse:collapse;font-size:13px}
+  .summary-table th{background:var(--bg);padding:9px 12px;text-align:left;font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--mid)}
+  .summary-table td{padding:8px 12px;border-top:1px solid var(--bg);color:var(--dark);vertical-align:top}
+  .summary-table td:first-child{color:var(--mid);font-weight:600;width:38%}
+
+  /* NAV */
+  .nav-bar{display:flex;justify-content:space-between;align-items:center;margin-top:20px;gap:10px}
+  .btn{padding:11px 26px;border-radius:10px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;border:none;transition:all .2s;display:flex;align-items:center;gap:6px}
+  .btn-outline{background:var(--white);border:2px solid var(--border);color:var(--mid)}
+  .btn-outline:hover{border-color:var(--active);color:var(--active)}
+  .btn-primary{background:var(--active);color:#fff;box-shadow:0 4px 14px color-mix(in srgb,var(--active) 35%,transparent)}
+  .btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  .btn-success{background:linear-gradient(135deg,#059669,#10B981);color:#fff;box-shadow:0 4px 14px rgba(5,150,105,.3)}
+  .btn-success:hover{filter:brightness(1.1);transform:translateY(-1px)}
+  .btn-sm{padding:5px 10px;font-size:11px;border-radius:7px}
+  .btn-danger{background:#EF4444;color:#fff}
+
+  /* SUCCESS */
+  .success-screen{text-align:center;padding:40px 20px;display:none}
+  .success-screen.active{display:block;animation:fadeUp .35s ease}
+  .success-icon{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#059669,#10B981);display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 18px;box-shadow:0 8px 28px rgba(5,150,105,.3)}
+  .success-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--dark);margin-bottom:6px}
+  .success-sub{font-size:13.5px;color:var(--mid);margin-bottom:24px}
+
+  /* RECORDS */
+  .records-wrap{overflow-x:auto;border-radius:12px;box-shadow:var(--shadow)}
+  .records-table{width:100%;border-collapse:collapse;font-size:12px;background:var(--white);min-width:680px}
+  .records-table th{background:var(--dark);color:#fff;padding:10px 13px;text-align:left;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+  .records-table td{padding:9px 13px;border-top:1px solid var(--bg);color:var(--dark);vertical-align:middle;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .records-table tr:hover td{background:#F8FAFF}
+  .badge{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700}
+
+  /* FILTER */
+  .filter-bar{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px;align-items:center}
+  .filter-bar input{flex:1;min-width:160px;font-size:12.5px;padding:8px 12px}
+  .filter-bar select{width:auto;font-size:12.5px;padding:8px 12px}
+
+  /* STATS */
+  .stats-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-bottom:20px}
+  .stat-card{background:var(--white);border-radius:12px;padding:14px 13px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:4px}
+  .stat-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1}
+  .stat-label{font-size:10.5px;font-weight:600;color:var(--mid);text-transform:uppercase}
+
+  .divider{height:1.5px;background:var(--bg);margin:16px 0}
+  .req-note{font-size:11px;color:var(--light);margin-bottom:16px}
+  .empty-state{text-align:center;padding:36px 20px;color:var(--light);font-size:13.5px;font-weight:600}
+  .empty-state .ei{font-size:38px;margin-bottom:9px}
+
+  @media print{.steps,.nav-bar,.obj-tabs,.filter-bar,.btn,.top-banner{display:none!important}.card{box-shadow:none;border:1px solid #ddd}body{background:white}}
+</style>
+</head>
+<body>
+
+<div class="top-banner">
+  <div class="banner-inner">
+    <div class="banner-title">📋 Formulaire de Collecte de Données</div>
+    <div class="banner-sub">Multi-catégories · Membres · Enquêtes · Inscriptions · Suivi d'activités</div>
+    <div class="banner-dots">
+      <span class="banner-dot" style="background:#7C3AED">⛪ Église</span>
+      <span class="banner-dot" style="background:#059669">🤝 ONG</span>
+      <span class="banner-dot" style="background:#D97706">🏪 Commerce</span>
+      <span class="banner-dot" style="background:#2563EB">🎓 École</span>
+      <span class="banner-dot" style="background:#DB2777">🎉 Événement</span>
+      <span class="banner-dot" style="background:#0891B2">🏥 Santé</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- STEPS -->
+  <div class="steps" id="stepsBar">
+    <div class="step active" onclick="goStep(1)"><div class="step-num">1</div><span class="step-label">Catégorie</span></div>
+    <div class="step" onclick="goStep(2)"><div class="step-num">2</div><span class="step-label">Général</span></div>
+    <div class="step" onclick="goStep(3)"><div class="step-num">3</div><span class="step-label">Spécifique</span></div>
+    <div class="step" onclick="goStep(4)"><div class="step-num">4</div><span class="step-label">Récapitulatif</span></div>
+    <div class="step" onclick="goStep(5)"><div class="step-num">5</div><span class="step-label">📊 Registre</span></div>
+  </div>
+
+  <!-- PAGE 1 -->
+  <div class="form-page active" id="page1">
+    <div class="card">
+      <div class="sec-title"><span>🗂️</span> Catégorie d'activité</div>
+      <div class="cat-grid">
+        <div class="cat-card selected" data-cat="eglise" style="--c:#7C3AED;--cl:#EDE9FE" onclick="selectCat(this)"><div class="cat-icon">⛪</div><div class="cat-name">Église / Culte / Religion</div></div>
+        <div class="cat-card" data-cat="ong" style="--c:#059669;--cl:#D1FAE5" onclick="selectCat(this)"><div class="cat-icon">🤝</div><div class="cat-name">ONG / Association</div></div>
+        <div class="cat-card" data-cat="commerce" style="--c:#D97706;--cl:#FEF3C7" onclick="selectCat(this)"><div class="cat-icon">🏪</div><div class="cat-name">Commerce / Entreprise</div></div>
+        <div class="cat-card" data-cat="ecole" style="--c:#2563EB;--cl:#DBEAFE" onclick="selectCat(this)"><div class="cat-icon">🎓</div><div class="cat-name">École / Formation</div></div>
+        <div class="cat-card" data-cat="evenement" style="--c:#DB2777;--cl:#FCE7F3" onclick="selectCat(this)"><div class="cat-icon">🎉</div><div class="cat-name">Événement / Fête</div></div>
+        <div class="cat-card" data-cat="sante" style="--c:#0891B2;--cl:#CFFAFE" onclick="selectCat(this)"><div class="cat-icon">🏥</div><div class="cat-name">Santé / Clinique</div></div>
+      </div>
+      <div class="sec-title"><span>🎯</span> Objectif du formulaire</div>
+      <div class="obj-tabs">
+        <div class="obj-tab active" data-obj="membre" onclick="selectObj(this)">👤 Membres / Adhérents</div>
+        <div class="obj-tab" data-obj="enquete" onclick="selectObj(this)">📊 Enquête</div>
+        <div class="obj-tab" data-obj="inscription" onclick="selectObj(this)">✍️ Inscription Événement</div>
+        <div class="obj-tab" data-obj="suivi" onclick="selectObj(this)">📈 Suivi d'Activités</div>
+      </div>
+    </div>
+    <div class="nav-bar"><div></div><button class="btn btn-primary" onclick="goStep(2)">Suivant →</button></div>
+  </div>
+
+  <!-- PAGE 2 -->
+  <div class="form-page" id="page2">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" id="genIcon" style="background:#EDE9FE">⛪</div>
+        <div><div class="card-title" id="genTitle">Informations générales</div><div class="card-sub">Données communes à toutes les catégories</div></div>
+      </div>
+      <p class="req-note">* Champs obligatoires</p>
+
+      <div class="sec-title" style="font-size:13.5px">👤 Identité de la personne</div>
+      <div class="form-grid" style="margin-bottom:14px">
+        <div class="field"><label>Nom <span class="req">*</span></label><input type="text" id="f_nom" placeholder="Nom de famille"></div>
+        <div class="field"><label>Prénom(s) <span class="req">*</span></label><input type="text" id="f_prenom" placeholder="Prénom(s)"></div>
+        <div class="field"><label>Date de naissance</label><input type="date" id="f_ddn"></div>
+        <div class="field"><label>Sexe</label>
+          <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="sexe" value="Masculin"> Masculin</label>
+            <label class="radio-label"><input type="radio" name="sexe" value="Féminin"> Féminin</label>
+            <label class="radio-label"><input type="radio" name="sexe" value="Autre"> Autre</label>
+          </div>
+        </div>
+        <div class="field"><label>Téléphone <span class="req">*</span></label><input type="tel" id="f_tel" placeholder="01 XX XX XX XX"></div>
+        <div class="field"><label>Email</label><input type="email" id="f_email" placeholder="adresse@email.com"></div>
+        <div class="field span2"><label>Adresse / Quartier</label><input type="text" id="f_adresse" placeholder="Rue, quartier, ville..."></div>
+        <div class="field"><label>Profession</label><input type="text" id="f_profession" placeholder="Ex : Enseignant, Commerçant..."></div>
+        <div class="field"><label>Situation matrimoniale</label>
+          <select id="f_sit_mat">
+            <option value="">— Sélectionner —</option>
+            <option>Célibataire</option><option>Marié(e)</option><option>Divorcé(e)</option><option>Veuf / Veuve</option>
+          </select>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="sec-title" style="font-size:13.5px">🏢 Organisme</div>
+      <div class="form-grid">
+        <div class="field"><label>Nom de l'organisme <span class="req">*</span></label><input type="text" id="f_org_nom" placeholder="Église, ONG, École..."></div>
+        <div class="field"><label>Date d'enregistrement</label><input type="date" id="f_date_enreg"></div>
+        <div class="field"><label>Département / Région</label><input type="text" id="f_dept" placeholder="Ex : Couffo, Atlantique..."></div>
+        <div class="field"><label>Commune / Ville</label><input type="text" id="f_ville" placeholder="Ex : Aplahoué, Cotonou..."></div>
+        <div class="field span2"><label>Observations</label><textarea id="f_obs" placeholder="Informations complémentaires..."></textarea></div>
+      </div>
+    </div>
+    <div class="nav-bar">
+      <button class="btn btn-outline" onclick="goStep(1)">← Retour</button>
+      <button class="btn btn-primary" onclick="goStep(3)">Suivant →</button>
+    </div>
+  </div>
+
+  <!-- PAGE 3 -->
+  <div class="form-page" id="page3">
+
+    <!-- EGLISE -->
+    <div id="spec_eglise" class="spec-panel" style="display:none">
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:#EDE9FE">⛪</div><div><div class="card-title">Données Église / Culte</div><div class="card-sub">Informations spécifiques à la communauté religieuse</div></div></div>
+        <div class="form-grid">
+          <div class="field"><label>Dénomination</label>
+            <select id="e_denom"><option value="">—</option><option>Catholique</option><option>Protestante</option><option>Évangélique</option><option>Pentecôtiste</option><option>Islam</option><option>Traditionnelle</option><option>Baptiste</option><option>Adventiste</option><option>Autre</option></select>
+          </div>
+          <div class="field"><label>Rôle dans la communauté</label>
+            <select id="e_role"><option value="">—</option><option>Fidèle / Membre</option><option>Diacre</option><option>Pasteur / Père</option><option>Évangéliste</option><option>Choriste</option><option>Responsable de cellule</option><option>Jeune</option><option>Autre</option></select>
+          </div>
+          <div class="field"><label>Date de baptême</label><input type="date" id="e_bapteme"></div>
+          <div class="field"><label>Ancienneté</label>
+            <select id="e_anciennete"><option value="">—</option><option>Moins de 1 an</option><option>1 à 3 ans</option><option>3 à 5 ans</option><option>5 à 10 ans</option><option>Plus de 10 ans</option></select>
+          </div>
+          <div class="field"><label>Dîme / Offrande régulière</label>
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="dime" value="Oui"> Oui</label>
+              <label class="radio-label"><input type="radio" name="dime" value="Non"> Non</label>
+              <label class="radio-label"><input type="radio" name="dime" value="Parfois"> Parfois</label>
+            </div>
+          </div>
+          <div class="field"><label>Cellule / Groupe</label><input type="text" id="e_cellule" placeholder="Ex : Groupe Jeunes, Cellule Nord..."></div>
+          <div class="field span2"><label>Ministère / Service</label>
+            <div class="check-group">
+              <label class="check-label"><input type="checkbox" value="Louange"> 🎵 Louange</label>
+              <label class="check-label"><input type="checkbox" value="Accueil"> 🤝 Accueil</label>
+              <label class="check-label"><input type="checkbox" value="Prière"> 🙏 Prière</label>
+              <label class="check-label"><input type="checkbox" value="Social"> ❤️ Social</label>
+              <label class="check-label"><input type="checkbox" value="Jeunesse"> 🌟 Jeunesse</label>
+              <label class="check-label"><input type="checkbox" value="Évangélisation"> 📖 Évangélisation</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ONG -->
+    <div id="spec_ong" class="spec-panel" style="display:none">
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:#D1FAE5">🤝</div><div><div class="card-title">Données ONG / Association</div><div class="card-sub">Informations spécifiques à l'organisation</div></div></div>
+        <div class="form-grid">
+          <div class="field"><label>Type d'organisation</label>
+            <select id="o_type"><option value="">—</option><option>ONG internationale</option><option>ONG nationale</option><option>Association locale</option><option>Coopérative</option><option>Groupement de femmes</option><option>Club de jeunes</option><option>Autre</option></select>
+          </div>
+          <div class="field"><label>Domaine d'intervention</label>
+            <select id="o_domaine"><option value="">—</option><option>Éducation</option><option>Santé</option><option>Agriculture</option><option>Environnement</option><option>Droits humains</option><option>Genre / Femmes</option><option>Jeunesse</option><option>Eau & Assainissement</option><option>Microfinance</option><option>Autre</option></select>
+          </div>
+          <div class="field"><label>Statut du membre</label>
+            <select id="o_statut"><option value="">—</option><option>Fondateur</option><option>Membre actif</option><option>Bénévole</option><option>Stagiaire</option><option>Partenaire</option><option>Bénéficiaire</option></select>
+          </div>
+          <div class="field"><label>Date d'adhésion</label><input type="date" id="o_adhesion"></div>
+          <div class="field"><label>Zone d'intervention</label><input type="text" id="o_zone" placeholder="Ex : Bénin, Togo, Région Sud..."></div>
+          <div class="field"><label>Cotisation annuelle (FCFA)</label><input type="number" id="o_cotis" placeholder="Ex : 5000"></div>
+          <div class="field"><label>Cotisation payée ?</label>
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="cotis" value="Oui"> Oui</label>
+              <label class="radio-label"><input type="radio" name="cotis" value="Non"> Non</label>
+              <label class="radio-label"><input type="radio" name="cotis" value="Partielle"> Partielle</label>
+            </div>
+          </div>
+          <div class="field span2"><label>Compétences clés</label>
+            <div class="check-group">
+              <label class="check-label"><input type="checkbox"> Gestion de projet</label>
+              <label class="check-label"><input type="checkbox"> Comptabilité</label>
+              <label class="check-label"><input type="checkbox"> Communication</label>
+              <label class="check-label"><input type="checkbox"> Terrain / Enquête</label>
+              <label class="check-label"><input type="checkbox"> Formation</label>
+              <label class="check-label"><input type="checkbox"> Informatique</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMMERCE -->
+    <div id="spec_commerce" class="spec-panel" style="display:none">
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:#FEF3C7">🏪</div><div><div class="card-title">Données Commerce / Entreprise</div><div class="card-sub">Informations spécifiques à l'activité commerciale</div></div></div>
+        <div class="form-grid">
+          <div class="field"><label>Type d'activité</label>
+            <select id="c_type"><option value="">—</option><option>Commerce de détail</option><option>Commerce de gros</option><option>Artisanat</option><option>Restauration</option><option>Services</option><option>Agriculture / Élevage</option><option>Transport</option><option>Numérique / Tech</option><option>Autre</option></select>
+          </div>
+          <div class="field"><label>Statut juridique</label>
+            <select id="c_statut"><option value="">—</option><option>Informel</option><option>Entreprise individuelle</option><option>SARL / SARLU</option><option>SA</option><option>Coopérative</option><option>GIE</option></select>
+          </div>
+          <div class="field"><label>Date de création</label><input type="date" id="c_creation"></div>
+          <div class="field"><label>Nombre d'employés</label>
+            <select id="c_effectif"><option value="">—</option><option>1 (seul)</option><option>2 à 5</option><option>6 à 10</option><option>11 à 50</option><option>Plus de 50</option></select>
+          </div>
+          <div class="field"><label>CA mensuel estimé (FCFA)</label><input type="number" id="c_ca" placeholder="Ex : 500000"></div>
+          <div class="field"><label>Besoin en financement</label>
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="finan" value="Oui"> Oui</label>
+              <label class="radio-label"><input type="radio" name="finan" value="Non"> Non</label>
+              <label class="radio-label"><input type="radio" name="finan" value="En cours"> En cours</label>
+            </div>
+          </div>
+          <div class="field span2"><label>Difficultés rencontrées</label>
+            <div class="check-group">
+              <label class="check-label"><input type="checkbox"> Financement</label>
+              <label class="check-label"><input type="checkbox"> Marché / Clients</label>
+              <label class="check-label"><input type="checkbox"> Concurrence</label>
+              <label class="check-label"><input type="checkbox"> Formalisation</label>
+              <label class="check-label"><input type="checkbox"> Personnel</label>
+              <label class="check-label"><input type="checkbox"> Intrants / Stock</label>
+            </div>
+          </div>
+          <div class="field span2"><label>Produits / Services principaux</label><textarea id="c_produits" placeholder="Décrivez les produits ou services..."></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉCOLE -->
+    <div id="spec_ecole" class="spec-panel" style="display:none">
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:#DBEAFE">🎓</div><div><div class="card-title">Données École / Formation</div><div class="card-sub">Informations spécifiques à l'apprenant ou à l'établissement</div></div></div>
+        <div class="form-grid">
+          <div class="field"><label>Type d'établissement</label>
+            <select id="ec_type"><option value="">—</option><option>École primaire</option><option>Collège / CEG</option><option>Lycée</option><option>Institut / BTS</option><option>Université</option><option>Centre de formation</option><option>École privée</option><option>Autre</option></select>
+          </div>
+          <div class="field"><label>Rôle</label>
+            <select id="ec_role"><option value="">—</option><option>Élève / Étudiant</option><option>Enseignant</option><option>Directeur</option><option>Personnel admin.</option><option>Parent d'élève</option><option>Stagiaire</option></select>
+          </div>
+          <div class="field"><label>Classe / Niveau</label><input type="text" id="ec_classe" placeholder="Ex : CM2, 3ème, Terminale, L2..."></div>
+          <div class="field"><label>Filière / Spécialité</label><input type="text" id="ec_filiere" placeholder="Ex : Informatique, Sciences..."></div>
+          <div class="field"><label>Matricule / N° inscription</label><input type="text" id="ec_matricule" placeholder="Numéro de l'établissement"></div>
+          <div class="field"><label>Année académique</label><input type="text" id="ec_annee" placeholder="Ex : 2024-2025"></div>
+          <div class="field"><label>Résidence</label>
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="resid" value="Internat"> Internat</label>
+              <label class="radio-label"><input type="radio" name="resid" value="Externat"> Externat</label>
+              <label class="radio-label"><input type="radio" name="resid" value="Demi-pension"> Demi-pension</label>
+            </div>
+          </div>
+          <div class="field"><label>Frais de scolarité</label>
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="scolar" value="Payés"> Payés</label>
+              <label class="radio-label"><input type="radio" name="scolar" value="Non payés"> Non payés</label>
+              <label class="radio-label"><input type="radio" name="scolar" value="Partiel"> Partiel</label>
+            </div>
+          </div>
+          <div class="field span2"><label>Besoins / Observations</label><textarea id="ec_obs" placeholder="Difficultés scolaires, besoins spéciaux..."></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÉVÉNEMENT -->
+    <div id="spec_evenement" class="spec-panel" style="display:none">
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:#FCE7F3">🎉</div><div><div class="card-title">Données Événement / Fête</div><div class="card-sub">Informations d'inscription à l'événement</div></div></div>
+        <div class="form-grid">
+          <div class="field"><label>Nom de l'événement <span class="req">*</span></label><input type="text" id="ev_nom" placeholder="Ex : Conférence 2025, Mariage..."></div>
+          <div class="field"><label>Type d'événement</label>
+            <select id="ev_type"><option value="">—</option><option>Conférence / Séminaire</option><option>Formation / Atelier</option><option>Mariage / Cérémonie</option><option>Fête nationale</option><option>Concert / Spectacle</option><option>Sport / Compétition</option><option>Marché / Salon</option><option>Deuil / Funérailles</option><option>Autre</option></select>
+          </div>
+          <div class="field"><label>Date de l'événement</label><input type="date" id="ev_date"></div>
+          <div class="field"><label>Lieu</label><input type="text" id="ev_lieu" placeholder="Salle, quartier, ville..."></div>
+          <div class="field"><label>Formule</label>
+            <select id="ev_formule"><option value="">—</option><option>Gratuit</option><option>Payant — Standard</option><option>Payant — VIP</option><option>Sur invitation</option></select>
+          </div>
+          <div class="field"><label>Paiement effectué</label>
+            <div class="radio-group">
+              <label class="radio-label"><input type="radio" name="ev_pay" value="Oui"> Oui</label>
+              <label class="radio-label"><input type="radio" name="ev_pay" value="Non"> Non</label>
+            </div>
+          </div>
+          <div class="field"><label>Mode de transport</label>
+            <div class="check-group">
+              <label class="check-label"><input type="checkbox"> Véhicule personnel</label>
+              <label class="check-label"><input type="checkbox"> Transport organisé</label>
+              <label class="check-label"><input type="checkbox"> Taxi / Moto</label>
+              <label class="check-label"><input type="checkbox"> À pied</label>
+            </div>
+          </div>
+          <div class="field"><label>Régime alimentaire / Allergie</label><input type="text" id="ev_allergie" placeholder="Ex : Végétarien, Aucun..."></div>
+          <div class="field span2"><label>Besoins spéciaux / Commentaires</label><textarea id="ev_besoins" placeholder="Accessibilité, logement, matériel..."></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SANTÉ -->
+    <div id="spec_sante" class="spec-panel" style="display:none">
+      <div class="card">
+        <div class="card-header"><div class="card-icon" style="background:#CFFAFE">🏥</div><div><div class="card-title">Données Santé / Clinique</div><div class="card-sub">Informations médicales et de suivi sanitaire</div></div></div>
+        <div class="form-grid">
+          <div class="field"><label>Type de structure</label>
+            <select id="s_struct"><option value="">—</option><option>Hôpital / CHU</option><option>Clinique privée</option><option>Centre de santé</option><option>Pharmacie</option><option>Cabinet médical</option><option>Unité mobile</option></select>
+          </div>
+          <div class="field"><label>Rôle / Statut</label>
+            <select id="s_role"><option value="">—</option><option>Patient / Bénéficiaire</option><option>Médecin</option><option>Infirmier(e)</option><option>Sage-femme</option><option>Agent communautaire</option><option>Administratif</option><option>Autre</option></select>
+          </div>
+          <div class="field"><label>N° de dossier</label><input type="text" id="s_dossier" placeholder="N° attribué par la structure"></div>
+          <div class="field"><label>Date de consultation</label><input type="date" id="s_date_c"></div>
+          <div class="field"><label>Groupe sanguin</label>
+            <select id="s_groupe"><option value="">—</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option><option>Inconnu</option></select>
+          </div>
+          <div class="field"><label>Couverture maladie</label>
+            <div class="check-group">
+              <label class="check-label"><input type="checkbox"> RAMU</label>
+              <label class="check-label"><input type="checkbox"> Assurance privée</label>
+              <label class="check-label"><input type="checkbox"> Mutuelle</label>
+              <label class="check-label"><input type="checkbox"> Aucune</label>
+            </div>
+          </div>
+          <div class="field span2"><label>Antécédents médicaux</label><textarea id="s_antecedents" placeholder="Maladies chroniques, allergies..."></textarea></div>
+          <div class="field span2"><label>Traitement en cours</label><textarea id="s_traitement" placeholder="Médicaments actuels, posologie..."></textarea></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OBJECTIF EXTRA -->
+    <div class="card" id="obj_extra">
+      <div class="card-header">
+        <div class="card-icon" id="obj_extra_icon" style="background:#F1F5F9">🎯</div>
+        <div><div class="card-title" id="obj_extra_title">Données complémentaires</div><div class="card-sub">Champs liés à l'objectif sélectionné</div></div>
+      </div>
+      <div id="obj_extra_content"></div>
+    </div>
+
+    <div class="nav-bar">
+      <button class="btn btn-outline" onclick="goStep(2)">← Retour</button>
+      <button class="btn btn-primary" onclick="goStep(4)">Voir le récapitulatif →</button>
+    </div>
+  </div>
+
+  <!-- PAGE 4 -->
+  <div class="form-page" id="page4">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#F0FFF4">✅</div>
+        <div><div class="card-title">Récapitulatif de la fiche</div><div class="card-sub">Vérifiez avant d'enregistrer</div></div>
+      </div>
+      <table class="summary-table" id="summaryTable"></table>
+    </div>
+    <div class="nav-bar">
+      <button class="btn btn-outline" onclick="goStep(3)">← Modifier</button>
+      <button class="btn btn-success" onclick="saveRecord()">✅ Enregistrer la fiche</button>
+    </div>
+  </div>
+
+  <!-- PAGE 5 -->
+  <div class="form-page" id="page5">
+    <div class="stats-row" id="statsRow"></div>
+    <div class="card">
+      <div class="card-header">
+        <div class="card-icon" style="background:#EFF6FF">📊</div>
+        <div><div class="card-title">Registre des fiches</div><div class="card-sub" id="recordCount">0 fiche(s)</div></div>
+      </div>
+      <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="🔍 Rechercher nom, tél, ville..." oninput="filterRecords()">
+        <select id="filterCat" onchange="filterRecords()">
+          <option value="">Toutes catégories</option>
+          <option value="eglise">⛪ Église</option><option value="ong">🤝 ONG</option>
+          <option value="commerce">🏪 Commerce</option><option value="ecole">🎓 École</option>
+          <option value="evenement">🎉 Événement</option><option value="sante">🏥 Santé</option>
+        </select>
+        <select id="filterObj" onchange="filterRecords()">
+          <option value="">Tous objectifs</option>
+          <option value="membre">Membres</option><option value="enquete">Enquête</option>
+          <option value="inscription">Inscription</option><option value="suivi">Suivi</option>
+        </select>
+        <button class="btn btn-outline" onclick="exportCSV()" style="padding:8px 14px;font-size:12px">⬇ CSV</button>
+        <button class="btn btn-outline" onclick="clearAll()" style="padding:8px 14px;font-size:12px;color:#EF4444;border-color:#FCA5A5">🗑 Vider</button>
+      </div>
+      <div class="records-wrap">
+        <table class="records-table">
+          <thead><tr><th>#</th><th>Catégorie</th><th>Objectif</th><th>Nom complet</th><th>Téléphone</th><th>Organisme</th><th>Ville</th><th>Enregistré le</th><th>Del</th></tr></thead>
+          <tbody id="recordsBody"></tbody>
+        </table>
+      </div>
+      <div class="empty-state" id="emptyState"><div class="ei">📭</div>Aucune fiche enregistrée.<br>Remplissez le formulaire pour commencer.</div>
+    </div>
+    <div class="nav-bar">
+      <button class="btn btn-primary" onclick="newRecord()">+ Nouvelle fiche</button>
+      <button class="btn btn-outline" onclick="window.print()">🖨 Imprimer</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-screen" id="successScreen">
+    <div class="card" style="max-width:460px;margin:0 auto">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Fiche enregistrée !</div>
+      <div class="success-sub">La fiche a été ajoutée au registre avec succès.</div>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="newRecord()">+ Nouvelle fiche</button>
+        <button class="btn btn-outline" onclick="goStep(5)">📊 Voir le registre</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const CAT_CONFIG = {
+  eglise:    { label:'⛪ Église / Religion', color:'#7C3AED', bg:'#EDE9FE' },
+  ong:       { label:'🤝 ONG / Association', color:'#059669', bg:'#D1FAE5' },
+  commerce:  { label:'🏪 Commerce / Entreprise', color:'#D97706', bg:'#FEF3C7' },
+  ecole:     { label:'🎓 École / Formation', color:'#2563EB', bg:'#DBEAFE' },
+  evenement: { label:'🎉 Événement / Fête', color:'#DB2777', bg:'#FCE7F3' },
+  sante:     { label:'🏥 Santé / Clinique', color:'#0891B2', bg:'#CFFAFE' },
+};
+const OBJ_LABEL = { membre:'👤 Membres', enquete:'📊 Enquête', inscription:'✍️ Inscription', suivi:'📈 Suivi' };
+const CAT_ICON  = { eglise:'⛪', ong:'🤝', commerce:'🏪', ecole:'🎓', evenement:'🎉', sante:'🏥' };
+
+let state = { cat:'eglise', obj:'membre' };
+let records = JSON.parse(localStorage.getItem('collecte_v2') || '[]');
+
+/* ── NAVIGATION ── */
+function goStep(n){
+  if(n===4) buildSummary();
+  if(n===5) buildRegistry();
+  document.querySelectorAll('.form-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.step').forEach((s,i)=>{
+    s.classList.remove('active','done');
+    if(i+1<n) s.classList.add('done');
+    if(i+1===n) s.classList.add('active');
+  });
+  document.getElementById('successScreen').classList.remove('active');
+  const pg=document.getElementById('page'+n);
+  if(pg) pg.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── CAT / OBJ ── */
+function selectCat(el){
+  document.querySelectorAll('.cat-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.cat=el.dataset.cat;
+  const cfg=CAT_CONFIG[state.cat];
+  document.documentElement.style.setProperty('--active',cfg.color);
+  document.getElementById('genIcon').style.background=cfg.bg;
+  document.getElementById('genIcon').textContent=CAT_ICON[state.cat];
+  document.getElementById('genTitle').textContent='Informations générales — '+cfg.label;
+}
+
+function selectObj(el){
+  document.querySelectorAll('.obj-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  state.obj=el.dataset.obj;
+  renderObjExtra();
+}
+
+function showSpecPanel(){
+  document.querySelectorAll('.spec-panel').forEach(p=>p.style.display='none');
+  const p=document.getElementById('spec_'+state.cat);
+  if(p) p.style.display='block';
+}
+
+function renderObjExtra(){
+  const icons={membre:'👤',enquete:'📊',inscription:'✍️',suivi:'📈'};
+  const titles={membre:'Données d\'adhésion / Membre',enquete:'Données d\'enquête',inscription:'Données d\'inscription',suivi:'Données de suivi'};
+  document.getElementById('obj_extra_icon').textContent=icons[state.obj]||'🎯';
+  document.getElementById('obj_extra_title').textContent=titles[state.obj]||'Données complémentaires';
+
+  const tpls={
+    membre:`<div class="form-grid">
+      <div class="field"><label>N° de membre</label><input type="text" id="obj_num" placeholder="Attribué ou saisi"></div>
+      <div class="field"><label>Type de membre</label>
+        <select id="obj_type_mb"><option value="">—</option><option>Fondateur</option><option>Actif</option><option>Associé</option><option>Honoraire</option><option>Sympathisant</option></select>
+      </div>
+      <div class="field"><label>Niveau d'engagement</label>
+        <div class="radio-group">
+          <label class="radio-label"><input type="radio" name="eng" value="Faible"> Faible</label>
+          <label class="radio-label"><input type="radio" name="eng" value="Moyen"> Moyen</label>
+          <label class="radio-label"><input type="radio" name="eng" value="Fort"> Fort</label>
+        </div>
+      </div>
+      <div class="field"><label>Contact d'urgence</label><input type="text" id="obj_urgence" placeholder="Nom + téléphone"></div>
+    </div>`,
+    enquete:`<div class="form-grid">
+      <div class="field"><label>N° de questionnaire</label><input type="text" id="obj_enq_num" placeholder="ENQ-2025-001"></div>
+      <div class="field"><label>Nom de l'enquêteur</label><input type="text" id="obj_enq_agent" placeholder="Nom de l'agent"></div>
+      <div class="field span2"><label>Source d'information</label>
+        <div class="check-group">
+          <label class="check-label"><input type="checkbox"> Radio/TV</label>
+          <label class="check-label"><input type="checkbox"> Réseaux sociaux</label>
+          <label class="check-label"><input type="checkbox"> Bouche à oreille</label>
+          <label class="check-label"><input type="checkbox"> Affiche</label>
+        </div>
+      </div>
+      <div class="field"><label>Satisfaction (1-5 ⭐)</label>
+        <div class="radio-group">
+          <label class="radio-label"><input type="radio" name="satis" value="1"> 1⭐</label>
+          <label class="radio-label"><input type="radio" name="satis" value="2"> 2⭐</label>
+          <label class="radio-label"><input type="radio" name="satis" value="3"> 3⭐</label>
+          <label class="radio-label"><input type="radio" name="satis" value="4"> 4⭐</label>
+          <label class="radio-label"><input type="radio" name="satis" value="5"> 5⭐</label>
+        </div>
+      </div>
+      <div class="field"><label>Suggestions / Remarques</label><textarea id="obj_enq_rem" placeholder="Commentaires de l'enquêté..."></textarea></div>
+    </div>`,
+    inscription:`<div class="form-grid">
+      <div class="field"><label>N° d'inscription</label><input type="text" id="obj_ins_num" placeholder="INS-2025-001"></div>
+      <div class="field"><label>Canal d'inscription</label>
+        <select id="obj_ins_canal"><option value="">—</option><option>En personne</option><option>Téléphone</option><option>WhatsApp</option><option>Email</option><option>Site web</option></select>
+      </div>
+      <div class="field"><label>Montant payé (FCFA)</label><input type="number" id="obj_ins_montant" placeholder="0"></div>
+      <div class="field"><label>Confirmation reçue</label>
+        <div class="radio-group">
+          <label class="radio-label"><input type="radio" name="confirm" value="Oui"> Oui</label>
+          <label class="radio-label"><input type="radio" name="confirm" value="Non"> Non</label>
+        </div>
+      </div>
+      <div class="field span2"><label>Attentes vis-à-vis de l'événement</label>
+        <textarea id="obj_ins_att" placeholder="Ce que la personne attend..."></textarea>
+      </div>
+    </div>`,
+    suivi:`<div class="form-grid">
+      <div class="field"><label>Indicateur principal</label><input type="text" id="obj_suivi_ind" placeholder="Ex : Présence, Production..."></div>
+      <div class="field"><label>Période de suivi</label>
+        <select id="obj_suivi_per"><option value="">—</option><option>Hebdomadaire</option><option>Mensuel</option><option>Trimestriel</option><option>Semestriel</option><option>Annuel</option></select>
+      </div>
+      <div class="field"><label>Valeur actuelle</label><input type="text" id="obj_suivi_val" placeholder="Quantité, nombre, montant..."></div>
+      <div class="field"><label>Objectif fixé</label><input type="text" id="obj_suivi_obj" placeholder="Valeur cible..."></div>
+      <div class="field"><label>Statut du suivi</label>
+        <div class="radio-group">
+          <label class="radio-label"><input type="radio" name="st_suivi" value="En cours"> En cours</label>
+          <label class="radio-label"><input type="radio" name="st_suivi" value="Atteint"> Atteint ✅</label>
+          <label class="radio-label"><input type="radio" name="st_suivi" value="En retard"> En retard ⚠️</label>
+        </div>
+      </div>
+      <div class="field"><label>Commentaire responsable</label><textarea id="obj_suivi_com" placeholder="Actions, difficultés, recommandations..."></textarea></div>
+    </div>`
+  };
+  document.getElementById('obj_extra_content').innerHTML = tpls[state.obj]||'';
+}
+
+/* ── HELPERS ── */
+const gv = id => { const e=document.getElementById(id); return e?e.value.trim():''; };
+const gr = name => { const e=document.querySelector(`input[name="${name}"]:checked`); return e?e.value:''; };
+
+/* ── SUMMARY ── */
+function buildSummary(){
+  showSpecPanel();
+  const cfg=CAT_CONFIG[state.cat];
+  const rows=[
+    ['Catégorie', `<span class="badge" style="background:${cfg.bg};color:${cfg.color}">${cfg.label}</span>`],
+    ['Objectif', OBJ_LABEL[state.obj]||state.obj],
+    ['── IDENTITÉ ──',''],
+    ['Nom & Prénom', [gv('f_nom'),gv('f_prenom')].filter(Boolean).join(' ')],
+    ['Sexe', gr('sexe')],
+    ['Date de naissance', gv('f_ddn')],
+    ['Téléphone', gv('f_tel')],
+    ['Email', gv('f_email')],
+    ['Adresse', gv('f_adresse')],
+    ['Profession', gv('f_profession')],
+    ['Situation matrimoniale', gv('f_sit_mat')],
+    ['── ORGANISME ──',''],
+    ['Organisme', gv('f_org_nom')],
+    ['Département', gv('f_dept')],
+    ['Ville', gv('f_ville')],
+    ['Date enregistrement', gv('f_date_enreg')],
+    ['Observations', gv('f_obs')],
+  ];
+  const tbl=document.getElementById('summaryTable');
+  tbl.innerHTML=`<thead><tr><th colspan="2" style="background:${cfg.color};color:white;padding:11px">Récapitulatif — ${cfg.label}</th></tr></thead>
+  <tbody>${rows.map(([k,v])=>{
+    if(k.startsWith('──')) return `<tr><td colspan="2" style="background:#F8FAFF;font-size:10px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:.5px;padding:6px 12px">${k}</td></tr>`;
+    return v?`<tr><td>${k}</td><td>${v}</td></tr>`:'';
+  }).join('')}</tbody>`;
+}
+
+/* ── SAVE ── */
+function saveRecord(){
+  const nom=gv('f_nom'), tel=gv('f_tel');
+  if(!nom||!tel){ alert('⚠️  Nom et Téléphone sont obligatoires.'); goStep(2); return; }
+  const r={
+    id:Date.now(), cat:state.cat, obj:state.obj,
+    nom, prenom:gv('f_prenom'), sexe:gr('sexe'), tel,
+    email:gv('f_email'), adresse:gv('f_adresse'),
+    profession:gv('f_profession'), organisme:gv('f_org_nom'),
+    ville:gv('f_ville'), dept:gv('f_dept'),
+    date_enreg:gv('f_date_enreg'), obs:gv('f_obs'),
+    savedAt:new Date().toLocaleDateString('fr-FR'),
+  };
+  records.push(r);
+  localStorage.setItem('collecte_v2', JSON.stringify(records));
+  document.querySelectorAll('.form-page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active','done'));
+  document.getElementById('successScreen').classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ── REGISTRY ── */
+function buildRegistry(){ renderStats(); renderTable(records); }
+
+function renderStats(){
+  const row=document.getElementById('statsRow');
+  const bycat={}; Object.keys(CAT_CONFIG).forEach(k=>bycat[k]=0);
+  records.forEach(r=>{ if(bycat[r.cat]!==undefined) bycat[r.cat]++; });
+  let html=`<div class="stat-card"><div class="stat-val" style="color:var(--dark)">${records.length}</div><div class="stat-label">Total fiches</div></div>`;
+  Object.entries(bycat).forEach(([k,v])=>{
+    if(v>0){const c=CAT_CONFIG[k]; html+=`<div class="stat-card"><div class="stat-val" style="color:${c.color}">${v}</div><div class="stat-label">${c.label}</div></div>`;}
+  });
+  row.innerHTML=html;
+}
+
+function renderTable(data){
+  const tbody=document.getElementById('recordsBody');
+  const empty=document.getElementById('emptyState');
+  document.getElementById('recordCount').textContent=`${records.length} fiche(s) enregistrée(s)`;
+  if(!data.length){ tbody.innerHTML=''; empty.style.display='block'; return; }
+  empty.style.display='none';
+  const objL={membre:'Membres',enquete:'Enquête',inscription:'Inscription',suivi:'Suivi'};
+  tbody.innerHTML=data.map((r,i)=>{
+    const cfg=CAT_CONFIG[r.cat]||{label:r.cat,color:'#666',bg:'#eee'};
+    return `<tr>
+      <td style="color:var(--light);font-weight:700">${i+1}</td>
+      <td><span class="badge" style="background:${cfg.bg};color:${cfg.color}">${cfg.label}</span></td>
+      <td><span style="font-size:11px;font-weight:600;color:var(--mid)">${objL[r.obj]||r.obj}</span></td>
+      <td><strong>${r.nom} ${r.prenom||''}</strong></td>
+      <td>${r.tel}</td>
+      <td>${r.organisme||'—'}</td>
+      <td>${r.ville||'—'}</td>
+      <td>${r.savedAt}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteRecord(${r.id})">🗑</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterRecords(){
+  const q=document.getElementById('searchInput').value.toLowerCase();
+  const cat=document.getElementById('filterCat').value;
+  const obj=document.getElementById('filterObj').value;
+  renderTable(records.filter(r=>{
+    const txt=`${r.nom} ${r.prenom} ${r.tel} ${r.ville} ${r.organisme}`.toLowerCase();
+    return(!q||txt.includes(q))&&(!cat||r.cat===cat)&&(!obj||r.obj===obj);
+  }));
+}
+
+function deleteRecord(id){
+  if(!confirm('Supprimer cette fiche ?')) return;
+  records=records.filter(r=>r.id!==id);
+  localStorage.setItem('collecte_v2',JSON.stringify(records));
+  buildRegistry();
+}
+
+function clearAll(){
+  if(!confirm('⚠️ Vider tout le registre ? Cette action est irréversible.')) return;
+  records=[]; localStorage.setItem('collecte_v2',JSON.stringify(records)); buildRegistry();
+}
+
+function newRecord(){
+  document.querySelectorAll('input[type=text],input[type=email],input[type=tel],input[type=number],input[type=date],textarea,select').forEach(el=>{
+    if(el.type==='checkbox'||el.type==='radio') el.checked=false; else el.value='';
+  });
+  document.getElementById('successScreen').classList.remove('active');
+  goStep(1);
+}
+
+function exportCSV(){
+  if(!records.length){ alert('Aucune fiche à exporter.'); return; }
+  const headers=['ID','Catégorie','Objectif','Nom','Prénom','Sexe','Téléphone','Email','Adresse','Profession','Organisme','Ville','Département','Date enreg.','Observations'];
+  const rows=records.map(r=>[r.id,CAT_CONFIG[r.cat]?.label||r.cat,r.obj,r.nom,r.prenom,r.sexe,r.tel,r.email,r.adresse,r.profession,r.organisme,r.ville,r.dept,r.savedAt,r.obs].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`).join(','));
+  const csv='\uFEFF'+[headers.join(','),...rows].join('\n');
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));
+  a.download=`collecte_${new Date().toLocaleDateString('fr-FR').replace(/\//g,'-')}.csv`;
+  a.click();
+}
+
+/* ── INIT ── */
+(function(){
+  document.querySelector('.cat-card[data-cat="eglise"]').classList.add('selected');
+  document.querySelector('.obj-tab[data-obj="membre"]').classList.add('active');
+  renderObjExtra();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>FormaTech Pro — Académie Informatique</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06090f;--surface:#0d1117;--surface2:#161b22;--surface3:#21262d;
+  --border:rgba(88,166,255,.08);--border2:rgba(88,166,255,.18);
+  --text:#e6edf3;--text2:#8b949e;--text3:#3d444d;
+  --blue:#58a6ff;--purple:#bc8cff;--green:#3fb950;--gold:#e3b341;
+  --cyan:#39d0d8;--rose:#f85149;
+  --radius:12px;--shadow:0 8px 32px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+button{cursor:pointer;font-family:inherit}
+input,select,textarea{font-family:inherit}
+
+/* VIEWS */
+.view{display:none;min-height:100vh;padding-bottom:80px}
+.view.active{display:block}
+
+/* NAVBAR */
+.navbar{position:fixed;top:0;left:0;right:0;z-index:900;height:60px;background:rgba(6,9,15,.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--border2);display:flex;align-items:center;padding:0 20px;gap:12px}
+.nav-logo{font-family:'Orbitron',monospace;font-size:15px;font-weight:900;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:2px;margin-left:auto}
+.nav-link{padding:6px 12px;border-radius:7px;font-size:12px;font-weight:600;color:var(--text2);border:none;background:transparent;transition:all .2s;cursor:pointer}
+.nav-link:hover,.nav-link.active{background:rgba(88,166,255,.1);color:var(--blue)}
+.nav-right{display:flex;gap:8px;margin-left:16px}
+.btn-nav{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;transition:all .2s}
+
+/* BUTTONS */
+.btn{padding:10px 20px;border-radius:var(--radius);font-size:13px;font-weight:700;border:none;transition:all .2s;cursor:pointer;font-family:'Exo 2',sans-serif}
+.btn-blue{background:var(--blue);color:#06090f}.btn-blue:hover{opacity:.9}
+.btn-purple{background:var(--purple);color:#06090f}.btn-purple:hover{opacity:.9}
+.btn-green{background:var(--green);color:#06090f}.btn-green:hover{opacity:.9}
+.btn-gold{background:var(--gold);color:#06090f}.btn-gold:hover{opacity:.9}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text2)}.btn-outline:hover{border-color:var(--blue);color:var(--blue)}
+.btn-red{background:rgba(248,81,73,.12);border:1px solid rgba(248,81,73,.3);color:var(--rose)}
+.btn-sm{padding:6px 13px;font-size:11px;border-radius:8px}
+.btn-full{width:100%}
+
+/* FORMS */
+.form-group{margin-bottom:14px}
+.form-label{font-size:10px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px;display:block}
+.form-input{width:100%;padding:10px 13px;background:var(--surface2);border:1px solid var(--border2);border-radius:9px;color:var(--text);font-size:13px;outline:none;transition:border .15s}
+.form-input:focus{border-color:var(--blue)}
+select.form-input option{background:var(--surface2)}
+textarea.form-input{resize:vertical;min-height:80px}
+
+/* SECTION */
+.section{max-width:1060px;margin:0 auto;padding:80px 20px 40px}
+.section-badge{display:inline-block;padding:4px 12px;background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.2);border-radius:20px;font-size:10px;font-weight:700;color:var(--blue);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px}
+.section-title{font-family:'Orbitron',monospace;font-size:clamp(22px,4vw,36px);font-weight:900;line-height:1.2;margin-bottom:10px}
+.section-sub{font-size:14px;color:var(--text2);line-height:1.7;max-width:600px;margin-bottom:28px}
+.highlight{background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.divider{width:50px;height:3px;background:linear-gradient(90deg,var(--blue),transparent);border-radius:2px;margin:12px 0 20px}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s}
+.card:hover{transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.5);border-color:var(--border2)}
+
+/* GRIDS */
+.grid-2{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+
+/* HERO */
+.hero{min-height:100vh;display:flex;align-items:center;background:radial-gradient(ellipse at 10% 50%,rgba(88,166,255,.07) 0%,transparent 55%),radial-gradient(ellipse at 90% 20%,rgba(188,140,255,.05) 0%,transparent 50%);padding:80px 20px 40px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 60px,rgba(88,166,255,.02) 60px,rgba(88,166,255,.02) 61px),repeating-linear-gradient(90deg,transparent,transparent 60px,rgba(88,166,255,.02) 60px,rgba(88,166,255,.02) 61px)}
+.hero-inner{max-width:1060px;margin:0 auto;display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:center;position:relative}
+@media(max-width:768px){.hero-inner,.hero-grid{grid-template-columns:1fr!important}}
+.hero-title{font-family:'Orbitron',monospace;font-size:clamp(28px,6vw,54px);font-weight:900;line-height:1.1;margin-bottom:18px}
+.hero-sub{font-size:15px;color:var(--text2);line-height:1.75;margin-bottom:28px}
+.hero-btns{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:32px}
+.hero-stats{display:flex;gap:24px;flex-wrap:wrap}
+.stat-item{text-align:center}
+.stat-val{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.stat-lbl{font-size:10px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+.hero-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hero-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;transition:border-color .2s}
+.hero-card:hover{border-color:var(--blue)}
+.hero-card-icon{font-size:28px;margin-bottom:8px}
+.hero-card-val{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-card-lbl{font-size:10px;color:var(--text3);margin-top:3px}
+
+/* CATALOGUE COURS */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.filter-btn{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;background:var(--surface2);border:1px solid var(--border);color:var(--text2);cursor:pointer;transition:all .2s}
+.filter-btn.active,.filter-btn:hover{background:rgba(88,166,255,.12);border-color:rgba(88,166,255,.4);color:var(--blue)}
+.cours-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all .2s;position:relative}
+.cours-card:hover{border-color:var(--blue);transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.cours-emoji{font-size:32px;margin-bottom:10px}
+.cours-titre{font-size:14px;font-weight:700;margin-bottom:6px;line-height:1.3}
+.cours-meta{display:flex;gap:10px;font-size:11px;color:var(--text3);margin-bottom:10px;flex-wrap:wrap}
+.cours-price{font-family:'Orbitron',monospace;font-size:15px;font-weight:700;color:var(--gold)}
+.niveau-tag{padding:2px 8px;border-radius:4px;font-size:9px;font-weight:700;display:inline-flex;align-items:center;gap:3px}
+.cat-tag{padding:2px 8px;border-radius:4px;background:rgba(88,166,255,.1);color:var(--blue);font-size:9px;font-weight:700}
+
+/* PACKS */
+.pack-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;transition:all .2s;position:relative;overflow:hidden}
+.pack-card:hover{border-color:var(--purple);transform:translateY(-2px)}
+.pack-card.featured{border-color:rgba(227,179,65,.4);background:linear-gradient(135deg,rgba(227,179,65,.04),var(--surface))}
+.pack-featured-badge{position:absolute;top:0;right:0;background:var(--gold);color:#06090f;font-size:10px;font-weight:700;padding:4px 12px;border-radius:0 16px 0 12px}
+.pack-emoji{font-size:36px;margin-bottom:12px}
+.pack-titre{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;margin-bottom:6px}
+.pack-desc{font-size:12px;color:var(--text2);margin-bottom:14px;line-height:1.5}
+.pack-prices{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.pack-old-price{font-size:12px;color:var(--text3);text-decoration:line-through}
+.pack-new-price{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;color:var(--gold)}
+.pack-economy{padding:2px 8px;background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.2);border-radius:4px;font-size:10px;font-weight:700;color:var(--green)}
+
+/* QUIZ */
+.quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px;cursor:pointer;transition:all .2s}
+.quiz-card:hover{border-color:var(--cyan);transform:translateY(-2px)}
+.quiz-icon{font-size:36px;margin-bottom:10px}
+.quiz-titre{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;margin-bottom:6px}
+.quiz-meta{font-size:12px;color:var(--text2)}
+.q-option{padding:12px 16px;border:1px solid var(--border2);border-radius:9px;cursor:pointer;transition:all .2s;margin-bottom:8px;font-size:13px}
+.q-option:hover{border-color:var(--blue);background:rgba(88,166,255,.06)}
+.q-option.correct{background:rgba(63,185,80,.12);border-color:var(--green);color:var(--green)}
+.q-option.wrong{background:rgba(248,81,73,.08);border-color:var(--rose);color:var(--rose)}
+
+/* TOAST */
+#toast{position:fixed;bottom:22px;right:20px;z-index:9999;padding:11px 18px;background:var(--surface2);border:1px solid var(--border2);border-radius:11px;font-size:13px;color:var(--text);box-shadow:var(--shadow);display:none;animation:fadeup .3s ease;max-width:300px}
+#toast.ok{border-color:rgba(63,185,80,.5)}
+#toast.err{border-color:rgba(248,81,73,.5)}
+#toast.warn{border-color:rgba(227,179,65,.5)}
+@keyframes fadeup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* MODALS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:9000;display:none;align-items:center;justify-content:center;padding:16px}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto}
+.modal-hdr{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-hdr-title{font-family:'Orbitron',monospace;font-size:14px;font-weight:700;color:var(--blue)}
+.modal-close{background:none;border:none;color:var(--text2);font-size:22px;line-height:1;cursor:pointer}
+.modal-body{padding:22px}
+
+/* ADMIN */
+.screen-admin{display:none;height:100vh;flex-direction:column;background:var(--bg)}
+.screen-admin.active{display:flex}
+.admin-topbar{height:54px;background:var(--surface);border-bottom:1px solid var(--border2);display:flex;align-items:center;padding:0 18px;gap:12px;flex-shrink:0}
+.admin-logo{font-family:'Orbitron',monospace;font-size:13px;font-weight:900;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.admin-layout{display:flex;flex:1;overflow:hidden}
+.admin-sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;flex-shrink:0;padding:10px 0}
+.adm-ns{font-size:9px;font-weight:700;color:var(--text3);letter-spacing:2px;text-transform:uppercase;padding:12px 16px 5px}
+.adm-ni{display:flex;align-items:center;gap:9px;padding:8px 16px;cursor:pointer;font-size:13px;color:var(--text2);border-left:2px solid transparent;transition:all .15s}
+.adm-ni:hover{background:rgba(88,166,255,.05);color:var(--text)}
+.adm-ni.active{background:rgba(88,166,255,.08);color:var(--blue);border-left-color:var(--blue)}
+.adm-ni .ic{width:18px;text-align:center;font-size:14px}
+.admin-content{flex:1;overflow-y:auto;padding:24px}
+.adm-page{display:none}
+.adm-page.active{display:block}
+.adm-ph{margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.adm-pt{font-family:'Orbitron',monospace;font-size:18px;font-weight:900;color:var(--blue)}
+.adm-ps{font-size:12px;color:var(--text2);margin-top:3px}
+
+/* KPI */
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:15px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;inset:0;background:var(--c,var(--blue));opacity:.04}
+.kpi-v{font-family:'Orbitron',monospace;font-size:22px;font-weight:900;margin-bottom:3px}
+.kpi-l{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
+.kpi-i{position:absolute;right:12px;top:12px;font-size:22px;opacity:.2}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{padding:9px 13px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);text-align:left;border-bottom:1px solid var(--border)}
+.tbl td{padding:10px 13px;border-bottom:1px solid var(--border);color:var(--text2)}
+.tbl tr:hover td{background:rgba(88,166,255,.02);color:var(--text)}
+.tbl-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+
+/* TAGS */
+.tag{padding:3px 8px;border-radius:6px;font-size:9px;font-weight:700}
+.tag-green{background:rgba(63,185,80,.12);color:var(--green);border:1px solid rgba(63,185,80,.2)}
+.tag-blue{background:rgba(88,166,255,.12);color:var(--blue);border:1px solid rgba(88,166,255,.2)}
+.tag-gold{background:rgba(227,179,65,.12);color:var(--gold);border:1px solid rgba(227,179,65,.2)}
+.tag-red{background:rgba(248,81,73,.1);color:var(--rose);border:1px solid rgba(248,81,73,.2)}
+
+/* ESPACE APPRENANT */
+.lecon-item{padding:11px 16px;border:1px solid var(--border);border-radius:9px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:all .2s;margin-bottom:8px}
+.lecon-item:hover{border-color:var(--blue);background:rgba(88,166,255,.04)}
+.lecon-item.done{background:rgba(63,185,80,.06);border-color:rgba(63,185,80,.25)}
+.lecon-check{width:20px;height:20px;border-radius:50%;background:var(--surface3);border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.lecon-item.done .lecon-check{background:var(--green);border-color:var(--green);color:#000}
+.prog-bar{background:var(--surface3);border-radius:10px;height:8px;overflow:hidden;margin:8px 0}
+.prog-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--blue),var(--purple));transition:width 1s ease}
+
+/* CERTIFICAT */
+.cert-box{background:linear-gradient(135deg,rgba(88,166,255,.06),rgba(188,140,255,.04));border:2px solid rgba(88,166,255,.2);border-radius:16px;padding:30px;text-align:center}
+.cert-title{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+
+/* MEDIA UPLOAD */
+.upload-tabs{display:flex;border:1px solid var(--border2);border-radius:10px;overflow:hidden;margin-bottom:14px}
+.upload-tab{flex:1;padding:9px;text-align:center;font-size:12px;font-weight:700;cursor:pointer;background:var(--surface2);color:var(--text2);border:none;transition:all .2s}
+.upload-tab.active{background:var(--blue);color:#06090f}
+.dropzone{border:2px dashed var(--border2);border-radius:11px;padding:28px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:12px}
+.dropzone:hover,.dropzone.drag{border-color:var(--blue);background:rgba(88,166,255,.04)}
+.dropzone input{display:none}
+.prog-up{background:var(--surface3);border-radius:20px;height:7px;overflow:hidden;margin:8px 0;display:none}
+.prog-up-fill{height:100%;background:var(--blue);border-radius:20px;width:0%;transition:width .3s}
+
+/* MEDIA CARDS */
+.media-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.media-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all .2s}
+.media-card:hover{border-color:var(--blue);transform:translateY(-2px)}
+.media-thumb{height:150px;background:var(--surface2);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.media-thumb img{width:100%;height:100%;object-fit:cover}
+.play-btn{position:absolute;width:50px;height:50px;border-radius:50%;background:rgba(88,166,255,.8);display:flex;align-items:center;justify-content:center;font-size:20px;transition:transform .2s}
+.media-card:hover .play-btn{transform:scale(1.1)}
+.media-badge{position:absolute;top:8px;right:8px;padding:3px 7px;border-radius:5px;font-size:9px;font-weight:700}
+.mb-green{background:var(--green);color:#000}
+.mb-blue{background:var(--blue);color:#000}
+.mb-gold{background:var(--gold);color:#000}
+.media-info{padding:11px}
+.media-title{font-size:12px;font-weight:700;margin-bottom:4px}
+.media-meta{font-size:10px;color:var(--text3);display:flex;justify-content:space-between}
+
+@media(max-width:600px){
+  .nav-links{display:none}
+  .admin-sidebar{display:none}
+  .kpi-row{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo">⚡ FormaTech Pro</div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showView('home',this)">Accueil</button>
+    <button class="nav-link" onclick="showView('catalogue',this)">Catalogue</button>
+    <button class="nav-link" onclick="showView('packs',this)">Packs</button>
+    <button class="nav-link" onclick="showView('medias',this)">Médiathèque</button>
+    <button class="nav-link" onclick="showView('quiz',this)">Quiz</button>
+  </div>
+  <div class="nav-right">
+    <button class="btn-nav" style="background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.2);color:var(--blue)" onclick="openModal('m-eleve-login')">Mon espace</button>
+    <button class="btn-nav btn-blue" onclick="openModal('m-inscription')">S'inscrire</button>
+    <button class="btn-nav" style="background:var(--surface2);border:1px solid var(--border);color:var(--text2)" onclick="openAdminLogin()">⚙️</button>
+  </div>
+</nav>
+
+<!-- VUE HOME -->
+<div class="view active" id="view-home">
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="section-badge">🎓 Académie Informatique — Bénin</div>
+        <h1 class="hero-title">Maîtrisez l'<span class="highlight">informatique</span> professionnelle</h1>
+        <p class="hero-sub">25 formations certifiantes, quiz interactifs, médiathèque vidéo. Apprenez à votre rythme depuis chez vous.</p>
+        <div class="hero-btns">
+          <button class="btn btn-blue" onclick="showView('catalogue',null)">📚 Voir les 25 cours</button>
+          <button class="btn btn-outline" onclick="showView('packs',null)">📦 Voir les packs</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item"><div class="stat-val" id="hs-ins">—</div><div class="stat-lbl">Apprenants</div></div>
+          <div class="stat-item"><div class="stat-val">25</div><div class="stat-lbl">Formations</div></div>
+          <div class="stat-item"><div class="stat-val" id="hs-cert">—</div><div class="stat-lbl">Certificats</div></div>
+          <div class="stat-item"><div class="stat-val">100%</div><div class="stat-lbl">En ligne</div></div>
+        </div>
+      </div>
+      <div class="hero-grid">
+        <div class="hero-card"><div class="hero-card-icon">💻</div><div class="hero-card-val">Windows</div><div class="hero-card-lbl">5 formations</div></div>
+        <div class="hero-card"><div class="hero-card-icon">📊</div><div class="hero-card-val">Office</div><div class="hero-card-lbl">6 formations</div></div>
+        <div class="hero-card"><div class="hero-card-icon">🌐</div><div class="hero-card-val">Réseaux</div><div class="hero-card-lbl">4 formations</div></div>
+        <div class="hero-card"><div class="hero-card-icon">⚡</div><div class="hero-card-val">Code</div><div class="hero-card-lbl">6 formations</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VUE CATALOGUE -->
+<div class="view" id="view-catalogue">
+  <div class="section">
+    <div class="section-badge">📚 25 formations</div>
+    <h2 class="section-title"><span class="highlight">Catalogue</span> complet</h2>
+    <div class="divider"></div>
+    <div class="filters" id="cat-filters">
+      <button class="filter-btn active" onclick="filterCat('all',this)">Tout</button>
+      <button class="filter-btn" onclick="filterCat('windows',this)">💻 Windows</button>
+      <button class="filter-btn" onclick="filterCat('office',this)">📊 Office</button>
+      <button class="filter-btn" onclick="filterCat('logiciels',this)">🛠 Logiciels</button>
+      <button class="filter-btn" onclick="filterCat('securite',this)">🔒 Sécurité</button>
+      <button class="filter-btn" onclick="filterCat('reseau',this)">🌐 Réseaux</button>
+      <button class="filter-btn" onclick="filterCat('prog',this)">⚡ Code</button>
+    </div>
+    <div class="grid-3" id="catalogue-grid"></div>
+  </div>
+</div>
+
+<!-- VUE PACKS -->
+<div class="view" id="view-packs">
+  <div class="section">
+    <div class="section-badge">📦 Économisez jusqu'à 65%</div>
+    <h2 class="section-title">Nos <span class="highlight">Packs</span></h2>
+    <div class="divider"></div>
+    <p class="section-sub">Regroupez plusieurs formations et économisez. Accès immédiat à tous les contenus du pack.</p>
+    <div class="grid-2" id="packs-grid"></div>
+  </div>
+</div>
+
+<!-- VUE MÉDIATHÈQUE -->
+<div class="view" id="view-medias">
+  <div class="section">
+    <div class="section-badge">🎬 Médiathèque</div>
+    <h2 class="section-title">Vidéos & <span class="highlight">Ressources</span></h2>
+    <div class="divider"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px">
+      <div class="filters" style="margin:0" id="media-filters">
+        <button class="filter-btn active" onclick="filterMedia('all',this)">Tout</button>
+        <button class="filter-btn" onclick="filterMedia('youtube',this)">▶️ YouTube</button>
+        <button class="filter-btn" onclick="filterMedia('video',this)">🎬 Vidéos</button>
+        <button class="filter-btn" onclick="filterMedia('pdf',this)">📄 PDF</button>
+      </div>
+      <button id="btn-upload" class="btn btn-blue btn-sm" style="display:none" onclick="openModal('m-upload')">⬆️ Ajouter</button>
+    </div>
+    <div class="media-grid" id="medias-grid"></div>
+  </div>
+</div>
+
+<!-- VUE QUIZ -->
+<div class="view" id="view-quiz">
+  <div class="section">
+    <div class="section-badge">🧠 Quiz interactifs</div>
+    <h2 class="section-title">Testez vos <span class="highlight">connaissances</span></h2>
+    <div class="divider"></div>
+    <div id="quiz-liste" class="grid-3"></div>
+    <div id="quiz-session" style="display:none"></div>
+  </div>
+</div>
+
+<!-- VUE ESPACE APPRENANT -->
+<div class="view" id="view-espace">
+  <div class="section">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:24px">
+      <div>
+        <div class="section-badge">🎓 Espace Apprenant</div>
+        <h2 class="section-title highlight" id="eleve-titre">Bienvenue</h2>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="logoutEleve()">Déconnexion</button>
+    </div>
+    <div id="espace-content"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="screen-admin" id="screen-admin">
+  <div class="admin-topbar">
+    <div class="admin-logo">⚡ FormaTech Admin</div>
+    <div style="font-size:12px;color:var(--text2)" id="adm-user"></div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn btn-outline btn-sm" onclick="closeAdmin()">🌍 Site public</button>
+      <button class="btn btn-red btn-sm" onclick="logoutAdmin()">Déconnexion</button>
+    </div>
+  </div>
+  <div class="admin-layout">
+    <nav class="admin-sidebar">
+      <div class="adm-ns">Tableau de bord</div>
+      <div class="adm-ni active" onclick="admPage('dashboard',this)"><span class="ic">📊</span>Dashboard</div>
+      <div class="adm-ns">Gestion</div>
+      <div class="adm-ni" onclick="admPage('inscriptions',this)"><span class="ic">📋</span>Inscriptions</div>
+      <div class="adm-ni" onclick="admPage('medias-adm',this)"><span class="ic">🎬</span>Médiathèque</div>
+      <div class="adm-ni" onclick="admPage('certificats',this)"><span class="ic">🏆</span>Certificats</div>
+      <div class="adm-ni" onclick="admPage('catalogue-adm',this)"><span class="ic">📚</span>Catalogue</div>
+      <div class="adm-ns">Paramètres</div>
+      <div class="adm-ni" onclick="admPage('parametres',this)"><span class="ic">⚙️</span>Paramètres</div>
+    </nav>
+    <div class="admin-content">
+
+      <!-- DASHBOARD -->
+      <div class="adm-page active" id="adm-dashboard">
+        <div class="adm-ph"><div><div class="adm-pt">Dashboard</div><div class="adm-ps" id="adm-date"></div></div></div>
+        <div class="kpi-row">
+          <div class="kpi" style="--c:var(--blue)"><div class="kpi-v" id="k-ins">0</div><div class="kpi-l">Inscriptions</div><div class="kpi-i">📋</div></div>
+          <div class="kpi" style="--c:var(--purple)"><div class="kpi-v" id="k-cert">0</div><div class="kpi-l">Certificats</div><div class="kpi-i">🏆</div></div>
+          <div class="kpi" style="--c:var(--gold)"><div class="kpi-v" id="k-ca">0</div><div class="kpi-l">CA (FCFA)</div><div class="kpi-i">💰</div></div>
+          <div class="kpi" style="--c:var(--green)"><div class="kpi-v" id="k-med">0</div><div class="kpi-l">Médias</div><div class="kpi-i">🎬</div></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div class="tbl-wrap" style="padding:16px">
+            <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--blue);margin-bottom:12px">📋 Dernières inscriptions</div>
+            <div id="last-ins" style="font-size:12px;color:var(--text3)">Chargement...</div>
+          </div>
+          <div class="tbl-wrap" style="padding:16px">
+            <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--blue);margin-bottom:12px">🏆 Derniers certificats</div>
+            <div id="last-cert" style="font-size:12px;color:var(--text3)">Chargement...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INSCRIPTIONS -->
+      <div class="adm-page" id="adm-inscriptions">
+        <div class="adm-ph">
+          <div><div class="adm-pt">Inscriptions</div><div class="adm-ps">Apprenants inscrits</div></div>
+          <button class="btn btn-blue btn-sm" onclick="exportCSV()">⬇️ Exporter CSV</button>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl"><thead><tr><th>Nom</th><th>Formation</th><th>Téléphone</th><th>Code</th><th>Montant</th><th>Date</th><th>Statut</th><th>Action</th></tr></thead>
+          <tbody id="ins-body"><tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text3)">Chargement...</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- MÉDIAS ADMIN -->
+      <div class="adm-page" id="adm-medias-adm">
+        <div class="adm-ph">
+          <div><div class="adm-pt">Médiathèque</div><div class="adm-ps">Vidéos, PDF et liens YouTube</div></div>
+          <button class="btn btn-blue btn-sm" onclick="openModal('m-upload')">⬆️ Ajouter un média</button>
+        </div>
+        <div class="media-grid" id="adm-media-grid"></div>
+      </div>
+
+      <!-- CERTIFICATS -->
+      <div class="adm-page" id="adm-certificats">
+        <div class="adm-ph"><div><div class="adm-pt">Certificats délivrés</div></div></div>
+        <div class="tbl-wrap">
+          <table class="tbl"><thead><tr><th>Numéro</th><th>Apprenant</th><th>Formation</th><th>Score</th><th>Date</th></tr></thead>
+          <tbody id="cert-body"><tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3)">Aucun certificat</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- CATALOGUE ADMIN -->
+      <div class="adm-page" id="adm-catalogue-adm">
+        <div class="adm-ph"><div><div class="adm-pt">Catalogue (25 cours)</div></div></div>
+        <div class="grid-3" id="adm-cat-grid"></div>
+      </div>
+
+      <!-- PARAMÈTRES -->
+      <div class="adm-page" id="adm-parametres">
+        <div class="adm-ph"><div><div class="adm-pt">Paramètres</div></div></div>
+        <div class="tbl-wrap" style="padding:20px;max-width:460px">
+          <div style="font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--blue);margin-bottom:14px">Jean Paul BOGNON</div>
+          <div style="display:flex;flex-direction:column;gap:8px;font-size:13px">
+            <div style="display:flex;justify-content:space-between;padding:9px;background:var(--surface2);border-radius:7px"><span style="color:var(--text2)">WhatsApp</span><span>+229 01 91 66 77 27</span></div>
+            <div style="display:flex;justify-content:space-between;padding:9px;background:var(--surface2);border-radius:7px"><span style="color:var(--text2)">Email</span><span>jeanpaulbognon3@gmail.com</span></div>
+            <div style="display:flex;justify-content:space-between;padding:9px;background:var(--surface2);border-radius:7px"><span style="color:var(--text2)">Login admin</span><span>admin / FT-JP-2026</span></div>
+            <div style="display:flex;justify-content:space-between;padding:9px;background:var(--surface2);border-radius:7px"><span style="color:var(--text2)">Firebase</span><span style="color:var(--blue)">dpgestpro</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- MODALS -->
+<!-- Login admin -->
+<div class="overlay" id="m-admin-login">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-hdr"><div class="modal-hdr-title">⚙️ Connexion Admin</div><button class="modal-close" onclick="closeModal('m-admin-login')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><div class="form-label">Identifiant</div><input class="form-input" id="adm-id" placeholder="admin ou jp"></div>
+      <div class="form-group"><div class="form-label">Mot de passe</div><input class="form-input" type="password" id="adm-pw" placeholder="••••••" onkeydown="if(event.key==='Enter')loginAdmin()"></div>
+      <button class="btn btn-blue btn-full" onclick="loginAdmin()">Se connecter →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Login élève -->
+<div class="overlay" id="m-eleve-login">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-hdr"><div class="modal-hdr-title">🎓 Mon Espace</div><button class="modal-close" onclick="closeModal('m-eleve-login')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><div class="form-label">Code d'accès</div><input class="form-input" id="eleve-code" placeholder="FT-XXXXXXXX" onkeydown="if(event.key==='Enter')loginEleve()"></div>
+      <button class="btn btn-blue btn-full" onclick="loginEleve()">Accéder →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Inscription -->
+<div class="overlay" id="m-inscription">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-hdr-title">📋 S'inscrire</div><button class="modal-close" onclick="closeModal('m-inscription')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-group"><div class="form-label">Nom complet *</div><input class="form-input" id="ins-nom" placeholder="Votre nom"></div>
+      <div class="form-group"><div class="form-label">Téléphone / WhatsApp *</div><input class="form-input" id="ins-tel" placeholder="+229..."></div>
+      <div class="form-group"><div class="form-label">Email</div><input class="form-input" type="email" id="ins-email" placeholder="email@..."></div>
+      <div class="form-group"><div class="form-label">Formation / Pack souhaité *</div>
+        <select class="form-input" id="ins-cours"><option value="">-- Choisir --</option></select>
+      </div>
+      <div class="form-group"><div class="form-label">Ville / Pays</div><input class="form-input" id="ins-ville" placeholder="Cotonou, Bénin"></div>
+      <button class="btn btn-blue btn-full" onclick="soumettre_inscription()">📤 Envoyer</button>
+      <p style="font-size:11px;color:var(--text3);text-align:center;margin-top:10px">Votre code d'accès vous sera envoyé par WhatsApp après confirmation</p>
+    </div>
+  </div>
+</div>
+
+<!-- Upload média -->
+<div class="overlay" id="m-upload">
+  <div class="modal">
+    <div class="modal-hdr"><div class="modal-hdr-title">📤 Ajouter un média</div><button class="modal-close" onclick="closeModal('m-upload')">✕</button></div>
+    <div class="modal-body">
+      <div class="upload-tabs">
+        <button class="upload-tab active" id="tab-file" onclick="setTab('file')">📁 Fichier PDF/Vidéo</button>
+        <button class="upload-tab" id="tab-yt" onclick="setTab('yt')">▶️ Lien YouTube</button>
+      </div>
+      <div id="panel-file">
+        <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+          <div style="font-size:36px;margin-bottom:8px">📁</div>
+          <div style="font-size:13px;color:var(--text)" id="file-label">Cliquer ou déposer ici</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px">PDF ou Vidéo MP4 (max 50MB)</div>
+          <input type="file" id="file-input" accept="video/*,.pdf" onchange="handleFile(this)" style="display:none">
+        </div>
+        <div class="prog-up" id="prog-up"><div class="prog-up-fill" id="prog-fill"></div></div>
+        <div style="font-size:11px;color:var(--text2);text-align:center;display:none" id="prog-lbl"></div>
+      </div>
+      <div id="panel-yt" style="display:none">
+        <div class="form-group"><div class="form-label">URL YouTube *</div><input class="form-input" id="yt-url" placeholder="https://www.youtube.com/watch?v=..." oninput="previewYT(this.value)"></div>
+        <div id="yt-prev" style="display:none;border-radius:10px;overflow:hidden;margin-bottom:12px"><iframe id="yt-frame" width="100%" height="170" frameborder="0" allowfullscreen style="display:block"></iframe></div>
+      </div>
+      <div class="form-group"><div class="form-label">Titre *</div><input class="form-input" id="up-titre" placeholder="Titre du média"></div>
+      <div class="form-group"><div class="form-label">Description</div><textarea class="form-input" id="up-desc" rows="2" placeholder="Description..."></textarea></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-group"><div class="form-label">Cours associé</div>
+          <select class="form-input" id="up-cours"><option value="">Tous les cours</option></select>
+        </div>
+        <div class="form-group"><div class="form-label">Durée</div><input class="form-input" id="up-duree" placeholder="ex: 30 min"></div>
+      </div>
+      <div class="form-group"><div class="form-label">Accès</div>
+        <select class="form-input" id="up-acces">
+          <option value="gratuit">🌍 Gratuit</option>
+          <option value="inscrit">🎓 Apprenants inscrits</option>
+          <option value="premium">⭐ Premium</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn btn-outline btn-sm" onclick="closeModal('m-upload')" style="flex:1">Annuler</button>
+        <button class="btn btn-blue btn-sm" id="btn-pub" onclick="publierMedia()" style="flex:2">📤 Publier</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Lecteur -->
+<div class="overlay" id="m-lecteur">
+  <div class="modal" style="max-width:760px;padding:0">
+    <div style="padding:13px 18px;background:rgba(0,0,0,.4);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <div style="font-family:'Orbitron',monospace;font-size:13px;font-weight:700;color:var(--blue)" id="lect-titre">Lecture</div>
+      <button onclick="closeLecteur()" style="background:none;border:none;color:var(--text2);font-size:22px;cursor:pointer">✕</button>
+    </div>
+    <div id="lect-content" style="min-height:200px;background:#000"></div>
+    <div style="padding:13px 18px;background:var(--surface)">
+      <div style="font-size:12px;color:var(--text2);margin-bottom:8px" id="lect-desc"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap" id="lect-actions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getFirestore,collection,addDoc,getDocs,onSnapshot,doc,updateDoc,orderBy,query,limit}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import{getStorage,ref,uploadBytesResumable,getDownloadURL}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js';
+const cfg={apiKey:"AIzaSyDCqoYZLBK0ipbotTejMCAvYGxrkomGIGk",authDomain:"dpgestpro.firebaseapp.com",projectId:"dpgestpro",storageBucket:"dpgestpro.firebasestorage.app",messagingSenderId:"795000345158",appId:"1:795000345158:web:b33a6f77ce9e98bff87047"};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+const storage=getStorage(app);
+window.FB={db,collection,addDoc,getDocs,onSnapshot,doc,updateDoc,orderBy,query,limit,storage,ref,uploadBytesResumable,getDownloadURL,ready:true};
+window._fbReady=true;
+if(typeof window._onFbReady==='function')window._onFbReady();
+</script>
+
+<script>
+'use strict';
+
+// ══ DONNÉES ═════════════════════════════════════════════════
+var PRIX={1:3000,2:7500,3:12000,4:18000,5:25000};
+var NIVEAUX=['','🟢 Débutant','🔵 Intermédiaire','🟡 Confirmé','🟠 Avancé','🟣 Expert'];
+
+var CATALOGUE=[
+  {id:'init-info',   emoji:'🖥', titre:'Initiation informatique',          niveau:1,cat:'windows', duree:'6h',  lecons:['Découverte de l\'ordinateur','Démarrer et éteindre','Le bureau Windows','Fichiers et dossiers','Organiser ses fichiers','Copier, couper, coller','Raccourcis clavier','Capture d\'écran','Examen final']},
+  {id:'windows11',   emoji:'🪟', titre:'Windows 11 — Complet',             niveau:1,cat:'windows', duree:'10h', lecons:['Interface Windows 11','Menu Démarrer','Snap Layouts','Widgets','Paramètres','Windows Defender','Gestion des comptes','Examen final']},
+  {id:'internet',    emoji:'🌐', titre:'Internet & Sécurité Web',          niveau:1,cat:'windows', duree:'5h',  lecons:['Les navigateurs','Recherche Google','Téléchargements','Arnaques & phishing','Mots de passe & 2FA','Vie privée','Examen final']},
+  {id:'email',       emoji:'📧', titre:'Email — Gmail & Outlook',          niveau:1,cat:'windows', duree:'4h',  lecons:['Créer et envoyer un email','Pièces jointes','Interface Outlook','Signature professionnelle','Examen final']},
+  {id:'maintenance', emoji:'🔧', titre:'Maintenance PC',                   niveau:2,cat:'windows', duree:'6h',  lecons:['Diagnostiquer les problèmes','Nettoyage et optimisation','Pilotes','Maintenance physique','Examen final']},
+  {id:'word',        emoji:'📝', titre:'Microsoft Word — Complet',         niveau:2,cat:'office',  duree:'12h', lecons:['Interface Word','Mise en forme','Styles et TDM','Tableaux','Images','Publipostage','Révision','Examen final']},
+  {id:'excel',       emoji:'📊', titre:'Microsoft Excel — Complet',        niveau:2,cat:'office',  duree:'16h', lecons:['Saisie de données','Formules de base','Références','Fonctions logiques','RECHERCHEV','TCD','Graphiques','Mise en forme conditionnelle','Examen final']},
+  {id:'powerpoint',  emoji:'🎨', titre:'Microsoft PowerPoint',             niveau:2,cat:'office',  duree:'8h',  lecons:['Interface','Texte et images','Transitions','Thèmes','Diaporama','Exporter','Examen final']},
+  {id:'access',      emoji:'🗄', titre:'Microsoft Access',                 niveau:3,cat:'office',  duree:'10h', lecons:['Introduction BDD','Tables et champs','Requêtes','Formulaires','États','Relations','Examen final']},
+  {id:'outlook',     emoji:'📬', titre:'Outlook Professionnel',            niveau:2,cat:'office',  duree:'5h',  lecons:['Configuration','Règles et filtres','Calendrier','Contacts','Partage','Examen final']},
+  {id:'office365',   emoji:'☁️', titre:'Microsoft 365 & OneDrive',        niveau:2,cat:'office',  duree:'6h',  lecons:['Microsoft 365 cloud','OneDrive','Teams bases','SharePoint','Examen final']},
+  {id:'pdf',         emoji:'📄', titre:'Adobe Acrobat & PDF',              niveau:2,cat:'logiciels',duree:'4h', lecons:['Créer un PDF','Modifier un PDF','Formulaires','Signatures','Compression','Examen final']},
+  {id:'compression', emoji:'🗜', titre:'Compression & Archivage',          niveau:1,cat:'logiciels',duree:'2h', lecons:['WinRAR','7-Zip','ZIP Windows','Archivage cloud','Examen final']},
+  {id:'acrobat-adv', emoji:'✍️', titre:'Signature électronique & PDF Pro', niveau:3,cat:'logiciels',duree:'4h', lecons:['Signature numérique','Certificats','DocuSign','Adobe Sign','Examen final']},
+  {id:'securite',    emoji:'🔒', titre:'Sécurité informatique',            niveau:3,cat:'securite', duree:'8h', lecons:['Menaces actuelles','Antivirus et firewall','VPN','Chiffrement','Sauvegarde','Réponse incidents','Examen final']},
+  {id:'reseaux',     emoji:'🌐', titre:'Réseaux informatiques',            niveau:3,cat:'reseau',  duree:'12h', lecons:['Concepts réseau','IP et TCP/IP','Switch et routeur','Wi-Fi','DNS et DHCP','Câblage','Examen final']},
+  {id:'admin-win',   emoji:'⚙️', titre:'Administration Windows Server',    niveau:4,cat:'reseau',  duree:'16h', lecons:['Installation Server','Active Directory','GPO','DNS Server','DHCP Server','Sauvegardes','Examen final']},
+  {id:'virtualisation',emoji:'💻',titre:'Virtualisation VMware/VirtualBox',niveau:4,cat:'reseau',  duree:'10h', lecons:['Concepts virtualisation','VMware Workstation','VirtualBox','Snapshots','Réseau virtuel','Examen final']},
+  {id:'linux',       emoji:'🐧', titre:'Linux — Administration',           niveau:5,cat:'reseau',  duree:'20h', lecons:['Installation Ubuntu','Terminal bash','Gestion fichiers','Utilisateurs','Réseau Linux','Services','Cron','Examen final']},
+  {id:'algo',        emoji:'🧮', titre:'Algorithmique — Bases',            niveau:3,cat:'prog',    duree:'8h',  lecons:['Algorithmes et pseudocode','Variables et types','Boucles','Conditions','Fonctions','Exercices pratiques','Examen final']},
+  {id:'html-css',    emoji:'🌐', titre:'HTML & CSS — Web Design',          niveau:3,cat:'prog',    duree:'10h', lecons:['Structure HTML','Balises sémantiques','CSS bases','Flexbox','Grid','Responsive','Animations','Examen final']},
+  {id:'javascript',  emoji:'⚡', titre:'JavaScript — Web Interactif',      niveau:4,cat:'prog',    duree:'14h', lecons:['Bases JS','DOM','Événements','Fetch API','ES6+','LocalStorage','Examen final']},
+  {id:'python',      emoji:'🐍', titre:'Python — Bases',                   niveau:3,cat:'prog',    duree:'12h', lecons:['Introduction Python','Variables','Listes & dicts','Boucles','Fonctions','Fichiers','Bibliothèques','Examen final']},
+  {id:'php-mysql',   emoji:'🐘', titre:'PHP & MySQL',                      niveau:4,cat:'prog',    duree:'16h', lecons:['PHP bases','Formulaires','MySQL','CRUD','PDO','Sessions','Sécurité','Examen final']},
+  {id:'git',         emoji:'📦', titre:'Git & GitHub',                     niveau:3,cat:'prog',    duree:'6h',  lecons:['Introduction Git','Workflow de base','Branches','GitHub','Pull Requests','Examen final']},
+];
+
+var PACKS=[
+  {id:'pack-bureau', emoji:'📦',titre:'Pack Bureautique',     desc:'Word + Excel + PowerPoint + Outlook + Office 365',        ids:['word','excel','powerpoint','outlook','office365'],         prixNormal:45000,prix:35000},
+  {id:'pack-prog',   emoji:'💻',titre:'Pack Programmation',   desc:'HTML/CSS + JavaScript + Python + PHP/MySQL + Git',         ids:['html-css','javascript','python','php-mysql','git'],        prixNormal:65000,prix:45000},
+  {id:'pack-windows',emoji:'🪟',titre:'Pack Windows Débutant',desc:'Initiation + Windows 11 + Internet + Email + Maintenance', ids:['init-info','windows11','internet','email','maintenance'],   prixNormal:22000,prix:15000},
+  {id:'pack-reseau', emoji:'🌐',titre:'Pack Réseaux & Admin', desc:'Réseaux + Admin Windows + Virtualisation + Linux',         ids:['reseaux','admin-win','virtualisation','linux'],            prixNormal:67000,prix:49000},
+  {id:'pack-securite',emoji:'🔒',titre:'Pack Sécurité',       desc:'Internet + Sécurité informatique + Maintenance',           ids:['internet','securite','maintenance'],                       prixNormal:20000,prix:14000},
+  {id:'pack-tout',   emoji:'🏆',titre:'Pack Tout inclus',     desc:'Les 25 formations — Accès illimité 1 an',                  ids:CATALOGUE.map(function(c){return c.id;}),                   prixNormal:280000,prix:99000,featured:true},
+];
+
+var QUIZ_DATA=[
+  {id:'q-win',emoji:'🪟',titre:'Windows 11 — Débutant',coursId:'windows11',questions:[
+    {q:'Quel raccourci verrouille la session ?',opts:['Ctrl+L','Win+L','Alt+L','Win+D'],c:1,exp:'Win+L verrouille instantanément votre session.'},
+    {q:'Où se trouvent les Paramètres Windows ?',opts:['Win+P','Win+I','Win+S','Ctrl+I'],c:1,exp:'Win+I ouvre directement les Paramètres.'},
+    {q:'Que fait la Corbeille ?',opts:['Compresse les fichiers','Stocke les fichiers supprimés','Sauvegarde automatique','Partage de fichiers'],c:1,exp:'La Corbeille conserve temporairement les fichiers supprimés.'},
+    {q:'Comment ouvrir l\'Explorateur de fichiers ?',opts:['Win+F','Win+E','Ctrl+E','Alt+F'],c:1,exp:'Win+E ouvre l\'Explorateur.'},
+    {q:'Qu\'est-ce que le Bureau Windows ?',opts:['Un logiciel de jeu','L\'écran principal de travail','Le disque dur','Un antivirus'],c:1,exp:'Le Bureau est l\'espace de travail principal.'},
+  ]},
+  {id:'q-excel',emoji:'📊',titre:'Excel — Formules de base',coursId:'excel',questions:[
+    {q:'Comment calculer la somme de A1 à A10 ?',opts:['=TOTAL(A1:A10)','=SOMME(A1:A10)','=ADDITION(A1,A10)','=SUM(A1+A10)'],c:1,exp:'SOMME() est la syntaxe correcte en Excel français.'},
+    {q:'Que fait le $ dans une formule ?',opts:['Arrondit','Fixe la référence','Multiplie','Ajoute une devise'],c:1,exp:'Le $ fixe la référence lors de la copie.'},
+    {q:'Comment centrer du texte ?',opts:['Format -> Texte','Ctrl+E','Alt+C','Ctrl+M'],c:1,exp:'Ctrl+E centre le texte.'},
+    {q:'Syntaxe correcte de SI ?',opts:['=SI(condition,vrai,faux)','=IF(val,true)','=CONDITION(a,b)','=TEST(a;b;c)'],c:0,exp:'=SI(condition,valeur_si_vrai,valeur_si_faux).'},
+    {q:'Que fait Ctrl+T dans Excel ?',opts:['Ferme Excel','Crée un tableau','Ouvre les thèmes','Fait une somme'],c:1,exp:'Ctrl+T crée un tableau structuré.'},
+  ]},
+  {id:'q-python',emoji:'🐍',titre:'Python — Bases',coursId:'python',questions:[
+    {q:'Comment afficher "Bonjour" en Python ?',opts:['echo "Bonjour"','System.out.println(...)','print("Bonjour")','Console.log("Bonjour")'],c:2,exp:'print() est la fonction d\'affichage en Python.'},
+    {q:'Comment créer une liste Python ?',opts:['list=(1,2,3)','list=[1,2,3]','list={1,2,3}','list=<1,2,3>'],c:1,exp:'Les crochets [] créent une liste.'},
+    {q:'Indentation correcte en Python ?',opts:['Accolades {}','Point-virgule','4 espaces','Pas d\'indentation'],c:2,exp:'Python utilise 4 espaces pour l\'indentation.'},
+    {q:'Comment vérifier le type d\'une variable ?',opts:['typeof(x)','x.type()','type(x)','gettype(x)'],c:2,exp:'type() retourne le type d\'une variable.'},
+    {q:'Qu\'est-ce qu\'une f-string ?',opts:['Une erreur','Un template de chaîne','Un type de liste','Une fonction'],c:1,exp:'f"..." permet d\'insérer des variables directement dans une chaîne.'},
+  ]},
+];
+
+var ADMIN_USERS={'admin':{pw:'FT-JP-2026',nom:'Jean Paul BOGNON',role:'SUPER ADMIN'},'jp':{pw:'JP@2026',nom:'Jean Paul BOGNON',role:'SUPER ADMIN'}};
+var DB={inscriptions:[],certificats:[],medias:[]};
+var _admin=null,_eleve=null,_catFilter='all',_mediaFilter='all',_uploadFile=null,_uploadTab='file';
+var _quizState=null;
+
+// ══ FIREBASE ════════════════════════════════════════════════
+window._onFbReady=function(){loadFromFirebase();};
+if(window._fbReady)loadFromFirebase();
+
+function loadFromFirebase(){
+  if(!window.FB||!window.FB.ready)return;
+  var FB=window.FB;
+  FB.getDocs(FB.query(FB.collection(FB.db,'ft_inscriptions'),FB.orderBy('date','desc'))).then(function(snap){
+    DB.inscriptions=[];snap.forEach(function(d){var r=d.data();r.id=d.id;DB.inscriptions.push(r);});
+    renderInscriptions();
+    var n=DB.inscriptions.length;
+    document.getElementById('k-ins').textContent=n;
+    document.getElementById('hs-ins').textContent=n;
+    renderLastIns();
+    var ca=DB.inscriptions.reduce(function(s,i){return s+(i.prix||0);},0);
+    document.getElementById('k-ca').textContent=ca>0?(ca/1000).toFixed(0)+'K':'0';
+  }).catch(function(){});
+  FB.getDocs(FB.query(FB.collection(FB.db,'ft_certificats'),FB.orderBy('date','desc'))).then(function(snap){
+    DB.certificats=[];snap.forEach(function(d){var r=d.data();r.id=d.id;DB.certificats.push(r);});
+    renderCertificats();
+    var n=DB.certificats.length;
+    document.getElementById('k-cert').textContent=n;
+    document.getElementById('hs-cert').textContent=n;
+    renderLastCert();
+  }).catch(function(){});
+  FB.getDocs(FB.query(FB.collection(FB.db,'ft_medias'),FB.orderBy('date','desc'),FB.limit(50))).then(function(snap){
+    snap.forEach(function(d){var r=d.data();r.id=d.id;if(!DB.medias.find(function(x){return x.id===r.id;}))DB.medias.push(r);});
+    renderMedias();
+    document.getElementById('k-med').textContent=DB.medias.length;
+  }).catch(function(){});
+}
+
+async function saveFB(col,data){
+  if(!window.FB||!window.FB.ready)return null;
+  try{var ref=await window.FB.addDoc(window.FB.collection(window.FB.db,col),data);return ref.id;}catch(e){return null;}
+}
+
+// ══ NAVIGATION ══════════════════════════════════════════════
+function showView(id,btn){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  var el=document.getElementById('view-'+id);if(el)el.classList.add('active');
+  document.querySelectorAll('.nav-link').forEach(function(b){b.classList.remove('active');});
+  if(btn)btn.classList.add('active');
+  window.scrollTo(0,0);
+  if(id==='catalogue')renderCatalogue();
+  if(id==='packs')renderPacks();
+  if(id==='medias')renderMedias();
+  if(id==='quiz')renderQuizListe();
+}
+
+function admPage(id,el){
+  document.querySelectorAll('.adm-page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.adm-ni').forEach(function(n){n.classList.remove('active');});
+  var p=document.getElementById('adm-'+id);if(p)p.classList.add('active');
+  if(el)el.classList.add('active');
+  if(id==='catalogue-adm')renderAdmCatalogue();
+  if(id==='medias-adm')renderMedias();
+}
+
+// ══ MODAL ═══════════════════════════════════════════════════
+function openModal(id){
+  var el=document.getElementById(id);if(!el)return;
+  if(id==='m-inscription')fillInsCours();
+  if(id==='m-upload'){setTab('file');fillUploadCours();}
+  el.classList.add('open');
+}
+function closeModal(id){var el=document.getElementById(id);if(el)el.classList.remove('open');}
+document.addEventListener('click',function(e){if(e.target.classList.contains('overlay'))e.target.classList.remove('open');});
+
+function toast(msg,type){
+  var el=document.getElementById('toast');
+  el.textContent=msg;el.className=type||'';el.style.display='block';
+  clearTimeout(window._tt);window._tt=setTimeout(function(){el.style.display='none';},3200);
+}
+
+// ══ AUTH ════════════════════════════════════════════════════
+function openAdminLogin(){openModal('m-admin-login');}
+function loginAdmin(){
+  var id=(document.getElementById('adm-id').value||'').trim();
+  var pw=(document.getElementById('adm-pw').value||'').trim();
+  var u=ADMIN_USERS[id];
+  if(!u||u.pw!==pw){toast('Identifiants incorrects','err');return;}
+  _admin=u;closeModal('m-admin-login');
+  document.getElementById('adm-user').textContent=u.nom+' · '+u.role;
+  document.getElementById('adm-date').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  document.getElementById('screen-admin').classList.add('active');
+  document.getElementById('btn-upload').style.display='inline-flex';
+  toast('Connexion admin réussie','ok');
+}
+function logoutAdmin(){_admin=null;document.getElementById('screen-admin').classList.remove('active');document.getElementById('btn-upload').style.display='none';showView('home',null);}
+function closeAdmin(){document.getElementById('screen-admin').classList.remove('active');showView('home',null);}
+
+function loginEleve(){
+  var code=(document.getElementById('eleve-code').value||'').trim().toUpperCase();
+  var ins=DB.inscriptions.find(function(i){return i.code===code;});
+  if(!ins){toast('Code invalide','err');return;}
+  _eleve=ins;closeModal('m-eleve-login');showView('espace',null);renderEspace();
+  toast('Bienvenue '+ins.nom+' !','ok');
+}
+function logoutEleve(){_eleve=null;showView('home',null);}
+
+// ══ CATALOGUE ═══════════════════════════════════════════════
+var CATS={all:'Tout',windows:'Windows',office:'Office',logiciels:'Logiciels',securite:'Sécurité',reseau:'Réseaux',prog:'Code'};
+
+function filterCat(cat,btn){
+  _catFilter=cat;
+  document.querySelectorAll('#cat-filters .filter-btn').forEach(function(b){b.classList.remove('active');});
+  if(btn)btn.classList.add('active');
+  renderCatalogue();
+}
+
+function renderCatalogue(){
+  var el=document.getElementById('catalogue-grid');if(!el)return;
+  var data=_catFilter==='all'?CATALOGUE:CATALOGUE.filter(function(c){return c.cat===_catFilter;});
+  el.innerHTML=data.map(function(c){
+    return '<div class="cours-card" onclick="inscrireCours(\''+c.id+'\')">'
+      +'<div class="cours-emoji">'+c.emoji+'</div>'
+      +'<div class="cours-titre">'+c.titre+'</div>'
+      +'<div class="cours-meta">'
+      +'<span>'+NIVEAUX[c.niveau]+'</span>'
+      +'<span>⏱ '+c.duree+'</span>'
+      +'<span>📚 '+c.lecons.length+' leçons</span>'
+      +'</div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">'
+      +'<div class="cours-price">'+PRIX[c.niveau].toLocaleString('fr-FR')+' F</div>'
+      +'<button class="btn btn-blue btn-sm">S\'inscrire →</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+function inscrireCours(coursId){
+  var sel=document.getElementById('ins-cours');
+  if(sel)sel.value=coursId;
+  openModal('m-inscription');
+}
+
+function fillInsCours(){
+  var sel=document.getElementById('ins-cours');if(!sel)return;
+  sel.innerHTML='<option value="">-- Choisir --</option>';
+  CATALOGUE.forEach(function(c){sel.innerHTML+='<option value="'+c.id+'">'+c.emoji+' '+c.titre+' — '+PRIX[c.niveau].toLocaleString('fr-FR')+' F</option>';});
+  PACKS.forEach(function(p){sel.innerHTML+='<option value="'+p.id+'">'+p.emoji+' [PACK] '+p.titre+' — '+p.prix.toLocaleString('fr-FR')+' F</option>';});
+}
+
+// ══ PACKS ════════════════════════════════════════════════════
+function renderPacks(){
+  var el=document.getElementById('packs-grid');if(!el)return;
+  el.innerHTML=PACKS.map(function(p){
+    var eco=Math.round((1-p.prix/p.prixNormal)*100);
+    return '<div class="pack-card'+(p.featured?' featured':'')+'">'
+      +(p.featured?'<div class="pack-featured-badge">⭐ BESTSELLER</div>':'')
+      +'<div class="pack-emoji">'+p.emoji+'</div>'
+      +'<div class="pack-titre">'+p.titre+'</div>'
+      +'<div class="pack-desc">'+p.desc+'</div>'
+      +'<div class="pack-prices">'
+      +'<div class="pack-old-price">'+p.prixNormal.toLocaleString('fr-FR')+' F</div>'
+      +'<div class="pack-new-price">'+p.prix.toLocaleString('fr-FR')+' F</div>'
+      +'<div class="pack-economy">-'+eco+'%</div>'
+      +'</div>'
+      +'<button class="btn btn-gold btn-full" onclick="inscrireCours(\''+p.id+'\')">S\'inscrire à ce pack →</button>'
+      +'</div>';
+  }).join('');
+}
+
+// ══ INSCRIPTION ═════════════════════════════════════════════
+function soumettre_inscription(){
+  var nom=(document.getElementById('ins-nom').value||'').trim();
+  var tel=(document.getElementById('ins-tel').value||'').trim();
+  var email=(document.getElementById('ins-email').value||'').trim();
+  var coursId=document.getElementById('ins-cours').value;
+  var ville=(document.getElementById('ins-ville').value||'').trim();
+  if(!nom||!tel||!coursId){toast('Nom, téléphone et formation obligatoires','err');return;}
+  var cours=CATALOGUE.find(function(c){return c.id===coursId;})||PACKS.find(function(p){return p.id===coursId;});
+  var prixFinal=cours?(cours.prix||PRIX[cours.niveau]||0):0;
+  var code='FT-'+Math.random().toString(36).substr(2,8).toUpperCase();
+  var data={nom:nom,tel:tel,email:email,coursId:coursId,coursTitre:cours?cours.titre:coursId,ville:ville,code:code,prix:prixFinal,date:new Date().toISOString(),statut:'en_attente'};
+  DB.inscriptions.unshift(data);
+  saveFB('ft_inscriptions',data);
+  var waMsg='[FormaTech Pro] NOUVELLE INSCRIPTION\nNom: '+nom+'\nFormation: '+(cours?cours.titre:coursId)+'\nTel: '+tel+'\nCode: '+code+'\nMontant: '+prixFinal.toLocaleString('fr-FR')+' FCFA';
+  window.open('https://wa.me/22901916677?text='+encodeURIComponent(waMsg),'_blank');
+  closeModal('m-inscription');
+  toast('Inscription envoyée ! Code: '+code+' (notez-le)','ok');
+  ['ins-nom','ins-tel','ins-email','ins-ville'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+}
+
+// ══ MÉDIAS ══════════════════════════════════════════════════
+function filterMedia(type,btn){
+  _mediaFilter=type;
+  document.querySelectorAll('#media-filters .filter-btn').forEach(function(b){b.classList.remove('active');});
+  if(btn)btn.classList.add('active');
+  renderMedias();
+}
+
+function renderMedias(){
+  ['medias-grid','adm-media-grid'].forEach(function(gid){
+    var el=document.getElementById(gid);if(!el)return;
+    var data=_mediaFilter==='all'?DB.medias:DB.medias.filter(function(m){return m.type===_mediaFilter;});
+    if(!data.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text3)">📭 Aucun média. Ajoutez-en depuis le panneau admin.</div>';return;}
+    el.innerHTML=data.map(function(m){return makeMediaCard(m);}).join('');
+  });
+  if(_admin)document.getElementById('k-med').textContent=DB.medias.length;
+}
+
+function makeMediaCard(m){
+  var isYT=m.type==='youtube',isPDF=m.type==='pdf';
+  var thumb='';
+  if(isYT&&m.ytId){thumb='<img src="https://img.youtube.com/vi/'+m.ytId+'/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover"><div class="play-btn">▶</div>';}
+  else if(isPDF){thumb='<div style="font-size:52px">📄</div>';}
+  else{thumb='<div style="font-size:52px">🎬</div>';}
+  var badge=m.acces==='gratuit'?'<span class="media-badge mb-green">GRATUIT</span>':m.acces==='premium'?'<span class="media-badge mb-gold">⭐ PREMIUM</span>':'<span class="media-badge mb-blue">🎓 INSCRIT</span>';
+  var adminBtn=_admin?'<button onclick="event.stopPropagation();delMedia(\''+m.id+'\')" class="btn btn-red btn-sm" style="margin-top:8px;width:100%">🗑 Supprimer</button>':'';
+  return '<div class="media-card" onclick="ouvrirMedia(\''+m.id+'\')">'
+    +'<div class="media-thumb">'+thumb+badge+'</div>'
+    +'<div class="media-info"><div class="media-title">'+m.titre+'</div>'
+    +(m.desc?'<div style="font-size:10px;color:var(--text2);margin:3px 0;line-height:1.4">'+m.desc.substring(0,60)+'</div>':'')
+    +'<div class="media-meta"><span>'+(m.duree||'')+'</span><span>'+(isYT?'YouTube':isPDF?'PDF':'Vidéo')+'</span></div>'
+    +adminBtn+'</div></div>';
+}
+
+function ouvrirMedia(id){
+  var m=DB.medias.find(function(x){return x.id===id;});if(!m)return;
+  if(m.acces==='premium'&&!_admin&&!_eleve){toast('Réservé aux abonnés Premium','err');return;}
+  if(m.acces==='inscrit'&&!_admin&&!_eleve){toast('Réservé aux apprenants inscrits','err');return;}
+  var lc=document.getElementById('lect-content');
+  document.getElementById('lect-titre').textContent=(m.emoji||'')+' '+m.titre;
+  document.getElementById('lect-desc').textContent=m.desc||'';
+  var la=document.getElementById('lect-actions');la.innerHTML='';
+  if(m.duree)la.innerHTML+='<span style="padding:4px 10px;background:rgba(255,255,255,.06);border-radius:20px;font-size:11px;color:var(--text2)">⏱ '+m.duree+'</span>';
+  if(m.type==='pdf'&&(m.url||m.data))la.innerHTML+='<button onclick="dlPDF(\''+m.id+'\')" class="btn btn-blue btn-sm">⬇️ Télécharger</button>';
+  if(m.type==='youtube'&&m.ytId){
+    lc.innerHTML='<iframe width="100%" height="430" src="https://www.youtube.com/embed/'+m.ytId+'?autoplay=1" frameborder="0" allow="autoplay;accelerometer;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen style="display:block"></iframe>';
+  } else if(m.type==='video'&&(m.url||m.data)){
+    lc.innerHTML='<video controls autoplay style="width:100%;max-height:430px;background:#000;display:block"><source src="'+(m.url||m.data)+'"><p style="color:white;padding:20px">Format non supporté</p></video>';
+  } else if(m.type==='pdf'&&(m.url||m.data)){
+    lc.innerHTML='<iframe src="'+(m.url||m.data)+'#toolbar=1" style="width:100%;height:530px;border:none;display:block" type="application/pdf"></iframe>';
+  } else {
+    lc.innerHTML='<div style="color:var(--text2);text-align:center;padding:60px">⚠️ Contenu non disponible</div>';
+  }
+  openModal('m-lecteur');
+}
+function closeLecteur(){closeModal('m-lecteur');var lc=document.getElementById('lect-content');if(lc)lc.innerHTML='';}
+function dlPDF(id){var m=DB.medias.find(function(x){return x.id===id;});if(!m)return;var a=document.createElement('a');a.href=m.url||m.data;a.download=m.titre+'.pdf';a.click();}
+function delMedia(id){if(!confirm('Supprimer ?'))return;DB.medias=DB.medias.filter(function(m){return m.id!==id;});renderMedias();toast('Média supprimé','ok');}
+
+// ══ UPLOAD MÉDIA ════════════════════════════════════════════
+function setTab(tab){
+  _uploadTab=tab;
+  document.getElementById('panel-file').style.display=tab==='file'?'block':'none';
+  document.getElementById('panel-yt').style.display=tab==='yt'?'block':'none';
+  document.getElementById('tab-file').className='upload-tab'+(tab==='file'?' active':'');
+  document.getElementById('tab-yt').className='upload-tab'+(tab==='yt'?' active':'');
+}
+function handleFile(input){
+  var file=input.files[0];if(!file)return;
+  _uploadFile=file;
+  var lbl=document.getElementById('file-label');
+  if(lbl){lbl.textContent=(file.type.includes('pdf')?'📄 ':'🎬 ')+file.name+' ('+(file.size/1024/1024).toFixed(1)+'MB)';lbl.style.color='var(--blue)';}
+}
+function handleDrop(event){
+  event.preventDefault();document.getElementById('dropzone').classList.remove('drag');
+  var files=event.dataTransfer.files;
+  if(files&&files[0]){var fi=document.getElementById('file-input');fi.files=files;handleFile(fi);}
+}
+function previewYT(url){
+  var vid=ytId(url);
+  var prev=document.getElementById('yt-prev'),frame=document.getElementById('yt-frame');
+  if(vid&&prev&&frame){frame.src='https://www.youtube-nocookie.com/embed/'+vid;prev.style.display='block';}
+  else if(prev){prev.style.display='none';}
+}
+function ytId(url){var m=url.match(/(?:youtube\.com.*[?&]v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);return m?m[1]:null;}
+function fillUploadCours(){
+  var sel=document.getElementById('up-cours');if(!sel)return;
+  sel.innerHTML='<option value="">Tous les cours</option>';
+  CATALOGUE.forEach(function(c){sel.innerHTML+='<option value="'+c.id+'">'+c.emoji+' '+c.titre+'</option>';});
+}
+function publierMedia(){
+  var titre=(document.getElementById('up-titre').value||'').trim();
+  if(!titre){toast('Titre obligatoire','err');return;}
+  var desc=(document.getElementById('up-desc').value||'').trim();
+  var cours=document.getElementById('up-cours').value;
+  var duree=(document.getElementById('up-duree').value||'').trim();
+  var acces=document.getElementById('up-acces').value;
+  var btn=document.getElementById('btn-pub');
+  if(_uploadTab==='yt'){
+    var url=(document.getElementById('yt-url').value||'').trim();
+    var vid=ytId(url);
+    if(!vid){toast('Lien YouTube invalide','err');return;}
+    _saveMedia({id:'ft_'+Date.now(),type:'youtube',titre:titre,desc:desc,cours:cours,duree:duree,acces:acces,ytId:vid,url:url,emoji:'▶️',date:new Date().toISOString()});
+    return;
+  }
+  var file=_uploadFile;
+  if(!file){toast('Sélectionnez un fichier','err');return;}
+  if(btn)btn.disabled=true;
+  var isPdf=file.type.includes('pdf')||file.name.endsWith('.pdf');
+  var media={id:'ft_'+Date.now(),type:isPdf?'pdf':'video',titre:titre,desc:desc,cours:cours,duree:duree,acces:acces,emoji:isPdf?'📄':'🎬',nom_fichier:file.name,date:new Date().toISOString()};
+  if(window.FB&&window.FB.storage&&window.FB.ref&&window.FB.uploadBytesResumable){
+    var pu=document.getElementById('prog-up'),pf=document.getElementById('prog-fill'),pl=document.getElementById('prog-lbl');
+    if(pu){pu.style.display='block';pl.style.display='block';}
+    var sRef=window.FB.ref(window.FB.storage,'formatech/'+(isPdf?'pdfs':'videos')+'/'+Date.now()+'_'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_'));
+    var task=window.FB.uploadBytesResumable(sRef,file);
+    task.on('state_changed',function(snap){
+      var pct=Math.round((snap.bytesTransferred/snap.totalBytes)*100);
+      if(pf)pf.style.width=pct+'%';if(pl)pl.textContent='Upload... '+pct+'%';
+    },function(){
+      var reader=new FileReader();reader.onload=function(e){media.data=e.target.result;_saveMedia(media);if(btn)btn.disabled=false;if(pu)pu.style.display='none';};reader.readAsDataURL(file);
+    },function(){
+      window.FB.getDownloadURL(task.snapshot.ref).then(function(url){media.url=url;_saveMedia(media);if(btn)btn.disabled=false;if(pu)pu.style.display='none';});
+    });
+  } else {
+    var reader2=new FileReader();reader2.onload=function(e){media.data=e.target.result;_saveMedia(media);if(btn)btn.disabled=false;};reader2.readAsDataURL(file);
+  }
+}
+function _saveMedia(m){
+  DB.medias.unshift(m);saveFB('ft_medias',m);renderMedias();closeModal('m-upload');
+  toast('Publié: '+m.titre,'ok');
+  _uploadFile=null;
+  var lbl=document.getElementById('file-label');if(lbl){lbl.textContent='Cliquer ou déposer ici';lbl.style.color='';}
+  ['up-titre','up-desc','up-duree','yt-url'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  var yp=document.getElementById('yt-prev');if(yp)yp.style.display='none';
+  var pu=document.getElementById('prog-up');if(pu)pu.style.display='none';
+  document.getElementById('btn-pub').disabled=false;
+}
+
+// ══ QUIZ ════════════════════════════════════════════════════
+function renderQuizListe(){
+  var el=document.getElementById('quiz-liste');if(!el)return;
+  document.getElementById('quiz-session').style.display='none';
+  el.style.display='grid';
+  el.innerHTML=QUIZ_DATA.map(function(q){
+    return '<div class="quiz-card" onclick="demarrerQuiz(\''+q.id+'\')">'
+      +'<div class="quiz-icon">'+q.emoji+'</div>'
+      +'<div class="quiz-titre">'+q.titre+'</div>'
+      +'<div class="quiz-meta">'+q.questions.length+' questions · 5 min estimé</div>'
+      +'<button class="btn btn-blue btn-sm" style="margin-top:14px">Commencer →</button>'
+      +'</div>';
+  }).join('');
+}
+
+function demarrerQuiz(qid){
+  var quiz=QUIZ_DATA.find(function(q){return q.id===qid;});if(!quiz)return;
+  _quizState={quiz:quiz,idx:0,score:0,reponses:[]};
+  document.getElementById('quiz-liste').style.display='none';
+  document.getElementById('quiz-session').style.display='block';
+  renderQuestion();
+}
+
+function renderQuestion(){
+  var s=_quizState;if(!s)return;
+  var el=document.getElementById('quiz-session');if(!el)return;
+  if(s.idx>=s.quiz.questions.length){renderResultatQuiz();return;}
+  var q=s.quiz.questions[s.idx];
+  var pct=Math.round(s.idx/s.quiz.questions.length*100);
+  el.innerHTML='<div style="max-width:600px;margin:0 auto">'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-size:13px;color:var(--text2)"><span>'+s.quiz.emoji+' '+s.quiz.titre+'</span><span>Question '+(s.idx+1)+'/'+s.quiz.questions.length+'</span></div>'
+    +'<div class="prog-bar" style="height:6px;margin-bottom:20px"><div class="prog-fill" style="width:'+pct+'%"></div></div>'
+    +'<div style="font-size:16px;font-weight:700;margin-bottom:20px;line-height:1.5">'+q.q+'</div>'
+    +q.opts.map(function(opt,i){return '<div class="q-option" id="opt-'+i+'" onclick="choisirReponse('+i+')">'+(['A','B','C','D'][i])+' — '+opt+'</div>';}).join('')
+    +'<div id="q-explication" style="display:none;margin-top:14px;padding:12px;background:rgba(88,166,255,.06);border:1px solid rgba(88,166,255,.15);border-radius:9px;font-size:13px;color:var(--text2)"></div>'
+    +'<button id="btn-suivant" class="btn btn-blue" style="margin-top:16px;display:none" onclick="suivantQuestion()">Question suivante →</button>'
+    +'</div>';
+}
+
+function choisirReponse(idx){
+  var s=_quizState;if(!s)return;
+  var q=s.quiz.questions[s.idx];
+  var opts=document.querySelectorAll('.q-option');
+  opts.forEach(function(o){o.onclick=null;o.style.cursor='default';});
+  opts[idx].classList.add(idx===q.c?'correct':'wrong');
+  if(idx!==q.c)opts[q.c].classList.add('correct');
+  if(idx===q.c)s.score++;
+  s.reponses.push(idx);
+  var exp=document.getElementById('q-explication');
+  if(exp){exp.style.display='block';exp.textContent='💡 '+q.exp;}
+  var btn=document.getElementById('btn-suivant');if(btn)btn.style.display='inline-flex';
+}
+
+function suivantQuestion(){_quizState.idx++;renderQuestion();}
+
+function renderResultatQuiz(){
+  var s=_quizState;if(!s)return;
+  var pct=Math.round(s.score/s.quiz.questions.length*100);
+  var pass=pct>=70;
+  var el=document.getElementById('quiz-session');
+  el.innerHTML='<div style="max-width:600px;margin:0 auto;text-align:center">'
+    +'<div style="font-size:64px;margin-bottom:16px">'+(pass?'🏆':'📚')+'</div>'
+    +'<div style="font-family:\'Orbitron\',monospace;font-size:22px;font-weight:900;margin-bottom:8px;background:linear-gradient(135deg,var(--blue),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent">'+(pass?'Félicitations !':'Continuez !')+'</div>'
+    +'<div style="font-size:15px;color:var(--text2);margin-bottom:20px">Score: <strong style="color:var(--'+(pass?'green':'gold')+')">'+(s.score+'/'+s.quiz.questions.length)+' ('+pct+'%)</strong></div>'
+    +(pass?'<div class="cert-box" style="margin-bottom:20px"><div class="cert-title">🏆 Certificat disponible</div><div style="font-size:13px;color:var(--text2);margin:8px 0">Score suffisant pour obtenir votre certificat</div>'
+      +'<button class="btn btn-blue" onclick="genererCertificat()">🏆 Générer mon certificat</button></div>':'')
+    +'<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">'
+    +'<button class="btn btn-outline" onclick="renderQuizListe()">← Retour aux quiz</button>'
+    +(pass?'':'<button class="btn btn-blue" onclick="demarrerQuiz(\''+s.quiz.id+'\')">🔄 Réessayer</button>')
+    +'</div></div>';
+}
+
+function genererCertificat(){
+  var s=_quizState;if(!s)return;
+  if(!_eleve){toast('Connectez-vous à votre espace pour générer un certificat','warn');openModal('m-eleve-login');return;}
+  var num='FT-CERT-'+Math.random().toString(36).substr(2,5).toUpperCase();
+  var cours=CATALOGUE.find(function(c){return c.id===s.quiz.coursId;})||{titre:s.quiz.titre};
+  var data={num:num,eleve:_eleve.nom,cours:cours.titre,score:Math.round(s.score/s.quiz.questions.length*100),date:new Date().toISOString()};
+  DB.certificats.unshift(data);saveFB('ft_certificats',data);
+  toast('🏆 Certificat '+num+' généré !','ok');
+  imprimerCertificat(data);
+}
+
+function imprimerCertificat(cert){
+  var win=window.open('','_blank');
+  win.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Certificat '+cert.num+'</title>'
+    +'<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@400;700&display=swap" rel="stylesheet">'
+    +'<style>body{margin:0;padding:40px;background:#06090f;color:#e6edf3;font-family:"Exo 2",sans-serif;text-align:center}'
+    +'.cert{max-width:700px;margin:0 auto;border:3px solid #58a6ff;border-radius:20px;padding:50px;background:linear-gradient(135deg,rgba(88,166,255,.06),rgba(188,140,255,.04))}'
+    +'.logo{font-family:"Orbitron",monospace;font-size:20px;font-weight:900;background:linear-gradient(135deg,#58a6ff,#bc8cff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}'
+    +'.title{font-family:"Orbitron",monospace;font-size:28px;font-weight:900;margin:20px 0;background:linear-gradient(135deg,#e3b341,#58a6ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}'
+    +'.name{font-family:"Orbitron",monospace;font-size:22px;font-weight:900;color:#58a6ff;margin:16px 0}'
+    +'.num{font-size:12px;color:#8b949e;margin-top:20px}@media print{body{-webkit-print-color-adjust:exact}}'
+    +'</style></head><body><div class="cert">'
+    +'<div class="logo">⚡ FormaTech Pro</div>'
+    +'<div style="font-size:13px;color:#8b949e;margin:8px 0">Académie Informatique Professionnelle</div>'
+    +'<div class="title">CERTIFICAT DE RÉUSSITE</div>'
+    +'<div style="font-size:15px;color:#8b949e">Ce certificat est décerné à</div>'
+    +'<div class="name">'+cert.eleve+'</div>'
+    +'<div style="font-size:15px;margin:10px 0">pour avoir complété avec succès</div>'
+    +'<div style="font-size:18px;font-weight:700;color:#e3b341;margin:10px 0">'+cert.cours+'</div>'
+    +'<div style="font-size:15px;color:#3fb950">Score: '+cert.score+'%</div>'
+    +'<div style="font-size:13px;color:#8b949e;margin-top:16px">'+new Date(cert.date).toLocaleDateString('fr-FR')+'</div>'
+    +'<div class="num">N° '+cert.num+'</div>'
+    +'<div style="margin-top:30px"><button onclick="window.print()" style="padding:12px 24px;background:#58a6ff;color:#06090f;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer">🖨 Imprimer</button></div>'
+    +'</div></body></html>');
+  win.document.close();
+}
+
+// ══ ESPACE APPRENANT ════════════════════════════════════════
+function renderEspace(){
+  if(!_eleve)return;
+  document.getElementById('eleve-titre').textContent='Bonjour, '+_eleve.nom;
+  var cours=CATALOGUE.find(function(c){return c.id===_eleve.coursId;})||PACKS.find(function(p){return p.id===_eleve.coursId;});
+  var prog=JSON.parse(localStorage.getItem('ft_prog_'+_eleve.code)||'{}');
+  var lecons=cours&&cours.lecons?cours.lecons:[];
+  var done=Object.keys(prog).filter(function(k){return prog[k];}).length;
+  var pct=lecons.length?Math.round(done/lecons.length*100):0;
+  var content='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px">'
+    +'<div class="tbl-wrap" style="padding:16px">'
+    +'<div style="font-family:\'Orbitron\',monospace;font-size:12px;font-weight:700;color:var(--blue);margin-bottom:10px">📚 Votre formation</div>'
+    +(cours?'<div style="font-size:15px;font-weight:700;margin-bottom:6px">'+(cours.emoji||'📚')+' '+cours.titre+'</div>':'<div style="color:var(--text2);font-size:13px">'+_eleve.coursId+'</div>')
+    +'<div style="font-size:12px;color:var(--text2)">Code: <strong style="color:var(--blue)">'+_eleve.code+'</strong></div>'
+    +(lecons.length?'<div style="margin-top:12px"><div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:4px"><span>Progression</span><span>'+pct+'%</span></div><div class="prog-bar"><div class="prog-fill" style="width:'+pct+'%"></div></div></div>':'')
+    +'</div>'
+    +'<div class="tbl-wrap" style="padding:16px">'
+    +'<div style="font-family:\'Orbitron\',monospace;font-size:12px;font-weight:700;color:var(--blue);margin-bottom:10px">⚡ Accès rapide</div>'
+    +'<button class="btn btn-outline btn-sm btn-full" style="margin-bottom:8px" onclick="showView(\'medias\',null)">🎬 Médiathèque</button>'
+    +'<button class="btn btn-outline btn-sm btn-full" style="margin-bottom:8px" onclick="showView(\'quiz\',null)">🧠 Quiz</button>'
+    +(pct>=80?'<button class="btn btn-gold btn-sm btn-full" onclick="openCertModal()">🏆 Mon certificat</button>':'')
+    +'</div></div>';
+  if(lecons.length){
+    content+='<div style="font-family:\'Orbitron\',monospace;font-size:13px;font-weight:700;color:var(--blue);margin-bottom:14px">📋 Leçons</div>';
+    lecons.forEach(function(lecon,i){
+      var isDone=prog['l'+i];
+      content+='<div class="lecon-item'+(isDone?' done':'')+'" onclick="toggleLecon(\''+_eleve.code+'\','+i+')">'
+        +'<div class="lecon-check">'+(isDone?'✓':'')+'</div>'
+        +'<span style="font-size:13px">'+(i+1)+'. '+lecon+'</span>'
+        +'</div>';
+    });
+  }
+  document.getElementById('espace-content').innerHTML=content;
+}
+
+function toggleLecon(code,idx){
+  var prog=JSON.parse(localStorage.getItem('ft_prog_'+code)||'{}');
+  prog['l'+idx]=!prog['l'+idx];
+  localStorage.setItem('ft_prog_'+code,JSON.stringify(prog));
+  renderEspace();
+}
+
+// ══ ADMIN RENDU ═════════════════════════════════════════════
+function renderInscriptions(){
+  var el=document.getElementById('ins-body');if(!el)return;
+  if(!DB.inscriptions.length){el.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--text3)">Aucune inscription</td></tr>';return;}
+  el.innerHTML=DB.inscriptions.map(function(i){
+    var c=CATALOGUE.find(function(x){return x.id===i.coursId;})||PACKS.find(function(x){return x.id===i.coursId;})||{emoji:'',titre:i.coursTitre||i.coursId};
+    return '<tr><td><strong>'+i.nom+'</strong></td><td>'+(c.emoji||'')+' '+(c.titre||i.coursId)+'</td>'
+      +'<td><a href="https://wa.me/'+i.tel.replace(/[^0-9]/g,'')+'" target="_blank" style="color:var(--blue)">'+i.tel+'</a></td>'
+      +'<td><strong style="color:var(--gold)">'+i.code+'</strong></td>'
+      +'<td style="color:var(--green)">'+(i.prix?(i.prix.toLocaleString('fr-FR')+' F'):'—')+'</td>'
+      +'<td style="font-size:11px">'+new Date(i.date).toLocaleDateString('fr-FR')+'</td>'
+      +'<td><span class="tag tag-'+(i.statut==='confirme'?'green':'gold')+'">'+i.statut+'</span></td>'
+      +'<td><button class="btn btn-green btn-sm" onclick="confirmerIns(\''+i.id+'\')">✅ Confirm.</button></td>'
+      +'</tr>';
+  }).join('');
+}
+
+function confirmerIns(id){
+  var ins=DB.inscriptions.find(function(x){return x.id===id;});if(!ins)return;
+  ins.statut='confirme';
+  if(window.FB&&window.FB.db&&id)try{window.FB.updateDoc(window.FB.doc(window.FB.db,'ft_inscriptions',id),{statut:'confirme'});}catch(e){}
+  renderInscriptions();toast('✅ Confirmé — Code: '+ins.code,'ok');
+}
+
+function renderCertificats(){
+  var el=document.getElementById('cert-body');if(!el)return;
+  if(!DB.certificats.length){el.innerHTML='<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3)">Aucun certificat</td></tr>';return;}
+  el.innerHTML=DB.certificats.map(function(c){
+    return '<tr><td><strong style="color:var(--blue)">'+c.num+'</strong></td><td>'+c.eleve+'</td><td>'+c.cours+'</td>'
+      +'<td><strong style="color:var(--green)">'+c.score+'%</strong></td>'
+      +'<td style="font-size:11px">'+new Date(c.date).toLocaleDateString('fr-FR')+'</td></tr>';
+  }).join('');
+}
+
+function renderAdmCatalogue(){
+  var el=document.getElementById('adm-cat-grid');if(!el)return;
+  el.innerHTML=CATALOGUE.map(function(c){
+    return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px">'
+      +'<div style="font-size:22px;margin-bottom:8px">'+c.emoji+'</div>'
+      +'<div style="font-size:12px;font-weight:700;margin-bottom:4px">'+c.titre+'</div>'
+      +'<div style="font-size:10px;color:var(--text3)">'+NIVEAUX[c.niveau]+' · '+c.duree+' · '+c.lecons.length+' leçons</div>'
+      +'<div style="font-size:12px;color:var(--gold);font-weight:700;margin-top:6px">'+PRIX[c.niveau].toLocaleString('fr-FR')+' F</div>'
+      +'</div>';
+  }).join('');
+}
+
+function renderLastIns(){
+  var el=document.getElementById('last-ins');if(!el)return;
+  el.innerHTML=DB.inscriptions.slice(0,4).map(function(i){
+    return '<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12px"><strong>'+i.nom+'</strong> — '+(i.coursTitre||i.coursId)+'<br><span style="color:var(--text3);font-size:10px">'+new Date(i.date).toLocaleDateString('fr-FR')+'</span></div>';
+  }).join('')||'<div style="color:var(--text3)">Aucune inscription</div>';
+}
+
+function renderLastCert(){
+  var el=document.getElementById('last-cert');if(!el)return;
+  el.innerHTML=DB.certificats.slice(0,4).map(function(c){
+    return '<div style="padding:6px 0;border-bottom:1px solid var(--border);font-size:12px"><strong style="color:var(--gold)">'+c.num+'</strong> — '+c.eleve+'<br><span style="color:var(--text3);font-size:10px">'+c.cours+'</span></div>';
+  }).join('')||'<div style="color:var(--text3)">Aucun certificat</div>';
+}
+
+function exportCSV(){
+  var csv='Nom,Formation,Telephone,Code,Montant,Date,Statut\n';
+  DB.inscriptions.forEach(function(i){csv+=i.nom+','+(i.coursTitre||i.coursId)+','+i.tel+','+i.code+','+(i.prix||0)+','+new Date(i.date).toLocaleDateString('fr-FR')+','+i.statut+'\n';});
+  var a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='inscriptions_formatech.csv';a.click();
+}
+
+// ══ INIT ════════════════════════════════════════════════════
+(function init(){
+  renderCatalogue();
+  renderPacks();
+  renderQuizListe();
+  // Exposer sur window
+  var fns=['showView','admPage','openModal','closeModal','loginAdmin','logoutAdmin','closeAdmin','loginEleve','logoutEleve','filterCat','inscrireCours','soumettre_inscription','filterMedia','ouvrirMedia','closeLecteur','publierMedia','delMedia','setTab','handleFile','handleDrop','previewYT','renderQuizListe','demarrerQuiz','choisirReponse','suivantQuestion','confirmerIns','exportCSV','openAdminLogin','toggleLecon'];
+  fns.forEach(function(f){if(typeof window[f]==='undefined')window[f]=eval(f);});
+  console.log('FormaTech Pro pret — 25 cours, 6 packs, 3 quiz');
+})();
+</script>
+</body>
+</html>

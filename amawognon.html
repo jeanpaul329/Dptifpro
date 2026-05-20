@@ -1,0 +1,2475 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Amawo Gnon</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#C9A84C;--gold2:#e6c96e;--green:#2d4a3e;--green2:#4a7c59;--rose:#f87171;--bg:#0a1a0e;--surface:#111d14;--surface2:#1a2d1e;--border:#2a3d2e;--border2:#3d5c42;--text:#f0ede6;--text2:#a8c4ac;--text3:#6b8a6f;--emerald:#06d6a0;--sky:#38bdf8;--amber:#fbbf24}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+/* NAV */
+.navbar{position:sticky;top:0;z-index:500;background:rgba(10,26,14,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;gap:16px}
+.nav-logo{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--gold);white-space:nowrap}
+.nav-links{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-link{padding:6px 12px;border:none;background:transparent;color:var(--text2);border-radius:8px;cursor:pointer;font-size:13px;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:all .2s}
+.nav-link:hover{background:rgba(201,168,76,.08);color:var(--text)}
+.nav-link.active{background:rgba(201,168,76,.12);color:var(--gold);font-weight:600}
+/* VIEWS */
+.view{display:none;min-height:calc(100vh - 56px)}
+.view.active{display:block}
+/* SECTIONS */
+.section{max-width:900px;margin:0 auto;padding:40px 20px}
+.section-badge{display:inline-block;padding:4px 14px;border-radius:20px;background:rgba(201,168,76,.12);color:var(--gold2);font-size:12px;font-weight:600;letter-spacing:1px;margin-bottom:14px}
+.section-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--text);margin-bottom:8px}
+.section-title .gold{color:var(--gold)}
+.divider{width:48px;height:3px;background:linear-gradient(90deg,var(--gold),transparent);border-radius:2px;margin:14px 0 28px}
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--green),#1a3d24);padding:60px 20px;text-align:center}
+.hero h1{font-family:'Playfair Display',serif;font-size:36px;color:var(--text);margin-bottom:12px}
+.hero p{color:var(--text2);font-size:15px;max-width:500px;margin:0 auto 24px}
+/* GRID */
+.grid-3{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px}
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;transition:all .2s}
+.card:hover{border-color:var(--border2);transform:translateY(-2px)}
+/* MODULES */
+.mod-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;cursor:pointer;transition:all .2s}
+.mod-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.mod-emoji{font-size:40px;margin-bottom:12px}
+.mod-titre{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px}
+.mod-desc{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:14px}
+.mod-prix{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--gold)}
+.mod-fcfa{font-size:11px;color:var(--text3)}
+.mod-dur{font-size:11px;color:var(--text3);margin-top:4px}
+/* BTNS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-gold{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0a1a0e}
+.btn-gold:hover{filter:brightness(1.1)}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text2)}
+.btn-outline:hover{border-color:var(--gold);color:var(--gold)}
+.btn-green{background:var(--green2);color:#fff}
+.btn-red{background:rgba(248,113,113,.15);color:var(--rose);border:1px solid rgba(248,113,113,.2)}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-full{width:100%;justify-content:center}
+/* PRODUITS */
+.produit-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .2s}
+.produit-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.produit-img{height:140px;display:flex;align-items:center;justify-content:center;background:var(--surface2);font-size:52px}
+.produit-body{padding:14px}
+.produit-name{font-weight:700;font-size:14px;margin-bottom:4px}
+.produit-price{color:var(--gold);font-weight:700;font-size:16px;font-family:'Playfair Display',serif}
+/* CART */
+.cart-badge{position:fixed;bottom:24px;right:20px;z-index:800;background:var(--gold);color:#0a1a0e;border:none;border-radius:24px;padding:10px 18px;font-weight:700;font-size:14px;cursor:pointer;display:none;box-shadow:0 4px 20px rgba(201,168,76,.4)}
+/* FORMS */
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase}
+.form-input{width:100%;padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s}
+.form-input:focus{border-color:var(--gold)}
+.form-input select option{background:var(--surface)}
+.form-row{display:grid;gap:12px}
+.fr2{grid-template-columns:1fr 1fr}
+/* MODALS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9000;display:none;align-items:center;justify-content:center;padding:16px}
+.overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:18px;width:100%;max-height:92vh;overflow-y:auto}
+.modal-hdr{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-weight:700;font-size:16px;font-family:'Playfair Display',serif;color:var(--gold)}
+.modal-close{background:transparent;border:none;color:var(--text3);font-size:18px;cursor:pointer;line-height:1}
+.modal-body{padding:20px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+/* ADMIN */
+.screen-admin{display:none;min-height:100vh;background:var(--bg)}
+.screen-admin.active{display:flex;flex-direction:column}
+.admin-topbar{height:56px;background:var(--surface);border-bottom:1px solid var(--border2);display:flex;align-items:center;padding:0 20px;gap:12px}
+.admin-layout{display:flex;flex:1;overflow:hidden;height:calc(100vh - 56px)}
+.admin-sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;padding:12px 0}
+.adm-ns{font-size:9px;font-weight:700;color:var(--text3);letter-spacing:2px;text-transform:uppercase;padding:14px 16px 6px}
+.adm-ni{display:flex;align-items:center;gap:9px;padding:8px 16px;cursor:pointer;font-size:13px;color:var(--text2);border-left:3px solid transparent;transition:all .15s}
+.adm-ni:hover{background:rgba(201,168,76,.05);color:var(--text)}
+.adm-ni.active{background:rgba(201,168,76,.08);color:var(--gold);border-left-color:var(--gold)}
+.adm-ni .ic{width:18px;text-align:center;font-size:14px}
+.admin-content{flex:1;overflow-y:auto;padding:24px}
+.adm-page{display:none}
+.adm-page.active{display:block}
+.adm-ph{margin-bottom:20px}
+.adm-pt{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:4px}
+.adm-ps{font-size:13px;color:var(--text3)}
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:24px}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--c,var(--gold)),transparent);opacity:.06}
+.kpi-v{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--text)}
+.kpi-l{font-size:12px;color:var(--text3);margin-top:2px}
+.kpi-i{position:absolute;top:12px;right:14px;font-size:22px;opacity:.4}
+/* TABLES */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 12px;text-align:left;font-size:12px;color:var(--text3);font-weight:600;letter-spacing:.5px;border-bottom:1px solid var(--border2)}
+td{padding:10px 12px;font-size:13px;border-bottom:1px solid var(--border);color:var(--text2)}
+tr:hover td{background:rgba(255,255,255,.02)}
+/* TAGS */
+.tag{display:inline-block;padding:3px 8px;border-radius:6px;font-size:11px;font-weight:700}
+.tag-green{background:rgba(6,214,160,.12);color:var(--emerald)}
+.tag-gold{background:rgba(201,168,76,.12);color:var(--gold2)}
+.tag-red{background:rgba(248,113,113,.12);color:var(--rose)}
+.tag-blue{background:rgba(56,189,248,.12);color:var(--sky)}
+/* MEDIA CARDS */
+.media-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.media-thumb{height:120px;display:flex;align-items:center;justify-content:center;background:var(--surface2);font-size:40px;cursor:pointer}
+.media-info{padding:12px}
+/* PROG */
+.prog-wrap{background:var(--border);border-radius:4px;height:6px;margin-top:10px;display:none}
+.prog-fill{height:100%;background:var(--gold);border-radius:4px;width:0;transition:width .3s}
+/* TEMOD */
+.temo-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px}
+/* TOAST */
+#toast-container{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--surface);border:1px solid var(--border2);color:var(--text);padding:10px 18px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.3);animation:toastIn .3s;pointer-events:all}
+.toast.ok{border-color:var(--emerald);color:var(--emerald)}
+.toast.err{border-color:var(--rose);color:var(--rose)}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <div class="nav-logo">🌿 Amawo Gnon</div>
+  <div class="nav-links">
+    <button class="nav-link active" onclick="showView('home',this)">Accueil</button>
+    <button class="nav-link" onclick="showView('formations',this)">Formations</button>
+    <button class="nav-link" onclick="showView('medias',this)">Médiathèque</button>
+    <button class="nav-link" onclick="showView('clinique',this)">Clinique</button>
+    <button class="nav-link" onclick="showView('boutique',this)">Boutique</button>
+    <button class="nav-link" onclick="showView('prestations',this)">Prestations</button>
+    <button class="nav-link" onclick="showView('temoignages',this)">Avis</button>
+    <button class="nav-link" onclick="showView('bilan',this)">🩺 Bilan</button>
+  </div>
+  <div style="margin-left:auto;display:flex;gap:8px">
+    <button class="btn btn-outline btn-sm" onclick="openModal('m-eleve-login')">🎓 Mon Espace</button>
+    <button class="btn btn-gold btn-sm" onclick="openModal('m-admin-login')">⚿️ Admin</button>
+  </div>
+</nav>
+
+<!-- VUE ACCUEIL -->
+<div class="view active" id="view-home">
+  <div class="hero">
+    <div style="font-size:52px;margin-bottom:16px">🌿</div>
+    <h1>Amawo <span style="color:var(--gold)">Gnon</span></h1>
+    <p>Cabinet de réflexologie et de Massage</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-gold" onclick="showView('formations',null)">🎓 Voir les formations</button>
+      <button class="btn btn-outline" onclick="showView('clinique',null)">💊 Prendre RDV</button>
+      <button class="btn btn-outline" onclick="showView('bilan',null)">🩺 Bilan santé</button>
+    </div>
+  </div>
+  <div class="section">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px">
+      <div class="card" style="padding:20px;text-align:center">
+        <div style="font-size:32px;margin-bottom:8px">🎓</div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:4px">5 Formations</div>
+        <div style="font-size:12px;color:var(--text3)">Réflexologie et Massage</div>
+      </div>
+      <div class="card" style="padding:20px;text-align:center">
+        <div style="font-size:32px;margin-bottom:8px">🩺</div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:4px">Clinique Virtuelle</div>
+        <div style="font-size:12px;color:var(--text3)">Consultations en ligne</div>
+      </div>
+      <div class="card" style="padding:20px;text-align:center">
+        <div style="font-size:32px;margin-bottom:8px">🌿</div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:4px">Boutique Naturelle</div>
+        <div style="font-size:12px;color:var(--text3)">Produits artisanaux</div>
+      </div>
+      <div class="card" style="padding:20px;text-align:center">
+        <div style="font-size:32px;margin-bottom:8px">📱</div>
+        <div style="font-weight:700;font-size:15px;margin-bottom:4px">WhatsApp Direct</div>
+        <div style="font-size:12px;color:var(--text3)">+229 01 40 60 21 26</div>
+      </div>
+    </div>
+    <div style="margin-top:32px;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+      <div style="flex:1;min-width:200px">
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gold);margin-bottom:4px">Amawo Gnon</div>
+        <div style="font-size:13px;color:var(--text2)">Amawo Gnon</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:4px">+229 01 40 60 21 26 · amawognon@gmail.com</div>
+      </div>
+      <a href="https://wa.me/2290140602126" target="_blank" style="margin-left:auto">
+        <button class="btn btn-green">📲 WhatsApp direct</button>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- VUE FORMATIONS -->
+<div class="view" id="view-formations">
+  <div class="section">
+    <div class="section-badge">🎓 Phase 1 — Formations</div>
+    <h2 class="section-title">Nos <span class="gold">Formations</span> Naturelles</h2>
+    <div class="divider"></div>
+    <div class="grid-3" id="formations-grid"></div>
+  </div>
+</div>
+
+<!-- VUE MEDIATHÈQUE -->
+<div class="view" id="view-medias">
+  <div class="section">
+    <div class="section-badge">🎬 Phase 1 — Médiathèque</div>
+    <h2 class="section-title">Médias <span class="gold">&amp; Ressources</span></h2>
+    <div class="divider"></div>
+    <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap" id="media-filters">
+      <button class="btn btn-sm btn-gold" onclick="setMediaFilter('all',this)">Tous</button>
+      <button class="btn btn-sm btn-outline" onclick="setMediaFilter('video',this)">🎬 Vidéos</button>
+      <button class="btn btn-sm btn-outline" onclick="setMediaFilter('youtube',this)">▶️ YouTube</button>
+      <button class="btn btn-sm btn-outline" onclick="setMediaFilter('pdf',this)">📄 PDF</button>
+    </div>
+    <div class="grid-3" id="medias-grid"></div>
+  </div>
+</div>
+
+<!-- VUE CLINIQUE -->
+<div class="view" id="view-clinique">
+  <div class="section">
+    <div class="section-badge">🩺 Phase 2 — Clinique Virtuelle</div>
+    <h2 class="section-title">Consultation <span class="gold">Naturelle</span></h2>
+    <div class="divider"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:600px">
+      <div class="card" style="padding:24px;text-align:center;cursor:pointer" onclick="openModal('m-consult-presen')">
+        <div style="font-size:36px;margin-bottom:10px">🏥</div>
+        <div style="font-weight:700;margin-bottom:6px">Présentiel</div>
+        <div style="font-size:12px;color:var(--text3)">RDV à Azovè</div>
+      </div>
+      <div class="card" style="padding:24px;text-align:center;cursor:pointer" onclick="openModal('m-consult-dist')">
+        <div style="font-size:36px;margin-bottom:10px">📱</div>
+        <div style="font-weight:700;margin-bottom:6px">Distance</div>
+        <div style="font-size:12px;color:var(--text3)">Par WhatsApp/Tél</div>
+      </div>
+    </div>
+    <div id="suivi-section" style="margin-top:28px;display:none">
+      <h3 style="font-family:'Playfair Display',serif;font-size:18px;color:var(--gold);margin-bottom:14px">Suivi de traitement</h3>
+      <div style="display:flex;gap:10px">
+        <input class="form-input" id="suivi-code" placeholder="Votre code patient" style="max-width:280px">
+        <button class="btn btn-gold" onclick="rechercherSuivi()">Rechercher</button>
+      </div>
+      <div id="suivi-result" style="margin-top:14px"></div>
+    </div>
+    <button class="btn btn-outline btn-sm" style="margin-top:20px" onclick="document.getElementById('suivi-section').style.display='block'">🔍 Suivre mon traitement</button>
+  </div>
+</div>
+
+<!-- VUE BOUTIQUE -->
+<div class="view" id="view-boutique">
+  <div class="section">
+    <div class="section-badge">🛒 Phase 3 — Boutique</div>
+    <h2 class="section-title">Produits <span class="gold">Naturels</span></h2>
+    <div class="divider"></div>
+    <div class="grid-3" id="boutique-grid"></div>
+  </div>
+<div class="view" id="view-prestations"><div class="section"><div class="section-badge">📋 Prestations</div><h2 class="section-title">Nos <span class="gold">Prestations</span></h2><p class="section-sub">Réservez directement via WhatsApp</p><div class="divider"></div><div id="prest-filtres" style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:28px"></div><div class="grid-3" id="prestations-grid"></div><div id="prest-empty" style="display:none;text-align:center;padding:60px;color:var(--text3)"><div style="font-size:48px;margin-bottom:16px">📋</div><div style="font-size:18px;font-weight:600">Aucune prestation disponible</div></div></div></div>
+
+  <button class="cart-badge" id="cart-badge" onclick="openModal('m-panier')">🛒 Panier (<span id="cart-count">0</span>)</button>
+</div>
+
+<!-- VUE TÉMOIGNAGES -->
+<div class="view" id="view-temoignages">
+  <div class="section">
+    <div class="section-badge">⭐ Témoignages</div>
+    <h2 class="section-title">Ce que disent nos <span class="gold">clients</span></h2>
+    <div class="divider"></div>
+    <div class="grid-2" id="temoignages-grid" style="margin-top:28px"></div>
+    <div style="text-align:center;margin-top:32px">
+      <button class="btn btn-outline" onclick="openModal('m-temoignage')">✍️ Laisser un avis</button>
+    </div>
+  </div>
+</div>
+
+<!-- VUE BILAN SANTÉ -->
+<div class="view" id="view-bilan">
+  <div class="section">
+    <div class="section-badge">🩺 Bilan Bien-être</div>
+    <h2 class="section-title">Votre Bilan <span class="gold">Personnalisé</span></h2>
+    <div class="divider"></div>
+    <p style="color:var(--text2);text-align:center;margin-bottom:28px;font-size:14px">Renseignez vos données pour un rapport basé sur la réflexologie et massage africaine.</p>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:600px;margin:0 auto">
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Nom complet</div><input class="form-input" id="bil-nom" placeholder="Votre nom"></div>
+        <div class="form-group"><div class="form-label">Âge</div><input class="form-input" type="number" id="bil-age" placeholder="35" min="1" max="120"></div>
+      </div>
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Sexe</div>
+          <select class="form-input" id="bil-sexe"><option value="">Sélectionner</option><option value="Homme">Homme</option><option value="Femme">Femme</option></select>
+        </div>
+        <div class="form-group"><div class="form-label">Poids (kg)</div><input class="form-input" type="number" id="bil-poids" placeholder="70"></div>
+      </div>
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Taille (cm)</div><input class="form-input" type="number" id="bil-taille" placeholder="170"></div>
+        <div class="form-group"><div class="form-label">Tension artérielle</div><input class="form-input" id="bil-tension" placeholder="12/8"></div>
+      </div>
+      <div class="form-group"><div class="form-label">Symptômes / Plaintes</div><textarea class="form-input" id="bil-symptomes" rows="3" placeholder="Décrivez vos symptômes, douleurs..."></textarea></div>
+      <div class="form-group"><div class="form-label">Antécédents médicaux</div><textarea class="form-input" id="bil-antecedents" rows="2" placeholder="Diabète, hypertension, allergies..."></textarea></div>
+      <div class="form-group"><div class="form-label">Objectifs de santé</div><textarea class="form-input" id="bil-objectifs" rows="2" placeholder="Perdre du poids, soulager douleurs..."></textarea></div>
+      <div style="border-top:1px solid var(--border);padding-top:16px;margin-bottom:20px">
+        <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:var(--text2)">➕ Données personnalisées</div>
+        <div id="bil-custom-fields"></div>
+        <button class="btn btn-outline btn-sm" onclick="ajouterChampBilan()" style="margin-top:8px">+ Ajouter un champ</button>
+      </div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-outline" style="flex:1" onclick="resetBilan()">🔄 Réinitialiser</button>
+        <button class="btn btn-gold" style="flex:2" onclick="genererBilanSante()">📊 Générer mon rapport</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VUE ESPACE APPRENANT -->
+<div class="view" id="view-espace">
+  <div class="section">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px">
+      <div>
+        <div class="section-badge">🎓 Mon Espace</div>
+        <h2 class="section-title" id="eleve-nom-titre">Bienvenue</h2>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="deconnecterEleve()">Déconnexion</button>
+    </div>
+    <div id="espace-content"></div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="screen-admin" id="screen-admin">
+  <div class="admin-topbar">
+    <div style="font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--gold)">🌿 Admin Amawo Gnon</div>
+    <div style="font-size:12px;color:var(--text2)" id="adm-user"></div>
+    <div style="margin-left:auto;display:flex;gap:10px">
+      <button class="btn btn-outline btn-sm" onclick="showView('home',null);closeAdmin()">🌍 Site public</button>
+      <button class="btn btn-sm btn-red" onclick="logoutAdmin()">Déconnexion</button>
+    </div>
+  </div>
+  <div class="admin-layout">
+    <nav class="admin-sidebar">
+      <div class="adm-ns">Tableau de bord</div>
+      <div class="adm-ni active" onclick="admPage('dashboard',this)"><span class="ic">📊</span>Dashboard</div>
+      <div class="adm-ns">Contenu</div>
+      <div class="adm-ni" onclick="admPage('formations-adm',this)"><span class="ic">🎓</span>Formations</div>
+      <div class="adm-ni" onclick="admPage('inscriptions',this)"><span class="ic">📋</span>Inscriptions</div>
+      <div class="adm-ni" onclick="admPage('medias-adm',this)"><span class="ic">🎬</span>Médiathèque</div>
+      <div class="adm-ni" onclick="admPage('consultations',this)"><span class="ic">🩺</span>Consultations</div>
+      <div class="adm-ni" onclick="admPage('produits-adm',this)"><span class="ic">🌿</span>Produits</div>
+      <div class="adm-ni" onclick="admPage('prestations-adm',this)"><span class="ic">📋</span>Prestations</div>
+      <div class="adm-ni" onclick="admPage('finances',this)"><span class="ic">📊</span>Finances</div>
+      <div class="adm-ni" onclick="admPage('commandes',this)"><span class="ic">📦</span>Commandes</div>
+      <div class="adm-ni" onclick="admPage('temoignages-adm',this)"><span class="ic">⭐</span>Témoignages</div>
+      <div class="adm-ni" onclick="admPage('chat-adm',this)"><span class="ic">💬</span>Chat</div>
+      <div class="adm-ns">Paramètres</div>
+      <div class="adm-ni" onclick="admPage('parametres',this)"><span class="ic">⚙️</span>Paramètres</div>
+    </nav>
+    <div class="admin-content">
+      <!-- DASHBOARD -->
+      <div class="adm-page active" id="adm-dashboard">
+        <div class="adm-ph"><div class="adm-pt">📊 Dashboard</div><div class="adm-ps" id="adm-date"></div></div>
+        <div class="kpi-grid">
+          <div class="kpi" style="--c:var(--gold)"><div class="kpi-v" id="k-ins">0</div><div class="kpi-l">Inscriptions</div><div class="kpi-i">📋</div></div>
+          <div class="kpi" style="--c:var(--sky)"><div class="kpi-v" id="k-med">0</div><div class="kpi-l">Médias</div><div class="kpi-i">🎬</div></div>
+          <div class="kpi" style="--c:var(--emerald)"><div class="kpi-v" id="k-produits">0</div><div class="kpi-l">Produits</div><div class="kpi-i">🌿</div></div>
+          <div class="kpi" style="--c:var(--amber)"><div class="kpi-v" id="k-cmd">0</div><div class="kpi-l">Commandes</div><div class="kpi-i">📦</div></div>
+          <div class="kpi" style="--c:var(--rose)"><div class="kpi-v" id="k-consult">0</div><div class="kpi-l">Consultations</div><div class="kpi-i">🩺</div></div>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px">
+          <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--text);margin-bottom:14px">Dernières commandes</div>
+          <table><thead><tr><th>Produits</th><th>Total</th><th>Date</th><th>Statut</th></tr></thead>
+          <tbody id="dash-commandes"><tr><td colspan="4" style="text-align:center;padding:30px;color:var(--text3)">Aucune commande</td></tr></tbody></table>
+        </div>
+      </div>
+
+      <!-- FORMATIONS ADMIN -->
+      <div class="adm-page" id="adm-formations-adm">
+        <div class="adm-ph" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <div><div class="adm-pt">🎓 Gestion des Formations</div><div class="adm-ps">Modifier les tarifs, descriptions et modules disponibles</div></div>
+          <button class="btn btn-gold btn-sm" onclick="ouvrirModalFormation()">+ Ajouter formation</button>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px" id="adm-formations-grid"></div>
+      </div>
+
+      <!-- INSCRIPTIONS -->
+      <div class="adm-page" id="adm-inscriptions">
+        <div class="adm-ph" style="display:flex;align-items:center;justify-content:space-between">
+          <div><div class="adm-pt">📋 Inscriptions</div><div class="adm-ps">Liste des inscriptions aux formations</div></div>
+        </div>
+        <div class="tbl-wrap"><table><thead><tr><th>Nom</th><th>Formation</th><th>Tel</th><th>Mode</th><th>Date</th><th>Statut</th></tr></thead>
+        <tbody id="adm-ins-tbody"><tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text3)">Aucune inscription</td></tr></tbody></table></div>
+      </div>
+
+      <!-- MEDIATHÈQUE ADMIN -->
+      <div class="adm-page" id="adm-medias-adm">
+        <div class="adm-ph" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <div><div class="adm-pt">🎬 Médiathèque</div><div class="adm-ps">Ajouter et gérer les médias</div></div>
+          <button id="btn-upload-media" class="btn btn-gold btn-sm" onclick="openModal('m-upload')">+ Ajouter média</button>
+        </div>
+        <div class="grid-3" id="adm-medias-grid"></div>
+      </div>
+
+      <!-- CONSULTATIONS ADMIN -->
+      <div class="adm-page" id="adm-consultations">
+        <div class="adm-ph"><div class="adm-pt">🩺 Consultations</div><div class="adm-ps">Demandes de consultation reçues</div></div>
+        <div class="tbl-wrap"><table><thead><tr><th>Nom</th><th>Type</th><th>Motif</th><th>Contact</th><th>Date</th></tr></thead>
+        <tbody id="adm-consult-tbody"><tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3)">Aucune consultation</td></tr></tbody></table></div>
+      </div>
+
+      <!-- PRODUITS ADMIN -->
+      <div class="adm-page" id="adm-produits-adm">
+        <div class="adm-ph" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
+          <div><div class="adm-pt">🌿 Gestion des Produits</div><div class="adm-ps">Ajouter, modifier et supprimer les produits</div></div>
+          <button class="btn btn-gold btn-sm" onclick="ouvrirModalProduit()">+ Nouveau produit</button>
+        </div>
+<div class="adm-page" id="adm-prestations-adm">
+  <!-- En-tête -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">💆 Gestion des Prestations</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:3px">Ajoutez, modifiez et gérez vos prestations disponibles</div>
+    </div>
+    <button class="btn btn-gold btn-sm" onclick="ouvrirModalPrestation()">+ Nouvelle prestation</button>
+  </div>
+
+  <!-- Grille des prestations admin -->
+  <div class="grid-3" id="adm-prestations-grid">
+    <div style="grid-column:span 3;text-align:center;padding:60px;color:var(--text3)">
+      <div style="font-size:40px;margin-bottom:12px">💆</div>
+      <div style="font-size:15px;font-weight:600;margin-bottom:6px">Aucune prestation</div>
+      <div style="font-size:13px;margin-bottom:16px">Cliquez "+ Nouvelle prestation" pour commencer</div>
+      <button class="btn btn-gold btn-sm" onclick="ouvrirModalPrestation()">+ Ajouter ma première prestation</button>
+    </div>
+  </div>
+</div>
+
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px" id="adm-produits-grid"></div>
+      </div>
+
+      <!-- COMMANDES ADMIN -->
+      <div class="adm-page" id="adm-commandes">
+        <div class="adm-ph"><div class="adm-pt">📦 Commandes</div><div class="adm-ps">Toutes les commandes de la boutique</div></div>
+<div class="adm-page" id="adm-finances">
+
+  <!-- En-tête -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+    <div>
+      <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700">📊 Gestion des Finances</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:3px">Recettes, dépenses, salaires et solde en temps réel</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-gold btn-sm" onclick="openModal('m-fin-ajout')">+ Ajouter opération</button>
+      <button class="btn btn-outline btn-sm" onclick="genererRapportFinances()">📄 Rapport PDF</button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px">
+    <div style="background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.3);border-radius:12px;padding:18px;text-align:center">
+      <div style="font-size:24px;font-weight:700;color:#2ea043" id="kf-recettes">0 F</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:4px">💰 Recettes</div>
+    </div>
+    <div style="background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);border-radius:12px;padding:18px;text-align:center">
+      <div style="font-size:24px;font-weight:700;color:#f85149" id="kf-depenses">0 F</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:4px">💸 Dépenses</div>
+    </div>
+    <div style="background:rgba(229,160,13,.1);border:1px solid rgba(229,160,13,.3);border-radius:12px;padding:18px;text-align:center">
+      <div style="font-size:24px;font-weight:700;color:#d29922" id="kf-salaires">0 F</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:4px">💼 Salaires</div>
+    </div>
+    <div style="background:rgba(47,129,247,.1);border:1px solid rgba(47,129,247,.3);border-radius:12px;padding:18px;text-align:center">
+      <div style="font-size:24px;font-weight:700;color:#2f81f7" id="kf-solde">0 F</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:4px">📈 Solde net</div>
+    </div>
+  </div>
+
+  <!-- Filtres période + type -->
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center">
+    <div style="display:flex;gap:3px;background:var(--surface2);padding:4px;border-radius:10px">
+      <button class="adm-tab active" id="fin-tab-jour" onclick="finTab('jour',this)">Aujourd'hui</button>
+      <button class="adm-tab" onclick="finTab('semaine',this)">Semaine</button>
+      <button class="adm-tab" onclick="finTab('mois',this)">Mois</button>
+      <button class="adm-tab" onclick="finTab('annee',this)">Année</button>
+      <button class="adm-tab" onclick="finTab('all',this)">Tout</button>
+    </div>
+    <div style="display:flex;gap:3px;background:var(--surface2);padding:4px;border-radius:10px">
+      <button class="adm-tab active" onclick="finTypeTab('all',this)">Tout</button>
+      <button class="adm-tab" onclick="finTypeTab('recette',this)">💰 Recettes</button>
+      <button class="adm-tab" onclick="finTypeTab('depense',this)">💸 Dépenses</button>
+      <button class="adm-tab" onclick="finTypeTab('salaire',this)">💼 Salaires</button>
+    </div>
+  </div>
+
+  <!-- Tableau -->
+  <div style="overflow-x:auto;border-radius:12px;border:1px solid var(--border)">
+    <table style="width:100%;border-collapse:collapse">
+      <thead>
+        <tr style="background:var(--surface2)">
+          <th style="padding:12px 14px;text-align:left;font-size:12px;font-weight:600;color:var(--text2)">Date</th>
+          <th style="padding:12px 14px;text-align:left;font-size:12px;font-weight:600;color:var(--text2)">Type</th>
+          <th style="padding:12px 14px;text-align:left;font-size:12px;font-weight:600;color:var(--text2)">Libellé</th>
+          <th style="padding:12px 14px;text-align:left;font-size:12px;font-weight:600;color:var(--text2)">Catégorie</th>
+          <th style="padding:12px 14px;text-align:right;font-size:12px;font-weight:600;color:var(--text2)">Montant</th>
+          <th style="padding:12px 14px;text-align:center;font-size:12px;font-weight:600;color:var(--text2)">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="finances-tbody">
+        <tr><td colspan="6" style="text-align:center;padding:50px;color:var(--text3)">
+          <div style="font-size:36px;margin-bottom:10px">📊</div>
+          <div style="font-size:14px;font-weight:600;margin-bottom:6px">Aucune opération</div>
+          <div style="font-size:12px">Cliquez "+ Ajouter opération" pour enregistrer votre première opération</div>
+        </td></tr>
+      </tbody>
+    </table>
+  </div>
+</div><div class="adm-page" id="adm-temoignages-adm">
+        <div class="adm-ph"><div class="adm-pt">⭐ Témoignages</div><div class="adm-ps">Valider et gérer les avis clients</div></div>
+<div class="adm-page" id="adm-chat-adm"><div style="display:grid;grid-template-columns:280px 1fr;gap:0;height:520px;border:1px solid var(--border);border-radius:12px;overflow:hidden"><div style="border-right:1px solid var(--border);overflow-y:auto;background:var(--surface2)"><div style="padding:14px;font-weight:700;font-size:13px;border-bottom:1px solid var(--border)">Conversations</div><div id="chat-list-adm" style="padding:8px"></div></div><div style="display:flex;flex-direction:column"><div id="chat-messages-adm" style="flex:1;overflow-y:auto;padding:14px;background:#e5ddd5;display:flex;flex-direction:column;gap:8px"><div style="text-align:center;color:rgba(0,0,0,.4);font-size:13px;padding:20px">Sélectionnez une conversation</div></div><div style="padding:12px;border-top:1px solid var(--border);display:flex;gap:8px;background:var(--surface)"><input id="adm-msg-input" class="form-input" placeholder="Répondre au client..." style="font-size:13px;flex:1" onkeydown="if(event.key==='Enter')envoyerReponseAdmin()"><button class="btn btn-primary btn-sm" onclick="envoyerReponseAdmin()">Envoyer</button></div></div></div></div>
+
+        <div id="adm-temo-grid"></div>
+      </div>
+
+      <!-- PARAMÈTRES -->
+      <div class="adm-page" id="adm-parametres">
+        <div class="adm-ph"><div class="adm-pt">⚙️ Paramètres</div><div class="adm-ps">Configuration du site</div></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px">
+          <div style="font-size:14px;color:var(--text2);margin-bottom:8px">Contact WhatsApp (Amawo Gnon)</div>
+          <div style="font-size:20px;font-weight:700;color:var(--gold)">+229 01 40 60 21 26</div>
+          <div style="font-size:13px;color:var(--text3);margin-top:4px">amawognon@gmail.com</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODALS ═══ -->
+
+<!-- Modal Formation -->
+<div class="overlay" id="m-formation">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-hdr"><span id="m-forma-title">🎓 Nouvelle Formation</span><button class="modal-close" onclick="closeModal('m-formation')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Emoji *</div><input class="form-input" id="forma-emoji" placeholder="🌿" maxlength="4" style="font-size:20px;text-align:center"></div>
+        <div class="form-group"><div class="form-label">Titre *</div><input class="form-input" id="forma-titre" placeholder="Nom de la formation"></div>
+      </div>
+      <div class="form-group"><div class="form-label">Description *</div><textarea class="form-input" id="forma-desc" rows="2" placeholder="Description courte..."></textarea></div>
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Prix (F CFA) *</div><input class="form-input" type="number" id="forma-prix" placeholder="35000" min="0"></div>
+        <div class="form-group"><div class="form-label">Durée</div><input class="form-input" id="forma-duree" placeholder="8 semaines"></div>
+      </div>
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Niveau</div>
+          <select class="form-input" id="forma-niveau"><option value="Débutant">Débutant</option><option value="Intermédiaire">Intermédiaire</option><option value="Avancé">Avancé</option><option value="Tous niveaux">Tous niveaux</option></select>
+        </div>
+        <div class="form-group"><div class="form-label">Statut</div>
+          <select class="form-input" id="forma-statut"><option value="actif">✅ Disponible</option><option value="complet">🔴 Complet</option><option value="inactif">❌ Masqué</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-formation')">Annuler</button>
+      <button class="btn btn-gold btn-sm" id="btn-save-forma" onclick="sauvegarderFormation()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Inscription -->
+<div class="overlay" id="m-inscription">
+  <div class="modal">
+    <div class="modal-hdr">📝 Inscription à la formation <button class="modal-close" onclick="closeModal('m-inscription')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Nom complet *</div><input class="form-input" id="ins-nom" placeholder="Prénom et nom"></div>
+        <div class="form-group"><div class="form-label">Téléphone *</div><input class="form-input" id="ins-tel" placeholder="+229 ..."></div>
+      </div>
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Email</div><input class="form-input" type="email" id="ins-email" placeholder="email@..."></div>
+        <div class="form-group"><div class="form-label">Mode de paiement</div>
+          <select class="form-input" id="ins-paiement"><option value="mtn">MTN MoMo</option><option value="moov">Moov Money</option><option value="cash">Espèces</option></select>
+        </div>
+      </div>
+      <div class="form-group"><div class="form-label">Formation souhaitée *</div>
+        <select class="form-input" id="ins-formation"><option value="">Sélectionner...</option></select>
+      </div>
+      <div class="form-group"><div class="form-label">Message (optionnel)</div><textarea class="form-input" id="ins-msg" rows="2" placeholder="Questions, disponibilités..."></textarea></div>
+      <div id="ins-paiement-info" style="margin-top:12px;background:var(--surface2);border-radius:10px;padding:14px;font-size:13px"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-inscription')">Annuler</button>
+      <button class="btn btn-gold btn-sm" onclick="soumettreinscription()">✅ Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Consultation Présentiel -->
+<div class="overlay" id="m-consult-presen">
+  <div class="modal">
+    <div class="modal-hdr">🏥 Consultation Présentiel <button class="modal-close" onclick="closeModal('m-consult-presen')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Nom complet *</div><input class="form-input" id="cp-nom" placeholder="Votre nom"></div>
+        <div class="form-group"><div class="form-label">Téléphone *</div><input class="form-input" id="cp-tel" placeholder="+229 ..."></div>
+      </div>
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Date souhaitée</div><input class="form-input" type="date" id="cp-date"></div>
+        <div class="form-group"><div class="form-label">Heure</div><input class="form-input" type="time" id="cp-heure"></div>
+      </div>
+      <div class="form-group"><div class="form-label">Motif de consultation *</div><textarea class="form-input" id="cp-motif" rows="3" placeholder="Décrivez votre problème de santé..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-consult-presen')">Annuler</button>
+      <button class="btn btn-gold btn-sm" onclick="envoyerConsultation('presentiel')">📲 Envoyer via WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Consultation Distance -->
+<div class="overlay" id="m-consult-dist">
+  <div class="modal">
+    <div class="modal-hdr">📱 Consultation à Distance <button class="modal-close" onclick="closeModal('m-consult-dist')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Nom complet *</div><input class="form-input" id="cd-nom" placeholder="Votre nom"></div>
+        <div class="form-group"><div class="form-label">Téléphone *</div><input class="form-input" id="cd-tel" placeholder="+229 ..."></div>
+      </div>
+      <div class="form-group"><div class="form-label">Pays / Ville</div><input class="form-input" id="cd-pays" placeholder="Ex: Côte d'Ivoire, Abidjan"></div>
+      <div class="form-group"><div class="form-label">Motif de consultation *</div><textarea class="form-input" id="cd-motif" rows="3" placeholder="Décrivez votre problème de santé..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-consult-dist')">Annuler</button>
+      <button class="btn btn-gold btn-sm" onclick="envoyerConsultation('distance')">📲 Envoyer via WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Upload Média -->
+<div class="overlay" id="m-upload">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-hdr">📂 Ajouter un média <button class="modal-close" onclick="closeModal('m-upload')">×</button></div>
+    <div class="modal-body">
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button class="btn btn-gold btn-sm" id="tab-file" onclick="setUploadTab('file',this)">📁 Fichier</button>
+        <button class="btn btn-outline btn-sm" id="tab-yt" onclick="setUploadTab('yt',this)">▶️ YouTube</button>
+      </div>
+      <div id="zone-file">
+        <div id="drop-zone" style="border:2px dashed var(--border2);border-radius:12px;padding:30px;text-align:center;cursor:pointer;transition:all .2s" onclick="document.getElementById('file-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--gold)'" ondrop="handleDrop(event)">
+          <div style="font-size:32px;margin-bottom:8px">📁</div>
+          <div id="file-label" style="color:var(--text3);font-size:13px">Cliquer ou déposer un fichier ici</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px">Vidéo (MP4, AVI) ou PDF — max 500MB</div>
+        </div>
+        <input type="file" id="file-input" accept="video/*,.pdf" style="display:none" onchange="handleFileSelect(this)">
+        <div class="prog-wrap" id="prog-wrap"><div class="prog-fill" id="prog-fill"></div></div>
+        <div id="prog-label" style="font-size:12px;color:var(--text3);margin-top:4px;display:none"></div>
+      </div>
+      <div id="zone-yt" style="display:none">
+        <div class="form-group"><div class="form-label">Lien YouTube</div><input class="form-input" id="yt-url" placeholder="https://youtube.com/watch?v=..."></div>
+      </div>
+      <div class="form-group" style="margin-top:14px"><div class="form-label">Titre *</div><input class="form-input" id="up-titre" placeholder="Titre du média"></div>
+      <div class="form-group"><div class="form-label">Description</div><input class="form-input" id="up-desc" placeholder="Description courte"></div>
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Module</div>
+          <select class="form-input" id="up-module"><option value="general">Général</option><option value="reflex">Réflexologie</option><option value="physio">Physiothérapie</option><option value="thes">Tisanes</option><option value="macerat">Macérats</option><option value="savon">Savons</option></select>
+        </div>
+        <div class="form-group"><div class="form-label">Accès</div>
+          <select class="form-input" id="up-acces"><option value="public">Public</option><option value="inscrits">Inscrits seulement</option></select>
+        </div>
+      </div>
+      <div class="form-group"><div class="form-label">Durée</div><input class="form-input" id="up-duree" placeholder="Ex: 45 min"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-upload')">Annuler</button>
+      <button class="btn btn-gold btn-sm" id="btn-publier" onclick="publierMedia()">📤 Publier</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Lecteur -->
+<div class="overlay" id="m-lecteur">
+  <div class="modal" style="max-width:720px">
+    <div class="modal-hdr" id="lecteur-titre">Lecture <button class="modal-close" onclick="closeModal('m-lecteur');document.getElementById('lecteur-embed').innerHTML=''">×</button></div>
+    <div class="modal-body" style="padding:0">
+      <div id="lecteur-embed" style="width:100%;min-height:300px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Témoignage -->
+<div class="overlay" id="m-temoignage">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-hdr">✍️ Laisser un avis <button class="modal-close" onclick="closeModal('m-temoignage')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><div class="form-label">Votre nom</div><input class="form-input" id="temo-nom" placeholder="Prénom et nom"></div>
+      <div class="form-group"><div class="form-label">Formation suivie</div><input class="form-input" id="temo-formation" placeholder="Ex: Réflexologie"></div>
+      <div class="form-group"><div class="form-label">Votre avis *</div><textarea class="form-input" id="temo-texte" rows="4" placeholder="Partagez votre expérience..."></textarea></div>
+      <div class="form-group"><div class="form-label">Note (1-5)</div>
+        <select class="form-input" id="temo-note"><option value="5">⭐⭐⭐⭐⭐ Excellent</option><option value="4">⭐⭐⭐⭐ Très bien</option><option value="3">⭐⭐⭐ Bien</option><option value="2">⭐⭐ Passable</option><option value="1">⭐ Insuffisant</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-temoignage')">Annuler</button>
+      <button class="btn btn-gold btn-sm" onclick="envoyerTemoignage()">✅ Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Panier -->
+<div class="overlay" id="m-panier">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-hdr">🛒 Mon Panier <button class="modal-close" onclick="closeModal('m-panier')">×</button></div>
+    <div class="modal-body">
+      <div id="panier-items"></div>
+      <div id="panier-total" style="display:flex;justify-content:space-between;font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-top:16px;padding-top:14px;border-top:2px solid var(--border)">
+        <span>Total</span><span style="color:var(--gold)" id="panier-total-val">0 F</span>
+      </div>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:8px">
+        <div class="form-group"><div class="form-label">Votre nom (optionnel)</div><input class="form-input" id="cmd-nom" placeholder="Ex: Konou Marie"></div>
+        <div class="form-group"><div class="form-label">Téléphone (optionnel)</div><input class="form-input" id="cmd-tel" placeholder="+229 ..."></div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px">
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="genererBonCommande()">📄 Bon de commande</button>
+        <button class="btn btn-gold" style="flex:2" onclick="validerCommande()">💬 Commander via WhatsApp</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Produit -->
+<div class="overlay" id="m-produit">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-hdr"><span id="m-prod-title">🌿 Nouveau produit</span><button class="modal-close" onclick="closeModal('m-produit')">×</button></div>
+    <div class="modal-body">
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Emoji *</div><input class="form-input" id="prod-emoji" placeholder="🌿" maxlength="4" style="font-size:20px;text-align:center"></div>
+        <div class="form-group"><div class="form-label">Nom du produit *</div><input class="form-input" id="prod-nom" placeholder="Nom du produit"></div>
+      </div>
+      <div class="form-group"><div class="form-label">Description *</div><textarea class="form-input" id="prod-desc" rows="2" placeholder="Description courte..."></textarea></div>
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Prix (F CFA) *</div><input class="form-input" type="number" id="prod-prix" placeholder="0" min="0"></div>
+        <div class="form-group"><div class="form-label">Stock</div><input class="form-input" type="number" id="prod-stock" placeholder="Illimité" min="0"></div>
+      </div>
+      <div class="form-row fr2">
+        <div class="form-group"><div class="form-label">Catégorie</div>
+          <select class="form-input" id="prod-categorie">
+            <option value="huile">Huiles essentielles</option><option value="tisane">Tisanes</option>
+            <option value="savon">Savons</option><option value="gelule">Gélules</option>
+            <option value="pommade">Pommades</option><option value="miel">Miel</option><option value="autre">Autre</option>
+          </select>
+        </div>
+        <div class="form-group"><div class="form-label">Statut</div>
+          <select class="form-input" id="prod-statut"><option value="actif">✅ Disponible</option><option value="rupture">⚠️ Rupture</option><option value="inactif">❌ Masqué</option></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Image du produit</div>
+        <div id="prod-img-preview" style="width:100%;height:100px;border-radius:10px;background:var(--surface2);border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:8px;overflow:hidden;cursor:pointer" onclick="document.getElementById('prod-img-file').click()">
+          <span id="prod-img-placeholder" style="color:var(--text3);font-size:13px">📷 Cliquer pour choisir une image</span>
+          <img id="prod-img-thumb" src="" style="display:none;width:100%;height:100%;object-fit:cover">
+        </div>
+        <input type="file" id="prod-img-file" accept="image/*" style="display:none" onchange="previewProdImg(this)">
+        <input class="form-input" id="prod-image" placeholder="Ou coller un lien image https://..." style="font-size:12px">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline btn-sm" onclick="closeModal('m-produit')">Annuler</button>
+      <button class="btn btn-gold btn-sm" id="btn-save-prod" onclick="sauvegarderProduit()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Login Admin -->
+<div class="overlay" id="m-admin-login">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-hdr">⚿️ Connexion Admin <button class="modal-close" onclick="closeModal('m-admin-login')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><div class="form-label">Identifiant</div><input class="form-input" id="adm-id" placeholder="admin ou Amawo Gnon"></div>
+      <div class="form-group"><div class="form-label">Mot de passe</div><input class="form-input" type="password" id="adm-pw" placeholder="..." onkeydown="if(event.key==='Enter')loginAdmin()"></div>
+      <button class="btn btn-gold btn-full" style="margin-top:8px" onclick="loginAdmin()">Se connecter →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Login Élève -->
+<div class="overlay" id="m-eleve-login">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-hdr">🎓 Mon Espace Apprenant <button class="modal-close" onclick="closeModal('m-eleve-login')">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><div class="form-label">Code d'accès</div><input class="form-input" id="eleve-code" placeholder="Ex: AMA-123456" onkeydown="if(event.key==='Enter')loginEleve()"></div>
+      <button class="btn btn-gold btn-full" style="margin-top:8px" onclick="loginEleve()">Accéder →</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<!-- Firebase -->
+
+
+<script>
+'use strict';
+
+// ═══ DONNÉES ═══
+
+var ADMIN_USERS={
+  'admin':{pw:'ama2026',nom:'Jean Paul BOGNON',role:'admin'},
+  'Amawo Gnon':{pw:'ama2026',nom:'Amawo Gnon',role:'admin'}
+};
+
+var MODULES=[
+  {id:'reflex',emoji:'🦶',titre:'Réflexologie Plantaire',duree:'8 semaines',prix:35000,niveau:'Débutant',desc:'Techniques ancestrales de réflexologie pour soulager douleurs et rééquilibrer l\'énergie du corps.'},
+  {id:'physio',emoji:'💆',titre:'Physiothérapie Naturelle',duree:'10 semaines',prix:45000,niveau:'Intermédiaire',desc:'Méthodes naturelles de physiothérapie pour traiter les troubles musculaires et articulaires.'},
+  {id:'thes',emoji:'🍵',titre:'Fabrication de Thés Médicinaux',duree:'4 semaines',prix:25000,niveau:'Débutant',desc:'Préparation de thés et décoctions à base de plantes africaines pour soigner diverses affections.'},
+  {id:'macerat',emoji:'🧪',titre:'Macérats d\'​Huile',duree:'3 semaines',prix:20000,niveau:'Débutant',desc:'Extraction et préparation d\'​huiles médicinales macérées à partir de plantes locales.'},
+  {id:'savon',emoji:'🧼',titre:'Savons &amp; Pommades',duree:'5 semaines',prix:40000,niveau:'Intermédiaire',desc:'Fabrication artisanale de savons naturels et pommades thérapeutiques traditionnelles.'}
+];
+
+var PRODUITS=[
+  {id:'p1',emoji:'🧪',nom:'Huile de Coco Vierge',prix:5000,desc:'Huile de coco pure, extraite à froid',categorie:'huile',statut:'actif'},
+  {id:'p2',emoji:'🍵',nom:'Tisane Immunité',prix:3000,desc:'Mélange de plantes pour renforcer l\'​immunité',categorie:'tisane',statut:'actif'},
+  {id:'p3',emoji:'🧼',nom:'Savon au Karithé',prix:2000,desc:'Savon naturel au beurre de karité',categorie:'savon',statut:'actif'},
+  {id:'p4',emoji:'🩴',nom:'Pommade Articulaire',prix:4500,desc:'Pommade naturelle pour les douleurs articulaires',categorie:'pommade',statut:'actif'},
+  {id:'p5',emoji:'🍯',nom:'Miel de Forêt',prix:8000,desc:'Miel pur de forêt africaine, non traité',categorie:'miel',statut:'actif'}
+];
+
+var TEMOIGNAGES_DEFAULT=[
+  {nom:'Adjovi Marie',formation:'Réflexologie',texte:'La formation en réflexologie a changé ma vie professionnelle. Merci Amawo Gnon !',note:5,date:'2026-01-15',valide:true},
+  {nom:'Komi Hervé',formation:'Physiothérapie',texte:'Excellent formateur, très pédagogue. Je recommande vivement.',note:5,date:'2026-02-10',valide:true}
+];
+
+// ═══ ÉTAT ═══
+var DB={
+  medias:[],inscriptions:[],consultations:[],commandes:[],
+  temoignages:[].concat(TEMOIGNAGES_DEFAULT),
+  produits:[].concat(PRODUITS),
+  formations:[].concat(MODULES)
+};
+var PANIER=[];
+var _admin=null;
+var _eleve=null;
+var _uploadFile=null;
+var _uploadTab='file';
+var _mediaFilter='all';
+var _mediaProtectUntil=0;
+var _editProduitId=null;
+var _editFormationId=null;
+var _bilCustomFields=[];
+
+// ═══ UTILITAIRES ═══
+
+function toast(msg,type){
+  var c=document.getElementById('toast-container');if(!c)return;
+  var t=document.createElement('div');t.className='toast '+(type||'');t.textContent=msg;
+  c.appendChild(t);
+  setTimeout(function(){t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(function(){try{c.removeChild(t);}catch(e){}},320);},3000);
+}
+function fmtNum(n){return (n||0).toLocaleString('fr-FR');}
+function fmtDate(d){if(!d)return '—';try{return new Date(d).toLocaleDateString('fr-FR');}catch(e){return d;}}
+function openModal(id){var el=document.getElementById(id);if(el)el.classList.add('open');}
+function closeModal(id){var el=document.getElementById(id);if(el)el.classList.remove('open');}
+
+// ═══ NAVIGATION ═══
+
+function showView(id,btn){
+  document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
+  document.querySelectorAll('.nav-link').forEach(function(n){n.classList.remove('active');});
+  var el=document.getElementById('view-'+id);if(el)el.classList.add('active');
+  if(btn)btn.classList.add('active');
+  else{var f=document.querySelector('[onclick*="showView(\''+id+'\'"]');if(f)f.classList.add('active');}
+  if(id==='boutique')renderBoutique();
+  if(id==='formations')renderFormations();
+  if(id==='medias')renderMedias();
+  if(id==='temoignages')renderTemoignages();
+  if(id==='bilan')renderChampsBilan();
+  if(id==='prestations'){ loadAmawo(); setTimeout(renderPrestations, 400); }
+}
+
+// ═══ ADMIN ═══
+
+function loginAdmin(){
+  var id=(document.getElementById('adm-id').value||'').trim();
+  var pw=(document.getElementById('adm-pw').value||'').trim();
+  var u=ADMIN_USERS[id];
+  if(!u||u.pw!==pw){toast('Identifiants incorrects','err');return;}
+  _admin=u;
+  closeModal('m-admin-login');
+  var sa=document.getElementById('screen-admin');if(sa)sa.classList.add('active');
+  var au=document.getElementById('adm-user');if(au)au.textContent='Bonjour, '+u.nom;
+  var d=document.getElementById('adm-date');if(d)d.textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  renderAdmInscriptions();renderAdmMedias();renderAdmCommandes();renderAdmTemoignages();renderAdmProduits();renderAdmFormations();
+  var kp=document.getElementById('k-produits');if(kp)kp.textContent=(DB.produits||[]).length;
+  // Charger données Amawo Gnon après login
+  setTimeout(function(){
+    loadAmawo();
+    renderAdmPrestations();
+    renderFinances();
+  }, 500);
+}
+function logoutAdmin(){
+  _admin=null;
+  var sa=document.getElementById('screen-admin');if(sa)sa.classList.remove('active');
+  showView('home',null);
+}
+function closeAdmin(){
+  var sa=document.getElementById('screen-admin');if(sa)sa.classList.remove('active');
+}
+function admPage(id,el){
+  document.querySelectorAll('.adm-page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.adm-ni').forEach(function(n){n.classList.remove('active');});
+  var p=document.getElementById('adm-'+id);if(p)p.classList.add('active');
+  if(el)el.classList.add('active');
+  if(id==='produits-adm')renderAdmProduits();
+  if(id==='formations-adm')renderAdmFormations();
+  if(id==='inscriptions')renderAdmInscriptions();
+  if(id==='commandes')renderAdmCommandes();
+  if(id==='temoignages-adm')renderAdmTemoignages();
+  if(id==='medias-adm')renderAdmMedias();
+  if(id==='consultations')renderAdmConsultations();
+  if(id==='dashboard'){
+    var kp=document.getElementById('k-produits');if(kp)kp.textContent=DB.produits.length;
+  }
+  if(id==='prestations-adm'){ loadAmawo(); setTimeout(renderAdmPrestations, 400); }
+  if(id==='finances'){ loadAmawo(); setTimeout(renderFinances, 400); }
+  if(id==='chat-adm'){ renderChatListAdmin(); }
+}
+
+// ═══ FIREBASE ═══
+
+function saveToFB(col,data){
+  try{var k='dps_'+col;var a=JSON.parse(localStorage.getItem(k)||'[]');a.unshift(data);localStorage.setItem(k,JSON.stringify(a.slice(0,100)));}catch(ex){}
+  if(!window.FB||!window.FB.ready)return Promise.resolve(null);
+  return window.FB.addDoc(window.FB.collection(window.FB.db,col),data)
+    .then(function(ref){return ref.id;})
+    .catch(function(e){
+      console.error('[Firebase] saveToFB "'+col+'":',e.code,e.message);
+      if(e.code==='permission-denied')toast('Firestore: vérifiez les règles','err');
+      return null;
+    });
+}
+function updateToFB(col,fbId,data){
+  if(!window.FB||!window.FB.ready||!fbId)return;
+  window.FB.updateDoc(window.FB.doc(window.FB.db,col,fbId),data).catch(function(e){console.warn('update:',e.code);});
+}
+function deleteFromFB(col,fbId){
+  if(!window.FB||!window.FB.ready||!fbId)return;
+  window.FB.deleteDoc(window.FB.doc(window.FB.db,col,fbId)).catch(function(e){console.warn('delete:',e.code);});
+}
+
+function loadFromFirebase(){
+  if(!window.FB||!window.FB.ready)return;
+  var FB=window.FB;
+  // Inscriptions
+  FB.onSnapshot(FB.query(FB.collection(FB.db,'ama_inscriptions'),FB.orderBy('date','desc'),FB.limit(200)),function(snap){
+    if(snap.size>0){DB.inscriptions=[];snap.forEach(function(d){var r=d.data();r._id=d.id;DB.inscriptions.push(r);});}
+    var ki=document.getElementById('k-ins');if(ki)ki.textContent=DB.inscriptions.length;
+    if(_admin)renderAdmInscriptions();
+  },function(e){console.warn('ins:',e.code);});
+  // Médias
+  FB.onSnapshot(FB.query(FB.collection(FB.db,'ama_medias'),FB.orderBy('date','desc'),FB.limit(50)),function(snap){
+    if(snap.size>0||(DB.medias.length===0&&(!window._mediaProtectUntil||Date.now()>window._mediaProtectUntil))){
+      DB.medias=[];snap.forEach(function(d){var m=d.data();m._id=d.id;m.id=m.id||d.id;DB.medias.push(m);});
+    }
+    renderMedias();
+    var km=document.getElementById('k-med');if(km)km.textContent=DB.medias.length;
+  },function(e){console.warn('med:',e.code);});
+  // Commandes
+  FB.onSnapshot(FB.query(FB.collection(FB.db,'ama_commandes'),FB.orderBy('date','desc'),FB.limit(100)),function(snap){
+    if(snap.size>0){DB.commandes=[];snap.forEach(function(d){var r=d.data();r._id=d.id;DB.commandes.push(r);});}
+    var kc=document.getElementById('k-cmd');if(kc)kc.textContent=DB.commandes.length;
+    if(_admin)renderAdmCommandes();
+  },function(e){console.warn('cmd:',e.code);});
+  // Témoignages
+  FB.onSnapshot(FB.query(FB.collection(FB.db,'ama_temoignages'),FB.orderBy('date','desc')),function(snap){
+    if(snap.size>0){DB.temoignages=[];snap.forEach(function(d){var r=d.data();r._id=d.id;DB.temoignages.push(r);});}
+    if(!DB.temoignages.length)DB.temoignages=TEMOIGNAGES_DEFAULT.slice();
+    renderTemoignages();
+  },function(e){console.warn('temo:',e.code);});
+  // Consultations
+  FB.onSnapshot(FB.query(FB.collection(FB.db,'ama_consultations'),FB.orderBy('date','desc'),FB.limit(100)),function(snap){
+    if(snap.size>0){DB.consultations=[];snap.forEach(function(d){var r=d.data();r._id=d.id;DB.consultations.push(r);});}
+    var kco=document.getElementById('k-consult');if(kco)kco.textContent=DB.consultations.length;
+    if(_admin)renderAdmConsultations();
+  },function(e){console.warn('consult:',e.code);});
+  // Produits
+  FB.onSnapshot(FB.query(FB.collection(FB.db,'ama_produits'),FB.orderBy('date','desc')),function(snap){
+    if(snap.size>0){DB.produits=[];snap.forEach(function(d){var r=d.data();r._id=d.id;r.id=r.id||d.id;DB.produits.push(r);});}
+    renderBoutique();
+    var kp=document.getElementById('k-produits');if(kp)kp.textContent=DB.produits.length;
+    if(_admin)renderAdmProduits();
+  },function(e){console.warn('produits:',e.code);});
+  // Formations
+  FB.onSnapshot(FB.query(FB.collection(FB.db,'ama_formations'),FB.orderBy('date','desc')),function(snap){
+    if(snap.size>0){DB.formations=[];snap.forEach(function(d){var r=d.data();r._id=d.id;r.id=r.id||d.id;DB.formations.push(r);});}
+    renderFormations();
+    if(_admin)renderAdmFormations();
+  },function(e){console.warn('formations:',e.code);});
+}
+
+window._onFbReady=function(){
+  loadFromFirebase();
+  renderFormations();renderBoutique();renderTemoignages();
+};
+if(window._fbReady)window._onFbReady();
+
+// ═══ FORMATIONS ═══
+
+function renderFormations(){
+  var el=document.getElementById('formations-grid');if(!el)return;
+  var fms=(DB.formations&&DB.formations.length)?DB.formations:MODULES;
+  fms=fms.filter(function(f){return !f.statut||f.statut==='actif';});
+  el.innerHTML=fms.map(function(m){
+    var id=m.id||m._id||'';
+    return '<div class="mod-card">'
+      +'<div class="mod-emoji">'+m.emoji+'</div>'
+      +'<div class="mod-titre">'+m.titre+'</div>'
+      +'<div class="mod-desc">'+m.desc+'</div>'
+      +'<div style="display:flex;align-items:flex-end;justify-content:space-between">'
+      +'<div><div class="mod-prix">'+(m.prix||0).toLocaleString('fr-FR')+'</div><div class="mod-fcfa">F CFA</div>'
+      +(m.duree?'<div class="mod-dur">🕒 '+m.duree+'</div>':'')+'</div>'
+      +'<button class="btn btn-gold btn-sm" onclick="openModalInscription(\''+id+'\',\''+m.titre+'\')">S\'inscrire</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+function openModalInscription(modId,titre){
+  var sel=document.getElementById('ins-formation');
+  if(sel){
+    sel.innerHTML='';
+    var fms=(DB.formations&&DB.formations.length)?DB.formations:MODULES;
+    fms.forEach(function(m){
+      var opt=document.createElement('option');
+      opt.value=m.id||m._id||m.titre;
+      opt.textContent=m.titre+' — '+(m.prix||0).toLocaleString('fr-FR')+' F';
+      if((m.id||m._id)===modId||m.titre===titre)opt.selected=true;
+      sel.appendChild(opt);
+    });
+  }
+  updatePaiementInfo();
+  openModal('m-inscription');
+}
+
+function updatePaiementInfo(){
+  var info=document.getElementById('ins-paiement-info');
+  if(!info)return;
+  info.innerHTML='📱 <strong>Paiement Mobile Money</strong><br>'
+    +'MTN MoMo: <strong>+229 01 40 60 21 26</strong> (Amawo Gnon)<br>'
+    +'Moov Money: <strong>+229 01 96 50 57 50</strong>';
+}
+
+function soumettreinscription(){
+  var nom=(document.getElementById('ins-nom').value||'').trim();
+  var tel=(document.getElementById('ins-tel').value||'').trim();
+  var formation=document.getElementById('ins-formation').value||'';
+  if(!nom||!tel||!formation){toast('Nom, tél et formation obligatoires','err');return;}
+  var code='AMA-'+Math.random().toString(36).substr(2,6).toUpperCase();
+  var data={nom:nom,tel:tel,email:document.getElementById('ins-email').value||'',
+    formation:formation,paiement:document.getElementById('ins-paiement').value,
+    msg:document.getElementById('ins-msg').value||'',code:code,
+    statut:'en_attente',date:new Date().toISOString()};
+  DB.inscriptions.unshift(data);
+  saveToFB('ama_inscriptions',data);
+  var wa='[Amawo Gnon] Nouvelle inscription\nNom: '+nom+'\nTél: '+tel+'\nFormation: '+formation+'\nCode: '+code;
+  window.open('https://wa.me/2290140602126?text='+encodeURIComponent(wa),'_blank');
+  closeModal('m-inscription');
+  ['ins-nom','ins-tel','ins-email','ins-msg'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  toast('✅ Inscription envoyée ! Code: '+code,'ok');
+}
+
+// ═══ MÉDIATHÈQUE ═══
+
+function setUploadTab(tab,btn){
+  _uploadTab=tab;
+  document.getElementById('zone-file').style.display=tab==='file'?'block':'none';
+  document.getElementById('zone-yt').style.display=tab==='yt'?'block':'none';
+  document.querySelectorAll('#m-upload .btn').forEach(function(b){b.classList.remove('btn-gold');b.classList.add('btn-outline');});
+  if(btn){btn.classList.remove('btn-outline');btn.classList.add('btn-gold');}
+}
+
+function handleFileSelect(input){
+  if(!input.files||!input.files[0])return;
+  _uploadFile=input.files[0];
+  var lbl=document.getElementById('file-label');
+  if(lbl){lbl.textContent='✅ '+_uploadFile.name+' ('+Math.round(_uploadFile.size/1024)+'KB)';lbl.style.color='var(--emerald)';}
+}
+function handleDrop(e){
+  e.preventDefault();
+  var f=e.dataTransfer.files[0];if(!f)return;
+  _uploadFile=f;
+  var lbl=document.getElementById('file-label');
+  if(lbl){lbl.textContent='✅ '+f.name;lbl.style.color='var(--emerald)';}
+}
+
+function publierMedia(){
+  var titre=(document.getElementById('up-titre').value||'').trim();
+  if(!titre){toast('Titre obligatoire','err');return;}
+  var module=document.getElementById('up-module').value;
+  var acces=document.getElementById('up-acces').value;
+  var desc=(document.getElementById('up-desc').value||'').trim();
+  var duree=(document.getElementById('up-duree').value||'').trim();
+  var btn=document.getElementById('btn-publier');
+  if(_uploadTab==='yt'){
+    var ytUrl=(document.getElementById('yt-url').value||'').trim();
+    var ytId=extractYTId(ytUrl);
+    if(!ytId){toast('Lien YouTube invalide','err');return;}
+    var media={id:'ama_'+Date.now(),type:'youtube',titre:titre,desc:desc,module:module,acces:acces,duree:duree,ytId:ytId,url:ytUrl,emoji:'▶️',date:new Date().toISOString()};
+    _saveMedia(media);return;
+  }
+  var file=_uploadFile;
+  if(!file){toast('Sélectionnez un fichier','err');return;}
+  if(btn)btn.disabled=true;
+  var isPdf=file.type.includes('pdf')||file.name.endsWith('.pdf');
+  var media={id:'ama_'+Date.now(),type:isPdf?'pdf':'video',titre:titre,desc:desc,module:module,acces:acces,duree:duree,emoji:isPdf?'📄':'🎬',nom_fichier:file.name,taille:Math.round(file.size/1024)+'KB',date:new Date().toISOString()};
+  var pz=document.getElementById('prog-wrap'),pb=document.getElementById('prog-fill'),pl=document.getElementById('prog-label');
+  if(pz){pz.style.display='block';if(pl)pl.style.display='block';}
+  if(pl)pl.textContent='Lecture du fichier...';
+  var reader=new FileReader();
+  reader.onprogress=function(e){if(e.lengthComputable&&pb)pb.style.width=Math.round(e.loaded/e.total*80)+'%';};
+  reader.onload=function(e){
+    if(pb)pb.style.width='90%';if(pl)pl.textContent='Enregistrement...';
+    media.data=e.target.result;media.url=e.target.result;media.stockage='local';
+    _saveMedia(media);if(btn)btn.disabled=false;
+    if(pz){pz.style.display='none';if(pl)pl.style.display='none';}
+  };
+  reader.onerror=function(){toast('Erreur lecture','err');if(btn)btn.disabled=false;if(pz)pz.style.display='none';};
+  reader.readAsDataURL(file);
+}
+
+function extractYTId(url){
+  var m=url.match(/[?&]v=([^&]+)/)||url.match(/youtu\.be\/([^?]+)/)||url.match(/embed\/([^?]+)/);
+  return m?m[1]:null;
+}
+
+function _saveMedia(media){
+  DB.medias.unshift(media);
+  _mediaProtectUntil=Date.now()+4000;
+  saveToFB('ama_medias',media);
+  renderMedias();
+  closeModal('m-upload');
+  toast('✅ '+media.titre+' publié !','ok');
+  _uploadFile=null;
+  var lbl=document.getElementById('file-label');if(lbl){lbl.textContent='Cliquer ou déposer un fichier ici';lbl.style.color='';}
+  ['up-titre','up-desc','up-duree','yt-url'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  var yp=document.getElementById('zone-yt');var fp=document.getElementById('zone-file');
+  if(yp)yp.style.display='none';if(fp)fp.style.display='block';
+  var fi=document.getElementById('file-input');if(fi)fi.value='';
+}
+
+function setMediaFilter(f,btn){
+  _mediaFilter=f;
+  document.querySelectorAll('#media-filters .btn').forEach(function(b){b.classList.remove('btn-gold');b.classList.add('btn-outline');});
+  if(btn){btn.classList.remove('btn-outline');btn.classList.add('btn-gold');}
+  renderMedias();
+}
+
+function renderMedias(){
+  ['medias-grid','adm-medias-grid'].forEach(function(gid){
+    var el=document.getElementById(gid);if(!el)return;
+    var data=_mediaFilter==='all'?DB.medias:DB.medias.filter(function(m){return m.type===_mediaFilter;});
+    if(!data.length){el.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text3)">📭 Aucun média</div>';return;}
+    el.innerHTML=data.map(function(m){return makeMediaCard(m);}).join('');
+  });
+  var km=document.getElementById('k-med');if(km)km.textContent=DB.medias.length;
+}
+
+function makeMediaCard(m){
+  var thumb='';
+  if(m.type==='youtube'&&m.ytId)thumb='<img src="https://img.youtube.com/vi/'+m.ytId+'/mqdefault.jpg" style="width:100%;height:100%;object-fit:cover">';
+  else if(m.type==='pdf')thumb='<span style="font-size:40px">📄</span>';
+  else thumb='<span style="font-size:40px">🎬</span>';
+  return '<div class="media-card">'
+    +'<div class="media-thumb" onclick="ouvrirMedia(\''+m.id+'\')">'+thumb+'</div>'
+    +'<div class="media-info">'
+    +'<div style="font-weight:700;font-size:13px;margin-bottom:2px">'+m.titre+'</div>'
+    +(m.desc?'<div style="font-size:11px;color:var(--text3);margin-bottom:6px">'+m.desc+'</div>':'')
+    +'<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">'
+    +'<span class="tag tag-blue">'+m.type+'</span>'
+    +(m.duree?'<span class="tag tag-gold">🕒 '+m.duree+'</span>':'')
+    +(m.acces==='inscrits'?'<span class="tag tag-gold">🔒 Inscrits</span>':'<span class="tag tag-green">🌍 Public</span>')
+    +'</div></div></div>';
+}
+
+function ouvrirMedia(id){
+  var m=DB.medias.find(function(x){return x.id===id||x._id===id;});if(!m)return;
+  var embed=document.getElementById('lecteur-embed');
+  var titre=document.getElementById('lecteur-titre');
+  if(titre)titre.childNodes[0].textContent=m.titre+' ';
+  if(!embed)return;
+  if(m.type==='youtube')embed.innerHTML='<iframe width="100%" height="360" src="https://www.youtube.com/embed/'+m.ytId+'" frameborder="0" allowfullscreen style="border-radius:0 0 18px 18px"></iframe>';
+  else if(m.type==='pdf')embed.innerHTML='<embed src="'+m.url+'" type="application/pdf" width="100%" height="500px" style="border-radius:0 0 18px 18px">';
+  else embed.innerHTML='<video controls width="100%" src="'+m.url+'" style="border-radius:0 0 18px 18px;max-height:360px"></video>';
+  openModal('m-lecteur');
+}
+
+// ═══ CONSULTATIONS ═══
+
+function envoyerConsultation(type){
+  var nomId=type==='presentiel'?'cp-nom':'cd-nom';
+  var telId=type==='presentiel'?'cp-tel':'cd-tel';
+  var motifId=type==='presentiel'?'cp-motif':'cd-motif';
+  var nom=(document.getElementById(nomId).value||'').trim();
+  var tel=(document.getElementById(telId).value||'').trim();
+  var motif=(document.getElementById(motifId).value||'').trim();
+  if(!nom||!tel||!motif){toast('Nom, tél et motif obligatoires','err');return;}
+  var data={nom:nom,tel:tel,motif:motif,type:type,date:new Date().toISOString()};
+  if(type==='presentiel'){data.date_rdv=document.getElementById('cp-date').value;data.heure=document.getElementById('cp-heure').value;}
+  else{data.pays=document.getElementById('cd-pays').value;}
+  DB.consultations.unshift(data);
+  saveToFB('ama_consultations',data);
+  var wa='[Amawo Gnon] Demande de consultation ('+type+')\nNom: '+nom+'\nTél: '+tel+'\nMotif: '+motif;
+  if(data.date_rdv)wa+='\nDate souhaitée: '+data.date_rdv+(data.heure?' à '+data.heure:'');
+  window.open('https://wa.me/2290140602126?text='+encodeURIComponent(wa),'_blank');
+  closeModal(type==='presentiel'?'m-consult-presen':'m-consult-dist');
+  toast('✅ Demande de consultation envoyée !','ok');
+}
+
+function rechercherSuivi(){
+  var code=(document.getElementById('suivi-code').value||'').trim().toUpperCase();
+  var el=document.getElementById('suivi-result');if(!el)return;
+  var ins=DB.inscriptions.find(function(i){return (i.code||'').toUpperCase()===code;});
+  if(!ins){el.innerHTML='<div style="color:var(--rose);font-size:13px">Code introuvable</div>';return;}
+  el.innerHTML='<div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:16px;font-size:13px">'
+    +'<div style="font-weight:700;color:var(--gold);margin-bottom:8px">🎓 '+ins.formation+'</div>'
+    +'<div style="color:var(--text2)">Nom: <strong>'+ins.nom+'</strong></div>'
+    +'<div style="color:var(--text2)">Code: <strong>'+ins.code+'</strong></div>'
+    +'<div style="color:var(--text2)">Statut: <span class="tag '+(ins.statut==='valide'?'tag-green':'tag-gold')+'">'+ins.statut+'</span></div>'
+    +'<div style="color:var(--text3);margin-top:6px">Inscrit le: '+fmtDate(ins.date)+'</div>'
+    +'</div>';
+}
+
+// ═══ BOUTIQUE + PANIER ═══
+
+function renderBoutique(){
+  var el=document.getElementById('boutique-grid');if(!el)return;
+  var all=(DB.produits&&DB.produits.length)?DB.produits:PRODUITS;
+  var produits=all.filter(function(p){return !p.statut||p.statut==='actif';});
+  if(!produits.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text2);grid-column:1/-1"><div style="font-size:40px;margin-bottom:10px">🌿</div><p>Aucun produit disponible</p></div>';return;}
+  el.innerHTML=produits.map(function(p){
+    var pid=p.id||p._id||'';
+    var imgHtml=p.image?'<img src="'+p.image+'" style="width:100%;height:100%;object-fit:cover">':p.emoji||'🌿';
+    return '<div class="produit-card">'
+      +'<div class="produit-img">'+imgHtml+'</div>'
+      +'<div class="produit-body">'
+      +'<div class="produit-name">'+p.nom+'</div>'
+      +'<div style="font-size:11px;color:var(--text2);margin-bottom:10px">'+(p.desc||'').substring(0,50)+(p.desc&&p.desc.length>50?'...':'')+'</div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between">'
+      +'<div class="produit-price">'+(p.prix||0).toLocaleString('fr-FR')+' F</div>'
+      +(p.stock===0?'<span style="font-size:11px;color:var(--rose);font-weight:700">⚠️ Rupture</span>':'<button class="btn btn-gold btn-sm" onclick="addPanier(\''+pid+'\')">+ Panier</button>')
+      +'</div></div></div>';
+  }).join('');
+}
+
+function addPanier(pid){
+  var all=(DB.produits&&DB.produits.length)?DB.produits:PRODUITS;
+  var p=all.find(function(x){return (x.id||x._id)===pid;});
+  if(!p){toast('Produit introuvable','err');return;}
+  var ex=PANIER.find(function(x){return x.id===pid;});
+  if(ex)ex.qty++;
+  else PANIER.push({id:pid,nom:p.nom,prix:p.prix,emoji:p.emoji||'🌿',qty:1});
+  renderCartBadge();renderPanier();
+  toast(p.nom+' ajouté 🛒','ok');
+}
+
+function renderCartBadge(){
+  var total=PANIER.reduce(function(s,x){return s+x.qty;},0);
+  var cb=document.getElementById('cart-count');if(cb)cb.textContent=total;
+  var badge=document.getElementById('cart-badge');if(badge)badge.style.display=total>0?'block':'none';
+}
+
+function renderPanier(){
+  var el=document.getElementById('panier-items');if(!el)return;
+  var tv=document.getElementById('panier-total-val');
+  if(!PANIER.length){
+    el.innerHTML='<div style="text-align:center;padding:30px;color:var(--text3)">🛒 Votre panier est vide</div>';
+    if(tv)tv.textContent='0 F';return;
+  }
+  var total=PANIER.reduce(function(s,x){return s+x.prix*x.qty;},0);
+  el.innerHTML=PANIER.map(function(item,i){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">'
+      +'<span style="font-size:24px">'+item.emoji+'</span>'
+      +'<div style="flex:1"><div style="font-weight:600;font-size:14px">'+item.nom+'</div>'
+      +'<div style="color:var(--gold);font-weight:700;font-size:13px">'+(item.prix*item.qty).toLocaleString('fr-FR')+' F</div></div>'
+      +'<div style="display:flex;align-items:center;gap:6px">'
+      +'<button onclick="changerQtyPanier('+i+',-1)" style="width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-size:16px;line-height:1">−</button>'
+      +'<span style="min-width:20px;text-align:center;font-weight:700">'+item.qty+'</span>'
+      +'<button onclick="changerQtyPanier('+i+',1)" style="width:26px;height:26px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-size:16px;line-height:1">+</button>'
+      +'<button onclick="retirerDuPanier('+i+')" style="width:26px;height:26px;border-radius:50%;border:none;background:rgba(248,113,113,.15);color:var(--rose);cursor:pointer;font-size:14px">×</button>'
+      +'</div></div>';
+  }).join('');
+  if(tv)tv.textContent=total.toLocaleString('fr-FR')+' F CFA';
+}
+
+function changerQtyPanier(i,delta){
+  if(!PANIER[i])return;
+  PANIER[i].qty+=delta;
+  if(PANIER[i].qty<=0)PANIER.splice(i,1);
+  renderPanier();renderCartBadge();
+}
+function retirerDuPanier(i){PANIER.splice(i,1);renderPanier();renderCartBadge();}
+
+function genererBonCommande(){
+  if(!PANIER.length){toast('Panier vide','err');return;}
+  var total=PANIER.reduce(function(s,x){return s+x.prix*x.qty;},0);
+  var ref='CMD-'+Date.now().toString().slice(-6);
+  var now=new Date();
+  var nom=(document.getElementById('cmd-nom')||{value:''}).value||'Client';
+  var tel=(document.getElementById('cmd-tel')||{value:''}).value||'—';
+  var dateStr=now.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  var rows=PANIER.map(function(x){return '<tr><td style="padding:8px 12px">'+x.emoji+' '+x.nom+'</td><td style="padding:8px 12px;text-align:center">'+x.qty+'</td><td style="padding:8px 12px;text-align:right">'+x.prix.toLocaleString('fr-FR')+' F</td><td style="padding:8px 12px;text-align:right;font-weight:700">'+(x.prix*x.qty).toLocaleString('fr-FR')+' F</td></tr>';}).join('');
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bon de commande '+ref+'</title>'
+    +'<style>*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}body{padding:30px;max-width:600px;margin:0 auto}h1{color:#8B6914;font-size:22px;margin-bottom:4px}.sub{color:#666;font-size:13px;margin-bottom:24px}table{width:100%;border-collapse:collapse;margin-bottom:20px}th{background:#f9f3e3;padding:10px 12px;text-align:left;font-size:13px;border-bottom:2px solid #e6c96e}td{border-bottom:1px solid #f0e6c8;font-size:14px}.tr{background:#fdf8ec;font-weight:700}@media print{body{padding:10px}}</style></head><body>'
+    +'<h1>🌿 Amawo Gnon</h1><div class="sub">Azóvè, Bénin — +229 01 40 60 21 26</div>'
+    +'<div style="display:flex;justify-content:space-between;margin-bottom:20px;font-size:13px"><div><strong>BON DE COMMANDE</strong><br><span style="font-size:18px;color:#8B6914;font-weight:700">'+ref+'</span></div><div style="text-align:right">'+dateStr+'<br>Client: '+nom+'<br>Tél: '+tel+'</div></div>'
+    +'<table><thead><tr><th>Produit</th><th style="text-align:center">Qté</th><th style="text-align:right">P.U.</th><th style="text-align:right">Sous-total</th></tr></thead><tbody>'+rows+'<tr class="tr"><td colspan="3" style="padding:12px">TOTAL</td><td style="padding:12px;text-align:right">'+total.toLocaleString('fr-FR')+' F CFA</td></tr></tbody></table>'
+    +'<div style="background:#fff8e1;border:1px solid #e6c96e;border-radius:8px;padding:14px;margin-bottom:20px;font-size:13px"><strong>📱 Paiement</strong><br>MTN MoMo: +229 01 40 60 21 26 (Amawo Gnon)<br>Moov Money: +229 01 96 50 57 50</div>'
+    +'<div style="text-align:center"><button onclick="window.print()" style="background:#8B6914;color:#fff;border:none;padding:10px 28px;border-radius:6px;font-size:14px;cursor:pointer">🖨 Imprimer / PDF</button></div></body></html>';
+  var win=window.open('','_blank','width=680,height=820');
+  if(win){win.document.write(html);win.document.close();}
+}
+
+function validerCommande(){
+  if(!PANIER.length){toast('Panier vide','err');return;}
+  var total=PANIER.reduce(function(s,x){return s+x.prix*x.qty;},0);
+  var ref='CMD-'+Date.now().toString().slice(-6);
+  var now=new Date();
+  var nom=(document.getElementById('cmd-nom')||{value:''}).value||'';
+  var tel=(document.getElementById('cmd-tel')||{value:''}).value||'';
+  var dateStr=now.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  var heureStr=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  var data={ref:ref,produits:PANIER.map(function(x){return x.nom+'x'+x.qty;}).join(', '),
+    lignes:JSON.parse(JSON.stringify(PANIER)),total:total,
+    client:nom,tel:tel,date:now.toISOString(),statut:'en_attente'};
+  DB.commandes.unshift(data);saveToFB('ama_commandes',data);
+  var lignesWA=PANIER.map(function(x){return x.emoji+' '+x.nom+' x'+x.qty+' = '+(x.prix*x.qty).toLocaleString('fr-FR')+' F';}).join('\n');
+  var waMsg='[Amawo Gnon - Amawo Gnon]\nBON DE COMMANDE N° '+ref+'\nDate: '+dateStr+' à '+heureStr+'\n\n'+lignesWA+'\n\nTOTAL: '+total.toLocaleString('fr-FR')+' F CFA'+(nom?'\n\nClient: '+nom:'')+(tel?'\nTél: '+tel:'');
+  // Générer reçu
+  genererBonCommande();
+  // Envoyer WhatsApp
+  setTimeout(function(){window.open('https://wa.me/2290140602126?text='+encodeURIComponent(waMsg),'_blank');},800);
+  PANIER=[];renderCartBadge();renderPanier();closeModal('m-panier');
+  toast('✅ Commande '+ref+' envoyée !','ok');
+}
+
+// ═══ TÉMOIGNAGES ═══
+
+function renderTemoignages(){
+  var el=document.getElementById('temoignages-grid');if(!el)return;
+  var data=DB.temoignages.filter(function(t){return t.valide;});
+  if(!data.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3);grid-column:1/-1">Aucun témoignage validé.</div>';return;}
+  el.innerHTML=data.map(function(t){
+    var stars='⭐'.repeat(Math.min(parseInt(t.note)||5,5));
+    return '<div class="temo-card">'
+      +'<div style="color:var(--gold);font-size:14px;margin-bottom:8px">'+stars+'</div>'
+      +'<div style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:12px;font-style:italic">"'+t.texte+'"</div>'
+      +'<div style="display:flex;align-items:center;justify-content:space-between">'
+      +'<div><div style="font-weight:700;font-size:13px">'+t.nom+'</div>'
+      +(t.formation?'<div style="font-size:11px;color:var(--text3)">'+t.formation+'</div>':'')+'</div>'
+      +'<div style="font-size:11px;color:var(--text3)">'+fmtDate(t.date)+'</div>'
+      +'</div></div>';
+  }).join('');
+}
+
+function envoyerTemoignage(){
+  var texte=(document.getElementById('temo-texte').value||'').trim();
+  var nom=(document.getElementById('temo-nom').value||'').trim()||'Anonyme';
+  if(!texte){toast('Votre avis est requis','err');return;}
+  var data={nom:nom,formation:document.getElementById('temo-formation').value||'',
+    texte:texte,note:document.getElementById('temo-note').value||'5',
+    date:new Date().toISOString(),valide:false};
+  saveToFB('ama_temoignages',data);
+  closeModal('m-temoignage');
+  ['temo-texte','temo-nom','temo-formation'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  toast('✅ Avis envoyé, en attente de validation','ok');
+}
+
+// ═══ BILAN SANTÉ ═══
+
+var _bilCustomFields=[];
+function ajouterChampBilan(){
+  var idx=_bilCustomFields.length;
+  _bilCustomFields.push({label:'',valeur:''});
+  renderChampsBilan();
+}
+function renderChampsBilan(){
+  var el=document.getElementById('bil-custom-fields');if(!el)return;
+  el.innerHTML=_bilCustomFields.map(function(f,i){
+    return '<div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;margin-bottom:8px">'
+      +'<input class="form-input" placeholder="Nom du champ" value="'+f.label+'" oninput="_bilCustomFields['+i+'].label=this.value" style="font-size:13px">'
+      +'<input class="form-input" placeholder="Valeur" value="'+f.valeur+'" oninput="_bilCustomFields['+i+'].valeur=this.value" style="font-size:13px">'
+      +'<button onclick="_bilCustomFields.splice('+i+',1);renderChampsBilan()" style="width:32px;height:36px;border:none;background:rgba(248,113,113,.15);color:var(--rose);border-radius:6px;cursor:pointer">×</button>'
+      +'</div>';
+  }).join('');
+}
+function resetBilan(){
+  ['bil-nom','bil-age','bil-sexe','bil-poids','bil-taille','bil-tension','bil-symptomes','bil-antecedents','bil-objectifs'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  _bilCustomFields=[];renderChampsBilan();
+}
+function genererBilanSante(){
+  var nom=(document.getElementById('bil-nom')||{value:''}).value||'Patient';
+  var age=(document.getElementById('bil-age')||{value:''}).value||'—';
+  var sexe=(document.getElementById('bil-sexe')||{value:''}).value||'—';
+  var poids=parseFloat((document.getElementById('bil-poids')||{value:''}).value)||0;
+  var taille=parseFloat((document.getElementById('bil-taille')||{value:''}).value)||0;
+  var tension=(document.getElementById('bil-tension')||{value:''}).value||'—';
+  var symptomes=(document.getElementById('bil-symptomes')||{value:''}).value||'—';
+  var antecedents=(document.getElementById('bil-antecedents')||{value:''}).value||'—';
+  var objectifs=(document.getElementById('bil-objectifs')||{value:''}).value||'—';
+  var imcVal='—',imcComment='';
+  if(poids>0&&taille>0){var imc=poids/((taille/100)*(taille/100));imcVal=imc.toFixed(1);imcComment=imc<18.5?'⚠️ Insuffisance pondérale':imc<25?'✅ Poids normal':imc<30?'⚠️ Surpoids':'🛑 Obésité';}
+  var customRows=_bilCustomFields.filter(function(f){return f.label&&f.valeur;}).map(function(f){return '<tr><td style="padding:8px 14px;background:#fdf8ec;font-weight:600">'+f.label+'</td><td style="padding:8px 14px">'+f.valeur+'</td></tr>';}).join('');
+  var now=new Date();var ref='BIL-'+now.getTime().toString().slice(-6);
+  var dateStr=now.toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Bilan Bien-être — '+nom+'</title>'
+    +'<style>*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}body{padding:30px;max-width:650px;margin:0 auto}.hdr{background:linear-gradient(135deg,#2d4a3e,#4a7c59);color:#fff;padding:24px;border-radius:12px;margin-bottom:24px}.card{background:#fff;border:1px solid #e0d5b0;border-radius:10px;margin-bottom:16px;overflow:hidden}.card-h{background:#f9f3e3;padding:10px 14px;font-weight:700;font-size:14px;color:#5a3e0a;border-bottom:1px solid #e6c96e}table{width:100%;border-collapse:collapse}td{border-bottom:1px solid #f0e6c8;font-size:14px}.rec{background:#f0f9f0;border:1px solid #a8d5a2;border-radius:8px;padding:14px;margin-bottom:16px}.footer{font-size:12px;color:#888;text-align:center;border-top:1px solid #eee;padding-top:16px;margin-top:24px}@media print{body{padding:10px}}</style></head><body>'
+    +'<div class="hdr"><h1 style="font-size:18px">🌿 Bilan Bien-être Amawo Gnon</h1><div style="font-size:13px;opacity:.8">Amawo Gnon — Azóvè, Bénin</div><div style="display:flex;justify-content:space-between;margin-top:10px;font-size:12px;opacity:.8"><span>Réf: '+ref+'</span><span>'+dateStr+'</span></div></div>'
+    +'<div class="card"><div class="card-h">👤 Informations Patient</div><table>'
+    +'<tr><td style="padding:8px 14px;background:#fdf8ec;font-weight:600;width:40%">Nom</td><td style="padding:8px 14px">'+nom+'</td></tr>'
+    +'<tr><td style="padding:8px 14px;background:#fdf8ec;font-weight:600">Âge</td><td style="padding:8px 14px">'+age+' ans</td></tr>'
+    +'<tr><td style="padding:8px 14px;background:#fdf8ec;font-weight:600">Sexe</td><td style="padding:8px 14px">'+sexe+'</td></tr>'
+    +(poids>0?'<tr><td style="padding:8px 14px;background:#fdf8ec;font-weight:600">Poids</td><td style="padding:8px 14px">'+poids+' kg</td></tr>':'')
+    +(taille>0?'<tr><td style="padding:8px 14px;background:#fdf8ec;font-weight:600">Taille</td><td style="padding:8px 14px">'+taille+' cm</td></tr>':'')
+    +'<tr><td style="padding:8px 14px;background:#fdf8ec;font-weight:600">IMC</td><td style="padding:8px 14px">'+imcVal+(imcComment?' — '+imcComment:'')+'</td></tr>'
+    +'<tr><td style="padding:8px 14px;background:#fdf8ec;font-weight:600">Tension</td><td style="padding:8px 14px">'+tension+'</td></tr>'
+    +(customRows||'')+'</table></div>'
+    +'<div class="card"><div class="card-h">🤕 Symptômes</div><div style="padding:12px 14px;font-size:14px;line-height:1.7">'+symptomes.replace(/\n/g,'<br>')+'</div></div>'
+    +'<div class="rec"><strong>🌿 Recommandations Naturelles</strong><ul style="padding-left:18px;font-size:13px;line-height:2;margin-top:8px"><li>Consultation personnalisée avec Amawo Gnon recommandée</li><li>Nos formations en réflexologie et physiothérapie peuvent aider</li><li>Produits naturels adaptés disponibles en boutique</li></ul><div style="margin-top:8px;font-size:13px">📞 +229 01 40 60 21 26</div></div>'
+    +'<div class="footer">Document indicatif, ne remplace pas un avis médical — '+dateStr+'</div>'
+    +'<div style="text-align:center;margin-top:20px"><button onclick="window.print()" style="background:#2d4a3e;color:#fff;border:none;padding:10px 28px;border-radius:6px;font-size:14px;cursor:pointer">🖨 Imprimer / PDF</button></div>'
+    +'</body></html>';
+  var win=window.open('','_blank','width=720,height:900');
+  if(win){win.document.write(html);win.document.close();}
+  toast('📊 Rapport généré !','ok');
+}
+
+// ═══ ESPACE APPRENANT ═══
+
+function loginEleve(){
+  var code=(document.getElementById('eleve-code').value||'').trim().toUpperCase();
+  if(!code){toast('Code requis','err');return;}
+  var ins=DB.inscriptions.find(function(i){return (i.code||'').toUpperCase()===code;});
+  if(!ins){toast('Code invalide','err');return;}
+  _eleve=ins;
+  closeModal('m-eleve-login');
+  var t=document.getElementById('eleve-nom-titre');if(t)t.textContent='Bonjour, '+ins.nom;
+  showView('espace',null);
+  renderEspace();
+  toast('👋 Bienvenue '+ins.nom,'ok');
+}
+function deconnecterEleve(){_eleve=null;showView('home',null);}
+function renderEspace(){
+  var el=document.getElementById('espace-content');if(!el)return;
+  if(!_eleve){el.innerHTML='';return;}
+  var medias=DB.medias.filter(function(m){return m.acces==='public'||(m.moduleId===_eleve.formation);});
+  el.innerHTML='<div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:20px">'
+    +'<div style="font-size:13px;color:var(--text2)">Formation: <strong style="color:var(--gold)">'+_eleve.formation+'</strong></div>'
+    +'<div style="font-size:13px;color:var(--text2)">Code: <strong>'+_eleve.code+'</strong></div>'
+    +'<div style="font-size:13px;color:var(--text2)">Statut: <span class="tag tag-gold">'+_eleve.statut+'</span></div>'
+    +'</div>'
+    +'<h3 style="font-family:\'Playfair Display\',serif;font-size:18px;color:var(--gold);margin-bottom:14px">Vos médias (\u{0D5B8})</h3>'
+    +(medias.length?'<div class="grid-3">'+medias.map(function(m){return makeMediaCard(m);}).join('')+'</div>':'<div style="color:var(--text3);font-size:13px">Aucun média disponible pour l\'instant.</div>');
+}
+
+// ═══ ADMIN RENDERS ═══
+
+function renderAdmInscriptions(){
+  var el=document.getElementById('adm-ins-tbody');if(!el)return;
+  if(!DB.inscriptions.length){el.innerHTML='<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text3)">Aucune inscription</td></tr>';return;}
+  el.innerHTML=DB.inscriptions.map(function(i){
+    return '<tr><td style="font-weight:700">'+i.nom+'</td><td>'+i.formation+'</td><td>'+i.tel+'</td>'
+      +'<td>'+i.paiement+'</td><td>'+fmtDate(i.date)+'</td>'
+      +'<td><span class="tag '+(i.statut==='valide'?'tag-green':'tag-gold')+'">'+i.statut+'</span></td></tr>';
+  }).join('');
+}
+
+function renderAdmMedias(){
+  var el=document.getElementById('adm-medias-grid');if(!el)return;
+  if(!DB.medias.length){el.innerHTML='<div style="text-align:center;padding:60px;color:var(--text3);grid-column:1/-1">Aucun média. Ajoutez-en depuis le bouton ci-dessus.</div>';return;}
+  el.innerHTML=DB.medias.map(function(m,i){
+    return '<div class="media-card">'
+      +'<div class="media-thumb" onclick="ouvrirMedia(\''+(m.id||m._id)+'\')">'+makeMediaCard(m).match(/<div class="media-thumb"[^>]*>([\s\S]*?)<\/div>/)[1]+'</div>'
+      +'<div class="media-info">'
+      +'<div style="font-weight:700;font-size:13px">'+m.titre+'</div>'
+      +'<div style="display:flex;gap:6px;margin-top:6px">'
+      +'<button class="btn btn-red btn-sm" onclick="supprimerMedia(\''+( m.id||m._id||i)+'\')">Supprimer</button>'
+      +'</div></div></div>';
+  }).join('');
+}
+
+function supprimerMedia(id){
+  if(!confirm('Supprimer ce média ?'))return;
+  var idx=DB.medias.findIndex(function(m){return (m.id||m._id)===id;});
+  var fbId=idx>=0?(DB.medias[idx]._id||''):null;
+  if(idx>=0)DB.medias.splice(idx,1);
+  if(fbId)deleteFromFB('ama_medias',fbId);
+  renderMedias();renderAdmMedias();
+  toast('Média supprimé','ok');
+}
+
+function renderAdmCommandes(){
+  var el=document.getElementById('adm-cmd-tbody');if(!el)return;
+  var dash=document.getElementById('dash-commandes');
+  var rows=DB.commandes.map(function(c){
+    return '<tr><td><strong style="color:var(--gold)">'+(c.ref||'-')+'</strong></td><td style="font-size:12px">'+(c.produits||'-')+'</td>'
+      +'<td style="font-weight:700;color:var(--emerald)">'+(c.total||0).toLocaleString('fr-FR')+' F</td>'
+      +'<td>'+fmtDate(c.date)+'</td>'
+      +'<td><span class="tag tag-gold">'+(c.statut||'en_attente')+'</span></td>'
+      +'<td><button class="btn btn-outline btn-sm" onclick="updateStatutCmd(\''+(c._id||c.ref)+'\')">Confirmer</button></td></tr>';
+  }).join('');
+  var empty='<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text3)">Aucune commande</td></tr>';
+  if(el)el.innerHTML=rows||empty;
+  if(dash)dash.innerHTML=DB.commandes.slice(0,5).map(function(c){
+    return '<tr><td style="font-weight:700">'+(c.ref||'-')+'</td><td style="font-size:12px">'+(c.produits||'-')+'</td><td>'+(c.total||0).toLocaleString('fr-FR')+' F</td><td>'+fmtDate(c.date)+'</td></tr>';
+  }).join('')||empty.replace('colspan="6"','colspan="4"');
+}
+
+function updateStatutCmd(id){
+  var c=DB.commandes.find(function(x){return (x._id||x.ref)===id;});
+  if(!c)return;
+  c.statut='confirme';
+  if(c._id)updateToFB('ama_commandes',c._id,{statut:'confirme'});
+  renderAdmCommandes();
+  toast('✅ Commande confirmée','ok');
+}
+
+function renderAdmConsultations(){
+  var el=document.getElementById('adm-consult-tbody');if(!el)return;
+  if(!DB.consultations.length){el.innerHTML='<tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text3)">Aucune consultation</td></tr>';return;}
+  el.innerHTML=DB.consultations.map(function(c){
+    return '<tr><td style="font-weight:700">'+c.nom+'</td><td>'+(c.type||'-')+'</td>'
+      +'<td style="font-size:12px">'+c.motif.substring(0,50)+'...</td>'
+      +'<td>'+c.tel+'</td><td>'+fmtDate(c.date)+'</td></tr>';
+  }).join('');
+}
+
+function renderAdmTemoignages(){
+  var el=document.getElementById('adm-temo-grid');if(!el)return;
+  if(!DB.temoignages.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)">Aucun témoignage</div>';return;}
+  el.innerHTML='<div style="display:flex;flex-direction:column;gap:12px">'+DB.temoignages.map(function(t){
+    return '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px;display:flex;gap:12px;align-items:flex-start">'
+      +'<div style="flex:1"><div style="font-weight:700;font-size:13px">'+t.nom+'</div>'
+      +'<div style="font-size:13px;color:var(--text2);margin:4px 0">'+t.texte+'</div>'
+      +'<span class="tag '+(t.valide?'tag-green':'tag-gold')+'">'+(t.valide?'Validé':'En attente')+'</span></div>'
+      +(!t.valide?'<button class="btn btn-gold btn-sm" onclick="validerTemoignage(\''+(t._id||'')+'\')">Valider</button>':'')+'</div>';
+  }).join('')+'</div>';
+}
+
+function validerTemoignage(id){
+  var t=DB.temoignages.find(function(x){return x._id===id;});
+  if(!t)return;
+  t.valide=true;
+  if(id)updateToFB('ama_temoignages',id,{valide:true});
+  renderTemoignages();renderAdmTemoignages();
+  toast('✅ Témoignage validé','ok');
+}
+
+// ═══ GESTION PRODUITS ═══
+
+function ouvrirModalProduit(prodId){
+  _editProduitId=prodId||null;
+  var isEdit=!!prodId;
+  var t=document.getElementById('m-prod-title');var b=document.getElementById('btn-save-prod');
+  if(t)t.textContent=isEdit?'✏️ Modifier le produit':'🌿 Nouveau produit';
+  if(b)b.textContent=isEdit?'💾 Modifier':'💾 Enregistrer';
+  if(isEdit){
+    var p=(DB.produits||[]).find(function(x){return (x.id||x._id)===prodId;});
+    if(!p){toast('Produit introuvable','err');return;}
+    var sv=function(id,v){var e=document.getElementById(id);if(e)e.value=v||'';};
+    sv('prod-emoji',p.emoji||'🌿');sv('prod-nom',p.nom);sv('prod-desc',p.desc||'');
+    sv('prod-prix',p.prix||0);sv('prod-stock',p.stock!==null&&p.stock!==undefined?p.stock:'');
+    sv('prod-categorie',p.categorie||'autre');sv('prod-statut',p.statut||'actif');sv('prod-image',p.image&&!p.image.startsWith('data:')?p.image:'');
+    var img=document.getElementById('prod-img-thumb');var ph=document.getElementById('prod-img-placeholder');
+    if(p.image&&img){img.src=p.image;img.style.display='block';if(ph)ph.style.display='none';}
+  } else {
+    ['prod-emoji','prod-nom','prod-desc','prod-prix','prod-stock','prod-image'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+    var ec=document.getElementById('prod-emoji');if(ec)ec.value='🌿';
+    var sc=document.getElementById('prod-statut');if(sc)sc.value='actif';
+    window._prodImgData=null;
+    var th=document.getElementById('prod-img-thumb');if(th){th.src='';th.style.display='none';}
+    var ph2=document.getElementById('prod-img-placeholder');if(ph2)ph2.style.display='block';
+    var fi=document.getElementById('prod-img-file');if(fi)fi.value='';
+  }
+  openModal('m-produit');
+}
+
+function previewProdImg(input){
+  if(!input.files||!input.files[0])return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    var img=document.getElementById('prod-img-thumb');var ph=document.getElementById('prod-img-placeholder');
+    var urlInput=document.getElementById('prod-image');
+    if(img){img.src=e.target.result;img.style.display='block';}
+    if(ph)ph.style.display='none';
+    if(urlInput)urlInput.value='';
+    window._prodImgData=e.target.result;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function sauvegarderProduit(){
+  var nom=(document.getElementById('prod-nom').value||'').trim();
+  var prix=parseFloat(document.getElementById('prod-prix').value)||0;
+  var desc=(document.getElementById('prod-desc').value||'').trim();
+  var emoji=(document.getElementById('prod-emoji').value||'🌿').trim();
+  if(!nom){toast('Nom obligatoire','err');return;}
+  if(!prix){toast('Prix obligatoire','err');return;}
+  var btn=document.getElementById('btn-save-prod');if(btn)btn.disabled=true;
+  var data={nom:nom,prix:prix,desc:desc,emoji:emoji,
+    categorie:document.getElementById('prod-categorie').value||'autre',
+    statut:document.getElementById('prod-statut').value||'actif',
+    image:(window._prodImgData||document.getElementById('prod-image').value||''),
+    stock:document.getElementById('prod-stock').value!==''?parseInt(document.getElementById('prod-stock').value):null,
+    date:new Date().toISOString()};
+  if(_editProduitId){
+    var idx=(DB.produits||[]).findIndex(function(p){return (p.id||p._id)===_editProduitId;});
+    var fbId=idx>=0?(DB.produits[idx]._id||''):'';
+    if(idx>=0)DB.produits[idx]=Object.assign({},DB.produits[idx],data);
+    if(window.FB&&window.FB.ready&&fbId&&fbId.length>10)updateToFB('ama_produits',fbId,data);
+    toast('✅ Produit mis à jour','ok');
+    renderBoutique();renderAdmProduits();closeModal('m-produit');if(btn)btn.disabled=false;
+  } else {
+    data.id='prod_'+Date.now();
+    if(!DB.produits)DB.produits=[];
+    if(window.FB&&window.FB.ready){
+      window.FB.addDoc(window.FB.collection(window.FB.db,'ama_produits'),data)
+        .then(function(ref){data._id=ref.id;DB.produits.unshift(data);renderBoutique();renderAdmProduits();
+          var kp=document.getElementById('k-produits');if(kp)kp.textContent=DB.produits.length;
+          closeModal('m-produit');if(btn)btn.disabled=false;toast('🌿 Produit ajouté','ok');})
+        .catch(function(){DB.produits.unshift(data);renderBoutique();renderAdmProduits();
+          closeModal('m-produit');if(btn)btn.disabled=false;toast('Produit ajouté (local)','ok');});
+      return;
+    }
+    DB.produits.unshift(data);renderBoutique();renderAdmProduits();closeModal('m-produit');if(btn)btn.disabled=false;toast('Produit ajouté','ok');
+  }
+}
+
+function supprimerProduit(prodId){
+  if(!confirm('Supprimer ce produit ?'))return;
+  var idx=(DB.produits||[]).findIndex(function(p){return (p.id||p._id)===prodId;});
+  var fbId=idx>=0?(DB.produits[idx]._id||''):'';
+  if(idx>=0)DB.produits.splice(idx,1);
+  if(fbId)deleteFromFB('ama_produits',fbId);
+  renderBoutique();renderAdmProduits();
+  var kp=document.getElementById('k-produits');if(kp)kp.textContent=DB.produits.length;
+  toast('Produit supprimé','ok');
+}
+
+function toggleStatutProduit(prodId){
+  var p=(DB.produits||[]).find(function(x){return (x.id||x._id)===prodId;});
+  if(!p)return;
+  var ns=p.statut==='actif'?'inactif':'actif';p.statut=ns;
+  if(p._id)updateToFB('ama_produits',p._id,{statut:ns});
+  renderBoutique();renderAdmProduits();toast('Statut mis à jour','ok');
+}
+
+function renderAdmProduits(){
+  var el=document.getElementById('adm-produits-grid');if(!el)return;
+  var produits=DB.produits||[];
+  if(!produits.length){el.innerHTML='<div style="text-align:center;padding:60px;color:var(--text3);grid-column:1/-1">Aucun produit. Cliquez <strong>+ Nouveau produit</strong> pour commencer.</div>';return;}
+  var statColors={actif:'rgba(6,214,160,.1)',inactif:'rgba(248,113,113,.08)',rupture:'rgba(251,191,36,.1)'};
+  var statLabels={actif:'✅ Disponible',inactif:'❌ Masqué',rupture:'⚠️ Rupture'};
+  el.innerHTML=produits.map(function(p){
+    var pid=p.id||p._id||'';
+    var imgHtml=p.image?'<img src="'+p.image+'" style="width:50px;height:50px;border-radius:10px;object-fit:cover">':'<span style="font-size:32px">'+(p.emoji||'🌿')+'</span>';
+    return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:16px;display:flex;flex-direction:column;gap:10px">'
+      +'<div style="display:flex;gap:12px;align-items:flex-start">'
+      +'<div style="width:50px;height:50px;border-radius:10px;background:var(--surface2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">'+imgHtml+'</div>'
+      +'<div style="flex:1"><div style="font-weight:700;font-size:14px">'+p.nom+'</div>'
+      +'<div style="font-size:12px;color:var(--text2);margin-bottom:4px">'+(p.desc||'').substring(0,50)+'</div>'
+      +'<div style="font-family:\'Playfair Display\',serif;font-size:17px;font-weight:700;color:var(--gold)">'+(p.prix||0).toLocaleString('fr-FR')+' F</div>'
+      +'</div></div>'
+      +'<div style="display:flex;justify-content:space-between;align-items:center">'
+      +'<span style="padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;background:'+(statColors[p.statut||'actif']||statColors.actif)+'">'+(statLabels[p.statut||'actif']||p.statut)+'</span>'
+      +(p.stock!==null&&p.stock!==undefined&&p.stock!==''?'<span style="font-size:11px;color:var(--text3)">Stock: <strong>'+p.stock+'</strong></span>':'<span style="font-size:11px;color:var(--text3)">Illimité</span>')
+      +'</div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="btn btn-outline btn-sm" style="flex:1" onclick="ouvrirModalProduit(\''+pid+'\')">✏️ Modifier</button>'
+      +'<button class="btn btn-sm" style="flex:1;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.3);color:#b45309" onclick="toggleStatutProduit(\''+pid+'\')">'+(p.statut==='actif'?'🚧 Masquer':'✅ Activer')+'</button>'
+      +'<button class="btn btn-red btn-sm" onclick="supprimerProduit(\''+pid+'\')">🗑</button>'
+      +'</div></div>';
+  }).join('');
+}
+
+// ═══ GESTION FORMATIONS ═══
+
+function ouvrirModalFormation(formId){
+  _editFormationId=formId||null;
+  var isEdit=!!formId;
+  var t=document.getElementById('m-forma-title');var b=document.getElementById('btn-save-forma');
+  if(t)t.textContent=isEdit?'✏️ Modifier la formation':'🎓 Nouvelle Formation';
+  if(b)b.textContent=isEdit?'💾 Modifier':'💾 Enregistrer';
+  if(isEdit){
+    var all=(DB.formations&&DB.formations.length)?DB.formations:MODULES;
+    var p=all.find(function(x){return (x.id||x._id)===formId;});
+    if(!p){toast('Formation introuvable','err');return;}
+    var sv=function(id,v){var e=document.getElementById(id);if(e)e.value=v||'';};
+    sv('forma-emoji',p.emoji||'🌿');sv('forma-titre',p.titre);sv('forma-desc',p.desc||'');
+    sv('forma-prix',p.prix||0);sv('forma-duree',p.duree||'');sv('forma-niveau',p.niveau||'Débutant');sv('forma-statut',p.statut||'actif');
+  } else {
+    ['forma-emoji','forma-titre','forma-desc','forma-prix','forma-duree'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+    var ec=document.getElementById('forma-emoji');if(ec)ec.value='🌿';
+    var sc=document.getElementById('forma-statut');if(sc)sc.value='actif';
+  }
+  openModal('m-formation');
+}
+
+function sauvegarderFormation(){
+  var titre=(document.getElementById('forma-titre').value||'').trim();
+  var prix=parseFloat(document.getElementById('forma-prix').value)||0;
+  var desc=(document.getElementById('forma-desc').value||'').trim();
+  var emoji=(document.getElementById('forma-emoji').value||'🌿').trim();
+  if(!titre){toast('Titre obligatoire','err');return;}
+  if(!prix){toast('Prix obligatoire','err');return;}
+  var btn=document.getElementById('btn-save-forma');if(btn)btn.disabled=true;
+  var data={emoji:emoji,titre:titre,desc:desc,prix:prix,
+    duree:document.getElementById('forma-duree').value||'',
+    niveau:document.getElementById('forma-niveau').value||'Débutant',
+    statut:document.getElementById('forma-statut').value||'actif',
+    date:new Date().toISOString()};
+  if(_editFormationId){
+    var idx=(DB.formations||[]).findIndex(function(p){return (p.id||p._id)===_editFormationId;});
+    var fbId=idx>=0?(DB.formations[idx]._id||''):'';
+    if(idx>=0)DB.formations[idx]=Object.assign({},DB.formations[idx],data);
+    if(fbId)updateToFB('ama_formations',fbId,data);
+    toast('✅ Formation mise à jour','ok');
+  } else {
+    data.id='forma_'+Date.now();
+    if(!DB.formations)DB.formations=[];
+    if(window.FB&&window.FB.ready){
+      window.FB.addDoc(window.FB.collection(window.FB.db,'ama_formations'),data)
+        .then(function(ref){data._id=ref.id;DB.formations.unshift(data);renderFormations();renderAdmFormations();
+          closeModal('m-formation');if(btn)btn.disabled=false;toast('🎓 Formation ajoutée','ok');})
+        .catch(function(){DB.formations.unshift(data);renderFormations();renderAdmFormations();
+          closeModal('m-formation');if(btn)btn.disabled=false;toast('Formation ajoutée (local)','ok');});
+      return;
+    }
+    DB.formations.unshift(data);
+  }
+  renderFormations();renderAdmFormations();closeModal('m-formation');if(btn)btn.disabled=false;
+}
+
+function supprimerFormation(formId){
+  if(!confirm('Supprimer cette formation ?'))return;
+  var idx=(DB.formations||[]).findIndex(function(p){return (p.id||p._id)===formId;});
+  var fbId=idx>=0?(DB.formations[idx]._id||''):'';
+  if(idx>=0)DB.formations.splice(idx,1);
+  if(fbId)deleteFromFB('ama_formations',fbId);
+  renderFormations();renderAdmFormations();toast('Formation supprimée','ok');
+}
+
+function renderAdmFormations(){
+  var el=document.getElementById('adm-formations-grid');if(!el)return;
+  var fms=(DB.formations&&DB.formations.length)?DB.formations:MODULES;
+  if(!fms.length){el.innerHTML='<div style="text-align:center;padding:60px;color:var(--text3);grid-column:1/-1">Aucune formation.</div>';return;}
+  var statColors={actif:'rgba(6,214,160,.1)',inactif:'rgba(248,113,113,.08)',complet:'rgba(251,191,36,.1)'};
+  var statLabels={actif:'✅ Disponible',inactif:'❌ Masqué',complet:'🔴 Complet'};
+  el.innerHTML=fms.map(function(p){
+    var fid=p.id||p._id||'';
+    return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:16px;display:flex;flex-direction:column;gap:10px">'
+      +'<div style="display:flex;gap:12px;align-items:flex-start">'
+      +'<div style="font-size:32px;width:44px;text-align:center">'+(p.emoji||'🎓')+'</div>'
+      +'<div style="flex:1"><div style="font-weight:700;font-size:14px">'+p.titre+'</div>'
+      +'<div style="font-size:12px;color:var(--text2)">'+(p.duree||'')+( p.niveau?' — '+p.niveau:'')+'</div>'
+      +'<div style="font-family:\'Playfair Display\',serif;font-size:17px;font-weight:700;color:var(--gold)">'+(p.prix||0).toLocaleString('fr-FR')+' F</div>'
+      +'</div></div>'
+      +'<div><span style="padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;background:'+(statColors[p.statut||'actif']||statColors.actif)+'">'+(statLabels[p.statut||'actif']||p.statut)+'</span></div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="btn btn-outline btn-sm" style="flex:1" onclick="ouvrirModalFormation(\''+fid+'\')">✏️ Modifier</button>'
+      +(fid.length>8?'<button class="btn btn-red btn-sm" onclick="supprimerFormation(\''+fid+'\')">🗑</button>':'')
+      +'</div></div>';
+  }).join('');
+}
+
+// ═══ INIT ═══
+renderFormations();
+renderBoutique();
+renderTemoignages();
+
+// Exposer sur window
+window.showView=showView;window.admPage=admPage;window.openModal=openModal;window.closeModal=closeModal;
+window.loginAdmin=loginAdmin;window.logoutAdmin=logoutAdmin;window.closeAdmin=closeAdmin;
+window.loginEleve=loginEleve;window.deconnecterEleve=deconnecterEleve;
+window.soumettreinscription=soumettreinscription;window.openModalInscription=openModalInscription;
+window.updatePaiementInfo=updatePaiementInfo;window.setUploadTab=setUploadTab;
+window.handleFileSelect=handleFileSelect;window.handleDrop=handleDrop;window.publierMedia=publierMedia;
+window.setMediaFilter=setMediaFilter;window.ouvrirMedia=ouvrirMedia;window.supprimerMedia=supprimerMedia;
+window.envoyerConsultation=envoyerConsultation;window.rechercherSuivi=rechercherSuivi;
+window.addPanier=addPanier;window.renderCartBadge=renderCartBadge;window.renderPanier=renderPanier;
+window.changerQtyPanier=changerQtyPanier;window.retirerDuPanier=retirerDuPanier;
+window.genererBonCommande=genererBonCommande;window.validerCommande=validerCommande;
+window.envoyerTemoignage=envoyerTemoignage;window.validerTemoignage=validerTemoignage;
+window.ouvrirModalProduit=ouvrirModalProduit;window.previewProdImg=previewProdImg;
+window.sauvegarderProduit=sauvegarderProduit;window.supprimerProduit=supprimerProduit;
+window.toggleStatutProduit=toggleStatutProduit;window.renderAdmProduits=renderAdmProduits;
+window.ouvrirModalFormation=ouvrirModalFormation;window.sauvegarderFormation=sauvegarderFormation;
+window.supprimerFormation=supprimerFormation;window.renderAdmFormations=renderAdmFormations;
+window.ajouterChampBilan=ajouterChampBilan;window.renderChampsBilan=renderChampsBilan;
+window.resetBilan=resetBilan;window.genererBilanSante=genererBilanSante;
+window.updateStatutCmd=updateStatutCmd;
+window._bilCustomFields=_bilCustomFields;
+
+
+// ═══════════════════════════════════════
+// ═══════════════════════════════════════
+// FIREBASE DB REFERENCE
+// ═══════════════════════════════════════
+function getDB() {
+  if(window.FB && window.FB.ready && window.FB.db) return window.FB.db;
+  if(window.db) return window.db;
+  return null;
+}
+
+// ═══════════════════════════════════════
+// DATA STORE
+// ═══════════════════════════════════════
+window._prestations = window._prestations || [];
+window._finances = window._finances || [];
+window._chatSessions = window._chatSessions || [];
+
+// ═══════════════════════════════════════
+// CHARGER DONNÉES FIREBASE
+// ═══════════════════════════════════════
+function loadAmawo() {
+  // Utiliser saveToFB/window.FB (le système natif du fichier)
+  if(!window.FB || !window.FB.ready) {
+    // Charger depuis localStorage (fallback offline)
+    try {
+      var lp = JSON.parse(localStorage.getItem('dps_ama_prestations')||'[]');
+      var lf = JSON.parse(localStorage.getItem('dps_ama_finances')||'[]');
+      window._prestations = lp;
+      window._finances = lf;
+    } catch(e) {}
+    renderPrestations();
+    renderAdmPrestations();
+    renderFinances();
+    return;
+  }
+  var db = window.FB.db;
+  var q = window.FB.query;
+  var col = window.FB.collection;
+  var od = window.FB.orderBy;
+
+  // Prestations — sans orderBy (évite erreur index Firestore)
+  window.FB.getDocs(col(db,'ama_prestations'))
+    .then(function(snap){
+      var items = [];
+      snap.forEach(function(d){ var r=d.data(); r.id=d.id; items.push(r); });
+      items.sort(function(a,b){ return (b.date||'') > (a.date||'') ? 1 : -1; });
+      window._prestations = items;
+      renderPrestations();
+      renderAdmPrestations();
+    }).catch(function(e){
+      console.error('prestations:', e);
+      window._prestations = [];
+      renderPrestations();
+      renderAdmPrestations();
+    });
+
+  // Finances — sans orderBy
+  window.FB.getDocs(col(db,'ama_finances'))
+    .then(function(snap){
+      var items = [];
+      snap.forEach(function(d){ var r=d.data(); r.id=d.id; items.push(r); });
+      items.sort(function(a,b){ return (b.date||'') > (a.date||'') ? 1 : -1; });
+      window._finances = items;
+      renderFinances();
+    }).catch(function(e){
+      console.error('finances:', e);
+      window._finances = [];
+      renderFinances();
+    });
+
+  // Chat — sans orderBy
+  window.FB.getDocs(col(db,'ama_chat'))
+    .then(function(snap){
+      var items = [];
+      snap.forEach(function(d){ var r=d.data(); r.id=d.id; items.push(r); });
+      items.sort(function(a,b){ return (b.date||'') > (a.date||'') ? 1 : -1; });
+      window._chatSessions = items;
+    }).catch(function(){});
+}
+
+// Charger au démarrage (attendre window.FB ready)
+// Firebase se charge après ce script et appelle loadAmawo() directement
+// Pas besoin d'attendre ici
+
+// ═══════════════════════════════════════
+// PRESTATIONS - PUBLIC
+// ═══════════════════════════════════════
+var _prestFiltreActif = 'all';
+
+function renderPrestations() {
+  var data = window._prestations || [];
+  var grid = document.getElementById('prestations-grid');
+  var filtresEl = document.getElementById('prest-filtres');
+  var emptyEl = document.getElementById('prest-empty');
+  if(!grid) return;
+
+  var actives = data.filter(function(p){ return p.statut !== 'inactif'; });
+  var cats = Array.from(new Set(actives.map(function(p){ return p.categorie || ''; }).filter(Boolean)));
+
+  if(filtresEl) {
+    filtresEl.innerHTML = (
+      '<button onclick="filterPrestations(\'all\',this)" '
+      +'style="padding:7px 18px;border-radius:20px;background:var(--gold);color:#fff;border:none;cursor:pointer;font-size:12px;font-weight:600">Tout</button>'
+      + cats.map(function(cat){
+        return '<button onclick="filterPrestations(\''+cat+'\',this)" '
+          +'style="padding:7px 18px;border-radius:20px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;font-size:12px;color:var(--text)">'+cat+'</button>';
+      }).join('')
+    );
+  }
+
+  var filtered = actives.filter(function(p){
+    return _prestFiltreActif === 'all' || p.categorie === _prestFiltreActif;
+  });
+
+  if(emptyEl) emptyEl.style.display = filtered.length ? 'none' : 'block';
+  if(!filtered.length){ grid.innerHTML = ''; return; }
+
+  var dispoLabel = {disponible:'Disponible', sur_rdv:'Sur RDV', indisponible:'Indisponible'};
+  var dispoCls   = {disponible:'#2ea043',    sur_rdv:'#d29922',  indisponible:'#f85149'};
+  var lieuLabel  = {presentiel:'Cabinet',    domicile:'Domicile', distance:'Distance', les_deux:'Cabinet + Distance'};
+
+  grid.innerHTML = filtered.map(function(p){
+    var dc = dispoCls[p.dispo] || '#2ea043';
+    var dl = dispoLabel[p.dispo] || 'Disponible';
+    var ll = lieuLabel[p.lieu] || p.lieu || '';
+    return (
+      '<div style="background:var(--surface2);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:transform .2s,box-shadow .2s" '
+      +'onmouseenter="this.style.transform=\'translateY(-4px)\';this.style.boxShadow=\'0 12px 40px rgba(0,0,0,.25)\'" '
+      +'onmouseleave="this.style.transform=\'none\';this.style.boxShadow=\'none\'">'
+      +'<div style="background:linear-gradient(135deg,rgba(200,160,20,.12),transparent);padding:26px;text-align:center;border-bottom:1px solid var(--border)">'
+      +'<div style="font-size:52px;margin-bottom:10px">'+(p.emoji || '🌿')+'</div>'
+      +'<div style="font-weight:700;font-size:17px;margin-bottom:8px">'+p.nom+'</div>'
+      +'<div style="font-size:24px;font-weight:700;color:var(--gold)">'+fmtNum(p.prix||0)+' F CFA</div>'
+      +(p.duree?'<div style="font-size:12px;color:var(--text3);margin-top:5px">⏱ '+p.duree+'</div>':'')
+      +'</div>'
+      +'<div style="padding:18px">'
+      +(p.desc?'<div style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.55">'+p.desc+'</div>':'')
+      +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">'
+      +(p.categorie?'<span style="font-size:11px;padding:4px 10px;background:var(--surface);border-radius:20px;color:var(--text3)">'+p.categorie+'</span>':'')
+      +(ll?'<span style="font-size:11px;padding:4px 10px;background:var(--surface);border-radius:20px;color:var(--text3)">📍 '+ll+'</span>':'')
+      +'<span style="font-size:11px;padding:4px 10px;border-radius:20px;background:'+dc+'22;color:'+dc+'">'+dl+'</span>'
+      +'</div>'
+      +'<button onclick="reserverPrestation(\''+p.id+'\')" '
+      +'style="width:100%;padding:12px;background:linear-gradient(135deg,var(--gold),#b8860b);'
+      +'border:none;border-radius:12px;color:#fff;font-weight:700;cursor:pointer;font-size:14px;'
+      +'display:flex;align-items:center;justify-content:center;gap:8px'
+      +'>'  // style hover
+      +'📱 Réserver cette prestation</button>'
+      +'</div></div>'
+    );
+  }).join('');
+}
+
+function filterPrestations(cat, btn) {
+  _prestFiltreActif = cat;
+  var btns = document.querySelectorAll('#prest-filtres button');
+  btns.forEach(function(b){
+    b.style.background = 'var(--surface2)'; b.style.color = 'var(--text)'; b.style.border = '1px solid var(--border)';
+  });
+  if(btn){ btn.style.background = 'var(--gold)'; btn.style.color = '#fff'; btn.style.border = 'none'; }
+  renderPrestations();
+}
+
+function reserverPrestation(id) {
+  var p = (window._prestations||[]).find(function(x){ return x.id===id; }) || {};
+  var msg = encodeURIComponent(
+    'Bonjour Amawo Gnon,\n\n'
+    +'Je souhaite réserver la prestation suivante :\n'
+    +'✅ '+p.nom+'\n'
+    +(p.prix ? '💰 Tarif: '+fmtNum(p.prix)+' F CFA\n' : '')
+    +(p.duree ? '⏱ Durée: '+p.duree+'\n' : '')
+    +'\nMerci de me confirmer vos disponibilités.'
+  );
+  window.open('https://wa.me/2290140602126?text='+msg, '_blank');
+}
+
+// ═══════════════════════════════════════
+// PRESTATIONS - ADMIN
+// ═══════════════════════════════════════
+function renderAdmPrestations() {
+  var el = document.getElementById('adm-prestations-grid');
+  if(!el) return;
+  var data = window._prestations || [];
+  if(!data.length) {
+    el.innerHTML = '<div style="color:var(--text3);text-align:center;grid-column:span 3;padding:60px">Aucune prestation. Cliquez &quot;+ Nouvelle prestation&quot; pour commencer.</div>';
+    return;
+  }
+  var dispoL = {disponible:'✅ Disponible', sur_rdv:'📅 Sur RDV', indisponible:'❌ Indisponible'};
+  var dC = {disponible:'#2ea043', sur_rdv:'#d29922', indisponible:'#f85149'};
+  el.innerHTML = data.map(function(p){
+    return (
+      '<div style="background:var(--surface2);border-radius:14px;padding:18px;border:1px solid var(--border)'
+      +(p.statut==='inactif'?';opacity:.65':'')+';">'
+      +'<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'
+      +'<span style="font-size:32px">'+(p.emoji||'🌿')+'</span>'
+      +'<div><div style="font-weight:700;font-size:14px">'+p.nom+'</div>'
+      +'<div style="font-size:13px;color:var(--gold);font-weight:600">'+fmtNum(p.prix||0)+' F'+(p.duree?' • '+p.duree:'')+'</div></div>'
+      +'</div>'
+      +(p.desc?'<div style="font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.4">'+p.desc.substring(0,90)+(p.desc.length>90?'...':'')+'</div>':'')
+      +'<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">'
+      +(p.categorie?'<span style="font-size:10px;padding:3px 8px;background:var(--surface);border-radius:20px;color:var(--text3)">'+p.categorie+'</span>':'')
+      +'<span style="font-size:10px;padding:3px 8px;border-radius:20px;background:'+(dC[p.dispo]||'#2ea043')+'22;color:'+(dC[p.dispo]||'#2ea043')+'">'+(dispoL[p.dispo]||'Disponible')+'</span>'
+      +'<span style="font-size:10px;padding:3px 8px;background:var(--surface);border-radius:20px;color:'+(p.statut==='actif'?'#2ea043':'#f85149')+';">'+(p.statut==='actif'?'👁 Visible':'🔒 Masqué')+'</span>'
+      +'</div>'
+      +'<div style="display:flex;gap:8px">'
+      +'<button onclick="ouvrirModalPrestation(\''+p.id+'\')" '
+      +'style="flex:1;padding:8px;background:var(--surface);border:1px solid var(--border);'
+      +'border-radius:8px;cursor:pointer;font-size:12px;color:var(--text)">✏️ Modifier</button>'
+      +'<button onclick="supprimerPrestation(\''+p.id+'\')" '
+      +'style="padding:8px 12px;background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.2);'
+      +'border-radius:8px;cursor:pointer;font-size:12px;color:#f85149">🗑</button>'
+      +'</div></div>'
+    );
+  }).join('');
+}
+
+function ouvrirModalPrestation(id) {
+  var editId = id || '';
+  document.getElementById('prest-edit-id').value = editId;
+  document.getElementById('m-prest-title').textContent = editId ? 'Modifier la prestation' : 'Nouvelle prestation';
+  if(editId) {
+    var p = (window._prestations||[]).find(function(x){ return x.id===editId; }) || {};
+    var sv = function(eid,v){ var e=document.getElementById(eid); if(e) e.value=v||''; };
+    sv('prest-emoji',p.emoji); sv('prest-nom',p.nom); sv('prest-desc',p.desc);
+    sv('prest-prix',p.prix); sv('prest-duree',p.duree); sv('prest-categorie',p.categorie);
+    sv('prest-lieu',p.lieu||'presentiel'); sv('prest-dispo',p.dispo||'disponible'); sv('prest-statut',p.statut||'actif');
+  } else {
+    ['prest-emoji','prest-nom','prest-desc','prest-prix','prest-duree','prest-categorie'].forEach(function(id){
+      var e=document.getElementById(id); if(e) e.value='';
+    });
+    ['prest-lieu','prest-dispo','prest-statut'].forEach(function(id){
+      var e=document.getElementById(id); if(e) e.selectedIndex=0;
+    });
+  }
+  openModal('m-prestation');
+}
+
+function sauvegarderPrestation() {
+  var nom = (document.getElementById('prest-nom').value||'').trim();
+  if(!nom){ toast('Nom de la prestation obligatoire', 'error'); return; }
+  var editId = document.getElementById('prest-edit-id').value;
+  var data = {
+    emoji:     document.getElementById('prest-emoji').value||'🌿',
+    nom:       nom,
+    desc:      document.getElementById('prest-desc').value||'',
+    prix:      parseFloat(document.getElementById('prest-prix').value)||0,
+    duree:     document.getElementById('prest-duree').value||'',
+    categorie: document.getElementById('prest-categorie').value||'',
+    lieu:      document.getElementById('prest-lieu').value||'presentiel',
+    dispo:     document.getElementById('prest-dispo').value||'disponible',
+    statut:    document.getElementById('prest-statut').value||'actif',
+    date:      new Date().toISOString()
+  };
+  if(editId) {
+    updateToFB('ama_prestations', editId, data);
+    toast('✅ Prestation mise à jour', 'success');
+    closeModal('m-prestation');
+    setTimeout(loadAmawo, 800);
+  } else {
+    var p = saveToFB('ama_prestations', data);
+    if(p && typeof p.then === 'function') {
+      p.then(function(id){
+        toast('✅ Prestation ajoutée', 'success');
+        closeModal('m-prestation');
+        setTimeout(loadAmawo, 800);
+      }).catch(function(e){
+        console.error('save prestation:', e);
+        toast('Prestation sauvegardée localement', 'success');
+        closeModal('m-prestation');
+      });
+    } else {
+      toast('✅ Prestation ajoutée', 'success');
+      closeModal('m-prestation');
+      setTimeout(loadAmawo, 800);
+    }
+  }
+}
+
+function supprimerPrestation(id) {
+  if(!confirm('Supprimer cette prestation définitivement ?')) return;
+  deleteFromFB('ama_prestations', id);
+  toast('Prestation supprimée', 'success');
+  setTimeout(loadAmawo, 600);
+}
+
+// ═══════════════════════════════════════
+// FINANCES
+// ═══════════════════════════════════════
+var _finPeriode = 'all';
+var _finType = 'all';
+
+function finTab(p, btn) {
+  _finPeriode = p;
+  document.querySelectorAll('#adm-finances .adm-tab').forEach(function(b){ b.classList.remove('active'); });
+  if(btn) btn.classList.add('active');
+  renderFinances();
+}
+
+function finTypeTab(t, btn) {
+  _finType = t;
+  document.querySelectorAll('#adm-finances .adm-tab').forEach(function(b){ b.classList.remove('active'); });
+  if(btn) btn.classList.add('active');
+  renderFinances();
+}
+
+function filtFin(items) {
+  var now = new Date();
+  var today = now.toISOString().substring(0,10);
+  var ws = new Date(now); ws.setDate(now.getDate()-now.getDay());
+  var wk = ws.toISOString().substring(0,10);
+  var mo = now.toISOString().substring(0,7);
+  var yr = now.getFullYear().toString();
+  return items.filter(function(f){
+    var d = (f.date||'').substring(0,10);
+    if(_finPeriode==='jour')    return d === today;
+    if(_finPeriode==='semaine') return d >= wk;
+    if(_finPeriode==='mois')    return d.substring(0,7) === mo;
+    if(_finPeriode==='annee')   return d.substring(0,4) === yr;
+    return true;
+  });
+}
+
+function finTypeChange(radio) {
+  var ew = document.getElementById('fin-employe-wrap');
+  var cw = document.getElementById('fin-cat-wrap');
+  if(ew) ew.style.display = radio.value==='salaire' ? 'block' : 'none';
+  if(cw) cw.style.display = radio.value==='salaire' ? 'none'  : 'block';
+}
+
+function saveFinance() {
+  var typeRad = document.querySelector('input[name="fin-type"]:checked');
+  var type = typeRad ? typeRad.value : 'recette';
+  var lib = (document.getElementById('fin-libelle').value||'').trim();
+  var mnt = parseFloat(document.getElementById('fin-montant').value)||0;
+  if(!lib || !mnt){ toast('Libellé et montant obligatoires', 'error'); return; }
+  var data = {
+    type: type,
+    libelle: lib,
+    montant: mnt,
+    date: document.getElementById('fin-date').value || new Date().toISOString().substring(0,10),
+    categorie: type==='salaire' ? 'salaire' : (document.getElementById('fin-categorie').value||'autre'),
+    employe:   type==='salaire' ? (document.getElementById('fin-employe').value||'') : '',
+    notes:     document.getElementById('fin-notes').value || ''
+  };
+  var prom = saveToFB('ama_finances', data);
+  var afterSave = function(){
+    toast('✅ Opération enregistrée', 'success');
+    closeModal('m-fin-ajout');
+    ['fin-libelle','fin-montant','fin-employe','fin-notes'].forEach(function(fid){
+      var e=document.getElementById(fid); if(e) e.value='';
+    });
+    setTimeout(loadAmawo, 800);
+  };
+  if(prom && typeof prom.then === 'function') {
+    prom.then(afterSave).catch(function(){ afterSave(); });
+  } else {
+    afterSave();
+  }
+}
+
+function renderFinances() {
+  var el = document.getElementById('finances-tbody');
+  if(!el) return;
+  var all = window._finances || [];
+  var pd = filtFin(all);
+  var rec = pd.filter(function(f){ return f.type==='recette'; }).reduce(function(s,f){ return s+(f.montant||0); }, 0);
+  var dep = pd.filter(function(f){ return f.type==='depense'; }).reduce(function(s,f){ return s+(f.montant||0); }, 0);
+  var sal = pd.filter(function(f){ return f.type==='salaire'; }).reduce(function(s,f){ return s+(f.montant||0); }, 0);
+  var sol = rec - dep - sal;
+  var set = function(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; };
+  set('kf-recettes', fmtNum(rec)+' F');
+  set('kf-depenses', fmtNum(dep)+' F');
+  set('kf-salaires', fmtNum(sal)+' F');
+  set('kf-solde', fmtNum(sol)+' F');
+  var ks = document.getElementById('kf-solde');
+  if(ks) ks.style.color = sol >= 0 ? '#2ea043' : '#f85149';
+
+  var filtered = filtFin(all);
+  if(_finType !== 'all') filtered = filtered.filter(function(f){ return f.type===_finType; });
+
+  var tL = {recette:'💰 Recette', depense:'💸 Dépense', salaire:'💼 Salaire'};
+  var tC = {recette:'#2ea043', depense:'#f85149', salaire:'#d29922'};
+
+  el.innerHTML = filtered.length ? filtered.map(function(f){
+    return (
+      '<tr>'
+      +'<td style="padding:9px 12px;font-size:12px;color:var(--text3)">'+fmtDate(f.date)+'</td>'
+      +'<td style="padding:9px 12px"><span style="font-size:11px;padding:3px 9px;border-radius:20px;'
+      +'background:'+(tC[f.type]||'#666')+'22;color:'+(tC[f.type]||'#666')+';">'+(tL[f.type]||f.type)+'</span></td>'
+      +'<td style="padding:9px 12px;font-size:13px;font-weight:600">'+(f.libelle||'-')
+      +(f.employe?' <span style="font-size:11px;font-weight:400;color:var(--text3)">('+f.employe+')</span>':'')+'</td>'
+      +'<td style="padding:9px 12px;font-size:12px;color:var(--text3)">'+(f.categorie||'-')+'</td>'
+      +'<td style="padding:9px 12px;text-align:right;font-weight:700;font-size:14px;color:'+(tC[f.type]||'#666')+'">'
+      +(f.type==='recette'?'+':'-')+fmtNum(f.montant||0)+' F</td>'
+      +'<td style="padding:9px 12px;text-align:center">'
+      +'<button onclick="supprimerFinance(\''+f.id+'\')" style="background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.2);'
+      +'color:#f85149;border-radius:6px;padding:4px 9px;cursor:pointer;font-size:12px">🗑</button></td>'
+      +'</tr>'
+    );
+  }).join('') : '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text3)">Aucune opération pour cette période</td></tr>';
+}
+
+function supprimerFinance(id) {
+  if(!confirm('Supprimer cette opération ?')) return;
+  deleteFromFB('ama_finances', id);
+  toast('Supprimé', 'success');
+  setTimeout(loadAmawo, 600);
+}
+
+function genererRapportFinances() {
+  var all = window._finances || [];
+  var pd = filtFin(all);
+  var rec = pd.filter(function(f){ return f.type==='recette'; }).reduce(function(s,f){ return s+(f.montant||0); }, 0);
+  var dep = pd.filter(function(f){ return f.type==='depense'; }).reduce(function(s,f){ return s+(f.montant||0); }, 0);
+  var sal = pd.filter(function(f){ return f.type==='salaire'; }).reduce(function(s,f){ return s+(f.montant||0); }, 0);
+  var sol = rec - dep - sal;
+  var pL = {jour:"Aujourd'hui",semaine:'Cette semaine',mois:'Ce mois',annee:'Cette année',all:'Tout'};
+  var tL = {recette:'💰 Recette',depense:'💸 Dépense',salaire:'💼 Salaire'};
+  var tC = {recette:'#2ea043',depense:'#f85149',salaire:'#d29922'};
+  var win = window.open('','_blank','width=700,height=900');
+  if(!win) return;
+  win.document.write(
+    '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Rapport Finances - Amawo Gnon</title>'
+    +'<style>*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}body{padding:28px;color:#1a1a2e}'
+    +'.header{background:linear-gradient(135deg,#2e7d32,#1b5e20);color:#fff;padding:20px;border-radius:12px;margin-bottom:24px}'
+    +'.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}'
+    +'.kpi{border:1px solid #e0e0e0;border-radius:10px;padding:14px;text-align:center}'
+    +'.kv{font-size:20px;font-weight:700}.kl{font-size:11px;color:#666;margin-top:3px}'
+    +'table{width:100%;border-collapse:collapse}th{background:#f5f5f5;padding:8px 10px;text-align:left;font-size:11px;border-bottom:2px solid #ddd;text-transform:uppercase}'
+    +'td{padding:8px 10px;font-size:12px;border-bottom:1px solid #f0f0f0}'
+    +'.footer{font-size:11px;color:#999;text-align:center;border-top:1px solid #eee;padding-top:12px;margin-top:20px}'
+    +'@media print{button{display:none}}</style></head><body>'
+    +'<div class="header"><div style="font-size:18px;font-weight:700">📈 RAPPORT FINANCIER — Amawo Gnon</div>'
+    +'<div style="font-size:12px;opacity:.9;margin-top:4px">Période: '+(pL[_finPeriode]||_finPeriode)+'</div>'
+    +'<div style="font-size:12px;opacity:.8">Généré le '+new Date().toLocaleDateString('fr-FR')+'</div></div>'
+    +'<div class="kpis">'
+    +'<div class="kpi"><div class="kv" style="color:#2ea043">'+fmtNum(rec)+' F</div><div class="kl">Recettes</div></div>'
+    +'<div class="kpi"><div class="kv" style="color:#f85149">'+fmtNum(dep)+' F</div><div class="kl">Dépenses</div></div>'
+    +'<div class="kpi"><div class="kv" style="color:#d29922">'+fmtNum(sal)+' F</div><div class="kl">Salaires</div></div>'
+    +'<div class="kpi"><div class="kv" style="color:'+(sol>=0?'#2ea043':'#f85149')+'">'+fmtNum(sol)+' F</div><div class="kl">Solde net</div></div>'
+    +'</div>'
+    +'<table><thead><tr><th>Date</th><th>Type</th><th>Libellé</th><th>Catégorie</th><th style="text-align:right">Montant</th></tr></thead><tbody>'
+    +pd.map(function(f){
+      return '<tr><td>'+fmtDate(f.date)+'</td><td style="color:'+(tC[f.type]||'#333')+'">'+(tL[f.type]||f.type)+'</td>'
+        +'<td>'+f.libelle+(f.employe?' ('+f.employe+')':'')+'</td>'
+        +'<td style="color:#666">'+(f.categorie||'-')+'</td>'
+        +'<td style="text-align:right;font-weight:700;color:'+(tC[f.type]||'#333')+'">'+(f.type==='recette'?'+':'-')+fmtNum(f.montant)+' F</td></tr>';
+    }).join('')
+    +'</tbody></table>'
+    +'<div class="footer">Amawo Gnon — amawognon@gmail.com — +229 01 40 60 21 26</div>'
+    +'<div style="text-align:center;margin-top:14px"><button onclick="window.print()" '
+    +'style="background:#2e7d32;color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:13px;cursor:pointer">🖨 Imprimer / PDF</button></div>'
+    +'</body></html>'
+  );
+  win.document.close();
+}
+
+// ═══════════════════════════════════════
+// CHAT CLIENT ↔ AMAWO GNON
+// ═══════════════════════════════════════
+var _chatSession = null;
+var _chatAdmSession = null;
+var _chatOpen = false;
+
+function ouvrirChatWidget() {
+  var box = document.getElementById('chat-widget-box');
+  if(!box) return;
+  _chatOpen = !_chatOpen;
+  box.style.display = _chatOpen ? 'flex' : 'none';
+  box.style.flexDirection = 'column';
+}
+
+function fermerChatWidget() {
+  var box = document.getElementById('chat-widget-box');
+  if(box) box.style.display = 'none';
+  _chatOpen = false;
+}
+
+function demarrerChat() {
+  var nom = (document.getElementById('chat-nom-client').value||'').trim();
+  if(!nom){ toast('Votre nom est requis', 'error'); return; }
+  var tel = (document.getElementById('chat-tel-client').value||'').trim();
+  _chatSession = { id: 'chat_'+Date.now()+'_'+Math.random().toString(36).substr(2,6), nom:nom, tel:tel };
+  saveToFB('ama_chat', { sessionId:_chatSession.id, clientNom:nom, clientTel:tel, statut:'actif', date:new Date().toISOString() });
+  document.getElementById('chat-identification').style.display = 'none';
+  var zone = document.getElementById('chat-zone');
+  zone.style.display = 'flex'; zone.style.flexDirection = 'column';
+  document.getElementById('chat-saisie').style.display = 'flex';
+  document.getElementById('chat-raccourcis').style.display = 'block';
+  ajouterBulleChat('bot',
+    'Bonjour '+nom+' ! 👋\n'
+    +'Bienvenue chez Amawo Gnon.\n'
+    +'Je suis là pour répondre à vos questions sur nos prestations, tarifs et rendez-vous.\n\n'
+    +'Comment puis-je vous aider ?',
+  zone);
+}
+
+function ajouterBulleChat(type, texte, zone) {
+  if(!zone) zone = document.getElementById('chat-zone');
+  if(!zone) return;
+  var isBot = (type==='bot'||type==='admin');
+  var div = document.createElement('div');
+  div.style.cssText = 'display:flex;flex-direction:column;align-items:'+(isBot?'flex-start':'flex-end');
+  div.innerHTML = (
+    '<div style="max-width:85%;padding:10px 14px;border-radius:'
+    +(isBot?'4px 14px 14px 14px':'14px 4px 14px 14px')+';'
+    +'background:'+(isBot?'#fff':'#dcf8c6')+';color:#1a1a2e;'
+    +'font-size:13px;line-height:1.55;box-shadow:0 1px 3px rgba(0,0,0,.12);white-space:pre-wrap">'
+    +texte+'</div>'
+    +'<div style="font-size:10px;color:rgba(0,0,0,.4);margin-top:3px;padding:0 4px">'
+    +new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})
+    +(isBot?' • Amawo Gnon':'')+'</div>'
+  );
+  zone.appendChild(div);
+  zone.scrollTop = zone.scrollHeight;
+}
+
+function envoyerMessageClient() {
+  if(!_chatSession) return;
+  var inp = document.getElementById('chat-msg-input');
+  var msg = (inp.value||'').trim();
+  if(!msg) return;
+  inp.value = '';
+  inp.style.height = 'auto';
+  var zone = document.getElementById('chat-zone');
+  ajouterBulleChat('client', msg, zone);
+  saveToFB('ama_chat_messages', {
+    sessionId:_chatSession.id, clientNom:_chatSession.nom,
+    auteur:'client', message:msg, date:new Date().toISOString(), lu:false
+  });
+  // Réponse auto hors horaires
+  var h = new Date().getHours();
+  if(h < 7 || h >= 20) {
+    setTimeout(function(){
+      ajouterBulleChat('bot',
+        'Merci pour votre message ! 🙏\n'
+        +'Nos conseillers vous répondront à l\'ouverture (7h-20h).\n'
+        +'Pour une urgence : +229 01 40 60 21 26',
+      zone);
+    }, 1000);
+  }
+}
+
+function quickMsg(text) {
+  var inp = document.getElementById('chat-msg-input');
+  if(inp){ inp.value = text; envoyerMessageClient(); }
+}
+
+// Admin chat
+function renderChatListAdmin() {
+  var el = document.getElementById('chat-list-adm'); if(!el) return;
+  if(!window.FB||!window.FB.ready){ el.innerHTML='<div style="color:var(--text3);font-size:12px;padding:10px">Connexion en cours...</div>'; return; }
+  var db=window.FB.db, q=window.FB.query, col=window.FB.collection, od=window.FB.orderBy, lim=window.FB.limit;
+  window.FB.getDocs(q(col(db,'ama_chat'), od('date','desc'), lim(20))).then(function(snap){
+    var sessions = []; snap.forEach(function(d){ var r=d.data(); r.id=d.id; sessions.push(r); });
+    el.innerHTML = sessions.length ? sessions.map(function(s){
+      return (
+        '<div onclick="loadChatMessages(\''+s.sessionId+'\')" '
+        +'style="padding:12px;border-radius:8px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s" '
+        +'onmouseenter="this.style.background=\'var(--surface)\'" onmouseleave="this.style.background=\'none\'">'
+        +'<div style="font-weight:600;font-size:13px">'+(s.clientNom||'Inconnu')+'</div>'
+        +(s.clientTel?'<div style="font-size:11px;color:var(--text3)">'+s.clientTel+'</div>':'')
+        +'<div style="font-size:10px;color:var(--text3);margin-top:3px">'+fmtDate(s.date)+'</div>'
+        +'</div>'
+      );
+    }).join('') : '<div style="color:var(--text3);font-size:12px;padding:12px">Aucune conversation</div>';
+  }).catch(function(){ el.innerHTML='<div style="color:var(--text3);font-size:12px;padding:10px">Erreur</div>'; });
+}
+
+function loadChatMessages(sessionId) {
+  _chatAdmSession = sessionId;
+  var el = document.getElementById('chat-messages-adm'); if(!el) return;
+  if(!window.FB||!window.FB.ready) return;
+  el.innerHTML = '';
+  var db=window.FB.db, q=window.FB.query, col=window.FB.collection, od=window.FB.orderBy, wh=window.FB.where;
+  window.FB.getDocs(q(col(db,'ama_chat_messages'), wh('sessionId','==',sessionId), od('date','asc')))
+  .then(function(snap){
+    if(!snap.size){ el.innerHTML='<div style="text-align:center;color:rgba(0,0,0,.4);font-size:13px;padding:20px">Aucun message</div>'; return; }
+    snap.forEach(function(d){
+      var m = d.data();
+      var isClient = m.auteur === 'client';
+      var div = document.createElement('div');
+      div.style.cssText = 'display:flex;flex-direction:column;align-items:'+(isClient?'flex-start':'flex-end');
+      div.innerHTML = (
+        '<div style="max-width:80%;padding:9px 13px;border-radius:10px;background:'
+        +(isClient?'#fff':'#dcf8c6')+';color:#1a1a2e;font-size:13px;line-height:1.5">'+m.message+'</div>'
+        +'<div style="font-size:10px;color:rgba(0,0,0,.4);margin-top:2px">'
+        +(isClient?m.clientNom||'Client':'Amawo Gnon')+' • '+fmtDate(m.date)+'</div>'
+      );
+      el.appendChild(div);
+    });
+    el.scrollTop = el.scrollHeight;
+  }).catch(function(){});
+}
+
+function envoyerReponseAdmin() {
+  if(!_chatAdmSession){ toast('Sélectionnez une conversation', 'error'); return; }
+  var inp = document.getElementById('adm-msg-input');
+  var msg = (inp.value||'').trim(); if(!msg) return;
+  inp.value = '';
+  saveToFB('ama_chat_messages', {
+    sessionId:_chatAdmSession, auteur:'admin',
+    message:msg, date:new Date().toISOString(), lu:true
+  }, function(){ loadChatMessages(_chatAdmSession); toast('Réponse envoyée', 'success'); });
+}
+
+// ═══════════════════════════════════════
+// EXPOSER TOUTES LES FONCTIONS
+// ═══════════════════════════════════════
+window.loadAmawo = loadAmawo;
+window.renderPrestations = renderPrestations;
+window.filterPrestations = filterPrestations;
+window.reserverPrestation = reserverPrestation;
+window.ouvrirModalPrestation = ouvrirModalPrestation;
+window.sauvegarderPrestation = sauvegarderPrestation;
+window.supprimerPrestation = supprimerPrestation;
+window.renderAdmPrestations = renderAdmPrestations;
+window.finTab = finTab;
+window.finTypeTab = finTypeTab;
+window.filtFin = filtFin;
+window.finTypeChange = finTypeChange;
+window.saveFinance = saveFinance;
+window.renderFinances = renderFinances;
+window.supprimerFinance = supprimerFinance;
+window.genererRapportFinances = genererRapportFinances;
+window.ouvrirChatWidget = ouvrirChatWidget;
+window.fermerChatWidget = fermerChatWidget;
+window.demarrerChat = demarrerChat;
+window.ajouterBulleChat = ajouterBulleChat;
+window.envoyerMessageClient = envoyerMessageClient;
+window.quickMsg = quickMsg;
+window.renderChatListAdmin = renderChatListAdmin;
+window.loadChatMessages = loadChatMessages;
+window.envoyerReponseAdmin = envoyerReponseAdmin;
+
+</script>
+
+<div class="overlay" id="m-fin-ajout"><div class="modal" style="max-width:500px"><div class="modal-hdr"><div style="font-weight:700;font-size:16px">Nouvelle opération</div><button class="modal-close" onclick="closeModal('m-fin-ajout')">✕</button></div><div class="modal-body" style="padding:20px"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px"><div style="grid-column:span 2"><div style="font-size:12px;font-weight:600;margin-bottom:8px;color:var(--text2)">TYPE *</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px"><label style="display:flex;align-items:center;gap:7px;padding:10px;border:2px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px"><input type="radio" name="fin-type" value="recette" onchange="finTypeChange(this)" checked> 💰 Recette</label><label style="display:flex;align-items:center;gap:7px;padding:10px;border:2px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px"><input type="radio" name="fin-type" value="depense" onchange="finTypeChange(this)"> 💸 Dépense</label><label style="display:flex;align-items:center;gap:7px;padding:10px;border:2px solid var(--border);border-radius:10px;cursor:pointer;font-size:13px"><input type="radio" name="fin-type" value="salaire" onchange="finTypeChange(this)"> 💼 Salaire</label></div></div><div style="grid-column:span 2"><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">LIBELLÉ *</div><input class="form-input" id="fin-libelle" placeholder="Ex: Consultation reflexologie"></div><div><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">MONTANT (F CFA) *</div><input class="form-input" type="number" id="fin-montant" placeholder="0" min="0"></div><div><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">DATE</div><input class="form-input" type="date" id="fin-date"></div><div id="fin-cat-wrap" style="grid-column:span 2"><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">CATÉGORIE</div><select class="form-input" id="fin-categorie"><option value="prestation">Prestation</option><option value="formation">Formation</option><option value="produit">Produit vendu</option><option value="consultation">Consultation</option><option value="loyer">Loyer</option><option value="fournitures">Fournitures</option><option value="transport">Transport</option><option value="autre">Autre</option></select></div><div id="fin-employe-wrap" style="display:none;grid-column:span 2"><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">EMPLOYÉ</div><input class="form-input" id="fin-employe" placeholder="Nom de l'employé"></div><div style="grid-column:span 2"><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">NOTES</div><textarea class="form-input" id="fin-notes" rows="2" placeholder="Observations optionnelles..."></textarea></div></div></div><div style="display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid var(--border)"><button class="btn btn-outline btn-sm" onclick="closeModal('m-fin-ajout')">Annuler</button><button class="btn btn-primary btn-sm" onclick="saveFinance()">💾 Enregistrer</button></div></div></div>
+
+<div class="overlay" id="m-prestation"><div class="modal" style="max-width:560px"><div class="modal-hdr"><div style="font-weight:700;font-size:16px" id="m-prest-title">Nouvelle prestation</div><button class="modal-close" onclick="closeModal('m-prestation')">✕</button></div><div class="modal-body" style="padding:20px"><input type="hidden" id="prest-edit-id"><div style="display:grid;grid-template-columns:1fr 1fr;gap:14px"><div><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">EMOJI</div><input class="form-input" id="prest-emoji" placeholder="🌿" maxlength="4"></div><div><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">NOM *</div><input class="form-input" id="prest-nom" placeholder="Ex: Massage réflexologie"></div><div style="grid-column:span 2"><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">DESCRIPTION</div><textarea class="form-input" id="prest-desc" rows="3" placeholder="Décrivez la prestation en détail..."></textarea></div><div><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">PRIX (F CFA) *</div><input class="form-input" type="number" id="prest-prix" placeholder="0" min="0"></div><div><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">DURÉE</div><input class="form-input" id="prest-duree" placeholder="Ex: 1h30, 45 min"></div><div><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">CATÉGORIE</div><input class="form-input" id="prest-categorie" placeholder="Ex: Massages, Soins..." list="prest-cats"><datalist id="prest-cats"><option value="Massages"><option value="Soins du corps"><option value="Réflexologie"><option value="Phytothérapie"><option value="Bien-être"><option value="Consultation"><option value="Formation"></datalist></div><div><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">LIEU</div><select class="form-input" id="prest-lieu"><option value="presentiel">Présentiel (cabinet)</option><option value="domicile">À domicile</option><option value="distance">À distance</option><option value="les_deux">Présentiel + distance</option></select></div><div><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">DISPONIBILITÉ</div><select class="form-input" id="prest-dispo"><option value="disponible">✅ Disponible</option><option value="sur_rdv">📅 Sur rendez-vous</option><option value="indisponible">❌ Indisponible</option></select></div><div><div style="font-size:12px;font-weight:600;margin-bottom:6px;color:var(--text2)">STATUT</div><select class="form-input" id="prest-statut"><option value="actif">👁 Visible (public)</option><option value="inactif">🔒 Masqué (brouillon)</option></select></div></div></div><div style="display:flex;justify-content:flex-end;gap:10px;padding:14px 20px;border-top:1px solid var(--border)"><button class="btn btn-outline btn-sm" onclick="closeModal('m-prestation')">Annuler</button><button class="btn btn-primary btn-sm" onclick="sauvegarderPrestation()">💾 Enregistrer</button></div></div></div>
+
+<!-- CHAT WIDGET -->
+<div id="btn-chat-float" onclick="ouvrirChatWidget()" style="position:fixed;bottom:24px;right:24px;width:56px;height:56px;background:linear-gradient(135deg,#25D366,#128C7E);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(37,211,102,.4);z-index:890;font-size:26px;transition:transform .2s" onmouseenter="this.style.transform='scale(1.12)'" onmouseleave="this.style.transform='none'">💬<div id="chat-notif-dot" style="display:none;position:absolute;top:2px;right:2px;width:14px;height:14px;background:#f85149;border-radius:50%;border:2px solid #fff"></div></div>
+<div id="chat-widget-box" style="display:none;position:fixed;bottom:90px;right:24px;width:340px;max-height:520px;background:var(--surface);border-radius:16px;box-shadow:0 12px 48px rgba(0,0,0,.5);border:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;z-index:890"><div style="background:linear-gradient(135deg,#25D366,#128C7E);padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0"><div style="width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:20px">🌿</div><div style="flex:1"><div style="font-weight:700;color:#fff;font-size:14px">Amawo Gnon</div><div style="font-size:11px;color:#c8ffc8" id="chat-status-txt">En ligne</div></div><button onclick="fermerChatWidget()" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:15px">✕</button></div><div id="chat-identification" style="padding:18px;border-bottom:1px solid var(--border);flex-shrink:0"><div style="font-size:13px;font-weight:600;margin-bottom:12px">👋 Avant de commencer</div><input class="form-input" id="chat-nom-client" placeholder="Votre nom *" style="margin-bottom:10px;font-size:13px"><input class="form-input" id="chat-tel-client" placeholder="Téléphone (optionnel)" style="margin-bottom:12px;font-size:13px"><button onclick="demarrerChat()" style="width:100%;padding:11px;background:linear-gradient(135deg,#25D366,#128C7E);border:none;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:14px">💬 Démarrer la conversation</button></div><div id="chat-zone" style="flex:1;overflow-y:auto;padding:12px;background:#e5ddd5;display:none;flex-direction:column;gap:8px;min-height:180px"></div><div id="chat-raccourcis" style="display:none;padding:8px 10px;background:var(--surface);border-top:1px solid var(--border);overflow-x:auto;white-space:nowrap;flex-shrink:0"><button onclick="quickMsg('Bonjour, quelles sont vos prestations ?')" style="font-size:11px;padding:5px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;cursor:pointer;margin-right:6px;color:var(--text)">Prestations</button><button onclick="quickMsg('Quels sont vos tarifs ?')" style="font-size:11px;padding:5px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;cursor:pointer;margin-right:6px;color:var(--text)">Tarifs</button><button onclick="quickMsg('Je souhaite prendre un rendez-vous')" style="font-size:11px;padding:5px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;cursor:pointer;margin-right:6px;color:var(--text)">RDV</button><button onclick="quickMsg('Services à distance ?')" style="font-size:11px;padding:5px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;cursor:pointer;margin-right:6px;color:var(--text)">Distance</button></div><div id="chat-saisie" style="display:none;padding:10px;border-top:1px solid var(--border);align-items:flex-end;gap:8px;background:var(--surface);flex-shrink:0"><textarea id="chat-msg-input" rows="1" placeholder="Votre message..." style="flex:1;resize:none;border-radius:20px;padding:8px 14px;font-size:13px;border:1px solid var(--border);background:var(--surface2);color:var(--text);outline:none;max-height:80px;overflow-y:auto;width:calc(100% - 48px)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();envoyerMessageClient();}"></textarea><button onclick="envoyerMessageClient()" style="background:linear-gradient(135deg,#25D366,#128C7E);border:none;border-radius:50%;width:36px;height:36px;cursor:pointer;color:#fff;font-size:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center">➤</button></div></div>
+
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getFirestore,collection,addDoc,getDocs,onSnapshot,doc,updateDoc,deleteDoc,orderBy,query,limit,where}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const cfg={apiKey:"AIzaSyDCqoYZLBK0ipbotTejMCAvYGxrkomGIGk",authDomain:"dpgestpro.firebaseapp.com",projectId:"dpgestpro",storageBucket:"dpgestpro.firebasestorage.app",messagingSenderId:"795000345158",appId:"1:795000345158:web:b33a6f77ce9e98bff87047"};
+const app=initializeApp(cfg);
+const db=getFirestore(app);
+window.FB={db,collection,addDoc,getDocs,onSnapshot,doc,updateDoc,deleteDoc,orderBy,query,limit,where,ready:true};
+console.log('Firebase pret');
+window._fbReady=true;
+// Appeler loadAmawo directement — il sera déjà défini car ce module s'exécute après le DOM
+if(typeof window.loadAmawo==='function'){
+  window.loadAmawo();
+} else {
+  // Fallback si le script principal n'est pas encore prêt
+  document.addEventListener('DOMContentLoaded',function(){
+    if(typeof window.loadAmawo==='function') window.loadAmawo();
+  });
+}
+</script>
+</body>
+</html>

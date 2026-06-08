@@ -1,0 +1,2509 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script>
+/* DPTIF Licence — Active jusqu'au 2027-05-26 */
+(function(){
+  var KEY='dptif_licence_dptif_admin';
+  var exp='2027-05-26';
+  try{
+    var lic=JSON.parse(localStorage.getItem(KEY)||'{}');
+    if(!lic.actif||!lic.expiration||lic.expiration<exp){
+      localStorage.setItem(KEY,JSON.stringify({actif:true,expiration:exp,activatedBy:'DPTIF-Admin',date:new Date().toISOString()}));
+    }
+    window.DPTIF_LICENCE={actif:true,expiration:exp,key:KEY};
+  }catch(e){window.DPTIF_LICENCE={actif:true,expiration:exp,key:KEY};}
+  // Override des vérifications de licence courantes
+  window.isLicenceActive=function(){return true;};
+  window.checkLicence=function(){return true;};
+  window.licenceActive=true;
+  window.LICENCE_ACTIVE=true;
+  window.LICENCE_EXPIRY='2027-05-26';
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DPTIF Pro — Administration Centrale</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05060e;--surf:#0b0d1a;--surf2:#10121f;--surf3:#161825;
+  --acc:#6366f1;--acc2:#818cf8;--gold:#f59e0b;--gold2:#fbbf24;
+  --green:#10b981;--green2:#34d399;--red:#ef4444;--red2:#f87171;
+  --cyan:#06b6d4;--violet:#8b5cf6;
+  --bdr:rgba(99,102,241,.2);--bdr2:rgba(99,102,241,.08);
+  --txt:#e8e9f8;--txt2:#9090c0;--txt3:#505080;
+  --radius:14px;--shadow:0 4px 24px rgba(0,0,0,.5);
+}
+html,body{height:100%;font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);overflow:hidden}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at 30% 50%,#0e0a2e 0%,#050610 70%)}
+#login-screen::before{content:'';position:absolute;inset:0;
+  background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%236366f1' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat}
+.login-box{position:relative;z-index:1;width:420px;max-width:94vw}
+.login-logo{text-align:center;margin-bottom:32px}
+.login-logo-icon{width:64px;height:64px;border-radius:18px;
+  background:linear-gradient(135deg,var(--acc),var(--violet));
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;margin:0 auto 14px;box-shadow:0 0 40px rgba(99,102,241,.4)}
+.login-logo-title{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;
+  background:linear-gradient(135deg,#fff,var(--acc2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.login-logo-sub{font-size:12px;color:var(--txt3);text-transform:uppercase;letter-spacing:2px;margin-top:4px}
+.login-card{background:var(--surf);border:1px solid var(--bdr);border-radius:20px;padding:36px;
+  box-shadow:0 0 60px rgba(99,102,241,.15)}
+.login-field{margin-bottom:16px}
+.login-label{font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;display:block}
+.login-inp{width:100%;background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;
+  padding:12px 16px;color:var(--txt);font-size:14px;font-family:'DM Sans',sans-serif;
+  transition:border-color .2s}
+.login-inp:focus{outline:none;border-color:var(--acc)}
+.login-btn{width:100%;padding:14px;background:linear-gradient(135deg,var(--acc),var(--violet));
+  border:none;border-radius:11px;color:#fff;font-size:15px;font-weight:700;
+  font-family:'Syne',sans-serif;cursor:pointer;transition:all .2s;margin-top:8px}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(99,102,241,.4)}
+.login-err{color:var(--red);font-size:12px;margin-top:8px;display:none}
+
+/* ── APP LAYOUT ── */
+#app{display:none;height:100vh;flex-direction:row}
+#app.visible{display:flex}
+
+/* ── SIDEBAR ── */
+.sidebar{width:240px;background:var(--surf);border-right:1px solid var(--bdr2);
+  display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-logo{padding:22px 20px 16px;border-bottom:1px solid var(--bdr2)}
+.sidebar-logo-text{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;
+  background:linear-gradient(135deg,var(--acc2),var(--violet));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sidebar-logo-sub{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:1.5px;margin-top:2px}
+.sidebar-nav{flex:1;padding:12px 10px}
+.nav-section{font-size:9px;font-weight:700;color:var(--txt3);text-transform:uppercase;
+  letter-spacing:2px;padding:12px 10px 4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;
+  cursor:pointer;transition:all .15s;font-size:13px;font-weight:500;color:var(--txt2);
+  border:1px solid transparent;margin-bottom:1px}
+.nav-item:hover{background:var(--surf2);color:var(--txt)}
+.nav-item.active{background:rgba(99,102,241,.12);color:var(--acc2);border-color:var(--bdr)}
+.nav-item .ni{width:20px;text-align:center;font-size:14px}
+.nav-badge{margin-left:auto;font-size:9px;background:var(--red);color:#fff;
+  border-radius:8px;padding:1px 6px;font-weight:700}
+.nav-badge.green{background:var(--green)}
+.nav-badge.gold{background:var(--gold);color:#000}
+.sidebar-bottom{padding:12px 10px;border-top:1px solid var(--bdr2)}
+.sidebar-user{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;
+  background:var(--surf2);border:1px solid var(--bdr2)}
+.sidebar-avatar{width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--acc),var(--violet));
+  display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0}
+.sidebar-uname{font-size:12px;font-weight:600;color:var(--txt)}
+.sidebar-urole{font-size:10px;color:var(--txt3)}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;background:var(--bg)}
+.page{display:none;padding:28px;min-height:100%}
+.page.active{display:block}
+
+/* ── TOPBAR ── */
+.topbar{display:flex;align-items:center;gap:16px;margin-bottom:28px;flex-wrap:wrap}
+.page-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--txt)}
+.page-sub{font-size:13px;color:var(--txt2);margin-top:2px}
+.topbar-actions{margin-left:auto;display:flex;gap:10px}
+
+/* ── KPI CARDS ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+.kpi{background:var(--surf);border:1px solid var(--bdr2);border-radius:var(--radius);padding:20px;
+  position:relative;overflow:hidden;transition:border-color .2s}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi.indigo::before{background:linear-gradient(90deg,var(--acc),var(--violet))}
+.kpi.gold::before{background:linear-gradient(90deg,var(--gold),#f97316)}
+.kpi.green::before{background:linear-gradient(90deg,var(--green),var(--cyan))}
+.kpi.red::before{background:linear-gradient(90deg,var(--red),#ec4899)}
+.kpi-icon{font-size:22px;margin-bottom:10px}
+.kpi-val{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:var(--txt);letter-spacing:-1px}
+.kpi-lbl{font-size:11px;color:var(--txt2);margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.kpi-sub{font-size:11px;margin-top:6px}
+.kpi-sub.up{color:var(--green2)}
+.kpi-sub.down{color:var(--red2)}
+.kpi-sub.warn{color:var(--gold2)}
+
+/* ── CARDS ── */
+.card{background:var(--surf);border:1px solid var(--bdr2);border-radius:var(--radius);padding:22px;margin-bottom:18px}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--txt)}
+.card-sub{font-size:12px;color:var(--txt2);margin-top:2px}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse}
+.tbl th{font-size:10px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;
+  padding:8px 12px;border-bottom:1px solid var(--bdr2);text-align:left;white-space:nowrap}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--bdr2);font-size:13px;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:rgba(99,102,241,.03)}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;white-space:nowrap}
+.badge-active{background:rgba(16,185,129,.12);color:var(--green2);border:1px solid rgba(16,185,129,.2)}
+.badge-expired{background:rgba(239,68,68,.12);color:var(--red2);border:1px solid rgba(239,68,68,.2)}
+.badge-demo{background:rgba(245,158,11,.12);color:var(--gold2);border:1px solid rgba(245,158,11,.2)}
+.badge-suspended{background:rgba(99,102,241,.12);color:var(--acc2);border:1px solid var(--bdr)}
+.badge-pending{background:rgba(6,182,212,.12);color:var(--cyan);border:1px solid rgba(6,182,212,.2)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:10px;
+  font-size:13px;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s}
+.btn-primary{background:linear-gradient(135deg,var(--acc),var(--violet));color:#fff}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(99,102,241,.35)}
+.btn-gold{background:linear-gradient(135deg,var(--gold),#f97316);color:#000}
+.btn-green{background:rgba(16,185,129,.15);color:var(--green2);border:1px solid rgba(16,185,129,.25)}
+.btn-red{background:rgba(239,68,68,.12);color:var(--red2);border:1px solid rgba(239,68,68,.2)}
+.btn-outline{background:transparent;color:var(--txt2);border:1px solid var(--bdr)}
+.btn-outline:hover{background:var(--surf2);color:var(--txt)}
+.btn-sm{padding:5px 12px;font-size:12px;border-radius:8px}
+.btn-icon{background:transparent;border:none;cursor:pointer;font-size:14px;padding:5px;border-radius:6px;
+  color:var(--txt2);transition:all .15s}
+.btn-icon:hover{background:var(--surf2);color:var(--txt)}
+
+/* ── FORMS ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px}
+.fg{margin-bottom:12px}
+.fg-label{font-size:11px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;
+  display:block;margin-bottom:5px}
+.fg-inp,.fg-sel{width:100%;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;
+  padding:10px 12px;color:var(--txt);font-size:13px;font-family:'DM Sans',sans-serif}
+.fg-inp:focus,.fg-sel:focus{outline:none;border-color:var(--acc)}
+.fg-sel option{background:var(--surf2)}
+.fg-inp::placeholder{color:var(--txt3)}
+.fg-ta{width:100%;background:var(--surf2);border:1px solid var(--bdr);border-radius:8px;
+  padding:10px 12px;color:var(--txt);font-size:13px;font-family:'DM Sans',sans-serif;
+  resize:vertical;min-height:80px}
+.fg-ta:focus{outline:none;border-color:var(--acc)}
+
+/* ── APP CARDS ── */
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.app-card{background:var(--surf);border:1px solid var(--bdr2);border-radius:var(--radius);
+  padding:20px;transition:all .2s;cursor:pointer;position:relative;overflow:hidden}
+.app-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--acc),var(--violet));
+  opacity:0;transition:opacity .2s}
+.app-card:hover{border-color:var(--acc);transform:translateY(-2px);box-shadow:0 8px 24px rgba(99,102,241,.15)}
+.app-card-icon{font-size:32px;margin-bottom:12px}
+.app-card-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--txt);margin-bottom:4px}
+.app-card-desc{font-size:12px;color:var(--txt2);margin-bottom:12px;line-height:1.5}
+.app-card-stats{display:flex;gap:10px;margin-bottom:12px}
+.app-stat{font-size:11px;color:var(--txt3)}
+.app-stat strong{color:var(--txt2)}
+.app-card-foot{display:flex;align-items:center;justify-content:space-between}
+
+/* ── LICENCE KEY ── */
+.lic-key{font-family:monospace;font-size:13px;background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:8px;padding:10px 14px;color:var(--acc2);letter-spacing:2px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px}
+.lic-key-val{flex:1;word-break:break-all}
+
+/* ── PROGRESS ── */
+.progress{background:var(--surf2);border-radius:4px;height:6px;overflow:hidden;margin-top:6px}
+.progress-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.progress-fill.green{background:linear-gradient(90deg,var(--green),var(--cyan))}
+.progress-fill.gold{background:linear-gradient(90deg,var(--gold),#f97316)}
+.progress-fill.red{background:linear-gradient(90deg,var(--red),#ec4899)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;
+  display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surf);border:1px solid var(--bdr);border-radius:20px;
+  width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow)}
+.modal-hdr{padding:22px 24px 0;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--txt)}
+.modal-close{background:none;border:none;color:var(--txt2);font-size:20px;cursor:pointer;
+  padding:4px;border-radius:6px;line-height:1}
+.modal-close:hover{color:var(--txt);background:var(--surf2)}
+.modal-body{padding:0 24px 24px}
+.modal-foot{padding:16px 24px;border-top:1px solid var(--bdr2);display:flex;gap:10px;justify-content:flex-end}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 20px;border-radius:12px;
+  background:var(--surf);border:1px solid var(--bdr);color:var(--txt);font-size:13px;
+  font-weight:500;z-index:9999;transform:translateY(80px);opacity:0;
+  transition:all .3s;box-shadow:var(--shadow);max-width:340px}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.ok{border-color:rgba(16,185,129,.4);background:rgba(16,185,129,.08)}
+.toast.err{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.08)}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--surf3);border-radius:3px}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page.active{animation:fadeIn .25s ease}
+</style>
+</head>
+<body>
+
+<!-- ██ LOGIN ██ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">⚡</div>
+      <div class="login-logo-title">DPTIF Pro Admin</div>
+      <div class="login-logo-sub">Centre de contrôle global</div>
+    </div>
+    <div class="login-card">
+      <div class="login-field">
+        <label class="login-label">Identifiant</label>
+        <input id="l-id" class="login-inp" placeholder="admin" autocomplete="username"
+          onkeydown="if(event.key==='Enter')document.getElementById('l-pw').focus()">
+      </div>
+      <div class="login-field">
+        <label class="login-label">Mot de passe</label>
+        <input id="l-pw" class="login-inp" type="password" placeholder="••••••••"
+          onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div id="l-err" class="login-err">❌ Identifiants incorrects</div>
+      <button class="login-btn" onclick="doLogin()">🔐 Accéder au panneau admin</button>
+      <div style="font-size:11px;color:var(--txt3);text-align:center;margin-top:14px">
+        DPTIF Pro · Admin: Jean Paul BOGNON · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e68c8387889687938a848981888988d5a6818b878f8ac885898b">[email&#160;protected]</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ██ APP ██ -->
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-text">⚡ DPTIF Admin</div>
+      <div class="sidebar-logo-sub">v2026 · Jean Paul BOGNON</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-section">Vue générale</div>
+      <div class="nav-item active" onclick="goPage('dashboard',this)">
+        <span class="ni">📊</span>Dashboard
+      </div>
+
+      <div class="nav-section">Gestion</div>
+      <div class="nav-item" onclick="goPage('clients',this)">
+        <span class="ni">🏢</span>Clients & Entreprises
+        <span class="nav-badge" id="nb-clients">0</span>
+      </div>
+      <div class="nav-item" onclick="goPage('apps',this)">
+        <span class="ni">📱</span>Applications (10)
+      </div>
+      <div class="nav-item" onclick="goPage('licences',this)">
+        <span class="ni">🔑</span>Licences
+        <span class="nav-badge" id="nb-expiry" style="display:none">0</span>
+      </div>
+
+      <div class="nav-section">Production</div>
+      <div class="nav-item" onclick="goPage('generateur',this)">
+        <span class="ni">🚀</span>Générer une App
+      </div>
+
+      <div class="nav-section">Commerce</div>
+      <div class="nav-item" onclick="goPage('facturation',this)">
+        <span class="ni">💰</span>Facturation
+        <span class="nav-badge green" id="nb-factures">0</span>
+      </div>
+      <div class="nav-item" onclick="goPage('paiements',this)">
+        <span class="ni">💳</span>Paiements
+        <span class="nav-badge" id="nb-attente">0</span>
+      </div>
+
+      <div class="nav-section">Communication</div>
+      <div class="nav-item" onclick="goPage('notifications',this)">
+        <span class="ni">📢</span>Notifications
+      </div>
+
+      <div class="nav-section">Configuration</div>
+      <div class="nav-item" onclick="goPage('tarifs',this)">
+        <span class="ni">🏷</span>Tarifs & Forfaits
+      </div>
+      <div class="nav-item" onclick="goPage('parametres',this)">
+        <span class="ni">⚙️</span>Paramètres
+      </div>
+    </nav>
+    <div class="sidebar-bottom">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar">JP</div>
+        <div>
+          <div class="sidebar-uname">Jean Paul BOGNON</div>
+          <div class="sidebar-urole">Super Admin</div>
+        </div>
+        <button class="btn-icon" onclick="deconnecter()" title="Déconnexion" style="margin-left:auto">🚪</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- ████ DASHBOARD ████ -->
+    <div class="page active" id="page-dashboard">
+      <div class="topbar">
+        <div>
+          <div class="page-title">📊 Dashboard</div>
+          <div class="page-sub" id="dash-date">Chargement...</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-outline btn-sm" onclick="exporterRapport()">📥 Rapport PDF</button>
+          <button class="btn btn-primary btn-sm" onclick="goPage('licences',null);openModal('modal-nouvelle-licence')">➕ Nouvelle licence</button>
+        </div>
+      </div>
+
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi indigo">
+          <div class="kpi-icon">🏢</div>
+          <div class="kpi-val" id="kpi-clients">0</div>
+          <div class="kpi-lbl">Clients actifs</div>
+          <div class="kpi-sub up" id="kpi-clients-sub">—</div>
+        </div>
+        <div class="kpi gold">
+          <div class="kpi-icon">🔑</div>
+          <div class="kpi-val" id="kpi-licences">0</div>
+          <div class="kpi-lbl">Licences actives</div>
+          <div class="kpi-sub warn" id="kpi-expiry-sub">—</div>
+        </div>
+        <div class="kpi green">
+          <div class="kpi-icon">💰</div>
+          <div class="kpi-val" id="kpi-ca">0 F</div>
+          <div class="kpi-lbl">CA mensuel</div>
+          <div class="kpi-sub up" id="kpi-ca-sub">—</div>
+        </div>
+        <div class="kpi red">
+          <div class="kpi-icon">⏰</div>
+          <div class="kpi-val" id="kpi-expiry">0</div>
+          <div class="kpi-lbl">Expirent bientôt</div>
+          <div class="kpi-sub warn">Dans les 7 prochains jours</div>
+        </div>
+      </div>
+
+      <!-- Graphique et alertes côte à côte -->
+      <div style="display:grid;grid-template-columns:1fr 360px;gap:18px">
+        <!-- Licences par app -->
+        <div class="card">
+          <div class="card-hdr">
+            <div>
+              <div class="card-title">📱 Licences par application</div>
+              <div class="card-sub">Distribution des abonnements actifs</div>
+            </div>
+          </div>
+          <div id="dash-apps-chart"></div>
+        </div>
+        <!-- Alertes urgentes -->
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">🚨 Alertes</div>
+          </div>
+          <div id="dash-alerts">
+            <div style="text-align:center;padding:20px;color:var(--txt3);font-size:13px">
+              ✅ Aucune alerte urgente
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Derniers paiements -->
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">💳 Derniers paiements</div>
+          <button class="btn btn-outline btn-sm" onclick="goPage('paiements',null)">Voir tout →</button>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>Client</th><th>App</th><th>Forfait</th><th>Montant</th><th>Date</th><th>Statut</th></tr></thead>
+            <tbody id="dash-paiements-tbody">
+              <tr><td colspan="6" style="text-align:center;padding:20px;color:var(--txt3)">Aucun paiement enregistré</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    
+      <!-- Activité récente -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px">⚡ Activité récente</div>
+          <div id="recent-activity">
+            <div style="color:var(--text3);text-align:center;padding:20px;font-size:13px">Chargement...</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:12px">📊 Statistiques globales</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
+              <div style="font-size:20px;font-weight:800;color:var(--acc)" id="kpi-ca-total">—</div>
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-top:2px">CA Total</div>
+            </div>
+            <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
+              <div style="font-size:20px;font-weight:800;color:var(--acc2)" id="kpi-ca-mois">—</div>
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-top:2px">CA Ce mois</div>
+            </div>
+            <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
+              <div style="font-size:20px;font-weight:800;color:#10b981" id="kpi-gen-mois">—</div>
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-top:2px">Apps ce mois</div>
+            </div>
+            <div style="background:var(--bg);border-radius:8px;padding:12px;text-align:center">
+              <div style="font-size:20px;font-weight:800;color:#f59e0b" id="kpi-apps">—</div>
+              <div style="font-size:10px;color:var(--text3);text-transform:uppercase;margin-top:2px">Apps dispo</div>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
+
+    <!-- ████ CLIENTS ████ -->
+    <div class="page" id="page-clients">
+      <div class="topbar">
+        <div>
+          <div class="page-title">🏢 Clients & Entreprises</div>
+          <div class="page-sub">Gestion de tous vos abonnés DPTIF Pro</div>
+        </div>
+        <div class="topbar-actions">
+          <input id="search-clients" class="fg-inp" placeholder="🔍 Rechercher un client..." style="width:220px"
+            oninput="renderClients(this.value)">
+          <button class="btn btn-primary btn-sm" onclick="openModal('modal-nouveau-client')">➕ Nouveau client</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>Client</th><th>Secteur</th><th>Apps actives</th><th>Licence</th><th>Expiration</th><th>CA Total</th><th>Actions</th></tr></thead>
+            <tbody id="clients-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ APPLICATIONS ████ -->
+    <div class="page" id="page-apps">
+      <div class="topbar">
+        <div>
+          <div class="page-title">📱 Applications DPTIF Pro</div>
+          <div class="page-sub">9 applications — Gestion et statistiques</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary btn-sm" onclick="openModal('modal-nouvelle-licence')">➕ Activer une licence</button>
+        </div>
+      </div>
+      <div class="apps-grid" id="apps-grid"></div>
+    </div>
+
+    <!-- ████ LICENCES ████ -->
+    <div class="page" id="page-licences">
+      <div class="topbar">
+        <div>
+          <div class="page-title">🔑 Licences & Abonnements</div>
+          <div class="page-sub">Activation, renouvellement et suivi</div>
+        </div>
+        <div class="topbar-actions">
+          <select id="filtre-statut-lic" class="fg-sel" style="width:160px" onchange="renderLicences()">
+            <option value="">Tous les statuts</option>
+            <option value="active">Actives</option>
+            <option value="demo">Démo</option>
+            <option value="expiry">Expire bientôt</option>
+            <option value="expired">Expirées</option>
+            <option value="suspended">Suspendues</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="openModal('modal-nouvelle-licence')">➕ Nouvelle licence</button>
+          <button class="btn btn-outline btn-sm" onclick="exporterLicencesCSV()">📥 CSV</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>Client</th><th>Application</th><th>Clé de licence</th><th>Forfait</th><th>Début</th><th>Expiration</th><th>Jours restants</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="licences-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ FACTURATION ████ -->
+    <div class="page" id="page-facturation">
+      <div class="topbar">
+        <div>
+          <div class="page-title">💰 Facturation</div>
+          <div class="page-sub">Toutes les factures et reçus émis</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary btn-sm" onclick="openModal('modal-nouvelle-facture')">➕ Nouvelle facture</button>
+          <button class="btn btn-outline btn-sm" onclick="exporterFacturesCSV()">📥 CSV</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>N° Facture</th><th>Client</th><th>App</th><th>Forfait</th><th>Montant</th><th>Date</th><th>Mode paiement</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="factures-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ PAIEMENTS ████ -->
+    <div class="page" id="page-paiements">
+      <div class="topbar">
+        <div>
+          <div class="page-title">💳 Paiements</div>
+          <div class="page-sub">Validation des paiements Mobile Money et virements</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>Client</th><th>App</th><th>Montant</th><th>Mode</th><th>Référence</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+            <tbody id="paiements-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ NOTIFICATIONS ████ -->
+    <div class="page" id="page-notifications">
+      <div class="topbar">
+        <div>
+          <div class="page-title">📢 Notifications</div>
+          <div class="page-sub">Envoyer des alertes WhatsApp aux clients</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px">📱 Message WhatsApp individuel</div>
+          <div class="fg"><label class="fg-label">Client</label>
+            <select id="notif-client" class="fg-sel"></select></div>
+          <div class="fg"><label class="fg-label">Message</label>
+            <textarea id="notif-msg" class="fg-ta" placeholder="Votre message..."></textarea></div>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <button class="btn btn-green btn-sm" onclick="envoyerWhatsApp()">💚 Envoyer WhatsApp</button>
+            <button class="btn btn-outline btn-sm" onclick="chargerTemplateNotif('renouvellement')">📋 Template renouvellement</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:14px">🔔 Alertes automatiques</div>
+          <div style="font-size:13px;color:var(--txt2);margin-bottom:14px">
+            Licences expirant dans les 7 prochains jours:
+          </div>
+          <div id="expiry-alerts-list"></div>
+          <button class="btn btn-gold btn-sm" style="margin-top:12px;width:100%;justify-content:center"
+            onclick="envoyerAlertesMasse()">📨 Envoyer alertes à tous</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:14px">📝 Historique notifications</div>
+        <div id="notif-history" style="color:var(--txt3);font-size:13px;text-align:center;padding:16px">
+          Aucune notification envoyée
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ TARIFS ████ -->
+    <div class="page" id="page-tarifs">
+      <div class="topbar">
+        <div>
+          <div class="page-title">🏷 Tarifs & Forfaits</div>
+          <div class="page-sub">Configurez les prix de vos abonnements</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary btn-sm" onclick="sauvegarderTarifs()">💾 Sauvegarder</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px">💰 Tarifs par application (F CFA)</div>
+          <div id="tarifs-form"></div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px">📦 Packs spéciaux</div>
+          <div class="fg"><label class="fg-label">Pack 3 apps</label>
+            <input id="pack3" class="fg-inp" type="number" value="40000"></div>
+          <div class="fg"><label class="fg-label">Pack 5 apps</label>
+            <input id="pack5" class="fg-inp" type="number" value="65000"></div>
+          <div class="fg"><label class="fg-label">Pack complet (9 apps) / mois</label>
+            <input id="pack9" class="fg-inp" type="number" value="120000"></div>
+          <div class="fg"><label class="fg-label">Pack complet (9 apps) / an</label>
+            <input id="pack9an" class="fg-inp" type="number" value="1200000"></div>
+          <div style="margin-top:12px;padding:12px;background:var(--surf2);border-radius:10px;font-size:12px;color:var(--txt2)">
+            📌 Durée démo: <strong style="color:var(--gold2)" id="duree-demo-display">30 jours</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ████ GÉNÉRATEUR D'APPS ████ -->
+    <div class="page" id="page-generateur">
+      <div class="topbar">
+        <div>
+          <div class="page-title">🚀 Générer une Application</div>
+          <div class="page-sub">Créez une app personnalisée pour un client en quelques secondes</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start">
+
+        <!-- FORMULAIRE -->
+        <div class="card">
+          <div class="card-title" style="margin-bottom:18px;font-size:15px">⚙️ Configuration du client</div>
+
+          <div class="fg">
+            <label class="fg-label">Application à générer *</label>
+            <select id="gen-app" class="fg-sel" onchange="genPreview();updateGenPrix()">
+              <option value="">— Choisir une application —</option>
+              <optgroup label="💼 Commerce & Vente">
+                <option value="caissepro">🛒 CaissePro — Caisse & Stock</option>
+                <option value="restopro">🍽️ RestoPro — Restaurant & Menu</option>
+              </optgroup>
+              <optgroup label="🏥 Santé">
+                <option value="pharmapro">💊 PharmaPro — Pharmacie</option>
+                <option value="amawognon">🌿 Amawo Gnon — Réflexologie</option>
+                <option value="gcars">🏥 GCARS — Santé Globale</option>
+              </optgroup>
+              <optgroup label="🏨 Hébergement & Services">
+                <option value="hotel">🏨 HôtelPro — Hôtel & Réservation</option>
+                <option value="transport">🚗 TransportPro — Véhicules</option>
+              </optgroup>
+              <optgroup label="🌱 Agriculture & Élevage">
+                <option value="agri">🌱 AgriPro — Agriculture</option>
+                <option value="elevage">🐄 ÉlevagePro — Élevage</option>
+              </optgroup>
+              <optgroup label="🎓 Éducation & Formation">
+                <option value="formation">🎓 FormationPro — Centre de formation</option>
+              </optgroup>
+              <optgroup label="🏗️ Immobilier">
+                <option value="immobilier">🏗️ ImmobilierPro — Agence immobilière</option>
+              </optgroup>
+            </select>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div class="fg">
+              <label class="fg-label">Nom de l'établissement *</label>
+              <input id="gen-nom" class="fg-inp" placeholder="Ex: Pharmacie Centrale" oninput="genPreview()">
+            </div>
+            <div class="fg">
+              <label class="fg-label">Ville / Localisation</label>
+              <input id="gen-ville" class="fg-inp" placeholder="Ex: Cotonou, Bénin" oninput="genPreview()">
+            </div>
+            <div class="fg">
+              <label class="fg-label">Téléphone</label>
+              <input id="gen-tel" class="fg-inp" placeholder="+229 01 XX XX XX" oninput="genPreview()">
+            </div>
+            <div class="fg">
+              <label class="fg-label">Email</label>
+              <input id="gen-email" class="fg-inp" type="email" placeholder="contact@..." oninput="genPreview()">
+            </div>
+          </div>
+
+          <div style="border-top:1px solid var(--bord);margin:14px 0;padding-top:14px">
+            <div class="card-title" style="margin-bottom:12px;font-size:13px;color:var(--text3)">🔐 Accès administrateur</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="fg">
+                <label class="fg-label">Identifiant admin</label>
+                <input id="gen-user" class="fg-inp" placeholder="admin" oninput="genPreview()">
+              </div>
+              <div class="fg">
+                <label class="fg-label">Mot de passe</label>
+                <div style="display:flex;gap:6px">
+                  <input id="gen-pw" class="fg-inp" placeholder="Auto-généré si vide" oninput="genPreview()">
+                  <button class="btn btn-ghost btn-sm" onclick="genPw()" title="Générer mot de passe" style="flex-shrink:0">🔄</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div style="border-top:1px solid var(--bord);margin:14px 0;padding-top:14px">
+            <div class="card-title" style="margin-bottom:12px;font-size:13px;color:var(--text3)">📅 Licence</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end">
+              <div class="fg">
+                <label class="fg-label">Durée (jours)</label>
+                <select id="gen-duree" class="fg-sel" onchange="genPreview();updateGenPrix()">
+                  <option value="30">30 jours — Démo</option>
+                  <option value="90">90 jours — 3 mois</option>
+                  <option value="180">180 jours — 6 mois</option>
+                  <option value="365" selected>365 jours — 1 an</option>
+                  <option value="730">730 jours — 2 ans</option>
+                </select>
+              </div>
+              <div class="fg">
+                <label class="fg-label">Prix facturé (F CFA)</label>
+                <input id="gen-prix" class="fg-inp" type="number" placeholder="0" style="color:var(--acc);font-weight:700">
+              </div>
+            </div>
+          </div>
+
+          <!-- Zone statut -->
+          <div id="gen-status" style="display:none;padding:12px 14px;border-radius:8px;font-size:13px;margin-top:4px"></div>
+
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="btn btn-primary" onclick="genererApp()" style="flex:1;padding:12px;font-size:14px;font-weight:700">
+              ⬇️ Générer & Télécharger
+            </button>
+            <button class="btn btn-outline" onclick="resetGen()" style="padding:12px 16px">
+              🔄 Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- APERÇU + HISTORIQUE -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+
+          <!-- Aperçu -->
+          <div class="card">
+            <div class="card-title" style="margin-bottom:14px;font-size:14px">👁️ Aperçu de l'app générée</div>
+            <div id="gen-preview" style="color:var(--text3);font-size:13px;text-align:center;padding:30px 0">
+              Remplissez le formulaire pour voir l'aperçu
+            </div>
+          </div>
+
+          <!-- Historique -->
+          <div class="card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+              <div class="card-title" style="font-size:14px">📋 Historique des générations</div>
+              <button class="btn btn-ghost btn-sm" onclick="viderHistorique()" style="font-size:11px">Vider</button>
+            </div>
+            <div id="gen-historique">
+              <div style="color:var(--text3);font-size:13px;text-align:center;padding:20px 0">Aucune app générée</div>
+            </div>
+          </div>
+
+          <!-- Instructions déploiement -->
+          <div class="card" style="background:rgba(99,102,241,.05);border:1px solid rgba(99,102,241,.2)">
+            <div class="card-title" style="margin-bottom:12px;font-size:13px;color:var(--acc2)">📦 Après téléchargement</div>
+            <ol style="font-size:12px;color:var(--text2);padding-left:16px;line-height:2">
+              <li>Uploader le fichier .html sur <strong>GitHub</strong> dans le repo <code>Dptifpro</code></li>
+              <li>L'app est accessible sur <strong>santeplus.online/[fichier].html</strong></li>
+              <li>Communiquer au client : URL + identifiant + mot de passe</li>
+              <li>Ses données sont <strong>isolées</strong> (entId unique)</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ████ PARAMÈTRES ████ -->
+    <div class="page" id="page-parametres">
+      <div class="topbar">
+        <div>
+          <div class="page-title">⚙️ Paramètres</div>
+          <div class="page-sub">Configuration générale de DPTIF Admin</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn btn-primary btn-sm" onclick="sauvegarderParametres()">💾 Sauvegarder</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px">👤 Administrateur</div>
+          <div class="fg"><label class="fg-label">Nom complet</label>
+            <input id="p-nom" class="fg-inp" value="Jean Paul BOGNON"></div>
+          <div class="fg"><label class="fg-label">Email</label>
+            <input id="p-email" class="fg-inp" value="jeanpaulbognon3@gmail.com"></div>
+          <div class="fg"><label class="fg-label">Téléphone / WhatsApp</label>
+            <input id="p-tel" class="fg-inp" value="+229 01 97 XX XX XX"></div>
+          <div class="fg"><label class="fg-label">Nouveau mot de passe admin</label>
+            <input id="p-pw" class="fg-inp" type="password" placeholder="Laisser vide pour garder l'actuel"></div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px">🏢 DPTIF Pro</div>
+          <div class="fg"><label class="fg-label">Nom de la plateforme</label>
+            <input id="p-platform" class="fg-inp" value="DPTIF Pro"></div>
+          <div class="fg"><label class="fg-label">URL GitHub Pages</label>
+            <input id="p-url" class="fg-inp" value="https://jeanpaul329.github.io/Dptifpro/"></div>
+          <div class="fg"><label class="fg-label">Durée démo (jours)</label>
+            <input id="p-demo-days" class="fg-inp" type="number" value="30" min="1" max="90"></div>
+          <div class="fg"><label class="fg-label">Alerte expiration (jours avant)</label>
+            <input id="p-alert-days" class="fg-inp" type="number" value="7" min="1" max="30"></div>
+        </div>
+      </div>
+    </div>
+
+  </main><!-- /main -->
+</div><!-- /app -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ████ MODAL: NOUVELLE LICENCE ████ -->
+<div class="modal-overlay" id="modal-nouvelle-licence">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title">🔑 Nouvelle licence</div>
+      <button class="modal-close" onclick="closeModal('modal-nouvelle-licence')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg"><label class="fg-label">Client *</label>
+          <select id="nl-client" class="fg-sel" onchange="updateNLClient()">
+            <option value="">— Sélectionner un client —</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fg-label">Application *</label>
+          <select id="nl-app" class="fg-sel" onchange="updateNLPrix()">
+            <option value="">— Sélectionner l'app —</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="fg"><label class="fg-label">Forfait *</label>
+          <select id="nl-forfait" class="fg-sel" onchange="updateNLPrix()">
+            <option value="mensuel">Mensuel</option>
+            <option value="trimestriel">Trimestriel</option>
+            <option value="semestriel">Semestriel</option>
+            <option value="annuel" selected>Annuel</option>
+            <option value="demo">Démo (30 jours)</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fg-label">Date de début</label>
+          <input id="nl-debut" class="fg-inp" type="date"></div>
+      </div>
+      <div class="form-grid">
+        <div class="fg"><label class="fg-label">Mode de paiement</label>
+          <select id="nl-mode-pay" class="fg-sel">
+            <option value="mtn">MTN Mobile Money</option>
+            <option value="moov">Moov Money</option>
+            <option value="wave">Wave</option>
+            <option value="virement">Virement bancaire</option>
+            <option value="especes">Espèces</option>
+            <option value="demo">Gratuit / Démo</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fg-label">Référence paiement</label>
+          <input id="nl-ref" class="fg-inp" placeholder="Ex: MTN-20240115-XXXX"></div>
+      </div>
+      <div style="background:var(--surf2);border-radius:10px;padding:14px;margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--txt)" id="nl-resume">Sélectionnez un client et une app</div>
+            <div style="font-size:11px;color:var(--txt2);margin-top:2px" id="nl-dates">—</div>
+          </div>
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--gold2)" id="nl-prix">0 F</div>
+        </div>
+      </div>
+      <div class="fg"><label class="fg-label">Clé de licence générée</label>
+        <div class="lic-key">
+          <span class="lic-key-val" id="nl-key">—</span>
+          <button class="btn-icon" onclick="copierCle()" title="Copier">📋</button>
+          <button class="btn-icon" onclick="regenererCle()" title="Régénérer">🔄</button>
+        </div>
+      </div>
+      <div class="fg"><label class="fg-label">Notes internes</label>
+        <textarea id="nl-notes" class="fg-ta" placeholder="Notes optionnelles..."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('modal-nouvelle-licence')">Annuler</button>
+      <button class="btn btn-green" onclick="activerLicence()">✅ Activer la licence</button>
+      <button class="btn btn-gold" onclick="activerEtEnvoyerWA()">💚 Activer + WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<!-- ████ MODAL: NOUVEAU CLIENT ████ -->
+<div class="modal-overlay" id="modal-nouveau-client">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title">🏢 Nouveau client</div>
+      <button class="modal-close" onclick="closeModal('modal-nouveau-client')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="fg"><label class="fg-label">Nom du client / Entreprise *</label>
+          <input id="nc-nom" class="fg-inp" placeholder="Ex: Santé Globale Amawognon"></div>
+        <div class="fg"><label class="fg-label">Secteur d'activité</label>
+          <select id="nc-secteur" class="fg-sel">
+            <option value="sante">Santé</option>
+            <option value="education">Éducation / Formation</option>
+            <option value="commerce">Commerce</option>
+            <option value="immobilier">Immobilier</option>
+            <option value="transport">Transport</option>
+            <option value="agriculture">Agriculture</option>
+            <option value="elevage">Élevage</option>
+            <option value="tech">Technologie</option>
+            <option value="construction">Construction / Architecture</option>
+            <option value="ong">ONG / Association</option>
+            <option value="autre">Autre</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="fg"><label class="fg-label">Responsable / Contact *</label>
+          <input id="nc-contact" class="fg-inp" placeholder="Nom du responsable"></div>
+        <div class="fg"><label class="fg-label">Téléphone / WhatsApp *</label>
+          <input id="nc-tel" class="fg-inp" placeholder="+229 XX XX XX XX"></div>
+      </div>
+      <div class="form-grid">
+        <div class="fg"><label class="fg-label">Email</label>
+          <input id="nc-email" class="fg-inp" type="email" placeholder="email@exemple.com"></div>
+        <div class="fg"><label class="fg-label">Ville / Localité</label>
+          <input id="nc-ville" class="fg-inp" placeholder="Ex: Cotonou, Bénin"></div>
+      </div>
+      <div class="fg"><label class="fg-label">Notes</label>
+        <textarea id="nc-notes" class="fg-ta" placeholder="Notes sur le client..."></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('modal-nouveau-client')">Annuler</button>
+      <button class="btn btn-primary" onclick="ajouterClient()">➕ Ajouter le client</button>
+    </div>
+  </div>
+</div>
+
+<!-- ████ MODAL: RENOUVELLEMENT ████ -->
+<div class="modal-overlay" id="modal-renouvellement">
+  <div class="modal">
+    <div class="modal-hdr">
+      <div class="modal-title">🔄 Renouveler la licence</div>
+      <button class="modal-close" onclick="closeModal('modal-renouvellement')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="renouv-info" style="background:var(--surf2);border-radius:10px;padding:14px;margin-bottom:16px"></div>
+      <div class="form-grid">
+        <div class="fg"><label class="fg-label">Nouveau forfait</label>
+          <select id="renouv-forfait" class="fg-sel" onchange="updateRenouv()">
+            <option value="mensuel">Mensuel</option>
+            <option value="trimestriel">Trimestriel</option>
+            <option value="semestriel">Semestriel</option>
+            <option value="annuel" selected>Annuel</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fg-label">Mode de paiement</label>
+          <select id="renouv-mode" class="fg-sel">
+            <option value="mtn">MTN Mobile Money</option>
+            <option value="moov">Moov Money</option>
+            <option value="wave">Wave</option>
+            <option value="virement">Virement</option>
+            <option value="especes">Espèces</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label class="fg-label">Référence paiement</label>
+        <input id="renouv-ref" class="fg-inp" placeholder="Référence de la transaction"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;
+        background:var(--surf2);border-radius:10px;padding:14px">
+        <div style="font-size:13px;color:var(--txt2)" id="renouv-dates">—</div>
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--gold2)" id="renouv-prix">—</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-outline" onclick="closeModal('modal-renouvellement')">Annuler</button>
+      <button class="btn btn-green" onclick="confirmerRenouvellement()">✅ Confirmer renouvellement</button>
+      <button class="btn btn-gold" onclick="confirmerRenouvellerEtWA()">💚 Confirmer + WhatsApp</button>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ════════════════════════════════════════════════════════════════
+// DPTIF PRO — ADMIN CENTRAL
+// Jean Paul BOGNON | jeanpaulbognon3@gmail.com
+// ════════════════════════════════════════════════════════════════
+
+const ADMIN_CREDS = { id: 'admin', pw: 'dptif2026jp' };
+const ADMIN_INFO  = { nom:'Jean Paul BOGNON', email:'jeanpaulbognon3@gmail.com', tel:'+22901970000' };
+
+// ── Applications DPTIF ─────────────────────────────────────────
+const DPTIF_APPS = [
+  { id:'amawognon',    nom:'Santé Globale Amawognon', emoji:'🌿', desc:'Médecine naturelle, formations santé, clinique virtuelle',
+    url:'amawognon.html', categorie:'Santé', couleur:'#10b981' },
+  { id:'formatech',   nom:'FormaTech Pro',            emoji:'🎓', desc:'Classe virtuelle, formations certifiantes en ligne',
+    url:'formatech-classe.html', categorie:'Éducation', couleur:'#6366f1' },
+  { id:'formation',   nom:'Centre de Formation',      emoji:'📚', desc:'Gestion centre: apprenants, présences, évaluations',
+    url:'formation.html', categorie:'Éducation', couleur:'#8b5cf6' },
+  { id:'immobilier',  nom:'Immobilier Pro',           emoji:'🏠', desc:'Gestion biens immobiliers, locations, transactions',
+    url:'immobilier.html', categorie:'Immobilier', couleur:'#f59e0b' },
+  { id:'transport',   nom:'Taxi & Transport',         emoji:'🚖', desc:'Gestion flotte, courses, chauffeurs, recettes',
+    url:'transport.html', categorie:'Transport', couleur:'#06b6d4' },
+  { id:'techdiag',    nom:'TechDiag Pro',             emoji:'🔧', desc:'Diagnostic et réparation matériel tech',
+    url:'techdiag.html', categorie:'Technologie', couleur:'#ef4444' },
+  { id:'agro',        nom:'AgroSmart Pro',            emoji:'🌾', desc:'Agriculture intelligente, cultures, récoltes',
+    url:'agro.html', categorie:'Agriculture', couleur:'#84cc16' },
+  { id:'elevage',     nom:'Élevage Pro',              emoji:'🐄', desc:'Gestion animaux, santé, production',
+    url:'elevage.html', categorie:'Élevage', couleur:'#a78bfa' },
+  { id:'architecture',nom:'ArchitecPro',              emoji:'🏗', desc:'Plans, devis, chantiers, suivi construction',
+    url:'architecture.html', categorie:'Construction', couleur:'#fb923c' },
+  { id:'transformpro', nom:'TransformPro',             emoji:'🧃', desc:'Transformation alimentaire, jus, recettes, production',
+    url:'transformpro.html', categorie:'Agroalimentaire', couleur:'#f97316' },
+];
+
+// ── Tarifs ─────────────────────────────────────────────────────
+var TARIFS = {
+  mensuel:     { label:'Mensuel',     mois:1,  prix:15000  },
+  trimestriel: { label:'Trimestriel', mois:3,  prix:40000  },
+  semestriel:  { label:'Semestriel',  mois:6,  prix:75000  },
+  annuel:      { label:'Annuel',      mois:12, prix:140000 },
+  demo:        { label:'Démo',        mois:0,  prix:0      },
+};
+var CONFIG = { demoDays:30, alertDays:7, platformName:'DPTIF Pro',
+  adminTel:'+22901970000', adminEmail:'jeanpaulbognon3@gmail.com' };
+
+// ── Base de données locale ──────────────────────────────────────
+var DB_CLIENTS  = [];
+var DB_LICENCES = [];
+var DB_FACTURES = [];
+var DB_PAIEMENTS= [];
+var DB_NOTIFS   = [];
+
+// ── Données de démonstration ────────────────────────────────────
+function chargerDemo() {
+  DB_CLIENTS = [
+    { id:'cli001', nom:'Santé Globale Amawognon', secteur:'sante', contact:'Tohoun Achille',
+      tel:'+22901406021', email:'amawognon@gmail.com', ville:'Azové, Bénin', notes:'Client fondateur', date:'2025-01-15' },
+    { id:'cli002', nom:'FormaTech Bénin', secteur:'education', contact:'Prudent Gbèdo',
+      tel:'+22997123456', email:'formatech@gmail.com', ville:'Cotonou, Bénin', notes:'', date:'2025-03-20' },
+    { id:'cli003', nom:'AsproAzove Commerce', secteur:'commerce', contact:'Jean Paul BOGNON',
+      tel:'+22901970000', email:'aspro@gmail.com', ville:'Azovè, Bénin', notes:'Admin par intérim', date:'2026-01-01' },
+    { id:'cli004', nom:'AgroSmart Atacora', secteur:'agriculture', contact:'Kossi Dèdjo',
+      tel:'+22994234567', email:'agro@atacora.bj', ville:'Natitingou, Bénin', notes:'', date:'2026-02-10' },
+  ];
+
+  var today = new Date();
+  var addDays = function(d,n){ var r=new Date(d); r.setDate(r.getDate()+n); return r.toISOString().split('T')[0]; };
+  var subDays = function(d,n){ return addDays(d,-n); };
+  var todayStr = today.toISOString().split('T')[0];
+
+  DB_LICENCES = [
+    { id:'lic001', clientId:'cli001', appId:'amawognon', cle:'AMA-SAN-XXXX-YYYY-ZZZZ',
+      forfait:'annuel', debut:subDays(todayStr,30), fin:addDays(todayStr,335),
+      modePay:'mtn', ref:'MTN-20250115', statut:'active', notes:'' },
+    { id:'lic002', clientId:'cli001', appId:'formatech', cle:'FTC-SAN-AAAA-BBBB-CCCC',
+      forfait:'semestriel', debut:subDays(todayStr,170), fin:addDays(todayStr,10),
+      modePay:'moov', ref:'MOV-20250601', statut:'active', notes:'Expire bientôt!' },
+    { id:'lic003', clientId:'cli002', appId:'formation', cle:'FOR-FTC-DDDD-EEEE-FFFF',
+      forfait:'trimestriel', debut:subDays(todayStr,100), fin:subDays(todayStr,10),
+      modePay:'wave', ref:'WAV-20250901', statut:'expired', notes:'' },
+    { id:'lic004', clientId:'cli003', appId:'immobilier', cle:'IMM-ASP-GGGG-HHHH-IIII',
+      forfait:'mensuel', debut:todayStr, fin:addDays(todayStr,30),
+      modePay:'demo', ref:'DEMO', statut:'demo', notes:'Période essai 30j' },
+    { id:'lic005', clientId:'cli004', appId:'agro', cle:'AGR-AGS-JJJJ-KKKK-LLLL',
+      forfait:'annuel', debut:subDays(todayStr,60), fin:addDays(todayStr,305),
+      modePay:'especes', ref:'ESP-20260210', statut:'active', notes:'' },
+  ];
+
+  DB_FACTURES = [
+    { id:'FAC-001', clientId:'cli001', appId:'amawognon', forfait:'annuel', montant:140000,
+      modePay:'mtn', ref:'MTN-20250115', date:'2025-01-15', statut:'payee' },
+    { id:'FAC-002', clientId:'cli001', appId:'formatech', forfait:'semestriel', montant:75000,
+      modePay:'moov', ref:'MOV-20250601', date:'2025-06-01', statut:'payee' },
+    { id:'FAC-003', clientId:'cli002', appId:'formation', forfait:'trimestriel', montant:40000,
+      modePay:'wave', ref:'WAV-20250901', date:'2025-09-01', statut:'payee' },
+    { id:'FAC-004', clientId:'cli004', appId:'agro', forfait:'annuel', montant:140000,
+      modePay:'especes', ref:'ESP-20260210', date:'2026-02-10', statut:'payee' },
+  ];
+}
+
+// ════════════════════════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════════════════════════
+function doLogin() {
+  var id = (document.getElementById('l-id')?.value||'').trim();
+  var pw = (document.getElementById('l-pw')?.value||'').trim();
+  if(id===ADMIN_CREDS.id && pw===ADMIN_CREDS.pw) {
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').classList.add('visible');
+    chargerDemo();
+    initApp();
+    toast('Bienvenue Jean Paul !','ok');
+  } else {
+    document.getElementById('l-err').style.display='block';
+    setTimeout(function(){ document.getElementById('l-err').style.display='none'; },3000);
+  }
+}
+function deconnecter() {
+  if(!confirm('Se déconnecter ?')) return;
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('l-id').value='';
+  document.getElementById('l-pw').value='';
+}
+
+// ════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════════════════════
+function goPage(id, btn) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  var el = document.getElementById('page-'+id);
+  if(el) el.classList.add('active');
+  if(btn) btn.classList.add('active');
+  else {
+    var found = document.querySelector('[onclick*="goPage(\''+id+'\'"]');
+    if(found) found.classList.add('active');
+  }
+  // Init pages
+  if(id==='dashboard')     renderDashboard();
+  if(id==='clients')       renderClients();
+  if(id==='apps')          renderApps();
+  if(id==='licences')      renderLicences();
+  if(id==='facturation')   renderFactures();
+  if(id==='paiements')     renderPaiements();
+  if(id==='notifications') renderNotifications();
+  if(id==='tarifs')        renderTarifs();
+}
+
+// ════════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════════
+function initApp() {
+  // Date
+  var d = new Date();
+  var el = document.getElementById('dash-date');
+  if(el) el.textContent = d.toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  // Remplir selects
+  remplirSelectClients();
+  remplirSelectApps();
+  // Render dashboard
+  renderDashboard();
+  // Badges
+  updateBadges();
+  // Tarifs form
+  renderTarifs();
+}
+
+function updateBadges() {
+  var today = new Date().toISOString().split('T')[0];
+  var soon  = new Date(); soon.setDate(soon.getDate()+7);
+  var soonStr = soon.toISOString().split('T')[0];
+  var expiring = DB_LICENCES.filter(function(l){ return l.statut==='active' && l.fin>=today && l.fin<=soonStr; });
+  var pending  = DB_PAIEMENTS.filter(function(p){ return p.statut==='attente'; });
+  var el1 = document.getElementById('nb-clients');
+  if(el1) el1.textContent = DB_CLIENTS.length;
+  var el2 = document.getElementById('nb-expiry');
+  if(el2){ el2.textContent = expiring.length; el2.style.display = expiring.length?'inline':'none'; }
+  var el3 = document.getElementById('nb-attente');
+  if(el3){ el3.textContent = pending.length; el3.style.display = pending.length?'inline':'none'; }
+  var el4 = document.getElementById('nb-factures');
+  if(el4) el4.textContent = DB_FACTURES.length;
+}
+
+// ════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════════════════════════════
+function renderDashboard() {
+  var today = new Date().toISOString().split('T')[0];
+  var soon  = new Date(); soon.setDate(soon.getDate()+CONFIG.alertDays);
+  var soonStr = soon.toISOString().split('T')[0];
+
+  var actives   = DB_LICENCES.filter(function(l){ return l.statut==='active'; });
+  var expiring  = DB_LICENCES.filter(function(l){ return l.statut==='active' && l.fin>=today && l.fin<=soonStr; });
+  var ca = DB_FACTURES.filter(function(f){
+    return f.statut==='payee' && f.date.slice(0,7) === today.slice(0,7);
+  }).reduce(function(s,f){ return s+f.montant; },0);
+
+  setEl('kpi-clients', DB_CLIENTS.length);
+  setEl('kpi-licences', actives.length);
+  setEl('kpi-ca', fmtNum(ca)+' F');
+  setEl('kpi-expiry', expiring.length);
+  setEl('kpi-clients-sub', DB_CLIENTS.length+' entreprises enregistrées');
+  setEl('kpi-expiry-sub', expiring.length+' expire(nt) dans '+CONFIG.alertDays+'j');
+  setEl('kpi-ca-sub', 'Mois en cours');
+
+  // Chart apps
+  var chartEl = document.getElementById('dash-apps-chart');
+  if(chartEl) {
+    var html = '<div style="display:flex;flex-direction:column;gap:8px">';
+    DPTIF_APPS.forEach(function(app){
+      var count = DB_LICENCES.filter(function(l){ return l.appId===app.id && l.statut==='active'; }).length;
+      var pct = DB_LICENCES.length ? Math.round(count/DB_LICENCES.length*100) : 0;
+      html += '<div>'
+        +'<div style="display:flex;justify-content:space-between;margin-bottom:3px">'
+        +'<span style="font-size:12px;color:var(--txt2)">'+app.emoji+' '+app.nom+'</span>'
+        +'<span style="font-size:11px;font-weight:700;color:var(--txt)">'+count+'</span>'
+        +'</div>'
+        +'<div class="progress"><div class="progress-fill green" style="width:'+pct+'%;background:'+app.couleur+'"></div></div>'
+        +'</div>';
+    });
+    chartEl.innerHTML = html + '</div>';
+  }
+
+  // Alertes
+  var alertsEl = document.getElementById('dash-alerts');
+  if(alertsEl) {
+    if(!expiring.length && !DB_LICENCES.filter(function(l){return l.statut==='expired';}).length) {
+      alertsEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--txt3);font-size:13px">✅ Aucune alerte urgente</div>';
+    } else {
+      var alertHtml = '';
+      expiring.forEach(function(l){
+        var cli = DB_CLIENTS.find(function(c){return c.id===l.clientId;});
+        var app = DPTIF_APPS.find(function(a){return a.id===l.appId;});
+        var jours = Math.ceil((new Date(l.fin)-new Date())/86400000);
+        alertHtml += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr2)">'
+          +'<span style="font-size:18px">⚠️</span>'
+          +'<div style="flex:1">'
+          +'<div style="font-size:12px;font-weight:600;color:var(--txt)">'+(cli?cli.nom:'—')+'</div>'
+          +'<div style="font-size:11px;color:var(--txt2)">'+(app?app.emoji+' '+app.nom:'—')+' · J-'+jours+'</div>'
+          +'</div>'
+          +'<button class="btn btn-gold btn-sm" onclick="ouvrirRenouvellement(\''+l.id+'\')">🔄</button>'
+          +'</div>';
+      });
+      DB_LICENCES.filter(function(l){return l.statut==='expired';}).forEach(function(l){
+        var cli = DB_CLIENTS.find(function(c){return c.id===l.clientId;});
+        var app = DPTIF_APPS.find(function(a){return a.id===l.appId;});
+        alertHtml += '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr2)">'
+          +'<span style="font-size:18px">❌</span>'
+          +'<div style="flex:1">'
+          +'<div style="font-size:12px;font-weight:600;color:var(--txt)">'+(cli?cli.nom:'—')+'</div>'
+          +'<div style="font-size:11px;color:var(--red2)">'+(app?app.emoji+' '+app.nom:'—')+' · EXPIRÉE</div>'
+          +'</div>'
+          +'<button class="btn btn-green btn-sm" onclick="ouvrirRenouvellement(\''+l.id+'\')">Renouveler</button>'
+          +'</div>';
+      });
+      alertsEl.innerHTML = alertHtml;
+    }
+  }
+
+  // Derniers paiements
+  var tbody = document.getElementById('dash-paiements-tbody');
+  if(tbody) {
+    var factures = DB_FACTURES.slice().sort(function(a,b){return b.date.localeCompare(a.date);}).slice(0,5);
+    tbody.innerHTML = factures.map(function(f){
+      var cli = DB_CLIENTS.find(function(c){return c.id===f.clientId;});
+      var app = DPTIF_APPS.find(function(a){return a.id===f.appId;});
+      return '<tr>'
+        +'<td><strong style="color:var(--txt)">'+(cli?cli.nom:'—')+'</strong></td>'
+        +'<td>'+(app?app.emoji+' '+app.nom:'—')+'</td>'
+        +'<td>'+TARIFS[f.forfait]?.label+'</td>'
+        +'<td style="font-weight:700;color:var(--gold2)">'+fmtNum(f.montant)+' F</td>'
+        +'<td>'+f.date+'</td>'
+        +'<td><span class="badge badge-active">Payée</span></td>'
+        +'</tr>';
+    }).join('') || '<tr><td colspan="6" style="text-align:center;padding:16px;color:var(--txt3)">Aucun paiement</td></tr>';
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+// CLIENTS
+// ════════════════════════════════════════════════════════════════
+function renderClients(filtre) {
+  var tbody = document.getElementById('clients-tbody');
+  if(!tbody) return;
+  var data = filtre ? DB_CLIENTS.filter(function(c){
+    return (c.nom+c.contact+c.ville+c.secteur).toLowerCase().includes(filtre.toLowerCase());
+  }) : DB_CLIENTS;
+
+  tbody.innerHTML = data.map(function(c){
+    var lics = DB_LICENCES.filter(function(l){ return l.clientId===c.id && l.statut==='active'; });
+    var ca = DB_FACTURES.filter(function(f){ return f.clientId===c.id && f.statut==='payee'; })
+               .reduce(function(s,f){ return s+f.montant; },0);
+    var nextExpiry = lics.length ? lics.slice().sort(function(a,b){return a.fin.localeCompare(b.fin);})[0] : null;
+    var jours = nextExpiry ? Math.ceil((new Date(nextExpiry.fin)-new Date())/86400000) : null;
+
+    return '<tr>'
+      +'<td><div style="font-weight:600;color:var(--txt)">'+c.nom+'</div>'
+      +'<div style="font-size:11px;color:var(--txt3)">'+c.contact+' · '+c.tel+'</div></td>'
+      +'<td style="font-size:12px;color:var(--txt2)">'+c.secteur+'</td>'
+      +'<td><strong>'+lics.length+'</strong> app'+(lics.length>1?'s':'')+' active'+(lics.length>1?'s':'')+'</td>'
+      +'<td>'+lics.map(function(l){
+          var a=DPTIF_APPS.find(function(x){return x.id===l.appId;});
+          return a?'<span title="'+a.nom+'">'+a.emoji+'</span>':'';
+        }).join(' ')+'</td>'
+      +'<td>'+(jours!==null?'<span class="'+(jours<7?'badge badge-expired':jours<30?'badge badge-demo':'badge badge-active')+'">J-'+jours+'</span>':'—')+'</td>'
+      +'<td style="font-weight:700;color:var(--gold2)">'+fmtNum(ca)+' F</td>'
+      +'<td><div style="display:flex;gap:4px">'
+      +'<button class="btn btn-outline btn-sm" onclick="voirClient(\''+c.id+'\')">👁</button>'
+      +'<button class="btn btn-primary btn-sm" onclick="nouvelleLocenceClient(\''+c.id+'\')">🔑 Licence</button>'
+      +'<button class="btn btn-icon" onclick="supprimerClient(\''+c.id+'\')" title="Supprimer">🗑</button>'
+      +'</div></td>'
+      +'</tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--txt3)">Aucun client</td></tr>';
+}
+
+function ajouterClient() {
+  var nom = (document.getElementById('nc-nom')?.value||'').trim();
+  var tel = (document.getElementById('nc-tel')?.value||'').trim();
+  var contact = (document.getElementById('nc-contact')?.value||'').trim();
+  if(!nom||!tel||!contact){ toast('Nom, contact et téléphone obligatoires','err'); return; }
+  DB_CLIENTS.push({
+    id: 'cli'+Date.now(), nom:nom,
+    secteur: document.getElementById('nc-secteur')?.value||'autre',
+    contact:contact, tel:tel,
+    email: document.getElementById('nc-email')?.value||'',
+    ville: document.getElementById('nc-ville')?.value||'',
+    notes: document.getElementById('nc-notes')?.value||'',
+    date: new Date().toISOString().split('T')[0]
+  });
+  closeModal('modal-nouveau-client');
+  remplirSelectClients();
+  renderClients();
+  updateBadges();
+  toast('Client "'+nom+'" ajouté !','ok');
+}
+
+function voirClient(id) {
+  var c = DB_CLIENTS.find(function(x){return x.id===id;});
+  if(!c) return;
+  var lics = DB_LICENCES.filter(function(l){return l.clientId===id;});
+  var factures = DB_FACTURES.filter(function(f){return f.clientId===id;});
+  var total = factures.reduce(function(s,f){return s+f.montant;},0);
+  alert(c.nom+'\n'+c.contact+' · '+c.tel+'\n'+c.ville+'\nCA total: '+fmtNum(total)+' F\nLicences: '+lics.length);
+}
+
+function nouvelleLocenceClient(clientId) {
+  document.getElementById('nl-client').value = clientId;
+  updateNLClient();
+  openModal('modal-nouvelle-licence');
+}
+
+function supprimerClient(id) {
+  var c = DB_CLIENTS.find(function(x){return x.id===id;});
+  if(!c||!confirm('Supprimer "'+c.nom+'" ?')) return;
+  DB_CLIENTS = DB_CLIENTS.filter(function(x){return x.id!==id;});
+  renderClients();
+  updateBadges();
+  remplirSelectClients();
+  toast('Client supprimé');
+}
+
+// ════════════════════════════════════════════════════════════════
+// APPLICATIONS
+// ════════════════════════════════════════════════════════════════
+function renderApps() {
+  var grid = document.getElementById('apps-grid');
+  if(!grid) return;
+  grid.innerHTML = DPTIF_APPS.map(function(app){
+    var lics = DB_LICENCES.filter(function(l){return l.appId===app.id && l.statut==='active';});
+    var revenu = DB_FACTURES.filter(function(f){return f.appId===app.id;}).reduce(function(s,f){return s+f.montant;},0);
+    return '<div class="app-card" style="border-top:3px solid '+app.couleur+'">'
+      +'<div class="app-card-icon">'+app.emoji+'</div>'
+      +'<div class="app-card-name">'+app.nom+'</div>'
+      +'<div class="app-card-desc">'+app.desc+'</div>'
+      +'<div class="app-card-stats">'
+      +'<div class="app-stat"><strong>'+lics.length+'</strong> licence'+(lics.length>1?'s':'')+' active'+(lics.length>1?'s':'')+' </div>'
+      +'<div class="app-stat"><strong>'+fmtNum(revenu)+' F</strong> CA</div>'
+      +'</div>'
+      +'<div class="app-card-foot">'
+      +'<span class="badge badge-active" style="font-size:9px">'+app.categorie+'</span>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="btn btn-outline btn-sm" onclick="window.open(\''+app.url+'\',\'_blank\')" title="Ouvrir l\'app">↗</button>'
+      +'<button class="btn btn-primary btn-sm" onclick="ouvrirLicenceApp(\''+app.id+'\')">🔑 Licences</button>'
+      +'</div></div>'
+      +'</div>';
+  }).join('');
+}
+
+function ouvrirLicenceApp(appId) {
+  document.getElementById('nl-app').value = appId;
+  updateNLPrix();
+  openModal('modal-nouvelle-licence');
+}
+
+// ════════════════════════════════════════════════════════════════
+// LICENCES
+// ════════════════════════════════════════════════════════════════
+function renderLicences() {
+  var tbody = document.getElementById('licences-tbody');
+  if(!tbody) return;
+  var filtre = document.getElementById('filtre-statut-lic')?.value||'';
+  var today  = new Date().toISOString().split('T')[0];
+  var soon   = new Date(); soon.setDate(soon.getDate()+CONFIG.alertDays);
+  var soonStr= soon.toISOString().split('T')[0];
+
+  var data = DB_LICENCES.slice().sort(function(a,b){return a.fin.localeCompare(b.fin);});
+  if(filtre==='active')   data = data.filter(function(l){return l.statut==='active';});
+  if(filtre==='demo')     data = data.filter(function(l){return l.statut==='demo';});
+  if(filtre==='expiry')   data = data.filter(function(l){return l.statut==='active'&&l.fin>=today&&l.fin<=soonStr;});
+  if(filtre==='expired')  data = data.filter(function(l){return l.statut==='expired';});
+  if(filtre==='suspended')data = data.filter(function(l){return l.statut==='suspended';});
+
+  tbody.innerHTML = data.map(function(l){
+    var cli = DB_CLIENTS.find(function(c){return c.id===l.clientId;});
+    var app = DPTIF_APPS.find(function(a){return a.id===l.appId;});
+    var jours = Math.ceil((new Date(l.fin)-new Date())/86400000);
+    var statutEl = getBadgeLicence(l.statut, jours, today, soonStr, l);
+    var joursEl = jours>0 ? (jours<=CONFIG.alertDays
+      ? '<span style="color:var(--gold2);font-weight:700">⚠️ J-'+jours+'</span>'
+      : '<span style="color:var(--green2)">'+jours+' j</span>')
+      : '<span style="color:var(--red2)">Expiré</span>';
+
+    return '<tr>'
+      +'<td><div style="font-weight:600;color:var(--txt)">'+(cli?cli.nom:'—')+'</div>'
+      +'<div style="font-size:10px;color:var(--txt3)">'+(cli?cli.tel:'')+'</div></td>'
+      +'<td>'+(app?app.emoji+' '+app.nom:'—')+'</td>'
+      +'<td><div class="lic-key" style="padding:5px 10px;font-size:11px;max-width:220px">'
+      +'<span class="lic-key-val" style="font-size:10px">'+l.cle.slice(0,20)+'…</span>'
+      +'<button class="btn-icon" onclick="navigator.clipboard&&navigator.clipboard.writeText(\''+l.cle+'\');toast(\'Clé copiée !\')">📋</button>'
+      +'</div></td>'
+      +'<td>'+TARIFS[l.forfait]?.label+'</td>'
+      +'<td style="font-size:11px">'+l.debut+'</td>'
+      +'<td style="font-size:11px">'+l.fin+'</td>'
+      +'<td>'+joursEl+'</td>'
+      +'<td>'+statutEl+'</td>'
+      +'<td><div style="display:flex;gap:4px">'
+      +'<button class="btn btn-green btn-sm" onclick="ouvrirRenouvellement(\''+l.id+'\')">🔄</button>'
+      +'<button class="btn btn-gold btn-sm" onclick="envoyerCleLicenceWA(\''+l.id+'\')">💚</button>'
+      +'<button class="btn btn-icon" onclick="supprimerLicence(\''+l.id+'\')" title="Supprimer">🗑</button>'
+      +'</div></td>'
+      +'</tr>';
+  }).join('') || '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--txt3)">Aucune licence</td></tr>';
+}
+
+function getBadgeLicence(statut, jours, today, soonStr, l) {
+  if(statut==='active') {
+    if(jours<=0) return '<span class="badge badge-expired">Expirée</span>';
+    if(l.fin<=soonStr) return '<span class="badge badge-demo">⚠️ Expire bientôt</span>';
+    return '<span class="badge badge-active">Active</span>';
+  }
+  if(statut==='demo')      return '<span class="badge badge-demo">Démo</span>';
+  if(statut==='expired')   return '<span class="badge badge-expired">Expirée</span>';
+  if(statut==='suspended') return '<span class="badge badge-suspended">Suspendue</span>';
+  return '<span class="badge badge-pending">'+statut+'</span>';
+}
+
+// Nouvelle licence
+var _currentRenouv = null;
+
+function updateNLClient() {
+  var clientId = document.getElementById('nl-client')?.value;
+  updateNLPrix();
+  regenererCle();
+}
+
+function updateNLPrix() {
+  var appId   = document.getElementById('nl-app')?.value;
+  var forfait = document.getElementById('nl-forfait')?.value||'annuel';
+  var app     = DPTIF_APPS.find(function(a){return a.id===appId;});
+  var tarif   = TARIFS[forfait];
+  var prix    = tarif ? (forfait==='demo'?0:tarif.prix) : 0;
+
+  setEl('nl-prix', fmtNum(prix)+' F CFA');
+  setEl('nl-resume', app?(app.emoji+' '+app.nom+' — '+(tarif?tarif.label:'')):'Sélectionnez une app');
+
+  // Dates
+  var debut = document.getElementById('nl-debut')?.value || new Date().toISOString().split('T')[0];
+  if(tarif && tarif.mois>0) {
+    var fin = new Date(debut); fin.setMonth(fin.getMonth()+tarif.mois);
+    setEl('nl-dates', 'Du '+debut+' au '+fin.toISOString().split('T')[0]);
+  } else if(forfait==='demo') {
+    var finDemo = new Date(debut); finDemo.setDate(finDemo.getDate()+CONFIG.demoDays);
+    setEl('nl-dates', 'Démo '+CONFIG.demoDays+'j — jusqu\'au '+finDemo.toISOString().split('T')[0]);
+  }
+  regenererCle();
+}
+
+function regenererCle() {
+  var appId   = document.getElementById('nl-app')?.value||'APP';
+  var clientId= document.getElementById('nl-client')?.value||'CLI';
+  var forfait = document.getElementById('nl-forfait')?.value||'ANN';
+  var app     = DPTIF_APPS.find(function(a){return a.id===appId;});
+  var cli     = DB_CLIENTS.find(function(c){return c.id===clientId;});
+  var prefix  = (app?app.id.slice(0,3).toUpperCase():'APP')+'-'+(cli?cli.nom.slice(0,3).toUpperCase():'CLI');
+  var chars   = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  var rand = function(n){ return Array.from({length:n},function(){return chars[Math.floor(Math.random()*chars.length)];}).join(''); };
+  var cle = prefix+'-'+rand(4)+'-'+rand(4)+'-'+rand(4);
+  setEl('nl-key', cle);
+}
+
+function copierCle() {
+  var cle = document.getElementById('nl-key')?.textContent;
+  if(cle && navigator.clipboard) {
+    navigator.clipboard.writeText(cle).then(function(){ toast('Clé copiée dans le presse-papiers !','ok'); });
+  } else {
+    toast('Copiez manuellement: '+cle);
+  }
+}
+
+function activerLicence(withWA) {
+  var clientId= document.getElementById('nl-client')?.value;
+  var appId   = document.getElementById('nl-app')?.value;
+  var forfait = document.getElementById('nl-forfait')?.value||'annuel';
+  var debut   = document.getElementById('nl-debut')?.value||new Date().toISOString().split('T')[0];
+  var cle     = document.getElementById('nl-key')?.textContent;
+  var modePay = document.getElementById('nl-mode-pay')?.value||'especes';
+  var ref     = document.getElementById('nl-ref')?.value||'';
+  var notes   = document.getElementById('nl-notes')?.value||'';
+
+  if(!clientId||!appId){ toast('Sélectionnez un client et une application','err'); return; }
+
+  var tarif = TARIFS[forfait];
+  var fin;
+  if(forfait==='demo') {
+    var fd=new Date(debut); fd.setDate(fd.getDate()+CONFIG.demoDays);
+    fin=fd.toISOString().split('T')[0];
+  } else {
+    var fe=new Date(debut); fe.setMonth(fe.getMonth()+tarif.mois);
+    fin=fe.toISOString().split('T')[0];
+  }
+
+  var newLic = {
+    id:'lic'+Date.now(), clientId:clientId, appId:appId,
+    cle:cle, forfait:forfait, debut:debut, fin:fin,
+    modePay:modePay, ref:ref, statut:forfait==='demo'?'demo':'active', notes:notes
+  };
+  DB_LICENCES.push(newLic);
+
+  // Facture si payant
+  if(forfait!=='demo' && tarif) {
+    DB_FACTURES.push({
+      id:'FAC-'+Date.now(), clientId:clientId, appId:appId,
+      forfait:forfait, montant:tarif.prix, modePay:modePay,
+      ref:ref, date:debut, statut:'payee'
+    });
+  }
+
+  closeModal('modal-nouvelle-licence');
+  renderLicences();
+  renderDashboard();
+  updateBadges();
+
+  var cli = DB_CLIENTS.find(function(c){return c.id===clientId;});
+  var app = DPTIF_APPS.find(function(a){return a.id===appId;});
+  toast('Licence '+(app?app.nom:'')+ ' activée pour '+(cli?cli.nom:'')+' !','ok');
+
+  // PDF reçu
+  setTimeout(function(){ imprimerRecuLicence(newLic); }, 800);
+
+  if(withWA) {
+    setTimeout(function(){ envoyerCleLicenceWA(newLic.id); }, 1500);
+  }
+}
+
+function activerEtEnvoyerWA() { activerLicence(true); }
+
+function envoyerCleLicenceWA(licId) {
+  var l = DB_LICENCES.find(function(x){return x.id===licId;});
+  if(!l) return;
+  var cli = DB_CLIENTS.find(function(c){return c.id===l.clientId;});
+  var app = DPTIF_APPS.find(function(a){return a.id===l.appId;});
+  var tarif = TARIFS[l.forfait];
+  var parts = [
+    'Bonjour '+(cli?cli.nom:'')+'!',
+    '',
+    'Votre licence DPTIF Pro a ete activee:',
+    'Application: '+(app?app.emoji+' '+app.nom:'—'),
+    'Forfait: '+(tarif?tarif.label:'—'),
+    'Cle d\'acces: '+l.cle,
+    'Valable jusqu\'au: '+l.fin,
+    '',
+    'Acces: https://jeanpaul329.github.io/Dptifpro/'+(app?app.url:''),
+    '',
+    'Merci de votre confiance!',
+    'DPTIF Pro - Jean Paul BOGNON'
+  ];
+  var tel = (cli?cli.tel:'').replace(/\D/g,'');
+  window.open('https://wa.me/'+tel+'?text='+encodeURIComponent(parts.join('\n')),'_blank');
+}
+
+function ouvrirRenouvellement(licId) {
+  _currentRenouv = DB_LICENCES.find(function(l){return l.id===licId;});
+  if(!_currentRenouv) return;
+  var cli = DB_CLIENTS.find(function(c){return c.id===_currentRenouv.clientId;});
+  var app = DPTIF_APPS.find(function(a){return a.id===_currentRenouv.appId;});
+  var infoEl = document.getElementById('renouv-info');
+  if(infoEl) infoEl.innerHTML = '<strong style="color:var(--txt)">'+(cli?cli.nom:'')+'</strong>'
+    +' — '+(app?app.emoji+' '+app.nom:'')
+    +'<br><span style="font-size:12px;color:var(--txt2)">Licence actuelle expire le '+_currentRenouv.fin+'</span>';
+  updateRenouv();
+  openModal('modal-renouvellement');
+}
+
+function updateRenouv() {
+  if(!_currentRenouv) return;
+  var forfait = document.getElementById('renouv-forfait')?.value||'annuel';
+  var tarif = TARIFS[forfait];
+  var debut = _currentRenouv.fin; // Repart de la date d'expiration
+  var fin = new Date(debut); fin.setMonth(fin.getMonth()+(tarif?tarif.mois:12));
+  setEl('renouv-dates','Du '+debut+' au '+fin.toISOString().split('T')[0]);
+  setEl('renouv-prix', fmtNum(tarif?tarif.prix:0)+' F');
+}
+
+function confirmerRenouvellement(withWA) {
+  if(!_currentRenouv) return;
+  var forfait = document.getElementById('renouv-forfait')?.value||'annuel';
+  var modePay = document.getElementById('renouv-mode')?.value||'especes';
+  var ref     = document.getElementById('renouv-ref')?.value||'';
+  var tarif   = TARIFS[forfait];
+  var debut   = _currentRenouv.fin;
+  var fin     = new Date(debut); fin.setMonth(fin.getMonth()+tarif.mois);
+
+  _currentRenouv.forfait  = forfait;
+  _currentRenouv.debut    = debut;
+  _currentRenouv.fin      = fin.toISOString().split('T')[0];
+  _currentRenouv.statut   = 'active';
+  _currentRenouv.modePay  = modePay;
+  _currentRenouv.ref      = ref;
+
+  // Nouvelle facture
+  DB_FACTURES.push({
+    id:'FAC-'+Date.now(), clientId:_currentRenouv.clientId, appId:_currentRenouv.appId,
+    forfait:forfait, montant:tarif.prix, modePay:modePay,
+    ref:ref, date:new Date().toISOString().split('T')[0], statut:'payee'
+  });
+
+  closeModal('modal-renouvellement');
+  renderLicences();
+  renderDashboard();
+  updateBadges();
+
+  var cli = DB_CLIENTS.find(function(c){return c.id===_currentRenouv.clientId;});
+  toast('Licence renouvelée pour '+(cli?cli.nom:'')+' !','ok');
+
+  setTimeout(function(){ imprimerRecuLicence(_currentRenouv); }, 800);
+  if(withWA) setTimeout(function(){ envoyerCleLicenceWA(_currentRenouv.id); }, 1500);
+}
+
+function confirmerRenouvellerEtWA() { confirmerRenouvellement(true); }
+
+function supprimerLicence(id) {
+  if(!confirm('Supprimer cette licence ?')) return;
+  DB_LICENCES = DB_LICENCES.filter(function(l){return l.id!==id;});
+  renderLicences();
+  updateBadges();
+  toast('Licence supprimée');
+}
+
+// ════════════════════════════════════════════════════════════════
+// FACTURATION
+// ════════════════════════════════════════════════════════════════
+function renderFactures() {
+  var tbody = document.getElementById('factures-tbody');
+  if(!tbody) return;
+  var data = DB_FACTURES.slice().sort(function(a,b){return b.date.localeCompare(a.date);});
+  tbody.innerHTML = data.map(function(f){
+    var cli = DB_CLIENTS.find(function(c){return c.id===f.clientId;});
+    var app = DPTIF_APPS.find(function(a){return a.id===f.appId;});
+    return '<tr>'
+      +'<td style="font-family:monospace;font-size:11px;color:var(--acc2)">'+f.id+'</td>'
+      +'<td><strong style="color:var(--txt)">'+(cli?cli.nom:'—')+'</strong></td>'
+      +'<td>'+(app?app.emoji+' '+app.nom:'—')+'</td>'
+      +'<td>'+TARIFS[f.forfait]?.label+'</td>'
+      +'<td style="font-weight:700;color:var(--gold2)">'+fmtNum(f.montant)+' F</td>'
+      +'<td>'+f.date+'</td>'
+      +'<td style="font-size:11px">'+f.modePay+'</td>'
+      +'<td><span class="badge badge-active">Payée</span></td>'
+      +'<td><button class="btn btn-outline btn-sm" onclick="imprimerFacture(\''+f.id+'\')">🖨 PDF</button></td>'
+      +'</tr>';
+  }).join('') || '<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--txt3)">Aucune facture</td></tr>';
+}
+
+function renderPaiements() {
+  var tbody = document.getElementById('paiements-tbody');
+  if(tbody) tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--txt3)">Aucun paiement en attente</td></tr>';
+}
+
+// ════════════════════════════════════════════════════════════════
+// NOTIFICATIONS
+// ════════════════════════════════════════════════════════════════
+function renderNotifications() {
+  // Remplir select clients
+  var sel = document.getElementById('notif-client');
+  if(sel) {
+    sel.innerHTML = '<option value="">— Sélectionner un client —</option>'
+      + DB_CLIENTS.map(function(c){ return '<option value="'+c.id+'">'+c.nom+'</option>'; }).join('');
+  }
+  // Alertes expiration
+  var today  = new Date().toISOString().split('T')[0];
+  var soon   = new Date(); soon.setDate(soon.getDate()+CONFIG.alertDays);
+  var soonStr= soon.toISOString().split('T')[0];
+  var expiring = DB_LICENCES.filter(function(l){ return l.statut==='active' && l.fin>=today && l.fin<=soonStr; });
+  var el = document.getElementById('expiry-alerts-list');
+  if(el) {
+    el.innerHTML = expiring.map(function(l){
+      var cli = DB_CLIENTS.find(function(c){return c.id===l.clientId;});
+      var app = DPTIF_APPS.find(function(a){return a.id===l.appId;});
+      var jours = Math.ceil((new Date(l.fin)-new Date())/86400000);
+      return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr2)">'
+        +'<span style="font-size:18px">⚠️</span>'
+        +'<div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--txt)">'+(cli?cli.nom:'—')+'</div>'
+        +'<div style="font-size:11px;color:var(--txt2)">'+(app?app.emoji+' '+app.nom:'—')+' · J-'+jours+'</div></div>'
+        +'<button class="btn btn-green btn-sm" onclick="envoyerAlerteWA(\''+l.id+'\')">💚 WA</button>'
+        +'</div>';
+    }).join('') || '<div style="text-align:center;padding:16px;color:var(--txt3);font-size:13px">✅ Aucune licence expirant bientôt</div>';
+  }
+}
+
+function chargerTemplateNotif(type) {
+  var templates = {
+    renouvellement: 'Bonjour ! Votre licence DPTIF Pro expire bientôt. Contactez-nous pour renouveler et continuer à profiter de nos services. Jean Paul BOGNON - +229 01 97 XX XX XX',
+    activation: 'Bonjour ! Votre licence DPTIF Pro est maintenant active. Accédez à votre application sur: https://jeanpaul329.github.io/Dptifpro/',
+    suspension: 'Bonjour ! Votre licence DPTIF Pro a été suspendue pour non-paiement. Contactez-nous pour régulariser.',
+  };
+  var el = document.getElementById('notif-msg');
+  if(el) el.value = templates[type]||'';
+}
+
+function envoyerWhatsApp() {
+  var clientId = document.getElementById('notif-client')?.value;
+  var msg = document.getElementById('notif-msg')?.value||'';
+  if(!clientId||!msg){ toast('Sélectionnez un client et rédigez un message','err'); return; }
+  var cli = DB_CLIENTS.find(function(c){return c.id===clientId;});
+  if(!cli){ toast('Client introuvable','err'); return; }
+  var tel = cli.tel.replace(/\D/g,'');
+  window.open('https://wa.me/'+tel+'?text='+encodeURIComponent(msg),'_blank');
+  DB_NOTIFS.push({ date:new Date().toLocaleString('fr-FR'), client:cli.nom, msg:msg.slice(0,80)+'…', canal:'WhatsApp' });
+  toast('WhatsApp ouvert pour '+cli.nom,'ok');
+}
+
+function envoyerAlerteWA(licId) {
+  var l = DB_LICENCES.find(function(x){return x.id===licId;});
+  if(!l) return;
+  var cli = DB_CLIENTS.find(function(c){return c.id===l.clientId;});
+  var app = DPTIF_APPS.find(function(a){return a.id===l.appId;});
+  var jours = Math.ceil((new Date(l.fin)-new Date())/86400000);
+  var msg = 'Bonjour '+(cli?cli.nom:'')+'!\n\nVotre licence '+(app?app.nom:'')+' expire dans '+jours+' jour(s) (le '+l.fin+').\nContactez-nous pour renouveler:\n📞 +229 01 97 XX XX XX\n💚 WhatsApp direct';
+  var tel = (cli?cli.tel:'').replace(/\D/g,'');
+  window.open('https://wa.me/'+tel+'?text='+encodeURIComponent(msg),'_blank');
+}
+
+function envoyerAlertesMasse() {
+  var today  = new Date().toISOString().split('T')[0];
+  var soon   = new Date(); soon.setDate(soon.getDate()+CONFIG.alertDays);
+  var soonStr= soon.toISOString().split('T')[0];
+  var expiring = DB_LICENCES.filter(function(l){ return l.statut==='active' && l.fin>=today && l.fin<=soonStr; });
+  if(!expiring.length){ toast('Aucune licence à alerter'); return; }
+  expiring.forEach(function(l, i){
+    setTimeout(function(){ envoyerAlerteWA(l.id); }, i*1500);
+  });
+  toast(expiring.length+' alertes en cours d\'envoi...','ok');
+}
+
+// ════════════════════════════════════════════════════════════════
+// TARIFS
+// ════════════════════════════════════════════════════════════════
+function renderTarifs() {
+  var el = document.getElementById('tarifs-form');
+  if(!el) return;
+  var html = '<div class="form-grid">';
+  ['mensuel','trimestriel','semestriel','annuel'].forEach(function(f){
+    var t = TARIFS[f];
+    html += '<div class="fg"><label class="fg-label">'+t.label+' ('+t.mois+' mois)</label>'
+      +'<input id="tarif-'+f+'" class="fg-inp" type="number" value="'+t.prix+'" min="0" step="1000">'
+      +'</div>';
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function sauvegarderTarifs() {
+  ['mensuel','trimestriel','semestriel','annuel'].forEach(function(f){
+    var val = parseInt(document.getElementById('tarif-'+f)?.value)||TARIFS[f].prix;
+    TARIFS[f].prix = val;
+  });
+  toast('Tarifs sauvegardés !','ok');
+}
+
+function sauvegarderParametres() {
+  CONFIG.demoDays  = parseInt(document.getElementById('p-demo-days')?.value)||30;
+  CONFIG.alertDays = parseInt(document.getElementById('p-alert-days')?.value)||7;
+  var newPw = document.getElementById('p-pw')?.value;
+  if(newPw) ADMIN_CREDS.pw = newPw;
+  var dd = document.getElementById('duree-demo-display');
+  if(dd) dd.textContent = CONFIG.demoDays+' jours';
+  toast('Paramètres sauvegardés !','ok');
+}
+
+// ════════════════════════════════════════════════════════════════
+// IMPRESSION PDF
+// ════════════════════════════════════════════════════════════════
+function imprimerRecuLicence(id){
+  var l=DB.licences.find(function(x){return x.id===id||x._id===id;});
+  if(!l){toast('Licence introuvable','error');return;}
+  var params=DB.params||{};
+  var nom=params.nomSociete||'DPTIF Pro';
+  var exp=l.expiration||l.dateExpiration||'---';
+  var duree=l.duree||365;
+  var prix=l.prix||0;
+  var cle=l.cle||l.key||'---';
+  var clientNom=l.clientNom||l.client||'Client';
+  var app=l.app||l.application||'---';
+  var date=new Date(l.date||Date.now()).toLocaleDateString('fr-FR');
+  var h='<!DOCTYPE html><html><head><meta charset="UTF-8">'
+    +'<style>*{font-family:Arial,sans-serif;box-sizing:border-box}'
+    +'body{padding:20px;max-width:400px;margin:0 auto;font-size:12px}'
+    +'.logo{font-size:18px;font-weight:800;color:#1e293b;margin-bottom:4px}'
+    +'.sub{font-size:11px;color:#64748b;margin-bottom:16px}'
+    +'.card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:12px}'
+    +'.row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f1f5f9}'
+    +'.lbl{color:#64748b}.val{font-weight:600}'
+    +'.key-box{background:#1e293b;color:white;border-radius:8px;padding:12px;text-align:center;margin:12px 0}'
+    +'.key-val{font-size:16px;font-weight:800;letter-spacing:2px;margin:6px 0}'
+    +'.footer{text-align:center;font-size:10px;color:#94a3b8;margin-top:16px;padding-top:10px;border-top:1px solid #e2e8f0}'
+    +'@media print{button{display:none}}</style></head><body>'
+    +'<div class="logo">'+nom+'</div>'
+    +'<div class="sub">Recu de licence — '+date+'</div>'
+    +'<div class="card">'
+    +'<div class="row"><span class="lbl">Client</span><span class="val">'+clientNom+'</span></div>'
+    +'<div class="row"><span class="lbl">Application</span><span class="val">'+app+'</span></div>'
+    +'<div class="row"><span class="lbl">Duree</span><span class="val">'+duree+' jours</span></div>'
+    +'<div class="row"><span class="lbl">Expiration</span><span class="val">'+exp+'</span></div>'
+    +'<div class="row"><span class="lbl">Prix</span><span class="val">'+prix+' F</span></div>'
+    +'</div>'
+    +'<div class="key-box">'
+    +'<div style="font-size:10px;color:rgba(255,255,255,.6)">Cle de licence</div>'
+    +'<div class="key-val">'+cle+'</div>'
+    +'<div style="font-size:11px;color:rgba(255,255,255,.4)">Conservez cette cle</div>'
+    +'</div>'
+    +'<div class="footer">'+nom+' · Jean Paul BOGNON · jeanpaulbognon3@gmail.com</div>'
+    +'<div style="text-align:center;margin-top:12px">'
+    +'<button onclick="window.print()" style="padding:8px 20px;background:#2f81f7;color:white;border:none;border-radius:6px;font-size:13px;font-weight:700;cursor:pointer">Imprimer</button>'
+    +'</div>'
+    +'</body></html>';
+  var w=window.open('','_blank','width=460,height=660');
+  if(w){w.document.write(h);w.document.close();}
+}
+
+function imprimerFacture(facId) {
+  var f = DB_FACTURES.find(function(x){return x.id===facId;});
+  if(!f) return;
+  var lic = DB_LICENCES.find(function(l){return l.clientId===f.clientId && l.appId===f.appId;});
+  if(lic) imprimerRecuLicence(lic);
+}
+
+// ════════════════════════════════════════════════════════════════
+// EXPORTS
+// ════════════════════════════════════════════════════════════════
+function exporterLicencesCSV() {
+  var csv='ID,Client,Application,Cle,Forfait,Debut,Fin,Statut,Mode paiement,Reference\n'
+    +DB_LICENCES.map(function(l){
+      var cli=DB_CLIENTS.find(function(c){return c.id===l.clientId;});
+      var app=DPTIF_APPS.find(function(a){return a.id===l.appId;});
+      return [l.id,cli?cli.nom:'—',app?app.nom:'—',l.cle,l.forfait,l.debut,l.fin,l.statut,l.modePay,l.ref].join(',');
+    }).join('\n');
+  dlCSV(csv,'licences-dptif-'+new Date().toISOString().slice(0,10)+'.csv');
+}
+
+function exporterFacturesCSV() {
+  var csv='ID,Client,Application,Forfait,Montant,Date,Mode,Reference,Statut\n'
+    +DB_FACTURES.map(function(f){
+      var cli=DB_CLIENTS.find(function(c){return c.id===f.clientId;});
+      var app=DPTIF_APPS.find(function(a){return a.id===f.appId;});
+      return [f.id,cli?cli.nom:'—',app?app.nom:'—',f.forfait,f.montant,f.date,f.modePay,f.ref,f.statut].join(',');
+    }).join('\n');
+  dlCSV(csv,'factures-dptif-'+new Date().toISOString().slice(0,10)+'.csv');
+}
+
+function exporterRapport() {
+  var total = DB_FACTURES.filter(function(f){return f.statut==='payee';}).reduce(function(s,f){return s+f.montant;},0);
+  var actives = DB_LICENCES.filter(function(l){return l.statut==='active';}).length;
+  alert('Rapport: '+DB_CLIENTS.length+' clients | '+actives+' licences actives | CA total: '+fmtNum(total)+' F CFA');
+}
+
+function dlCSV(csv, fname) {
+  var blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  a.href=url; a.download=fname; a.click();
+  toast('📥 '+fname+' téléchargé','ok');
+}
+
+// ════════════════════════════════════════════════════════════════
+// HELPERS
+// ════════════════════════════════════════════════════════════════
+function fmtNum(n) {
+  return (n||0).toLocaleString('fr-FR');
+}
+
+function setEl(id, val) {
+  var el = document.getElementById(id);
+  if(el) el.textContent = val;
+}
+
+function remplirSelectClients() {
+  ['nl-client','notif-client'].forEach(function(selId){
+    var sel = document.getElementById(selId);
+    if(!sel) return;
+    var old = sel.value;
+    sel.innerHTML = '<option value="">— Sélectionner un client —</option>'
+      + DB_CLIENTS.map(function(c){ return '<option value="'+c.id+'">'+c.nom+'</option>'; }).join('');
+    if(old) sel.value = old;
+  });
+}
+
+function remplirSelectApps() {
+  var sel = document.getElementById('nl-app');
+  if(sel) {
+    sel.innerHTML = '<option value="">— Sélectionner l\'app —</option>'
+      + DPTIF_APPS.map(function(a){ return '<option value="'+a.id+'">'+a.emoji+' '+a.nom+'</option>'; }).join('');
+  }
+}
+
+// ════════════════════════════════════════════════════════════════
+// MODALS
+// ════════════════════════════════════════════════════════════════
+function openModal(id) {
+  var m = document.getElementById(id);
+  if(m) { m.classList.add('open');
+    // Init date
+    var d = document.getElementById('nl-debut');
+    if(d && !d.value) d.value = new Date().toISOString().split('T')[0];
+    remplirSelectClients();
+    remplirSelectApps();
+    if(id==='modal-nouvelle-licence') { updateNLPrix(); regenererCle(); }
+  }
+}
+function closeModal(id) {
+  var m = document.getElementById(id);
+  if(m) m.classList.remove('open');
+}
+document.addEventListener('click', function(e){
+  if(e.target.classList.contains('modal-overlay')) closeModal(e.target.id);
+});
+
+// ════════════════════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════════════════════
+var _toastT;
+function toast(msg, type) {
+  var el = document.getElementById('toast');
+  if(!el) return;
+  clearTimeout(_toastT);
+  el.textContent = msg;
+  el.className = 'toast show' + (type?' '+type:'');
+  _toastT = setTimeout(function(){ el.classList.remove('show'); }, 3200);
+}
+
+// ──
+
+
+// ══════════════════════════════════════════════
+// GÉNÉRATEUR D'APPS CLIENT
+// ══════════════════════════════════════════════
+
+var GEN_HISTORIQUE = JSON.parse(localStorage.getItem('dptif_gen_history')||'[]');
+
+// Templates de configuration par app
+var APP_CONFIGS = {
+  caissepro:  { file:'caissepro.html',  prefixe:'cp',  pwDefault:'caisse2026',  label:'CaissePro' },
+  restopro:   { file:'restopro.html',   prefixe:'rp',  pwDefault:'resto2026',   label:'RestoPro' },
+  pharmapro:  { file:'pharmapro.html',  prefixe:'pp',  pwDefault:'pharma2026',  label:'PharmaPro' },
+  amawognon:  { file:'amawognon.html',  prefixe:'ama', pwDefault:'ama2026',     label:'Amawo Gnon' },
+  gcars:      { file:'gcars.html',      prefixe:'gc',  pwDefault:'gcars2026',   label:'GCARS' },
+  hotel:      { file:'hotel.html',      prefixe:'ht',  pwDefault:'hotel2026',   label:'HotelPro' },
+  transport:  { file:'transport.html',  prefixe:'tr',  pwDefault:'trans2026',   label:'TransportPro' },
+  immobilier: { file:'immobilier.html', prefixe:'im',  pwDefault:'immo2026',    label:'ImmobilierPro' },
+  agri:       { file:'agri.html',       prefixe:'ag',  pwDefault:'agri2026',    label:'AgriPro' },
+  formation:  { file:'formation.html',  prefixe:'fm',  pwDefault:'form2026',    label:'FormationPro' },
+};
+
+function genPreview(){
+  var appId  = document.getElementById('gen-app').value;
+  var nom    = document.getElementById('gen-nom').value.trim();
+  var ville  = document.getElementById('gen-ville').value.trim();
+  var tel    = document.getElementById('gen-tel').value.trim();
+  var email  = document.getElementById('gen-email').value.trim();
+  var user   = document.getElementById('gen-user').value.trim()||'admin';
+  var pw     = document.getElementById('gen-pw').value.trim();
+  var duree  = document.getElementById('gen-duree').value;
+  var cfg    = APP_CONFIGS[appId];
+  var prev   = document.getElementById('gen-preview');
+  if(!prev) return;
+  if(!appId||!nom){
+    prev.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:40px 0">Remplissez l\'app et le nom pour voir l\'aperçu</div>';
+    return;
+  }
+  var exp = new Date(); exp.setDate(exp.getDate()+parseInt(duree));
+  var entId = (cfg?cfg.prefixe:'app')+'_'+nom.toLowerCase().replace(/[^a-z0-9]/g,'_').substr(0,20)+'_'+Date.now().toString(36);
+  prev.innerHTML =
+    '<div style="display:flex;flex-direction:column;gap:10px;font-size:13px">'+
+    '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bord)"><span style="color:var(--text3)">Application</span><span style="font-weight:700;color:var(--acc)">'+(cfg?cfg.label:appId)+'</span></div>'+
+    '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bord)"><span style="color:var(--text3)">Établissement</span><span style="font-weight:700">'+nom+'</span></div>'+
+    (ville?'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bord)"><span style="color:var(--text3)">Localisation</span><span>'+ville+'</span></div>':'')+
+    (tel?'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bord)"><span style="color:var(--text3)">Téléphone</span><span>'+tel+'</span></div>':'')+
+    (email?'<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bord)"><span style="color:var(--text3)">Email</span><span>'+email+'</span></div>':'')+
+    '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bord)"><span style="color:var(--text3)">Identifiant admin</span><code style="background:var(--surf2);padding:2px 6px;border-radius:4px">'+user+'</code></div>'+
+    '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bord)"><span style="color:var(--text3)">Mot de passe</span><code style="background:var(--surf2);padding:2px 6px;border-radius:4px">'+(pw||'<em style=\"color:var(--text3)\">auto</em>')+'</code></div>'+
+    '<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bord)"><span style="color:var(--text3)">Entité (entId)</span><code style="background:var(--surf2);padding:2px 6px;border-radius:4px;font-size:10px">'+entId+'</code></div>'+
+    '<div style="display:flex;justify-content:space-between;padding:8px 0"><span style="color:var(--text3)">Licence expire</span><span style="color:var(--gold);font-weight:700">'+exp.toLocaleDateString('fr-FR')+'</span></div>'+
+    '</div>';
+}
+
+function genererApp(){
+  var appId = document.getElementById('gen-app').value;
+  var nom   = document.getElementById('gen-nom').value.trim();
+  var ville = document.getElementById('gen-ville').value.trim();
+  var tel   = document.getElementById('gen-tel').value.trim();
+  var email = document.getElementById('gen-email').value.trim();
+  var user  = document.getElementById('gen-user').value.trim()||'admin';
+  var pw    = document.getElementById('gen-pw').value.trim();
+  var duree = parseInt(document.getElementById('gen-duree').value)||365;
+  var cfg   = APP_CONFIGS[appId];
+  var statusEl = document.getElementById('gen-status');
+
+  if(!appId||!nom){
+    toast('Choisissez une app et entrez le nom','err');
+    return;
+  }
+
+  // Générer le mot de passe si vide
+  if(!pw) pw = (cfg?cfg.prefixe:'app') + Math.random().toString(36).substr(2,6).toUpperCase();
+
+  // Générer l'entId unique
+  var exp = new Date(); exp.setDate(exp.getDate()+duree);
+  var expStr = exp.toISOString().split('T')[0];
+  var entId  = (cfg?cfg.prefixe:'app')+'_'+nom.toLowerCase().replace(/[^a-z0-9]/g,'_').substr(0,15)+'_'+Date.now().toString(36);
+
+  // Afficher état
+  if(statusEl){
+    statusEl.style.display='block';
+    statusEl.style.background='rgba(99,102,241,.1)';
+    statusEl.style.color='var(--acc2)';
+    statusEl.style.border='1px solid var(--acc)';
+    statusEl.textContent='⏳ Génération en cours...';
+  }
+
+  // Récupérer le template depuis GitHub Pages
+  var templateUrl = 'https://jeanpaul329.github.io/Dptifpro/'+(cfg?cfg.file:'caissepro.html');
+
+  fetch(templateUrl)
+    .then(function(r){
+      if(!r.ok) throw new Error('Fichier template non trouvé: '+templateUrl);
+      return r.text();
+    })
+    .then(function(html){
+      // ── Personnaliser le template ──
+      var modified = html;
+
+      // 1. Nom de l'établissement
+      var nomPatterns = [
+        /nomEtablissement\s*:\s*'[^']*'/g,
+        /nomRestaurant\s*:\s*'[^']*'/g,
+        /nomPharmacie\s*:\s*'[^']*'/g,
+        /nomApp\s*:\s*'[^']*'/g,
+      ];
+      nomPatterns.forEach(function(p){
+        modified = modified.replace(p, function(m){ return m.split(':')[0]+": '"+nom+"'"; });
+      });
+
+      // 2. Identifiants admin
+      var adminPatterns = [
+        { old: /'admin'\s*:\s*\{pw:'[^']*'/, new: "'admin':{pw:'"+pw+"'" },
+        { old: /"admin"\s*:\s*\{pw:"[^"]*"/, new: '"admin":{pw:"'+pw+'"' },
+      ];
+      adminPatterns.forEach(function(p){
+        modified = modified.replace(new RegExp(p.old.source,'g'), p.new);
+      });
+
+      // 3. Identifiant personnalisé
+      if(user !== 'admin'){
+        modified = modified.replace(
+          new RegExp("'admin':\{pw:'" + pw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + "'"),
+          "'"+user+"':{pw:'"+pw+"'"
+        );
+      }
+
+      // 4. Contact établissement
+      if(tel){
+        modified = modified.replace(/\+229 01 40 60 21 26/g, tel);
+        modified = modified.replace(/\+229 01 97 35 12 37/g, tel);
+        modified = modified.replace(/tel\s*:\s*'[^']*Azov[^']*'/g, "tel:'"+tel+"'");
+      }
+      if(email){
+        modified = modified.replace(/amawognon@gmail\.com/g, email);
+        modified = modified.replace(/gcars@gmail\.com/g, email);
+      }
+      if(ville){
+        modified = modified.replace(/Azov[eé],?\s*(Couffo,?\s*)?(B[eé]nin)?/g, ville);
+      }
+
+      // 5. EntId unique
+      modified = modified.replace(
+        /var _ENTID\s*=\s*'[^']*'/g,
+        "var _ENTID = '"+entId+"'"
+      );
+      // Aussi dans les localStorage keys
+      modified = modified.replace(
+        /lsS\('cp_/g, "lsS('"+entId+"_"
+      ).replace(
+        /lsG\('cp_/g, "lsG('"+entId+"_"
+      ).replace(
+        /lsS\('rp_/g, "lsS('"+entId+"_"
+      ).replace(
+        /lsG\('rp_/g, "lsG('"+entId+"_"
+      ).replace(
+        /lsS\('pp_/g, "lsS('"+entId+"_"
+      ).replace(
+        /lsG\('pp_/g, "lsG('"+entId+"_"
+      );
+
+      // 6. Licence
+      modified = modified.replace(
+        /var exp\s*=\s*'20[0-9]{2}-[0-9]{2}-[0-9]{2}'/g,
+        "var exp='"+expStr+"'"
+      );
+      modified = modified.replace(
+        /expiration\s*:\s*'20[0-9]{2}-[0-9]{2}-[0-9]{2}'/g,
+        "expiration:'"+expStr+"'"
+      );
+
+      // 7. Titre de la page
+      modified = modified.replace(
+        /<title>[^<]*<\/title>/,
+        '<title>'+nom+' — '+(cfg?cfg.label:appId)+'</title>'
+      );
+
+      // ── Télécharger le fichier ──
+      var fname = nom.toLowerCase().replace(/[^a-z0-9]/g,'-').replace(/-+/g,'-').substr(0,30)
+        + '-' + (cfg?cfg.file:'app.html');
+      var blob = new Blob([modified], {type:'text/html;charset=utf-8'});
+      var url  = URL.createObjectURL(blob);
+      var a    = document.createElement('a');
+      a.href = url; a.download = fname;
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      // ── Sauvegarder dans l'historique ──
+      GEN_HISTORIQUE.unshift({
+        date: new Date().toISOString(),
+        appId: appId, appLabel: cfg?cfg.label:appId,
+        nom: nom, ville: ville, user: user,
+        fichier: fname, entId: entId, expiration: expStr
+      });
+      GEN_HISTORIQUE = GEN_HISTORIQUE.slice(0,20);
+      localStorage.setItem('dptif_gen_history', JSON.stringify(GEN_HISTORIQUE));
+      renderGenHistorique();
+
+      // ── Succès ──
+      if(statusEl){
+        statusEl.style.background='rgba(16,185,129,.1)';
+        statusEl.style.color='#10b981';
+        statusEl.style.border='1px solid #10b981';
+        statusEl.innerHTML='✅ <strong>'+fname+'</strong> téléchargé avec succès !<br>'+
+          '<small>Identifiant: <code>'+user+'</code> | Mot de passe: <code>'+pw+'</code> | Expire: '+expStr+'</small>';
+      }
+      toast('"'+nom+'" généré et téléchargé !','ok');
+    })
+    .catch(function(err){
+      console.error(err);
+      if(statusEl){
+        statusEl.style.background='rgba(239,68,68,.1)';
+        statusEl.style.color='#ef4444';
+        statusEl.style.border='1px solid #ef4444';
+        statusEl.textContent='❌ Erreur: '+err.message+'. Vérifiez que le fichier template est sur GitHub Pages.';
+      }
+      toast('Erreur de génération','err');
+    });
+}
+
+function renderGenHistorique(){
+  var el = document.getElementById('gen-historique');
+  if(!el) return;
+  if(!GEN_HISTORIQUE.length){
+    el.innerHTML='<div style="color:var(--text3);font-size:13px">Aucune app générée pour le moment</div>';
+    return;
+  }
+  el.innerHTML='<table style="width:100%;border-collapse:collapse;font-size:12px">'+
+    '<thead><tr style="border-bottom:1px solid var(--bord)">'+
+    '<th style="text-align:left;padding:6px 8px;color:var(--text3)">Date</th>'+
+    '<th style="text-align:left;padding:6px 8px;color:var(--text3)">App</th>'+
+    '<th style="text-align:left;padding:6px 8px;color:var(--text3)">Établissement</th>'+
+    '<th style="text-align:left;padding:6px 8px;color:var(--text3)">Fichier</th>'+
+    '<th style="text-align:left;padding:6px 8px;color:var(--text3)">Expire</th>'+
+    '</tr></thead><tbody>'+
+    GEN_HISTORIQUE.map(function(h){
+      return '<tr style="border-bottom:1px solid var(--bord)">'+
+        '<td style="padding:6px 8px">'+new Date(h.date).toLocaleDateString('fr-FR')+'</td>'+
+        '<td style="padding:6px 8px"><span style="color:var(--acc)">'+h.appLabel+'</span></td>'+
+        '<td style="padding:6px 8px;font-weight:600">'+h.nom+(h.ville?' <span style=\"color:var(--text3)\">'+h.ville+'</span>':'')+'</td>'+
+        '<td style="padding:6px 8px"><code style="background:var(--surf2);padding:2px 5px;border-radius:4px">'+h.fichier+'</code></td>'+
+        '<td style="padding:6px 8px;color:var(--gold)">'+h.expiration+'</td>'+
+        '</tr>';
+    }).join('')+
+    '</tbody></table>';
+}
+
+// Initialiser l'historique au chargement
+document.addEventListener('DOMContentLoaded', function(){
+  renderGenHistorique();
+});
+
+
+
+// ══ GÉNÉRATEUR — Fonctions utilitaires ══
+function genPw(){
+  var chars='abcdefghjkmnpqrstuvwxyz23456789';
+  var pw=''; for(var i=0;i<8;i++) pw+=chars[Math.floor(Math.random()*chars.length)];
+  document.getElementById('gen-pw').value=pw;
+  genPreview();
+}
+
+function resetGen(){
+  ['gen-app','gen-nom','gen-ville','gen-tel','gen-email','gen-user','gen-pw'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('gen-duree').value='365';
+  document.getElementById('gen-prix').value='';
+  var prev=document.getElementById('gen-preview');
+  if(prev) prev.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:30px 0">Remplissez le formulaire pour voir l\'aperçu</div>';
+  var st=document.getElementById('gen-status');
+  if(st) st.style.display='none';
+}
+
+var PRIX_APPS = {
+  caissepro:{30:5000,90:12000,180:20000,365:35000,730:60000},
+  restopro:{30:5000,90:12000,180:20000,365:35000,730:60000},
+  pharmapro:{30:7000,90:18000,180:30000,365:50000,730:90000},
+  amawognon:{30:5000,90:12000,180:20000,365:35000,730:60000},
+  gcars:{30:5000,90:12000,180:20000,365:35000,730:60000},
+  hotel:{30:8000,90:20000,180:35000,365:60000,730:100000},
+  transport:{30:5000,90:12000,180:20000,365:35000,730:60000},
+  agri:{30:5000,90:12000,180:20000,365:35000,730:60000},
+  elevage:{30:5000,90:12000,180:20000,365:35000,730:60000},
+  formation:{30:7000,90:18000,180:30000,365:50000,730:90000},
+  immobilier:{30:8000,90:20000,180:35000,365:60000,730:100000},
+};
+
+function updateGenPrix(){
+  var appId=document.getElementById('gen-app').value;
+  var duree=document.getElementById('gen-duree').value;
+  var prixEl=document.getElementById('gen-prix');
+  if(!prixEl) return;
+  var p = PRIX_APPS[appId] && PRIX_APPS[appId][duree];
+  if(p) prixEl.value=p;
+}
+
+function viderHistorique(){
+  if(!confirm('Effacer tout l\'historique ?')) return;
+  GEN_HISTORIQUE=[];
+  localStorage.removeItem('dptif_gen_history');
+  renderGenHistorique();
+}
+
+
+// ══ DPTIF ADMIN — Firebase ══
+window._onDptifFBReady = function(){
+  loadDptifData();
+};
+
+function loadDptifData(){
+  if(!window.DPTIF_FB||!window.DPTIF_FB.ready) return;
+  var fb = window.DPTIF_FB;
+  // Charger clients
+  fb.onSnapshot(fb.col('dptif_clients'), function(snap){
+    DB.clients = [];
+    snap.forEach(function(d){ var r=d.data(); r._id=d.id; if(!r.__ping) DB.clients.push(r); });
+    if(typeof renderClients==='function') renderClients();
+    if(typeof refreshDashboard==='function') refreshDashboard();
+  });
+  // Charger licences
+  fb.onSnapshot(fb.col('dptif_licences'), function(snap){
+    DB.licences = [];
+    snap.forEach(function(d){ var r=d.data(); r._id=d.id; if(!r.__ping) DB.licences.push(r); });
+    if(typeof renderLicences==='function') renderLicences();
+    if(typeof refreshDashboard==='function') refreshDashboard();
+  });
+  // Charger générations
+  fb.onSnapshot(fb.col('dptif_gen_history'), function(snap){
+    GEN_HISTORIQUE = [];
+    snap.forEach(function(d){ var r=d.data(); r._id=d.id; if(!r.__ping) GEN_HISTORIQUE.push(r); });
+    GEN_HISTORIQUE.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+    if(typeof renderGenHistorique==='function') renderGenHistorique();
+  });
+}
+
+function saveDptifFB(cname, data){
+  if(!window.DPTIF_FB||!window.DPTIF_FB.ready) return Promise.resolve(null);
+  data.date = data.date||new Date().toISOString();
+  data.updatedAt = new Date().toISOString();
+  return window.DPTIF_FB.addDoc(window.DPTIF_FB.col(cname), data)
+    .then(function(ref){ console.log('[DPTIF] Saved',cname,ref.id); return ref.id; })
+    .catch(function(e){ console.warn('[DPTIF] Error',cname,e.message); return null; });
+}
+
+function updateDptifFB(cname, id, data){
+  if(!window.DPTIF_FB||!window.DPTIF_FB.ready||!id) return;
+  data.updatedAt = new Date().toISOString();
+  var docRef = window.DPTIF_FB.doc(window.DPTIF_FB.db, cname, id);
+  window.DPTIF_FB.updateDoc(docRef, data).catch(function(e){ console.warn('[DPTIF] Update error',e.message); });
+}
+
+
+// ══ DASHBOARD TEMPS RÉEL ══
+function refreshDashboard(){
+  var clients  = DB.clients||[];
+  var licences = DB.licences||[];
+  var gens     = GEN_HISTORIQUE||[];
+  var now      = new Date();
+  var ce_mois  = new Date(now.getFullYear(), now.getMonth(), 1);
+  
+  // Licences actives
+  var licActives = licences.filter(function(l){ return l.statut==='actif'||l.actif; }).length;
+  // Clients actifs
+  var cliActifs  = clients.filter(function(c){ return c.statut!=='inactif'; }).length;
+  // Générations ce mois
+  var gensMois   = gens.filter(function(g){ return new Date(g.date||0)>=ce_mois; }).length;
+  // CA ce mois (licences créées ce mois)
+  var caMois     = licences.filter(function(l){ return new Date(l.date||0)>=ce_mois; })
+                    .reduce(function(s,l){ return s+(l.prix||0); },0);
+  // CA total
+  var caTotal    = licences.reduce(function(s,l){ return s+(l.prix||0); },0);
+  
+  // Mettre à jour les KPI elements
+  var kpis = {
+    'kpi-clients':    cliActifs,
+    'kpi-licences':   licActives,
+    'kpi-gen-mois':   gensMois,
+    'kpi-ca-mois':    fmtMontant(caMois),
+    'kpi-ca-total':   fmtMontant(caTotal),
+    'kpi-apps':       Object.keys(APP_CONFIGS||{}).length,
+  };
+  Object.keys(kpis).forEach(function(id){
+    var el=document.getElementById(id);
+    if(el) el.textContent=kpis[id];
+  });
+  
+  // Date/heure
+  var dateEl = document.getElementById('dash-date');
+  if(dateEl) dateEl.textContent = now.toLocaleString('fr-FR', {weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  
+  // Mini graphe activité récente
+  renderRecentActivity(gens, licences);
+}
+
+function fmtMontant(n){
+  if(n>=1000000) return (n/1000000).toFixed(1)+'M F';
+  if(n>=1000) return (n/1000).toFixed(0)+'K F';
+  return n+' F';
+}
+
+function renderRecentActivity(gens, licences){
+  var el = document.getElementById('recent-activity');
+  if(!el) return;
+  var items = [];
+  gens.slice(0,5).forEach(function(g){
+    items.push({date:g.date, icon:'🚀', text:g.nomEtablissement+' — '+g.app, type:'gen'});
+  });
+  licences.slice(0,5).forEach(function(l){
+    items.push({date:l.date, icon:'🔑', text:l.clientNom+' — '+(l.duree||365)+' jours', type:'lic'});
+  });
+  items.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+  if(!items.length){
+    el.innerHTML='<div style="color:var(--text3);text-align:center;padding:20px;font-size:13px">Aucune activité récente</div>';
+    return;
+  }
+  el.innerHTML=items.slice(0,8).map(function(item){
+    var d = new Date(item.date||0);
+    var ago = Math.floor((Date.now()-d)/60000);
+    var agoStr = ago<60?(ago+'min'):(ago<1440?(Math.floor(ago/60)+'h'):(Math.floor(ago/1440)+'j'));
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bord)">'
+      +'<div style="font-size:18px">'+item.icon+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+item.text+'</div>'
+      +'<div style="font-size:11px;color:var(--text3)">il y a '+agoStr+'</div></div>'
+      +'</div>';
+  }).join('');
+}
+
+
+
+// == DPTIF ADMIN Firebase ==
+function loadDptifData(){
+  if(!window.DPTIF_FB||!window.DPTIF_FB.ready)return;
+  var fb=window.DPTIF_FB;
+  fb.onSnapshot(fb.col('dptif_clients'),function(snap){
+    DB.clients=[];
+    snap.forEach(function(d){var r=d.data();r._id=d.id;if(!r.__ping)DB.clients.push(r);});
+    if(typeof renderClients==='function')renderClients();
+    if(typeof refreshDashboard==='function')refreshDashboard();
+  });
+  fb.onSnapshot(fb.col('dptif_licences'),function(snap){
+    DB.licences=[];
+    snap.forEach(function(d){var r=d.data();r._id=d.id;if(!r.__ping)DB.licences.push(r);});
+    if(typeof renderLicences==='function')renderLicences();
+    if(typeof refreshDashboard==='function')refreshDashboard();
+  });
+  fb.onSnapshot(fb.col('dptif_gen_history'),function(snap){
+    GEN_HISTORIQUE=[];
+    snap.forEach(function(d){var r=d.data();r._id=d.id;if(!r.__ping)GEN_HISTORIQUE.push(r);});
+    GEN_HISTORIQUE.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+    if(typeof renderGenHistorique==='function')renderGenHistorique();
+  });
+}
+window._onDptifFBReady=function(){loadDptifData();};
+
+function saveDptifFB(cname,data){
+  if(!window.DPTIF_FB||!window.DPTIF_FB.ready)return Promise.resolve(null);
+  data.date=data.date||new Date().toISOString();
+  return window.DPTIF_FB.addDoc(window.DPTIF_FB.col(cname),data)
+    .then(function(ref){return ref.id;})
+    .catch(function(e){console.warn('[DPTIF]',e.message);return null;});
+}
+
+function updateDptifFB(cname,id,data){
+  if(!window.DPTIF_FB||!window.DPTIF_FB.ready||!id)return;
+  window.DPTIF_FB.updateDoc(
+    window.DPTIF_FB.doc(window.DPTIF_FB.db,cname,id),data
+  ).catch(function(e){console.warn('[DPTIF update]',e.message);});
+}
+
+function fmtMontant(n){
+  if(n>=1000000)return (n/1000000).toFixed(1)+'M F';
+  if(n>=1000)return Math.floor(n/1000)+'K F';
+  return n+' F';
+}
+
+function refreshDashboard(){
+  var clients=DB.clients||[];
+  var licences=DB.licences||[];
+  var gens=GEN_HISTORIQUE||[];
+  var now=new Date();
+  var ceMois=new Date(now.getFullYear(),now.getMonth(),1);
+  var licActives=licences.filter(function(l){return l.statut==='actif'||l.actif;}).length;
+  var cliActifs=clients.filter(function(cl){return cl.statut!=='inactif';}).length;
+  var gensMois=gens.filter(function(g){return new Date(g.date||0)>=ceMois;}).length;
+  var caMois=licences.filter(function(l){return new Date(l.date||0)>=ceMois;})
+    .reduce(function(s,l){return s+(l.prix||0);},0);
+  var caTotal=licences.reduce(function(s,l){return s+(l.prix||0);},0);
+  var kpis={
+    'kpi-clients':cliActifs,'kpi-licences':licActives,
+    'kpi-gen-mois':gensMois,'kpi-ca-mois':fmtMontant(caMois),
+    'kpi-ca-total':fmtMontant(caTotal),
+    'kpi-apps':Object.keys(APP_CONFIGS||{}).length
+  };
+  Object.keys(kpis).forEach(function(id){
+    var el=document.getElementById(id);if(el)el.textContent=kpis[id];
+  });
+  var dateEl=document.getElementById('dash-date');
+  if(dateEl)dateEl.textContent=now.toLocaleString('fr-FR',{
+    weekday:'long',day:'numeric',month:'long',year:'numeric',
+    hour:'2-digit',minute:'2-digit'
+  });
+  renderRecentActivity(gens,licences);
+}
+
+function renderRecentActivity(gens,licences){
+  var el=document.getElementById('recent-activity');if(!el)return;
+  var items=[];
+  gens.slice(0,5).forEach(function(g){
+    items.push({date:g.date,icon:'Appli',text:(g.nomEtablissement||'App')+'  '+( g.app||'')});
+  });
+  licences.slice(0,5).forEach(function(l){
+    items.push({date:l.date,icon:'Cle',text:(l.clientNom||'Client')+'  '+(l.duree||365)+'j'});
+  });
+  items.sort(function(a,b){return new Date(b.date)-new Date(a.date);});
+  if(!items.length){
+    el.innerHTML='<div style="color:var(--text3);text-align:center;padding:20px;font-size:13px">Aucune activite</div>';
+    return;
+  }
+  el.innerHTML=items.slice(0,8).map(function(item){
+    var ago=Math.floor((Date.now()-new Date(item.date||0))/60000);
+    var agoStr=ago<60?(ago+'min'):(ago<1440?(Math.floor(ago/60)+'h'):(Math.floor(ago/1440)+'j'));
+    return '<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bord)">'
+      +'<div style="font-size:11px;font-weight:700;color:var(--acc);white-space:nowrap">'+item.icon+'</div>'
+      +'<div style="flex:1;min-width:0;overflow:hidden">'
+      +'<div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+item.text+'</div>'
+      +'<div style="font-size:11px;color:var(--text3)">il y a '+agoStr+'</div></div></div>';
+  }).join('');
+}
+</script>
+
+
+<script type="module">
+import{initializeApp}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import{getFirestore,collection,addDoc,getDocs,doc,updateDoc,deleteDoc,query,where,orderBy,onSnapshot}from'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+const fbConfig={apiKey:"AIzaSyBWKOqhNMT1s_3fCbDMFZ5M7dQ_lq4LZi0",authDomain:"dpgestpro.firebaseapp.com",projectId:"dpgestpro"};
+const app=initializeApp(fbConfig);
+const db=getFirestore(app);
+const col=(name)=>collection(db,name);
+window.DPTIF_FB={db,collection,addDoc,getDocs,doc,updateDoc,deleteDoc,query,where,orderBy,onSnapshot,col,ready:true};
+// Charger les données admin
+window.DPTIF_FB.addDoc(col('dptif_gen_history'),{__ping:true}).then(()=>{}).catch(()=>{});
+window._onDptifFBReady&&window._onDptifFBReady();
+</script>
+
+</body>
+</html>

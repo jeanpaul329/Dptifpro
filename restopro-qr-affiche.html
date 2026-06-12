@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Affiche QR Code — RestoPro</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #f1f5f9;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Panneau de contrôle */
+  .controls {
+    background: white;
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    width: 100%;
+    max-width: 700px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .ctrl-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 160px; }
+  .ctrl-group label { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: .5px; }
+  .ctrl-group input, .ctrl-group select {
+    padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px;
+    font-size: 13px; font-family: 'Inter',sans-serif; outline: none; color: #1e293b;
+  }
+  .ctrl-group input:focus, .ctrl-group select:focus { border-color: #3b82f6; }
+  .btn-group { display: flex; gap: 8px; }
+  .btn {
+    padding: 9px 18px; border: none; border-radius: 8px; font-size: 13px;
+    font-weight: 700; cursor: pointer; font-family: 'Inter',sans-serif;
+  }
+  .btn-primary { background: #1e293b; color: white; }
+  .btn-print { background: #10b981; color: white; }
+  .btn-dl { background: #3b82f6; color: white; }
+
+  /* L'affiche elle-même */
+  .affiche-wrap {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  .affiche {
+    width: 340px;
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,.15);
+    page-break-inside: avoid;
+  }
+  .affiche-header {
+    background: #1e293b;
+    padding: 28px 24px 22px;
+    text-align: center;
+    color: white;
+  }
+  .affiche-emoji { font-size: 42px; margin-bottom: 8px; }
+  .affiche-nom {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 800;
+    color: white; margin-bottom: 5px;
+    line-height: 1.2;
+  }
+  .affiche-slogan { font-size: 13px; color: rgba(255,255,255,.65); }
+
+  .affiche-body { padding: 24px; text-align: center; }
+
+  .qr-wrap {
+    background: white;
+    border: 3px solid #1e293b;
+    border-radius: 16px;
+    padding: 14px;
+    display: inline-block;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+  }
+  .qr-wrap img { display: block; border-radius: 6px; }
+
+  .scan-titre {
+    font-size: 20px; font-weight: 800; color: #1e293b;
+    margin-bottom: 6px;
+  }
+  .scan-desc {
+    font-size: 13px; color: #64748b; line-height: 1.6;
+    margin-bottom: 18px;
+  }
+
+  .steps {
+    background: #f8fafc; border-radius: 12px;
+    padding: 14px 16px; text-align: left; margin-bottom: 18px;
+  }
+  .step {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 0; font-size: 12px; color: #374151;
+  }
+  .step + .step { border-top: 1px solid #e5e7eb; }
+  .step-num {
+    width: 24px; height: 24px; background: #1e293b; color: white;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 800; flex-shrink: 0;
+  }
+
+  .affiche-footer {
+    border-top: 1px solid #e5e7eb;
+    padding: 12px 24px 20px;
+    text-align: center;
+  }
+  .affiche-url {
+    font-size: 10px; color: #94a3b8;
+    word-break: break-all; margin-top: 4px;
+  }
+  .badge {
+    display: inline-block;
+    background: #ecfdf5; color: #065f46;
+    font-size: 10px; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px;
+    margin-bottom: 6px;
+    border: 1px solid #a7f3d0;
+  }
+
+  /* Print */
+  @media print {
+    body { background: white; padding: 0; justify-content: flex-start; }
+    .controls { display: none !important; }
+    .affiche-wrap { margin-top: 0; }
+    .affiche { box-shadow: none; border: 2px solid #1e293b; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Panneau de contrôle (masqué à l'impression) -->
+<div class="controls">
+  <div class="ctrl-group">
+    <label>Nom du restaurant</label>
+    <input type="text" id="inp-nom" value="Mon Restaurant" oninput="majAffiche()">
+  </div>
+  <div class="ctrl-group">
+    <label>Slogan / Sous-titre</label>
+    <input type="text" id="inp-slogan" value="Scannez pour commander" oninput="majAffiche()">
+  </div>
+  <div class="ctrl-group">
+    <label>Emoji / Icône</label>
+    <input type="text" id="inp-emoji" value="🍽️" oninput="majAffiche()" style="font-size:20px;width:70px">
+  </div>
+  <div class="ctrl-group">
+    <label>Couleur fond</label>
+    <input type="color" id="inp-couleur" value="#1e293b" oninput="majCouleur()" style="height:38px;cursor:pointer">
+  </div>
+  <div class="btn-group" style="align-self:flex-end">
+    <button class="btn btn-print" onclick="window.print()">🖨️ Imprimer</button>
+    <button class="btn btn-dl" onclick="telechargerQR()">⬇️ QR PNG</button>
+  </div>
+</div>
+
+<!-- L'AFFICHE -->
+<div class="affiche-wrap">
+  <div class="affiche" id="affiche">
+
+    <div class="affiche-header" id="affiche-header">
+      <div class="affiche-emoji" id="aff-emoji">🍽️</div>
+      <div class="affiche-nom" id="aff-nom">Mon Restaurant</div>
+      <div class="affiche-slogan" id="aff-slogan">Scannez pour commander</div>
+    </div>
+
+    <div class="affiche-body">
+      <div class="qr-wrap">
+        <img id="qr-img"
+          src="https://chart.googleapis.com/chart?chs=220x220&cht=qr&chl=https%3A%2F%2Fsanteplus.online%2Frestopro.html%3Fclient%3D1&choe=UTF-8&chld=H|2"
+          width="220" height="220" alt="QR Code">
+      </div>
+
+      <div class="scan-titre">📱 Scannez-moi !</div>
+      <div class="scan-desc">
+        Consultez notre menu et passez<br>
+        votre commande directement<br>
+        depuis votre smartphone
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <span>Ouvrez l'appareil photo de votre téléphone</span>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <span>Pointez vers le QR Code ci-dessus</span>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <span>Choisissez vos plats et validez</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="affiche-footer">
+      <div class="badge">✅ Sans application à installer</div>
+      <div class="affiche-url">santeplus.online/restopro.html?client=1</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var URL_CLIENT = 'https://santeplus.online/restopro.html?client=1';
+
+function majAffiche(){
+  document.getElementById('aff-nom').textContent    = document.getElementById('inp-nom').value    || 'Mon Restaurant';
+  document.getElementById('aff-slogan').textContent = document.getElementById('inp-slogan').value || 'Scannez pour commander';
+  document.getElementById('aff-emoji').textContent  = document.getElementById('inp-emoji').value  || '🍽️';
+}
+
+function majCouleur(){
+  var col = document.getElementById('inp-couleur').value;
+  document.getElementById('affiche-header').style.background = col;
+  document.querySelectorAll('.step-num').forEach(function(el){ el.style.background = col; });
+}
+
+function telechargerQR(){
+  var a = document.createElement('a');
+  a.href = 'https://chart.googleapis.com/chart?chs=500x500&cht=qr&chl='
+    + encodeURIComponent(URL_CLIENT)
+    + '&choe=UTF-8&chld=H|2';
+  a.target = '_blank';
+  a.download = 'qr-restopro.png';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+</script>
+</body>
+</html>

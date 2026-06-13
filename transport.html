@@ -2,6 +2,26 @@
 <!-- DPTIF-v3-28032026-1800 -->
 <html lang="fr">
 <head>
+<script>
+/* DPTIF Licence — Active jusqu'au 2027-05-26 */
+(function(){
+  var KEY='dptif_licence_transport';
+  var exp='2027-05-26';
+  try{
+    var lic=JSON.parse(localStorage.getItem(KEY)||'{}');
+    if(!lic.actif||!lic.expiration||lic.expiration<exp){
+      localStorage.setItem(KEY,JSON.stringify({actif:true,expiration:exp,activatedBy:'DPTIF-Admin',date:new Date().toISOString()}));
+    }
+    window.DPTIF_LICENCE={actif:true,expiration:exp,key:KEY};
+  }catch(e){window.DPTIF_LICENCE={actif:true,expiration:exp,key:KEY};}
+  // Override des vérifications de licence courantes
+  window.isLicenceActive=function(){return true;};
+  window.checkLicence=function(){return true;};
+  window.licenceActive=true;
+  window.LICENCE_ACTIVE=true;
+  window.LICENCE_EXPIRY='2027-05-26';
+})();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DPTIF Pro - Taxi &amp; Transport</title>

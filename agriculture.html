@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<script>
+/* DPTIF Licence — Active jusqu'au 2027-05-26 */
+(function(){
+  var KEY='dptif_licence_agriculture';
+  var exp='2027-05-26';
+  try{
+    var lic=JSON.parse(localStorage.getItem(KEY)||'{}');
+    if(!lic.actif||!lic.expiration||lic.expiration<exp){
+      localStorage.setItem(KEY,JSON.stringify({actif:true,expiration:exp,activatedBy:'DPTIF-Admin',date:new Date().toISOString()}));
+    }
+    window.DPTIF_LICENCE={actif:true,expiration:exp,key:KEY};
+  }catch(e){window.DPTIF_LICENCE={actif:true,expiration:exp,key:KEY};}
+  // Override des vérifications de licence courantes
+  window.isLicenceActive=function(){return true;};
+  window.checkLicence=function(){return true;};
+  window.licenceActive=true;
+  window.LICENCE_ACTIVE=true;
+  window.LICENCE_EXPIRY='2027-05-26';
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgroSmart Pro — Agriculture Intelligente</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&family=Syne:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#05100a;--surf:#0a1a0f;--surf2:#0f2416;--surf3:#142d1b;
+  --acc:#22c55e;--acc2:#f59e0b;--acc3:#3b82f6;--acc4:#8b5cf6;
+  --red:#ef4444;--bdr:rgba(34,197,94,.18);
+  --txt:#e8f5e9;--txt2:#86a892;--txt3:#3d6b4a;
+  --radius:14px;--shadow:0 8px 32px rgba(0,0,0,.5);
+}
+html,body{min-height:100vh;font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt)}
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ── Sidebar ── */
+.sidebar{width:252px;background:var(--surf);border-right:1px solid var(--bdr);
+  display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto}
+.sidebar-logo{padding:18px 16px;border-bottom:1px solid var(--bdr);
+  background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(245,158,11,.05))}
+.logo-icon{font-size:32px;margin-bottom:4px}
+.logo-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:900;
+  color:var(--acc);letter-spacing:-.3px}
+.logo-sub{font-size:10px;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.nav-sec{padding:12px 16px 4px;font-size:9px;font-weight:700;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:1.2px}
+.nav-item{width:100%;padding:9px 16px;border:none;background:transparent;
+  color:var(--txt2);text-align:left;cursor:pointer;font-size:13px;font-weight:500;
+  display:flex;align-items:center;gap:10px;transition:all .2s;
+  border-left:3px solid transparent}
+.nav-item:hover{background:rgba(34,197,94,.07);color:var(--txt)}
+.nav-item.active{background:rgba(34,197,94,.12);color:var(--acc);
+  border-left-color:var(--acc);font-weight:700}
+.nav-icon{font-size:15px;width:20px;text-align:center}
+.nav-badge{margin-left:auto;background:var(--acc);color:#000;font-size:9px;
+  font-weight:900;padding:2px 6px;border-radius:10px;min-width:18px;text-align:center}
+
+/* ── Main ── */
+.main{flex:1;overflow-y:auto;background:var(--bg)}
+.page{display:none;padding:24px}.page.active{display:block}
+.page-hdr{display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:22px;flex-wrap:wrap;gap:10px}
+.page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:900}
+.page-sub{font-size:13px;color:var(--txt2);margin-top:3px}
+
+/* ── Stats ── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.stat-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--radius);
+  padding:16px;transition:transform .2s;cursor:default}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-icon{font-size:28px;margin-bottom:6px}
+.stat-val{font-size:24px;font-weight:900;margin-bottom:2px}
+.stat-lbl{font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.5px}
+
+/* ── Cards ── */
+.card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--radius);margin-bottom:16px}
+.card-hdr{padding:14px 18px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.card-title{font-size:14px;font-weight:800}
+.card-body{padding:16px 18px}
+
+/* ── Culture cards ── */
+.cultures-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.culture-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);
+  overflow:hidden;transition:all .25s;cursor:pointer}
+.culture-card:hover{border-color:var(--acc);transform:translateY(-4px);box-shadow:0 12px 30px rgba(34,197,94,.12)}
+.culture-banner{height:130px;display:flex;align-items:center;justify-content:center;
+  font-size:60px;position:relative}
+.culture-season{position:absolute;top:8px;right:8px;padding:3px 9px;border-radius:20px;
+  font-size:10px;font-weight:700;background:rgba(0,0,0,.5);color:#fff}
+.culture-body{padding:14px}
+.culture-cat{font-size:10px;font-weight:700;color:var(--acc);
+  text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.culture-name{font-size:15px;font-weight:800;margin-bottom:4px}
+.culture-meta{font-size:12px;color:var(--txt2);display:flex;gap:10px;flex-wrap:wrap}
+.culture-footer{padding:10px 14px;border-top:1px solid var(--bdr);display:flex;gap:6px}
+
+/* ── Tableau ── */
+.table-wrap{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--radius);
+  overflow:hidden;margin-bottom:16px}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 14px;font-size:11px;font-weight:700;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:.4px;text-align:left;
+  background:var(--surf2);border-bottom:1px solid var(--bdr)}
+td{padding:10px 14px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(34,197,94,.03)}
+
+/* ── Forms ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-full{grid-column:1/-1}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-lbl{font-size:11px;font-weight:700;color:var(--txt3);text-transform:uppercase;letter-spacing:.4px}
+.form-inp{padding:10px 12px;background:var(--surf2);border:1px solid var(--bdr);
+  border-radius:9px;color:var(--txt);font-size:13px;font-family:inherit;width:100%}
+.form-inp:focus{outline:none;border-color:var(--acc)}
+select.form-inp option{background:var(--surf)}
+
+/* ── Boutons ── */
+.btn{padding:9px 16px;border-radius:9px;border:none;cursor:pointer;font-size:13px;
+  font-weight:700;display:inline-flex;align-items:center;gap:7px;transition:opacity .2s}
+.btn:hover{opacity:.85}
+.btn-primary{background:linear-gradient(135deg,var(--acc),#16a34a);color:#000}
+.btn-secondary{background:rgba(34,197,94,.1);color:var(--acc);border:1px solid var(--bdr)}
+.btn-gold{background:rgba(245,158,11,.1);color:var(--acc2);border:1px solid rgba(245,158,11,.2)}
+.btn-blue{background:rgba(59,130,246,.1);color:var(--acc3);border:1px solid rgba(59,130,246,.2)}
+.btn-danger{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.btn-sm{padding:5px 11px;font-size:11px;border-radius:7px}
+
+/* ── Tabs ── */
+.tabs{display:flex;gap:4px;background:var(--surf2);border-radius:10px;padding:4px;
+  margin-bottom:16px;flex-wrap:wrap}
+.tab{padding:7px 14px;border-radius:7px;border:none;background:transparent;
+  color:var(--txt2);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.tab.active{background:var(--acc);color:#000;font-weight:800}
+
+/* ── Badges ── */
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.badge-green{background:rgba(34,197,94,.15);color:var(--acc)}
+.badge-gold{background:rgba(245,158,11,.15);color:var(--acc2)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+.badge-blue{background:rgba(59,130,246,.15);color:var(--acc3)}
+.badge-purple{background:rgba(139,92,246,.15);color:var(--acc4)}
+
+/* ── Alert boxes ── */
+.alert{padding:12px 16px;border-radius:10px;font-size:13px;margin-bottom:12px;line-height:1.6}
+.alert-green{background:rgba(34,197,94,.08);border-left:4px solid var(--acc);border:1px solid rgba(34,197,94,.2)}
+.alert-gold{background:rgba(245,158,11,.08);border-left:4px solid var(--acc2);border:1px solid rgba(245,158,11,.2)}
+.alert-red{background:rgba(239,68,68,.08);border-left:4px solid var(--red);border:1px solid rgba(239,68,68,.2)}
+.alert-blue{background:rgba(59,130,246,.08);border-left:4px solid var(--acc3);border:1px solid rgba(59,130,246,.2)}
+
+/* ── Timeline ── */
+.timeline{border-left:2px solid var(--bdr);margin-left:10px;padding-left:20px}
+.tl-item{position:relative;padding:10px 0;margin-bottom:6px}
+.tl-item::before{content:'';width:12px;height:12px;border-radius:50%;
+  background:var(--acc);position:absolute;left:-27px;top:14px;border:2px solid var(--bg)}
+.tl-item.pending::before{background:var(--acc2)}
+.tl-item.late::before{background:var(--red)}
+.tl-date{font-size:11px;color:var(--txt3);margin-bottom:3px}
+.tl-title{font-size:13px;font-weight:700}
+.tl-desc{font-size:12px;color:var(--txt2);margin-top:2px}
+
+/* ── Progression ── */
+.progress-bar{height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;margin:6px 0}
+.progress-fill{height:100%;border-radius:4px;transition:width .6s}
+
+/* ── Maladie card ── */
+.maladie-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);
+  padding:16px;margin-bottom:10px;cursor:pointer;transition:all .2s}
+.maladie-card:hover{border-color:var(--red)}
+.maladie-card.expanded{border-color:var(--red)}
+.maladie-hdr{display:flex;align-items:center;gap:12px}
+.maladie-icon{font-size:28px;flex-shrink:0}
+.maladie-body{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--bdr)}
+.maladie-body.show{display:block}
+
+/* ── Conseil card ── */
+.conseil-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);
+  padding:16px;height:100%}
+.conseil-icon{font-size:32px;margin-bottom:10px}
+.conseil-title{font-size:14px;font-weight:800;margin-bottom:6px}
+.conseil-text{font-size:12px;color:var(--txt2);line-height:1.7}
+
+/* ── Tutoriel card ── */
+.tuto-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);
+  overflow:hidden;transition:all .2s;cursor:pointer}
+.tuto-card:hover{border-color:var(--acc);transform:translateY(-3px)}
+.tuto-banner{height:100px;display:flex;align-items:center;justify-content:center;font-size:44px}
+.tuto-body{padding:14px}
+.tuto-tag{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;
+  font-weight:700;background:rgba(34,197,94,.12);color:var(--acc);margin-bottom:6px}
+.tuto-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.tuto-desc{font-size:12px;color:var(--txt2);line-height:1.5}
+
+/* ── Modal ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);
+  z-index:1000;align-items:center;justify-content:center;padding:16px}
+.modal-bg.open{display:flex}
+.modal-box{background:var(--surf);border-radius:18px;width:100%;max-width:640px;
+  max-height:90vh;overflow-y:auto;border:1px solid var(--bdr)}
+.modal-hdr{padding:18px 20px;border-bottom:1px solid var(--bdr);
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;background:var(--surf);z-index:1}
+.modal-title{font-size:16px;font-weight:900}
+.modal-close{background:none;border:none;color:var(--txt3);font-size:20px;cursor:pointer}
+.modal-body{padding:20px}
+.modal-footer{padding:14px 20px;border-top:1px solid var(--bdr);
+  display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--surf)}
+
+/* ── Sol analyseur ── */
+.sol-meter{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.sol-label{font-size:12px;font-weight:700;margin-bottom:6px;display:flex;justify-content:space-between}
+.sol-bar{height:14px;background:rgba(255,255,255,.06);border-radius:7px;overflow:hidden}
+.sol-fill{height:100%;border-radius:7px;transition:width .8s}
+
+/* ── Plan calendrier ── */
+.cal-cultures{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;margin-bottom:8px}
+.cal-month{font-size:10px;text-align:center;color:var(--txt3);font-weight:700}
+.cal-bar{height:20px;border-radius:4px;transition:all .3s}
+.cal-bar.active{background:var(--acc);opacity:.8}
+.cal-bar.harvest{background:var(--acc2);opacity:.9}
+.cal-bar.empty{background:rgba(255,255,255,.04)}
+
+/* ── IA Chat ── */
+.ia-container{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);
+  display:flex;flex-direction:column;height:480px}
+.ia-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.ia-msg-user{align-self:flex-end;background:var(--acc);color:#000;
+  padding:9px 14px;border-radius:14px 14px 3px 14px;font-size:13px;max-width:80%;font-weight:600}
+.ia-msg-bot{align-self:flex-start;background:var(--surf3);color:var(--txt);
+  padding:9px 14px;border-radius:14px 14px 14px 3px;font-size:13px;max-width:88%;line-height:1.7;white-space:pre-line}
+.ia-typing{display:flex;gap:4px;align-items:center;padding:9px 14px}
+.ia-typing span{width:7px;height:7px;border-radius:50%;background:var(--acc);
+  animation:bounce .6s infinite alternate}
+.ia-typing span:nth-child(2){animation-delay:.2s}
+.ia-typing span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{to{transform:translateY(-6px);opacity:.5}}
+.ia-bar{padding:12px 16px;border-top:1px solid var(--bdr);display:flex;gap:8px}
+.ia-inp{flex:1;padding:10px 14px;background:var(--surf);border:1px solid var(--bdr);
+  border-radius:10px;color:var(--txt);font-size:13px;font-family:inherit}
+.ia-inp:focus{outline:none;border-color:var(--acc)}
+
+/* ── Toast ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--surf);border:1px solid var(--bdr);padding:10px 22px;
+  border-radius:10px;font-size:13px;font-weight:600;z-index:9999;
+  transition:transform .3s;box-shadow:var(--shadow)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── Engrais / Compost ── */
+.recipe-card{background:var(--surf2);border:1px solid var(--bdr);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.recipe-steps{counter-reset:step}
+.recipe-step{display:flex;gap:12px;margin-bottom:10px;align-items:flex-start}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--acc);color:#000;
+  font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+
+@media(max-width:700px){
+  .sidebar{width:200px}
+  .form-grid{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .cultures-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══ SIDEBAR ══ -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🌱</div>
+    <div class="logo-title">AgroSmart Pro</div>
+    <div class="logo-sub">Agriculture Intelligente</div>
+  </div>
+
+  <div class="nav-sec">🏠 Accueil</div>
+  <button class="nav-item active" onclick="showPage('dashboard',this)">
+    <span class="nav-icon">🏡</span> Tableau de bord
+  </button>
+
+  <div class="nav-sec">🌾 Cultures</div>
+  <button class="nav-item" onclick="showPage('cultures',this)">
+    <span class="nav-icon">🌿</span> Mes cultures <span class="nav-badge" id="badge-cultures">0</span>
+  </button>
+  <button class="nav-item" onclick="showPage('cereales',this)">
+    <span class="nav-icon">🌾</span> Céréales & Légumes
+  </button>
+  <button class="nav-item" onclick="showPage('horsol',this)">
+    <span class="nav-icon">💧</span> Culture Hors-Sol
+  </button>
+  <button class="nav-item" onclick="showPage('pepiniere',this)">
+    <span class="nav-icon">🌱</span> Pépinière
+  </button>
+  <button class="nav-item" onclick="showPage('calendrier',this)">
+    <span class="nav-icon">📅</span> Calendrier Cultural
+  </button>
+
+  <div class="nav-sec">🏥 Santé des plantes</div>
+  <button class="nav-item" onclick="showPage('maladies',this)">
+    <span class="nav-icon">🦠</span> Maladies & Traitements
+  </button>
+  <button class="nav-item" onclick="showPage('sol',this)">
+    <span class="nav-icon">🪨</span> Traitement du Sol
+  </button>
+  <button class="nav-item" onclick="showPage('engrais',this)">
+    <span class="nav-icon">♻️</span> Engrais Bio & Compost
+  </button>
+
+  <div class="nav-sec">📚 Formation</div>
+  <button class="nav-item" onclick="showPage('tutoriels',this)">
+    <span class="nav-icon">🎓</span> Tutoriels
+  </button>
+  <button class="nav-item" onclick="showPage('secrets',this)">
+    <span class="nav-icon">✨</span> Secrets & Astuces
+  </button>
+  <button class="nav-item" onclick="showPage('plans',this)">
+    <span class="nav-icon">📐</span> Plans Techniques
+  </button>
+
+  <div class="nav-sec">🤖 Outils</div>
+  <button class="nav-item" onclick="showPage('assistant',this)">
+    <span class="nav-icon">🤖</span> Assistant IA Agro
+  </button>
+  <button class="nav-item" onclick="showPage('budget',this)">
+    <span class="nav-icon">💰</span> Budget & Rentabilité
+  </button>
+  <button class="nav-item" onclick="showPage('meteo',this)">
+    <span class="nav-icon">🌦️</span> Météo & Alertes
+  </button>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <div class="page-hdr">
+    <div>
+      <div class="page-title">🏡 Tableau de bord AgroSmart</div>
+      <div class="page-sub" id="dash-date"></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-gold" onclick="showPage('meteo',null)">🌦️ Météo</button>
+      <button class="btn btn-primary" onclick="showPage('cultures',null);setTimeout(ouvrirNouvelleCulture,200)">+ Nouvelle culture</button>
+    </div>
+  </div>
+  <div class="stats-row" id="dash-stats"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">🚨 Alertes urgentes</span></div>
+      <div class="card-body" id="dash-alertes"></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">📅 Tâches du jour</span></div>
+      <div class="card-body" id="dash-taches"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hdr">
+      <span class="card-title">🌿 Mes cultures actives</span>
+      <span id="dash-saison" class="badge badge-green"></span>
+    </div>
+    <div class="card-body" id="dash-cultures"></div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <div class="card-hdr"><span class="card-title">💡 Conseil du jour</span></div>
+    <div class="card-body" id="dash-conseil"></div>
+  </div>
+</div>
+
+<!-- CULTURES -->
+<div class="page" id="page-cultures">
+  <div class="page-hdr">
+    <div><div class="page-title">🌿 Mes Cultures</div><div class="page-sub">Suivi complet de vos parcelles</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="filter-type-culture" onchange="renderCultures()" class="form-inp" style="width:160px">
+        <option value="">Tous types</option>
+        <option>Maraîchage</option><option>Céréale</option><option>Légumineuse</option>
+        <option>Fruit</option><option>Racine/Tubercule</option><option>Hors-sol</option><option>Pépinière</option>
+      </select>
+      <button class="btn btn-primary" onclick="ouvrirNouvelleCulture()">+ Ajouter parcelle</button>
+    </div>
+  </div>
+  <div class="cultures-grid" id="cultures-grid"></div>
+</div>
+
+<!-- CÉRÉALES & LÉGUMES -->
+<div class="page" id="page-cereales">
+  <div class="page-hdr"><div><div class="page-title">🌾 Céréales & Légumes</div><div class="page-sub">Guide de production par espèce</div></div></div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('cereales_tab',this,'cereales_content')">🌾 Céréales</button>
+    <button class="tab" onclick="switchTab('legumes_tab',this,'cereales_content')">🥬 Légumes</button>
+    <button class="tab" onclick="switchTab('legumineuses_tab',this,'cereales_content')">🫘 Légumineuses</button>
+    <button class="tab" onclick="switchTab('racines_tab',this,'cereales_content')">🥕 Racines</button>
+    <button class="tab" onclick="switchTab('fruits_tab',this,'cereales_content')">🍅 Fruits</button>
+  </div>
+  <div id="cereales_content"></div>
+</div>
+
+<!-- HORS-SOL -->
+<div class="page" id="page-horsol">
+  <div class="page-hdr"><div><div class="page-title">💧 Agriculture Hors-Sol</div><div class="page-sub">Hydroponique, Aquaponique, Aéroponique</div></div></div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchHSTab('hydro',this)">💧 Hydroponique</button>
+    <button class="tab" onclick="switchHSTab('aqua',this)">🐟 Aquaponique</button>
+    <button class="tab" onclick="switchHSTab('aero',this)">💨 Aéroponique</button>
+    <button class="tab" onclick="switchHSTab('montage',this)">🔧 Montage & Plans</button>
+  </div>
+  <div id="horsol-content"></div>
+</div>
+
+<!-- PÉPINIÈRE -->
+<div class="page" id="page-pepiniere">
+  <div class="page-hdr">
+    <div><div class="page-title">🌱 Pépinière</div><div class="page-sub">Germination, semis, repiquage</div></div>
+    <button class="btn btn-primary" onclick="ouvrirSemis()">+ Nouveau semis</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">🌱 Semis en cours</span></div>
+      <div class="card-body" id="pepiniere-semis"></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">📊 Taux de germination</span></div>
+      <div class="card-body" id="pepiniere-stats"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-hdr"><span class="card-title">📋 Guide de germination par espèce</span></div>
+    <div class="card-body" id="germination-guide"></div>
+  </div>
+</div>
+
+<!-- CALENDRIER -->
+<div class="page" id="page-calendrier">
+  <div class="page-hdr"><div><div class="page-title">📅 Calendrier Cultural</div><div class="page-sub">Planification optimale de vos semis et récoltes</div></div></div>
+  <div id="calendrier-content"></div>
+</div>
+
+<!-- MALADIES -->
+<div class="page" id="page-maladies">
+  <div class="page-hdr">
+    <div><div class="page-title">🦠 Maladies & Traitements</div><div class="page-sub">Identification, prévention, traitement bio et chimique</div></div>
+    <input id="search-maladie" oninput="renderMaladies()" placeholder="🔍 Rechercher maladie ou plante..." class="form-inp" style="width:220px">
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchMaladieTab('toutes',this)">Toutes</button>
+    <button class="tab" onclick="switchMaladieTab('fongique',this)">🍄 Fongiques</button>
+    <button class="tab" onclick="switchMaladieTab('bacterienne',this)">🦠 Bactériennes</button>
+    <button class="tab" onclick="switchMaladieTab('virale',this)">🧬 Virales</button>
+    <button class="tab" onclick="switchMaladieTab('ravageur',this)">🐛 Ravageurs</button>
+    <button class="tab" onclick="switchMaladieTab('carence',this)">⚗️ Carences</button>
+  </div>
+  <div id="maladies-content"></div>
+</div>
+
+<!-- SOL -->
+<div class="page" id="page-sol">
+  <div class="page-hdr"><div><div class="page-title">🪨 Traitement du Sol</div><div class="page-sub">Analyse, correction, amélioration, amendements</div></div></div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchSolTab('analyse',this)">🔬 Analyse</button>
+    <button class="tab" onclick="switchSolTab('types',this)">🏔️ Types de sol</button>
+    <button class="tab" onclick="switchSolTab('correction',this)">⚗️ Corrections</button>
+    <button class="tab" onclick="switchSolTab('rotation',this)">🔄 Rotation</button>
+  </div>
+  <div id="sol-content"></div>
+</div>
+
+<!-- ENGRAIS -->
+<div class="page" id="page-engrais">
+  <div class="page-hdr"><div><div class="page-title">♻️ Engrais Bio & Compost</div><div class="page-sub">Fabrication naturelle pour un sol vivant</div></div></div>
+  <div class="tabs">
+    <button class="tab active" onclick="switchEngraisTab('compost',this)">♻️ Compost</button>
+    <button class="tab" onclick="switchEngraisTab('lisier',this)">💧 Purins & Lisiers</button>
+    <button class="tab" onclick="switchEngraisTab('biochar',this)">🔥 Biochar</button>
+    <button class="tab" onclick="switchEngraisTab('vermi',this)">🪱 Lombricompost</button>
+    <button class="tab" onclick="switchEngraisTab('naturels',this)">🌿 Engrais verts</button>
+  </div>
+  <div id="engrais-content"></div>
+</div>
+
+<!-- TUTORIELS -->
+<div class="page" id="page-tutoriels">
+  <div class="page-hdr"><div><div class="page-title">🎓 Tutoriels & Formation</div><div class="page-sub">Guides pratiques et ressources pédagogiques</div></div></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px" id="tutoriels-grid"></div>
+</div>
+
+<!-- SECRETS -->
+<div class="page" id="page-secrets">
+  <div class="page-hdr"><div><div class="page-title">✨ Secrets & Astuces Pro</div><div class="page-sub">Techniques avancées des maîtres-agriculteurs</div></div></div>
+  <div id="secrets-content"></div>
+</div>
+
+<!-- PLANS TECHNIQUES -->
+<div class="page" id="page-plans">
+  <div class="page-hdr"><div><div class="page-title">📐 Plans Techniques</div><div class="page-sub">Schémas d'installation et d'aménagement</div></div></div>
+  <div id="plans-content"></div>
+</div>
+
+<!-- ASSISTANT IA -->
+<div class="page" id="page-assistant">
+  <div class="page-hdr"><div><div class="page-title">🤖 Assistant IA Agricole</div><div class="page-sub">Conseils personnalisés basés sur vos données</div></div></div>
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px">
+    <div class="ia-container">
+      <div class="ia-msgs" id="ia-msgs">
+        <div class="ia-msg-bot">🌱 Bonjour ! Je suis votre assistant agricole intelligent.
+
+Je peux vous aider sur : identification de maladies, conseils de culture, calcul d'engrais, planification des semis, techniques hors-sol, et bien plus !
+
+Décrivez votre problème ou posez votre question 👇</div>
+      </div>
+      <div class="ia-bar">
+        <input class="ia-inp" id="ia-inp" placeholder="Posez votre question agricole..." onkeydown="if(event.key==='Enter')envoyerIA()">
+        <button class="btn btn-primary" onclick="envoyerIA()">➤</button>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--txt2)">💬 Questions rapides</div>
+      <div style="display:flex;flex-direction:column;gap:7px" id="quick-agro"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BUDGET -->
+<div class="page" id="page-budget">
+  <div class="page-hdr"><div><div class="page-title">💰 Budget & Rentabilité</div><div class="page-sub">Analyse financière de votre exploitation</div></div></div>
+  <div class="stats-row" id="budget-stats"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <div class="card">
+      <div class="card-hdr">
+        <span class="card-title">📊 Calculateur de rentabilité</span>
+      </div>
+      <div class="card-body" id="budget-calc"></div>
+    </div>
+    <div class="card">
+      <div class="card-hdr"><span class="card-title">💹 Analyse par culture</span></div>
+      <div class="card-body" id="budget-analyse"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MÉTÉO -->
+<div class="page" id="page-meteo">
+  <div class="page-hdr"><div><div class="page-title">🌦️ Météo & Alertes Agricoles</div></div></div>
+  <div id="meteo-content"></div>
+</div>
+
+</div><!-- fin .main -->
+</div><!-- fin .app -->
+
+<!-- MODALS -->
+<div class="modal-bg" id="modal-culture">
+  <div class="modal-box">
+    <div class="modal-hdr">
+      <div class="modal-title" id="modal-culture-title">🌿 Nouvelle culture</div>
+      <button class="modal-close" onclick="closeModal('modal-culture')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="cult-id">
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-lbl">Culture / Espèce *</label>
+          <input id="cult-nom" class="form-inp" placeholder="Ex: Tomate, Maïs, Laitue...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Type *</label>
+          <select id="cult-type" class="form-inp">
+            <option>Maraîchage</option><option>Céréale</option><option>Légumineuse</option>
+            <option>Fruit</option><option>Racine/Tubercule</option>
+            <option>Hors-sol</option><option>Pépinière</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Variété / Cultivar</label>
+          <input id="cult-variete" class="form-inp" placeholder="Ex: Roma, Azalai...">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Surface (m²)</label>
+          <input type="number" id="cult-surface" class="form-inp" placeholder="Ex: 500">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Date de semis</label>
+          <input type="date" id="cult-semis" class="form-inp">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Récolte prévue</label>
+          <input type="date" id="cult-recolte" class="form-inp">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Densité semis</label>
+          <input id="cult-densite" class="form-inp" placeholder="Ex: 30×40 cm">
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Irrigation</label>
+          <select id="cult-irrigation" class="form-inp">
+            <option>Goutte à goutte</option><option>Aspersion</option>
+            <option>Submersion</option><option>Manuelle</option><option>Pluie naturelle</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Stade actuel</label>
+          <select id="cult-stade" class="form-inp">
+            <option>Semis</option><option>Germination</option><option>Levée</option>
+            <option>Croissance végétative</option><option>Floraison</option>
+            <option>Fructification</option><option>Maturation</option><option>Récolte</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-lbl">Statut sanitaire</label>
+          <select id="cult-sante" class="form-inp">
+            <option value="sain">✅ Saine</option>
+            <option value="surveillance">⚠️ Sous surveillance</option>
+            <option value="malade">🔴 Malade</option>
+            <option value="traitement">💊 En traitement</option>
+          </select>
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Engrais / Amendement utilisé</label>
+          <input id="cult-engrais" class="form-inp" placeholder="Ex: Compost maison, NPK 15-15-15...">
+        </div>
+        <div class="form-group form-full">
+          <label class="form-lbl">Notes / Observations</label>
+          <textarea id="cult-notes" class="form-inp" rows="2" placeholder="Observations, problèmes rencontrés..."></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-culture')">Annuler</button>
+      <button class="btn btn-primary" onclick="sauvegarderCulture()">💾 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+// AGROSMART PRO — Agriculture Intelligente v1.0
+// ══════════════════════════════════════════════════════════════════
+
+var DB = {
+  cultures     : JSON.parse(localStorage.getItem('agro_cultures')  || '[]'),
+  semis        : JSON.parse(localStorage.getItem('agro_semis')     || '[]'),
+  traitements  : JSON.parse(localStorage.getItem('agro_traitements')|| '[]'),
+  recoltes     : JSON.parse(localStorage.getItem('agro_recoltes')  || '[]'),
+  finances     : JSON.parse(localStorage.getItem('agro_finances')  || '[]'),
+  solAnalyses  : JSON.parse(localStorage.getItem('agro_sol')       || '[]'),
+};
+if(!DB.cultures.length) chargerDemo();
+
+function saveAll(){Object.keys(DB).forEach(function(k){try{localStorage.setItem('agro_'+k,JSON.stringify(DB[k]));}catch(e){}});}
+function genId(){return Date.now();}
+function today(){return new Date().toISOString().split('T')[0];}
+function fmtNum(n){return Number(n||0).toLocaleString('fr-FR');}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+var _tt;
+function toast(msg){var el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(function(){el.classList.remove('show');},3200);}
+
+function chargerDemo(){
+  DB.cultures=[
+    {id:1,nom:'Tomate',type:'Maraîchage',variete:'Roma F1',surface:200,semis:'2026-02-15',recolte:'2026-05-20',irrigation:'Goutte à goutte',stade:'Fructification',sante:'sain',engrais:'Compost + NPK',notes:'Belle croissance'},
+    {id:2,nom:'Maïs',type:'Céréale',variete:'EVDT-99',surface:1000,semis:'2026-03-01',recolte:'2026-07-01',irrigation:'Pluie naturelle',stade:'Croissance végétative',sante:'sain',engrais:'Urée + compost',notes:''},
+    {id:3,nom:'Laitue',type:'Maraîchage',variete:'Batavia',surface:80,semis:'2026-03-10',recolte:'2026-04-15',irrigation:'Aspersion',stade:'Floraison',sante:'surveillance',engrais:'Purin d\'ortie',notes:'Début de mildiou à surveiller'},
+    {id:4,nom:'Haricot vert',type:'Légumineuse',variete:'Manoa',surface:150,semis:'2026-02-20',recolte:'2026-04-30',irrigation:'Manuelle',stade:'Fructification',sante:'sain',engrais:'Rhizobium bio',notes:''},
+    {id:5,nom:'Piment',type:'Maraîchage',variete:'Doux long',surface:100,semis:'2026-01-15',recolte:'2026-04-10',irrigation:'Goutte à goutte',stade:'Maturation',sante:'malade',engrais:'NPK 10-10-10',notes:'Attaque pucerons en cours'},
+  ];
+  DB.semis=[
+    {id:1,espece:'Tomate Cherry',date:today(),substrat:'Tourbe + sable',nb:200,germination:0,stade:'Semis',repiquage:'',notes:''},
+    {id:2,espece:'Poivron',date:'2026-03-05',substrat:'Terreau pro',nb:150,germination:85,stade:'Levée',repiquage:'2026-03-25',notes:'Excellent taux'},
+  ];
+  saveAll();
+}
+
+// ── Navigation ──────────────────────────────────────────────────
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(b){b.classList.remove('active');});
+  var pg=document.getElementById('page-'+id); if(pg) pg.classList.add('active');
+  if(btn) btn.classList.add('active');
+  var r={
+    dashboard:renderDashboard, cultures:renderCultures, cereales:renderCereales,
+    horsol:renderHorSol, pepiniere:renderPepiniere, calendrier:renderCalendrier,
+    maladies:function(){renderMaladies('toutes');}, sol:function(){renderSol('analyse');},
+    engrais:function(){renderEngrais('compost');}, tutoriels:renderTutoriels,
+    secrets:renderSecrets, plans:renderPlans, assistant:renderAssistant,
+    budget:renderBudget, meteo:renderMeteo,
+  };
+  if(r[id]) r[id]();
+}
+
+// ── DASHBOARD ───────────────────────────────────────────────────
+function renderDashboard(){
+  document.getElementById('dash-date').textContent=
+    new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  var actives=DB.cultures.filter(function(c){return c.stade!=='Récolte';});
+  var malades=DB.cultures.filter(function(c){return c.sante==='malade'||c.sante==='surveillance';});
+  var prochaines=DB.cultures.filter(function(c){
+    if(!c.recolte)return false;
+    var diff=(new Date(c.recolte)-new Date())/86400000;
+    return diff>=0&&diff<=14;
+  });
+  var totalSurf=DB.cultures.reduce(function(s,c){return s+Number(c.surface||0);},0);
+
+  document.getElementById('dash-stats').innerHTML=
+    mkStat('🌿',actives.length,'Parcelles actives','var(--acc)')+
+    mkStat('🦠',malades.length,'Sous surveillance','var(--red)')+
+    mkStat('🌾',prochaines.length,'Récoltes <14j','var(--acc2)')+
+    mkStat('📐',fmtNum(totalSurf)+' m²','Surface totale','var(--acc3)')+
+    mkStat('🌱',DB.semis.length,'Semis pépinière','var(--acc4)')+
+    mkStat('♻️','Bio','Mode culture','var(--acc)');
+
+  document.getElementById('badge-cultures').textContent=DB.cultures.length;
+
+  // Alertes
+  var altEl=document.getElementById('dash-alertes');
+  var html='';
+  malades.forEach(function(c){
+    html+='<div class="alert alert-'+(c.sante==='malade'?'red':'gold')+'" style="margin-bottom:6px;padding:8px 12px">'
+      +(c.sante==='malade'?'🔴':'⚠️')+' <strong>'+c.nom+'</strong> — '+c.stade
+      +(c.notes?' : '+c.notes:'')+'</div>';
+  });
+  prochaines.forEach(function(c){
+    var diff=Math.round((new Date(c.recolte)-new Date())/86400000);
+    html+='<div class="alert alert-green" style="margin-bottom:6px;padding:8px 12px">'
+      +'🌾 <strong>'+c.nom+'</strong> — Récolte dans '+diff+' jour(s) ('+c.recolte+')</div>';
+  });
+  altEl.innerHTML=html||'<div style="color:var(--txt3);text-align:center;padding:20px">✅ Aucune alerte</div>';
+
+  // Tâches du jour
+  var saison=getSaison();
+  document.getElementById('dash-saison').textContent='🗓 '+saison;
+  var taches=[
+    {icon:'💧',task:'Arrosage matinal (6h-8h)',cultures:'Tomate, Laitue, Piment'},
+    {icon:'👁️',task:'Inspection phytosanitaire hebdomadaire',cultures:'Toutes parcelles'},
+    {icon:'✂️',task:'Taille des gourmands',cultures:'Tomate Roma'},
+    {icon:'📊',task:'Mesure pH sol',cultures:'Parcelle Maïs'},
+  ];
+  document.getElementById('dash-taches').innerHTML=taches.map(function(t){
+    return '<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--bdr);font-size:12px">'
+      +'<span style="font-size:18px">'+t.icon+'</span>'
+      +'<div><div style="font-weight:700">'+t.task+'</div>'
+      +'<div style="color:var(--txt3)">'+t.cultures+'</div></div>'
+      +'<input type="checkbox" style="margin-left:auto;width:16px;height:16px;cursor:pointer"></div>';
+  }).join('');
+
+  // Cultures actives résumé
+  document.getElementById('dash-cultures').innerHTML=actives.length?
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px">'
+    +actives.map(function(c){
+      var emoji=cultEmoji(c.nom);
+      var diff=c.recolte?Math.round((new Date(c.recolte)-new Date())/86400000):null;
+      var col=c.sante==='sain'?'var(--acc)':c.sante==='surveillance'?'var(--acc2)':'var(--red)';
+      return '<div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;padding:12px">'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+        +'<span style="font-size:24px">'+emoji+'</span>'
+        +'<div><div style="font-weight:700;font-size:13px">'+c.nom+'</div>'
+        +'<div style="font-size:11px;color:var(--txt2)">'+c.type+'</div></div></div>'
+        +'<div class="progress-bar"><div class="progress-fill" style="width:'+getProgres(c)+'%;background:'+col+'"></div></div>'
+        +'<div style="font-size:11px;color:var(--txt3);margin-top:4px">'
+        +c.stade+(diff!==null?' · Récolte J-'+diff:'')+'</div></div>';
+    }).join('')+'</div>'
+    :'<div style="text-align:center;padding:20px;color:var(--txt3)">Aucune culture active</div>';
+
+  // Conseil du jour
+  var conseils=[
+    '🌅 Arrosez tôt le matin pour réduire l\'évaporation et les risques de maladies fongiques.',
+    '🌿 Un compost bien mûr (6 mois) améliore la structure du sol et libère les nutriments progressivement.',
+    '🐛 Les pucerons fuient la lavande et la menthe — plantez-les en bordure de vos parcelles.',
+    '💧 Un sol bien drainé retient l\'eau plus longtemps qu\'un sol compact. Aérez avec une griffe.',
+    '🌾 Pratiquez la rotation: ne cultivez jamais la même famille dans la même parcelle 2 années consécutives.',
+    '🔬 Le pH idéal pour la majorité des légumes est entre 6.0 et 7.0 — testez votre sol chaque saison.',
+    '☀️ Les tomates ont besoin de 8h de soleil minimum. Orientez vos tuteurs nord-sud pour maximiser l\'ensoleillement.',
+    '♻️ Le lombricompost est 5 fois plus nutritif que le compost ordinaire — produisez-le vous-même.',
+  ];
+  var idx=new Date().getDay();
+  document.getElementById('dash-conseil').innerHTML='<div class="alert alert-green">'+conseils[idx%conseils.length]+'</div>';
+}
+
+function mkStat(icon,val,lbl,col){
+  return '<div class="stat-card"><div class="stat-icon">'+icon+'</div>'
+    +'<div class="stat-val" style="color:'+col+'">'+val+'</div>'
+    +'<div class="stat-lbl">'+lbl+'</div></div>';
+}
+function getSaison(){
+  var m=new Date().getMonth();
+  return m>=11||m<=1?'☀️ Saison sèche':m>=2&&m<=4?'🌱 Début pluies':m>=5&&m<=8?'🌧️ Saison pluvieuse':'🍂 Fin pluies';
+}
+function getProgres(c){
+  if(!c.semis||!c.recolte)return 50;
+  var tot=new Date(c.recolte)-new Date(c.semis);
+  var done=new Date()-new Date(c.semis);
+  return Math.min(100,Math.max(5,Math.round(done/tot*100)));
+}
+var CULT_EMOJI={'Tomate':'🍅','Maïs':'🌽','Laitue':'🥬','Piment':'🌶️','Haricot':'🫘',
+  'Carotte':'🥕','Oignon':'🧅','Ail':'🧄','Aubergine':'🍆','Gombo':'🫑',
+  'Manioc':'🌱','Igname':'🍠','Patate':'🍠','Banane':'🍌','Papaye':'🍈',
+  'Soja':'🫘','Arachide':'🥜','Mil':'🌾','Sorgho':'🌾','Riz':'🍚','Blé':'🌾'};
+function cultEmoji(nom){
+  for(var k in CULT_EMOJI){if(nom.toLowerCase().includes(k.toLowerCase()))return CULT_EMOJI[k];}
+  return '🌿';
+}
+
+// ── CULTURES ────────────────────────────────────────────────────
+function renderCultures(){
+  var filtre=document.getElementById('filter-type-culture').value;
+  var grid=document.getElementById('cultures-grid');
+  var data=DB.cultures.filter(function(c){return !filtre||c.type===filtre;});
+  document.getElementById('badge-cultures').textContent=DB.cultures.length;
+  if(!data.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--txt3)">'
+      +'<div style="font-size:56px;margin-bottom:14px">🌾</div>'
+      +'<div style="font-weight:700;font-size:16px">Aucune culture enregistrée</div>'
+      +'<button class="btn btn-primary" style="margin-top:14px" onclick="ouvrirNouvelleCulture()">+ Ajouter votre première culture</button></div>';
+    return;
+  }
+  grid.innerHTML='';
+  data.forEach(function(c){
+    var emoji=cultEmoji(c.nom);
+    var progres=getProgres(c);
+    var santeMap={'sain':'badge-green','surveillance':'badge-gold','malade':'badge-red','traitement':'badge-blue'};
+    var santeLabel={'sain':'✅ Saine','surveillance':'⚠️ Surveillance','malade':'🔴 Malade','traitement':'💊 Traitement'};
+    var bgMap={Maraîchage:'rgba(34,197,94,.06)',Céréale:'rgba(245,158,11,.06)',
+               Légumineuse:'rgba(139,92,246,.06)','Hors-sol':'rgba(59,130,246,.06)',
+               'Racine/Tubercule':'rgba(234,88,12,.06)'};
+    var card=document.createElement('div');
+    card.className='culture-card';
+    card.innerHTML=
+      '<div class="culture-banner" style="background:'+( bgMap[c.type]||'rgba(34,197,94,.06)')+'">'+emoji
+        +'<span class="culture-season">'+c.stade+'</span></div>'
+      +'<div class="culture-body">'
+        +'<div class="culture-cat">'+c.type+(c.variete?' · '+c.variete:'')+'</div>'
+        +'<div class="culture-name">'+c.nom+'</div>'
+        +'<div class="culture-meta">'
+          +'<span>📐 '+fmtNum(c.surface)+' m²</span>'
+          +'<span>💧 '+c.irrigation+'</span>'
+        +'</div>'
+        +'<span class="badge '+santeMap[c.sante||'sain']+'" style="margin-top:8px;display:inline-block">'+santeLabel[c.sante||'sain']+'</span>'
+        +'<div class="progress-bar"><div class="progress-fill" style="width:'+progres+'%;background:'+(c.sante==='malade'?'var(--red)':'var(--acc)')+'"></div></div>'
+        +'<div style="font-size:11px;color:var(--txt3);margin-top:2px">Progression: '+progres+'%'+(c.recolte?' · Récolte: '+c.recolte:'')+'</div>'
+        +(c.notes?'<div style="font-size:11px;color:var(--txt2);margin-top:4px;font-style:italic">'+c.notes+'</div>':'')
+      +'</div>'
+      +'<div class="culture-footer">'
+        +'<button class="btn btn-secondary btn-sm" data-id="'+c.id+'" onclick="editerCulture(this.dataset.id)">✏️</button>'
+        +'<button class="btn btn-gold btn-sm" data-id="'+c.id+'" onclick="ajouterTraitement(this.dataset.id)">💊 Soin</button>'
+        +'<button class="btn btn-danger btn-sm" data-id="'+c.id+'" onclick="supprimerCulture(this.dataset.id)">🗑</button>'
+      +'</div>';
+    grid.appendChild(card);
+  });
+}
+
+function ouvrirNouvelleCulture(){
+  document.getElementById('cult-id').value='';
+  document.getElementById('modal-culture-title').textContent='🌿 Nouvelle culture';
+  ['cult-nom','cult-variete','cult-densite','cult-engrais','cult-notes'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('cult-surface').value='';
+  document.getElementById('cult-semis').value=today();
+  document.getElementById('cult-recolte').value='';
+  document.getElementById('cult-stade').value='Semis';
+  document.getElementById('cult-sante').value='sain';
+  openModal('modal-culture');
+}
+
+function editerCulture(id){
+  var c=DB.cultures.find(function(x){return String(x.id)===String(id);});if(!c)return;
+  document.getElementById('cult-id').value=c.id;
+  document.getElementById('modal-culture-title').textContent='✏️ Modifier — '+c.nom;
+  document.getElementById('cult-nom').value=c.nom||'';
+  document.getElementById('cult-type').value=c.type||'Maraîchage';
+  document.getElementById('cult-variete').value=c.variete||'';
+  document.getElementById('cult-surface').value=c.surface||'';
+  document.getElementById('cult-semis').value=c.semis||'';
+  document.getElementById('cult-recolte').value=c.recolte||'';
+  document.getElementById('cult-irrigation').value=c.irrigation||'';
+  document.getElementById('cult-stade').value=c.stade||'Semis';
+  document.getElementById('cult-sante').value=c.sante||'sain';
+  document.getElementById('cult-engrais').value=c.engrais||'';
+  document.getElementById('cult-notes').value=c.notes||'';
+  openModal('modal-culture');
+}
+
+function sauvegarderCulture(){
+  var nom=document.getElementById('cult-nom').value.trim();
+  if(!nom){toast('Nom de la culture obligatoire');return;}
+  var id_val=document.getElementById('cult-id').value;
+  var obj={
+    id:id_val?Number(id_val):genId(),
+    nom,type:document.getElementById('cult-type').value,
+    variete:document.getElementById('cult-variete').value.trim(),
+    surface:parseFloat(document.getElementById('cult-surface').value)||0,
+    semis:document.getElementById('cult-semis').value,
+    recolte:document.getElementById('cult-recolte').value,
+    irrigation:document.getElementById('cult-irrigation').value,
+    stade:document.getElementById('cult-stade').value,
+    sante:document.getElementById('cult-sante').value,
+    engrais:document.getElementById('cult-engrais').value.trim(),
+    notes:document.getElementById('cult-notes').value.trim(),
+    dateEnreg:today(),
+  };
+  if(id_val){var i=DB.cultures.findIndex(function(x){return String(x.id)===String(id_val);});if(i>=0)DB.cultures[i]=obj;else DB.cultures.push(obj);}
+  else DB.cultures.push(obj);
+  saveAll();closeModal('modal-culture');renderCultures();
+  if(document.getElementById('page-dashboard').classList.contains('active'))renderDashboard();
+  toast('✅ Culture enregistrée: '+nom);
+}
+
+function supprimerCulture(id){
+  if(!confirm('Supprimer cette culture ?'))return;
+  DB.cultures=DB.cultures.filter(function(c){return String(c.id)!==String(id);});
+  saveAll();renderCultures();toast('🗑 Culture supprimée');
+}
+
+function ajouterTraitement(id){
+  var c=DB.cultures.find(function(x){return String(x.id)===String(id);});if(!c)return;
+  var prob=prompt('Problème ou maladie détectée sur '+c.nom+':','');if(!prob)return;
+  var trait=prompt('Traitement appliqué:','');
+  DB.traitements.push({id:genId(),cultureId:Number(id),cultureNom:c.nom,
+    probleme:prob,traitement:trait||'',date:today()});
+  // Mettre à jour la santé
+  c.sante='traitement';c.notes=prob;
+  saveAll();renderCultures();toast('💊 Traitement enregistré');
+}
+
+// ── CÉRÉALES & LÉGUMES ──────────────────────────────────────────
+var FICHES_CULTURES={
+  cereales:[
+    {emoji:'🌽',nom:'Maïs',famille:'Poacée',duree:'90-120j',
+     semis:'Profondeur 3-5cm, 60x40cm',irrigation:'Régulière aux stades critiques',
+     engrais:'N élevé: urée 200kg/ha + compost',recolte:'Humidité grain <14%',
+     rendement:'3-8 t/ha',varietes:'EVDT-99, QPM, OPV',
+     conseils:'Tuteurage inutile si variété naine. Irriguer abondamment à la floraison.',
+     ravageurs:'Foreur de tige (Busseola fusca), chenilles légionnaires'},
+    {emoji:'🌾',nom:'Sorgho',famille:'Poacée',duree:'90-180j',
+     semis:'Profondeur 3cm, 70x25cm',irrigation:'Résistant à la sécheresse',
+     engrais:'NPK 14-23-14 + top-dressing urée',recolte:'Grains durs, humidité <13%',
+     rendement:'1.5-5 t/ha',varietes:'SAMSORG, Framida, Fara Fara',
+     conseils:'Culture idéale pour sols pauvres et zones sèches. Excellent pour la sécurité alimentaire.',
+     ravageurs:'Midge du sorgho, pucerons'},
+    {emoji:'🍚',nom:'Riz',famille:'Poacée',duree:'90-150j',
+     semis:'Transplantation ou semis direct, 25x25cm',irrigation:'Submersion 5-10cm',
+     engrais:'NPK + urée split (3 apports)',recolte:'Épis dorés, humidité 20-25%',
+     rendement:'3-8 t/ha',varietes:'FOFIFA 154, NERICA, IR64',
+     conseils:'Riziculture irriguée: contrôle précis de l\'eau. Riziculture pluviale: drainage bon.',
+     ravageurs:'Borer du riz, pyriculariose'},
+    {emoji:'🌾',nom:'Mil (Petit mil)',famille:'Poacée',duree:'60-90j',
+     semis:'Profondeur 2-3cm, 80x80cm en poquets',irrigation:'Minimal, pluviométrie 250-500mm',
+     engrais:'Faible besoin: compost + phosphate naturel',recolte:'Épis mûrs, panicules penchées',
+     rendement:'0.8-2.5 t/ha',varietes:'HKP, SOSAT-C88',
+     conseils:'Culture de zone aride par excellence. Association avec niébé recommandée.',
+     ravageurs:'Striga, mineuse des épis'},
+  ],
+  legumes:[
+    {emoji:'🍅',nom:'Tomate',famille:'Solanacée',duree:'70-120j',
+     semis:'Pépinière 4-6 semaines, repiquage à 30×50cm',irrigation:'Régulière, éviter excès',
+     engrais:'NPK 15-15-15 + calcium + potassium en fructification',recolte:'Couleur uniforme, légèrement ferme',
+     rendement:'30-80 t/ha irrigué',varietes:'Roma, Mongal, Padma, Rio Grande',
+     conseils:'Tuteurage obligatoire. Taille des gourmands. Protéger des pluies en saison.',
+     ravageurs:'Phytophthora, Alternaria, pucerons, acariens'},
+    {emoji:'🌶️',nom:'Piment / Poivron',famille:'Solanacée',duree:'80-130j',
+     semis:'Pépinière 6 semaines, espacement 40×40cm',irrigation:'Régulière sans excès',
+     engrais:'Riche en phosphore (floraison) + potasse (maturité)',recolte:'Couleur finale atteinte',
+     rendement:'20-50 t/ha',varietes:'Jaune de Yolo, California Wonder, Nokchul',
+     conseils:'Sensible au froid. Irrigation goutte à goutte recommandée. Mulching bénéfique.',
+     ravageurs:'Anthracnose, pucerons, thrips'},
+    {emoji:'🥬',nom:'Laitue',famille:'Astéracée',duree:'45-75j',
+     semis:'Pépinière 3 semaines ou semis direct, 25×25cm',irrigation:'Régulière, sols frais',
+     engrais:'Azote modéré (risque de brûlure), compost bien décomposé',recolte:'Pomme bien formée, avant montée en graines',
+     rendement:'20-40 t/ha',varietes:'Batavia, Reine de mai, Iceberg',
+     conseils:'Culture de saison fraîche. Éviter chaleur > 30°C. Arrosage matinal.',
+     ravageurs:'Mildiou, limaces, pucerons'},
+    {emoji:'🍆',nom:'Aubergine',famille:'Solanacée',duree:'80-150j',
+     semis:'Pépinière 6-8 semaines, espacement 60×60cm',irrigation:'Régulière et profonde',
+     engrais:'NPK 15-15-15, riche en potasse',recolte:'Brillance de la peau, couleur variétale',
+     rendement:'20-60 t/ha',varietes:'Violette longue, Black Beauty, N\'Drowa',
+     conseils:'Plante pérenne en tropiques. Taille régulière. Mulch pour humidité.',
+     ravageurs:'Doryphore, acariens, Phomopsis (pourriture du collet)'},
+    {emoji:'🥕',nom:'Carotte',famille:'Apiacée',duree:'70-120j',
+     semis:'Semis direct en lignes, 5cm entre plants',irrigation:'Régulière, sol profond meuble',
+     engrais:'Faible azote (fourche), phosphore + potasse',recolte:'Diamètre 1.5-2cm, couleur uniforme',
+     rendement:'20-50 t/ha',varietes:'Nantaise, Chantenay, Touchon',
+     conseils:'Sol profond et meuble impératif (ameublir 30-40cm). pH 6-7. Éviter fumier frais.',
+     ravageurs:'Alternaria, mouche de la carotte'},
+    {emoji:'🧅',nom:'Oignon',famille:'Alliacée',duree:'90-150j',
+     semis:'Pépinière 6-8 semaines, repiquage à 10×20cm',irrigation:'Régulière, réduire à maturité',
+     engrais:'NPK riche en soufre + phosphore',recolte:'Collet tombe, feuilles jaunissent',
+     rendement:'20-60 t/ha',varietes:'Violet de Galmi, Blanc de Paris, Safari',
+     conseils:'Séchage post-récolte 2-4 semaines avant stockage. Rotation obligatoire.',
+     ravageurs:'Mildiou, thrips, mouche de l\'oignon'},
+  ],
+  legumineuses:[
+    {emoji:'🫘',nom:'Haricot vert',famille:'Fabacée',duree:'50-75j',
+     semis:'Semis direct, 40×10cm',irrigation:'Régulière aux stades floraison/remplissage',
+     engrais:'Peu d\'azote (fixation biologique), phosphore important',recolte:'Gousses tendres, avant durcissement graines',
+     rendement:'8-20 t/ha',varietes:'Manoa, Paulista, Fin de Bagnols',
+     conseils:'Inoculer avec Rhizobium pour optimiser la fixation d\'azote. Excellent précédent cultural.',
+     ravageurs:'Anthracnose, mouche des semis, bruche du haricot'},
+    {emoji:'🥜',nom:'Arachide',famille:'Fabacée',duree:'90-130j',
+     semis:'Semis direct, 30×10cm, profondeur 5cm',irrigation:'Critique à la floraison et remplissage',
+     engrais:'Phosphore et calcium (gypse), azote minimal',recolte:'Feuilles jaunissent, coques mûres (grattage test)',
+     rendement:'1.5-4 t/ha',varietes:'ICGV 86031, TS 32-1, Chinese',
+     conseils:'Ne jamais labourer après semi pour ne pas endommager les gynophores (pégs). Paillage recommandé.',
+     ravageurs:'Cercosporiose, rosette (virus), termites'},
+    {emoji:'🫘',nom:'Soja',famille:'Fabacée',duree:'80-130j',
+     semis:'Semis direct, 60×5cm',irrigation:'Critique à la floraison',
+     engrais:'Inoculation Bradyrhizobium obligatoire + phosphore',recolte:'Gousses brunissent, 80% maturité',
+     rendement:'1-3 t/ha',varietes:'TGX 1448-2E, Jenguma, SAMSOY-2',
+     conseils:'Culture améliorante du sol. Rotation avec céréales idéale. Protéines élevées (40%).',
+     ravageurs:'Noctuelle, charançon du soja, rouille du soja'},
+    {emoji:'🟤',nom:'Niébé (Cowpea)',famille:'Fabacée',duree:'60-90j',
+     semis:'Semis direct, 75×25cm en poquets',irrigation:'Résistant à la sécheresse',
+     engrais:'Inoculation Rhizobium + phosphate',recolte:'Gousses sèches ou légumes verts',
+     rendement:'0.5-2 t/ha grain, 5-8 t/ha fourrage',varietes:'IT99K-573-1-1, Dan Dawa, Suvita',
+     conseils:'Culture polyvalente: grain, fourrage, légume vert. Association maïs/sorgho classique.',
+     ravageurs:'Bruche, thrips, Striga'},
+  ],
+  racines:[
+    {emoji:'🌱',nom:'Manioc',famille:'Euphorbiacée',duree:'8-18 mois',
+     semis:'Boutures de 20-30cm, 1×1m',irrigation:'Tolérant à la sécheresse, mais eau améliore rendement',
+     engrais:'NPK modéré, potasse importante pour les racines',recolte:'Feuilles jaunissent, racines suffisamment grosses',
+     rendement:'10-80 t/ha selon variété',varietes:'TMS 30572, JEKI, Oko Iyawo',
+     conseils:'Traitement des boutures avant plantation (Thiram). Ne pas laisser plus de 18 mois (cyanure).',
+     ravageurs:'Cochenille farineuse, acarien vert, mosaïque du manioc (virus)'},
+    {emoji:'🍠',nom:'Igname',famille:'Dioscoréacée',duree:'6-11 mois',
+     semis:'Semenceaux de 200-400g, 1×1m, billons hauts',irrigation:'Modérée, bonne drainage',
+     engrais:'NPK + fumier organique',recolte:'Feuilles jaunissent et tombent',
+     rendement:'15-40 t/ha',varietes:'Florido, Krengle, TDa 98-01',
+     conseils:'Tuteurage avec perches 2m. Sol meuble et profond (ameublissement 60cm recommandé).',
+     ravageurs:'Nématodes, coléoptère de l\'igname, anthracnose'},
+  ],
+  fruits:[
+    {emoji:'🍅',nom:'Tomate Cerise',famille:'Solanacée',duree:'60-90j',
+     semis:'Pépinière 4 semaines, espacement 40×60cm',irrigation:'Régulière, paillis',
+     engrais:'Compost + NPK léger + calcium',recolte:'Grappes à coloration complète',
+     rendement:'20-50 t/ha',varietes:'Sweet 100, Juliet, Sun Gold',
+     conseils:'Très productive. Idéale en godets ou hors-sol. Tuteurage spiralé.',
+     ravageurs:'Idem tomate classique'},
+    {emoji:'🍈',nom:'Papaye',famille:'Caricacée',duree:'9-12 mois (1ère récolte)',
+     semis:'Pépinière 3 semaines, 3×3m',irrigation:'Régulière, drainage impératif',
+     engrais:'NPK 15-15-15 mensuel',recolte:'Teinte jaune sur 1/4 du fruit',
+     rendement:'50-150 t/ha',varietes:'Solo 8, Maradol, Sunrise',
+     conseils:'Planter 3 plants par poquet (sélectionner 1 mâle/2 femelles). Très sensible à la stagnation d\'eau.',
+     ravageurs:'Mouche des fruits, pucerons (vecteurs de virus)'},
+  ],
+};
+
+function renderCereales(tab){
+  var key=tab||'cereales_tab';
+  var map={cereales_tab:'cereales',legumes_tab:'legumes',
+    legumineuses_tab:'legumineuses',racines_tab:'racines',fruits_tab:'fruits'};
+  var data=FICHES_CULTURES[map[key]]||[];
+  document.getElementById('cereales_content').innerHTML=
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">'
+    +data.map(function(f){
+      return '<div class="card" style="overflow:visible">'
+        +'<div class="card-hdr" style="cursor:pointer" onclick="toggleFicheDetail(this)">'
+          +'<div style="display:flex;align-items:center;gap:10px">'
+            +'<span style="font-size:28px">'+f.emoji+'</span>'
+            +'<div><div style="font-weight:800;font-size:14px">'+f.nom+'</div>'
+            +'<div style="font-size:11px;color:var(--txt3)">'+f.famille+' · '+f.duree+'</div></div>'
+          +'</div>'
+          +'<span style="color:var(--acc);font-size:14px">▼</span>'
+        +'</div>'
+        +'<div class="fiche-detail" style="display:none"><div class="card-body">'
+          +ficheDetail(f)
+        +'</div></div>'
+      +'</div>';
+    }).join('')+'</div>';
+}
+
+function ficheDetail(f){
+  return '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12px">'
+    +'<div><span style="color:var(--txt3)">🌱 Semis:</span> '+f.semis+'</div>'
+    +'<div><span style="color:var(--txt3)">💧 Irrigation:</span> '+f.irrigation+'</div>'
+    +'<div><span style="color:var(--txt3)">🌾 Récolte:</span> '+f.recolte+'</div>'
+    +'<div><span style="color:var(--txt3)">📊 Rendement:</span> '+f.rendement+'</div>'
+    +'<div><span style="color:var(--txt3)">🌿 Variétés:</span> '+f.varietes+'</div>'
+    +'<div><span style="color:var(--txt3)">♻️ Engrais:</span> '+f.engrais+'</div>'
+    +'</div>'
+    +'<div class="alert alert-green" style="margin-top:10px"><strong>💡 Conseil:</strong> '+f.conseils+'</div>'
+    +'<div class="alert alert-red" style="margin-top:6px"><strong>🦠 Ravageurs:</strong> '+f.ravageurs+'</div>';
+}
+
+function toggleFicheDetail(hdr){
+  var det=hdr.nextElementSibling;
+  if(det){det.style.display=det.style.display==='none'?'block':'none';}
+  var arrow=hdr.querySelector('span:last-child');
+  if(arrow)arrow.textContent=det.style.display==='block'?'▲':'▼';
+}
+
+function switchTab(tabKey,btn,contentId){
+  var parent=btn.closest('.tabs');
+  if(parent)parent.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');
+  renderCereales(tabKey);
+}
+
+// ── HORS-SOL ────────────────────────────────────────────────────
+var HORSOL_DATA={
+  hydro:{
+    titre:'💧 Hydroponique — Culture dans l\'eau',
+    intro:'L\'hydroponique est la culture de plantes sans sol, les racines étant en contact direct avec une solution nutritive enrichie en minéraux.',
+    systemes:[
+      {nom:'NFT (Film nutritif)',desc:'Un mince film d\'eau coule en continu sous les racines. Idéal pour laitue, persil, basilic.',cout:'Faible',complexite:'Moyenne'},
+      {nom:'DWC (Eau profonde)',desc:'Les racines sont immergées en permanence dans la solution oxygénée. Idéal pour tomate, concombre.',cout:'Faible',complexite:'Facile'},
+      {nom:'Gouttière aéroponie',desc:'Solution pulvérisée directement sur les racines. Très haute performance.',cout:'Élevé',complexite:'Avancé'},
+      {nom:'Substrat (Hydro)',desc:'Billes d\'argile, fibre de coco ou laine de roche comme substrat. Facile à maîtriser.',cout:'Moyen',complexite:'Facile'},
+    ],
+    nutrients:'pH optimal: 5.5-6.5 · EC (conductivité): 1.5-3.0 mS/cm · Solution complète N-P-K + oligo-éléments',
+    avantages:['Économie d\'eau 70-90% vs culture classique','Croissance 30-50% plus rapide','Aucune mauvaise herbe','Production tout au long de l\'année','Contrôle total des nutriments'],
+    inconvenients:['Investissement initial','Surveillance pH/EC régulière','Panne de pompe = perte rapide'],
+  },
+  aqua:{
+    titre:'🐟 Aquaponique — Symbiose poisson-plante',
+    intro:'L\'aquaponique combine l\'élevage de poissons et la culture hydroponique. Les déjections des poissons nourrissent les plantes, et les plantes purifient l\'eau pour les poissons.',
+    systemes:[
+      {nom:'Media Bed (lit filtrant)',desc:'Substrat billes d\'argile dans des bacs. Simple et robuste pour débuter.',cout:'Moyen',complexite:'Facile'},
+      {nom:'NFT Aquaponique',desc:'Gouttières avec film nutritif. Hauts rendements légumes.',cout:'Moyen',complexite:'Moyenne'},
+      {nom:'DWC Aquaponique',desc:'Radeaux flottants. Excellent pour salades et herbes.',cout:'Élevé',complexite:'Avancé'},
+    ],
+    nutrients:'NH3 < 1 mg/L · NO2 < 0.5 mg/L · NO3 5-150 mg/L · pH 6.8-7.2 · Temp eau 24-28°C',
+    avantages:['Production simultanée poissons + légumes','Recyclage eau >95%','Zéro engrais chimique','Haute valeur nutritive des produits','Rentabilité excellente à moyen terme'],
+    inconvenients:['Démarrage lent (cycle azote 4-6 semaines)','Équilibre fragile','Coût installation'],
+  },
+  aero:{
+    titre:'💨 Aéroponique — Culture dans l\'air',
+    intro:'Les racines sont suspendues dans l\'air et brumisées de solution nutritive à intervalles réguliers. Le système le plus performant et le plus économe en eau.',
+    systemes:[
+      {nom:'Tour aéroponique',desc:'Structure verticale compacte, idéale pour herbes et fraises. Gain d\'espace maximal.',cout:'Moyen',complexite:'Moyenne'},
+      {nom:'Chambre de brumisation',desc:'Chambre fermée avec buses haute pression. Croissance ultra-rapide des racines.',cout:'Élevé',complexite:'Avancé'},
+    ],
+    nutrients:'pH 5.5-6.0 · EC 1.0-2.5 · Brumisation toutes les 5-15 min · Durée 30-60 sec',
+    avantages:['Économie d\'eau 95%','Croissance 2-3x plus rapide','Excellente oxygénation racinaire','Rendements records'],
+    inconvenients:['Coût élevé','Sensible aux pannes','Expertise requise'],
+  },
+  montage:{
+    titre:'🔧 Plans de montage hors-sol',
+    plans:[
+      {nom:'Kit NFT 12 tubes (laitue)',items:['12 tubes PVC 100mm','1 pompe 1200L/h','1 bac 100L','Minuterie 24h','Bouchons percés Ø 55mm','Solution nutritive A+B']},
+      {nom:'Tour aéroponique 5 niveaux',items:['Tube PVC 200mm H=1.5m','5 plaques percées','Pompe immergée 500L/h','Buses brumisation 360°','Minuterie','Bac de récupération 50L']},
+      {nom:'Système DWC 4 seaux',items:['4 seaux opaques 10L','4 paniers filets','Pierre d\'aération','Pompe à air + tuyaux','Billes d\'argile','Solution nutritive complète']},
+    ],
+  },
+};
+
+function renderHorSol(){switchHSTab('hydro',null);}
+function switchHSTab(tab,btn){
+  if(btn){var p=btn.closest('.tabs');if(p)p.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');}
+  var el=document.getElementById('horsol-content');
+  var d=HORSOL_DATA[tab];if(!d)return;
+
+  if(tab==='montage'){
+    el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">'
+      +d.plans.map(function(p){
+        return '<div class="card">'
+          +'<div class="card-hdr"><span class="card-title">🔧 '+p.nom+'</span></div>'
+          +'<div class="card-body"><div style="font-size:12px;font-weight:700;color:var(--txt2);margin-bottom:8px">Matériaux nécessaires:</div>'
+          +p.items.map(function(i){return '<div style="display:flex;gap:8px;padding:4px 0;font-size:12px;border-bottom:1px solid var(--bdr)">'
+            +'<span style="color:var(--acc)">•</span>'+i+'</div>';}).join('')
+          +'<button class="btn btn-primary btn-sm" style="margin-top:12px;width:100%" onclick="toast(\'📐 Plan détaillé disponible sur demande\')">📐 Voir le plan détaillé</button>'
+          +'</div></div>';
+      }).join('')+'</div>';
+    return;
+  }
+
+  el.innerHTML='<div class="card"><div class="card-hdr"><span class="card-title">'+d.titre+'</span></div>'
+    +'<div class="card-body">'
+      +'<p style="font-size:13px;color:var(--txt2);margin-bottom:16px">'+d.intro+'</p>'
+      +'<div class="alert alert-blue" style="margin-bottom:16px">⚗️ <strong>Paramètres:</strong> '+d.nutrients+'</div>'
+      +'<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:16px">'
+      +d.systemes.map(function(s){
+        return '<div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;padding:12px">'
+          +'<div style="font-weight:800;font-size:13px;margin-bottom:4px">'+s.nom+'</div>'
+          +'<div style="font-size:12px;color:var(--txt2);margin-bottom:8px">'+s.desc+'</div>'
+          +'<div style="display:flex;gap:6px"><span class="badge badge-green">Coût: '+s.cout+'</span>'
+          +'<span class="badge badge-blue">'+s.complexite+'</span></div></div>';
+      }).join('')+'</div>'
+      +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">'
+        +'<div class="alert alert-green"><strong>✅ Avantages:</strong><br>'
+          +d.avantages.map(function(a){return '• '+a;}).join('<br>')+'</div>'
+        +'<div class="alert alert-red"><strong>⚠️ Défis:</strong><br>'
+          +d.inconvenients.map(function(i){return '• '+i;}).join('<br>')+'</div>'
+      +'</div>'
+    +'</div></div>';
+}
+
+// ── PÉPINIÈRE ───────────────────────────────────────────────────
+var GERMINATION_GUIDE=[
+  {espece:'Tomate',duree:'7-14j',temp:'20-25°C',profondeur:'0.5-1cm',substrat:'Tourbe + perlite',specifique:'Couvrir pour maintenir humidité'},
+  {espece:'Piment/Poivron',duree:'10-21j',temp:'25-28°C',profondeur:'0.5cm',substrat:'Tourbe + vermiculite',specifique:'Chaleur constante recommandée'},
+  {espece:'Laitue',duree:'3-7j',temp:'15-20°C',profondeur:'Superficie',substrat:'Terreau léger',specifique:'Lumière nécessaire à la germination'},
+  {espece:'Carotte',duree:'10-21j',temp:'15-22°C',profondeur:'0.5cm',substrat:'Sol meuble sans cailloux',specifique:'Ne pas laisser sécher la surface'},
+  {espece:'Oignon',duree:'10-14j',temp:'18-25°C',profondeur:'1-2cm',substrat:'Terreau fin',specifique:'Pré-trempage 12h accélère'},
+  {espece:'Chou',duree:'5-10j',temp:'20-25°C',profondeur:'0.5-1cm',substrat:'Tourbe + compost',specifique:'Repiquage à 4-6 semaines'},
+  {espece:'Aubergine',duree:'10-20j',temp:'25-30°C',profondeur:'0.5cm',substrat:'Tourbe + sable',specifique:'Chaleur élevée indispensable'},
+  {espece:'Concombre',duree:'5-10j',temp:'22-28°C',profondeur:'2-3cm',substrat:'Substrat fertile',specifique:'Attention à la stagnation'},
+  {espece:'Maïs',duree:'5-8j',temp:'22-30°C',profondeur:'3-5cm',substrat:'Sol fertile',specifique:'Semis direct préférable'},
+  {espece:'Haricot',duree:'5-10j',temp:'20-28°C',profondeur:'3-4cm',substrat:'Sol fertile bien drainé',specifique:'Pas de semis en eau froide'},
+];
+
+function renderPepiniere(){
+  var semisEl=document.getElementById('pepiniere-semis');
+  semisEl.innerHTML=DB.semis.length?DB.semis.map(function(s){
+    var diff=Math.round((new Date()-new Date(s.date))/86400000);
+    var col=s.germination>=80?'var(--acc)':s.germination>=50?'var(--acc2)':'var(--red)';
+    return '<div style="background:var(--surf2);border:1px solid var(--bdr);border-radius:10px;padding:12px;margin-bottom:8px">'
+      +'<div style="display:flex;justify-content:space-between;margin-bottom:6px">'
+        +'<div><div style="font-weight:700;font-size:13px">🌱 '+s.espece+'</div>'
+        +'<div style="font-size:11px;color:var(--txt3)">'+s.date+' · J+'+diff+' · '+s.substrat+'</div></div>'
+        +'<div style="text-align:right">'
+          +'<div style="font-weight:900;color:'+col+';font-size:16px">'+s.germination+'%</div>'
+          +'<div style="font-size:10px;color:var(--txt3)">germination</div></div>'
+      +'</div>'
+      +'<div class="progress-bar"><div class="progress-fill" style="width:'+s.germination+'%;background:'+col+'"></div></div>'
+      +(s.stade==='Levée'?'<button class="btn btn-gold btn-sm" style="margin-top:6px;width:100%" onclick="toast(\'Planifiez le repiquage dans 1-2 semaines\')">🌿 Planifier repiquage</button>':'')
+    +'</div>';
+  }).join(''):'<div style="text-align:center;padding:20px;color:var(--txt3)">Aucun semis en cours<br><button class="btn btn-primary btn-sm" style="margin-top:8px" onclick="ouvrirSemis()">+ Nouveau semis</button></div>';
+
+  var statsEl=document.getElementById('pepiniere-stats');
+  var moy=DB.semis.length?Math.round(DB.semis.reduce(function(s,x){return s+Number(x.germination||0);},0)/DB.semis.length):0;
+  statsEl.innerHTML='<div style="text-align:center;margin-bottom:12px"><div style="font-size:36px;font-weight:900;color:var(--acc)">'+moy+'%</div><div style="font-size:12px;color:var(--txt3)">Taux de germination moyen</div></div>'
+    +DB.semis.map(function(s){return '<div style="margin-bottom:6px"><div style="font-size:12px;font-weight:700;margin-bottom:3px">'+s.espece+' ('+s.nb+' plants)</div>'
+      +'<div class="progress-bar"><div class="progress-fill" style="width:'+s.germination+'%;background:var(--acc)"></div></div></div>';}).join('');
+
+  document.getElementById('germination-guide').innerHTML='<div class="table-wrap" style="margin:0"><table><thead><tr>'
+    +'<th>Espèce</th><th>Durée germination</th><th>Température</th><th>Profondeur</th><th>Conseil</th>'
+    +'</tr></thead><tbody>'
+    +GERMINATION_GUIDE.map(function(g){
+      return '<tr><td><strong>'+g.espece+'</strong></td><td>'+g.duree+'</td><td>'+g.temp+'</td><td>'+g.profondeur+'</td><td style="font-size:11px">'+g.specifique+'</td></tr>';
+    }).join('')+'</tbody></table></div>';
+}
+
+function ouvrirSemis(){
+  var espece=prompt('Espèce à semer:');if(!espece)return;
+  var nb=parseInt(prompt('Nombre de plants:','100'))||100;
+  var substrat=prompt('Substrat utilisé:','Tourbe + perlite');
+  DB.semis.push({id:genId(),espece,date:today(),substrat:substrat||'',nb,germination:0,stade:'Semis',repiquage:'',notes:''});
+  saveAll();renderPepiniere();toast('✅ Semis enregistré: '+espece);
+}
+
+// ── CALENDRIER ──────────────────────────────────────────────────
+var CAL_DATA=[
+  {nom:'Tomate',emoji:'🍅',mois:[0,1,10,11],recolte:[3,4,5,6,7],saison:'Sec + début pluies'},
+  {nom:'Maïs',emoji:'🌽',mois:[2,3,4],recolte:[6,7,8],saison:'Saison pluvieuse'},
+  {nom:'Oignon',emoji:'🧅',mois:[9,10,11,0],recolte:[1,2,3],saison:'Saison sèche'},
+  {nom:'Laitue',emoji:'🥬',mois:[9,10,11,0,1,2],recolte:[10,11,0,1,2,3],saison:'Fraîche'},
+  {nom:'Arachide',emoji:'🥜',mois:[4,5],recolte:[7,8,9],saison:'Début pluies'},
+  {nom:'Haricot',emoji:'🫘',mois:[2,3,8,9],recolte:[4,5,10,11],saison:'2 saisons'},
+  {nom:'Manioc',emoji:'🌱',mois:[2,3,4,5],recolte:[10,11,12,13,14],saison:'Pluies'},
+  {nom:'Piment',emoji:'🌶️',mois:[0,1,9,10],recolte:[3,4,5,6],saison:'Saison sèche/fraîche'},
+  {nom:'Sorgho',emoji:'🌾',mois:[4,5,6],recolte:[8,9,10],saison:'Pluies'},
+  {nom:'Riz',emoji:'🍚',mois:[5,6],recolte:[9,10],saison:'Pluies'},
+];
+var MOIS_LABELS=['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
+
+function renderCalendrier(){
+  var el=document.getElementById('calendrier-content');
+  var moisActuel=new Date().getMonth();
+  el.innerHTML='<div class="alert alert-gold" style="margin-bottom:16px">📅 Mois actuel: <strong>'+MOIS_LABELS[moisActuel]+'</strong> — '
+    +'Cultures à semer maintenant: <strong>'
+    +CAL_DATA.filter(function(c){return c.mois.includes(moisActuel);}).map(function(c){return c.emoji+c.nom;}).join(', ')+'</strong></div>'
+    +'<div class="card"><div class="card-hdr"><span class="card-title">📊 Calendrier annuel de semis</span></div>'
+    +'<div class="card-body" style="overflow-x:auto">'
+      +'<div style="min-width:600px">'
+        +'<div style="display:grid;grid-template-columns:120px repeat(12,1fr);gap:3px;margin-bottom:8px">'
+          +'<div></div>'+MOIS_LABELS.map(function(m,i){return '<div style="text-align:center;font-size:11px;font-weight:700;'+(i===moisActuel?'color:var(--acc)':'color:var(--txt3)')+'">'+m+'</div>';}).join('')+'</div>'
+        +CAL_DATA.map(function(c){
+          return '<div style="display:grid;grid-template-columns:120px repeat(12,1fr);gap:3px;margin-bottom:4px">'
+            +'<div style="font-size:12px;display:flex;align-items:center;gap:4px">'+c.emoji+' '+c.nom+'</div>'
+            +Array.from({length:12},function(_,i){
+              var isSemis=c.mois.includes(i);
+              var isRecolte=c.recolte&&c.recolte.includes(i);
+              var isCurr=i===moisActuel;
+              return '<div style="height:22px;border-radius:4px;'
+                +(isRecolte?'background:var(--acc2);':'')
+                +(isSemis&&!isRecolte?'background:var(--acc);':'')
+                +((!isSemis&&!isRecolte)?'background:rgba(255,255,255,.04);':'')
+                +'opacity:'+(isCurr?1:.7)
+                +(isCurr?';box-shadow:0 0 0 2px var(--acc)':'')
+                +'"></div>';
+            }).join('')+'</div>';
+        }).join('')
+        +'<div style="display:flex;gap:16px;margin-top:12px;font-size:11px">'
+          +'<div style="display:flex;align-items:center;gap:5px"><div style="width:14px;height:14px;background:var(--acc);border-radius:3px"></div>Période de semis</div>'
+          +'<div style="display:flex;align-items:center;gap:5px"><div style="width:14px;height:14px;background:var(--acc2);border-radius:3px"></div>Période de récolte</div>'
+        +'</div>'
+      +'</div>'
+    +'</div></div>';
+}
+
+// ── MALADIES & TRAITEMENTS ──────────────────────────────────────
+var MALADIES_DB=[
+  // Fongiques
+  {nom:'Mildiou (Phytophthora)',type:'fongique',plantes:['Tomate','Pomme de terre','Laitue'],
+   emoji:'🍄',symptomes:'Taches huileuses sur feuilles, dessous blanc cotonneux, flétrissement rapide par temps humide',
+   causes:'Humidité >90%, rosée, températures 15-20°C, pluies prolongées',
+   prevention:'Espacement pour aération, éviter arrosage foliaire le soir, variétés résistantes',
+   traitement_bio:'Bouillie bordelaise 1%, décoction de prêle (2L pour 10L eau), purin d\'ortie',
+   traitement_chimique:'Mancozèbe 2g/L, Métalaxyl, Ridomil Gold',
+   gravite:'Élevée — peut détruire une culture en 48h par temps humide'},
+  {nom:'Oïdium (Blanc)',type:'fongique',plantes:['Courge','Concombre','Poivron','Vigne'],
+   emoji:'⬜',symptomes:'Feutrage blanc poudreux sur feuilles et tiges, jaunissement, dessèchement',
+   causes:'Chaleur 20-27°C, humidité modérée, mauvaise aération',
+   prevention:'Aération des plants, éviter excès d\'azote, variétés résistantes',
+   traitement_bio:'Soufre mouillable, bicarbonate de soude (10g/L), lait dilué (10%), huile essentielle de thym',
+   traitement_chimique:'Myclobutanil, Trifloxystrobine, Tébuconazole',
+   gravite:'Moyenne — affaiblit les plants mais rarement mortelle'},
+  {nom:'Alternariose (Tache noire)',type:'fongique',plantes:['Tomate','Carotte','Oignon'],
+   emoji:'🔵',symptomes:'Taches brunes concentriques, comme des cibles sur les vieilles feuilles, nécroses',
+   causes:'Blessures, stress hydrique, températures chaudes (25-30°C)',
+   prevention:'Éliminer débris végétaux, rotation des cultures, désinfection du matériel',
+   traitement_bio:'Bouillie bordelaise, bicarbonate de potassium, cuivre',
+   traitement_chimique:'Iprodione, Chlorothalonil, Mancozèbe',
+   gravite:'Moyenne'},
+  {nom:'Fusariose vasculaire',type:'fongique',plantes:['Tomate','Poivron','Melon','Asperge'],
+   emoji:'🟤',symptomes:'Jaunissement d\'un côté du plant, flétrissement progressif, brunissement des vaisseaux (couper la tige)',
+   causes:'Champignon du sol, températures 25-28°C, pH acide',
+   prevention:'Rotation longue (4-5 ans), solarisation sol, greffage sur porte-greffe résistant',
+   traitement_bio:'Trichoderma harzianum (biocontrôle), solarisation',
+   traitement_chimique:'Aucun traitement curatif efficace — prévention uniquement',
+   gravite:'Très élevée — irréversible'},
+  // Bactériennes
+  {nom:'Flétrissement bactérien (Ralstonia)',type:'bacterienne',plantes:['Tomate','Aubergine','Pomme de terre','Piment'],
+   emoji:'🦠',symptomes:'Flétrissement rapide et total du plant, filets blancs dans l\'eau (test verre d\'eau)',
+   causes:'Bactérie du sol, favorisée par chaleur et humidité',
+   prevention:'Rotation 3-4 ans hors Solanacées, variétés résistantes, désinfection outils',
+   traitement_bio:'Aucun traitement curatif — arracher et brûler',
+   traitement_chimique:'Aucun traitement curatif efficace',
+   gravite:'Très élevée — irréversible'},
+  {nom:'Chancre bactérien',type:'bacterienne',plantes:['Tomate','Poivron','Agrumes'],
+   emoji:'🔴',symptomes:'Lésions sur tiges, fruits, feuilles avec auréole jaune, exsudat bactérien',
+   causes:'Blessures mécaniques, insectes, pluie avec vent',
+   prevention:'Désinfection outils (eau de javel 10%), éviter blessures, fongicide cuivrique préventif',
+   traitement_bio:'Cuivre, huile de neem',
+   traitement_chimique:'Streptomycine (usage contrôlé), cuivre',
+   gravite:'Élevée'},
+  // Virales
+  {nom:'Mosaïque du concombre (CMV)',type:'virale',plantes:['Concombre','Courgette','Melon','Piment'],
+   emoji:'🧬',symptomes:'Feuilles en mosaïque vert/jaune, déformation, nanisme, fruits difformes',
+   causes:'Transmis par pucerons, passe par les semences infectées',
+   prevention:'Contrôle des pucerons (vecteurs), élimination plants malades, semences saines',
+   traitement_bio:'Aucun traitement curatif. Huile de neem pour pucerons vecteurs',
+   traitement_chimique:'Pas de traitement viral — contrôle des vecteurs seulement',
+   gravite:'Élevée'},
+  // Ravageurs
+  {nom:'Pucerons (Aphididae)',type:'ravageur',plantes:['Tomate','Piment','Laitue','Chou'],
+   emoji:'🐛',symptomes:'Colonies sur jeunes pousses, feuilles déformées, miellat collant, fumagine noire',
+   causes:'Chaleur, sécheresse, excès d\'azote, absence de prédateurs naturels',
+   prevention:'Plantation basilic/ail en répulsif, favoriser coccinelles et syrphes',
+   traitement_bio:'Savon noir (20mL/L), purin d\'ortie, pyrèthre naturel, insecticides à base de neem',
+   traitement_chimique:'Imidaclopride, Pyméthrozine, Spirotétramat',
+   gravite:'Moyenne à Élevée (vecteurs de virus)'},
+  {nom:'Mouche blanche (Aleurodes)',type:'ravageur',plantes:['Tomate','Aubergine','Haricot'],
+   emoji:'🦟',symptomes:'Petites mouches blanches sous les feuilles, jaunissement, miellat, fumagine',
+   causes:'Chaleur, chaleur intense, milieu sec',
+   prevention:'Pièges jaunes englués, filets insect-proof',
+   traitement_bio:'Huile de neem, savon insecticide, Beauveria bassiana (champignon entomopathogène)',
+   traitement_chimique:'Imidaclopride, Spiromésifène',
+   gravite:'Moyenne'},
+  {nom:'Chenilles défoliatrices',type:'ravageur',plantes:['Tomate','Chou','Maïs','Légumineuses'],
+   emoji:'🐛',symptomes:'Morsures sur feuilles, trous nets, défoliations importantes, excréments',
+   causes:'Papillons pondent sur les plants, conditions humides favorisent',
+   prevention:'Inspection régulière, ramassage manuel, encourager prédateurs naturels (guêpes parasitoïdes)',
+   traitement_bio:'Bacillus thuringiensis (Bt) — très efficace, sélectif, naturel',
+   traitement_chimique:'Lambda-cyhalothrine, Deltaméthrine, Spinosad',
+   gravite:'Variable selon espèce'},
+  // Carences
+  {nom:'Carence en Azote (N)',type:'carence',plantes:['Toutes cultures'],
+   emoji:'⚗️',symptomes:'Jaunissement commençant par les vieilles feuilles, plant pâle, retard de croissance, tiges fines',
+   causes:'Sol pauvre, arrosage excessif lessivant, pH acide',
+   prevention:'Apport de compost, fumier, engrais verts, analyse sol régulière',
+   traitement_bio:'Urée organique, lisier dilué, compost mûr, farine de sang',
+   traitement_chimique:'Urée (46% N), sulfate d\'ammonium, nitrate de chaux',
+   gravite:'Modérée — correctable rapidement'},
+  {nom:'Carence en Fer (Fe) — Chlorose ferrique',type:'carence',plantes:['Tomates','Vigne','Rosier'],
+   emoji:'🟡',symptomes:'Jaunissement des jeunes feuilles (nervures restent vertes), interveinal',
+   causes:'pH > 7.5 (sol calcaire) rendant le fer indisponible, excès de phosphore',
+   prevention:'Correction pH (soufre pour acidifier), éviter excès de chaux',
+   traitement_bio:'Chélate de fer naturel, tourbe acide, acidification par soufre',
+   traitement_chimique:'EDTA de fer, EDDHA de fer (en sol calcaire)',
+   gravite:'Modérée'},
+  {nom:'Carence en Potassium (K)',type:'carence',plantes:['Tomate','Pomme de terre','Banane'],
+   emoji:'🟠',symptomes:'Brûlures marginales des feuilles (bord des feuilles brun), qualité des fruits médiocre',
+   causes:'Sol pauvre, sableux, pH extrême',
+   prevention:'Apport compost, cendres de bois (riche en K), rotation avec légumineuses',
+   traitement_bio:'Cendres de bois tamisées (10%), compost de fumier',
+   traitement_chimique:'Sulfate de potassium, chlorure de potassium (si toléré)',
+   gravite:'Modérée — affecte fortement la qualité'},
+];
+
+function renderMaladies(type){
+  var search=(document.getElementById('search-maladie')||{}).value||'';
+  var el=document.getElementById('maladies-content');
+  var data=MALADIES_DB.filter(function(m){
+    if(type&&type!=='toutes'&&m.type!==type)return false;
+    if(search){var sl=search.toLowerCase();
+      return m.nom.toLowerCase().includes(sl)||m.plantes.join(' ').toLowerCase().includes(sl)||m.symptomes.toLowerCase().includes(sl);}
+    return true;
+  });
+  el.innerHTML=data.length?data.map(function(m){
+    var gravCol=m.gravite.startsWith('Très')?'var(--red)':m.gravite.startsWith('Élevée')?'#f97316':m.gravite.startsWith('Modérée')?'var(--acc2)':'var(--acc)';
+    return '<div class="maladie-card" onclick="toggleMaladie(this)">'
+      +'<div class="maladie-hdr">'
+        +'<span class="maladie-icon">'+m.emoji+'</span>'
+        +'<div style="flex:1">'
+          +'<div style="font-weight:800;font-size:14px">'+m.nom+'</div>'
+          +'<div style="font-size:12px;color:var(--txt2)">'+m.plantes.join(', ')+'</div>'
+          +'<div style="font-size:11px;color:var(--txt3);margin-top:2px">'+m.symptomes.slice(0,80)+'...</div>'
+        +'</div>'
+        +'<div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">'
+          +'<span class="badge '+(m.type==='fongique'?'badge-purple':m.type==='bacterienne'?'badge-red':m.type==='virale'?'badge-blue':m.type==='ravageur'?'badge-gold':'badge-green')+'">'+m.type+'</span>'
+          +'<span style="font-size:10px;color:'+gravCol+'">●'+m.gravite.split(' ')[0]+'</span>'
+        +'</div>'
+      +'</div>'
+      +'<div class="maladie-body">'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;font-size:12px">'
+          +'<div><strong>🔍 Causes:</strong> '+m.causes+'</div>'
+          +'<div><strong>🛡 Prévention:</strong> '+m.prevention+'</div>'
+        +'</div>'
+        +'<div class="alert alert-green" style="margin-bottom:6px"><strong>🌿 Traitement BIO:</strong> '+m.traitement_bio+'</div>'
+        +'<div class="alert alert-blue"><strong>⚗️ Traitement chimique:</strong> '+m.traitement_chimique+'</div>'
+        +'<div style="margin-top:8px;font-size:12px"><strong style="color:'+gravCol+'">⚠️ Gravité:</strong> '+m.gravite+'</div>'
+      +'</div>'
+    +'</div>';
+  }).join(''):'<div style="text-align:center;padding:40px;color:var(--txt3)">Aucune maladie trouvée</div>';
+}
+
+function toggleMaladie(card){
+  var body=card.querySelector('.maladie-body');
+  body.classList.toggle('show');card.classList.toggle('expanded');
+}
+function switchMaladieTab(type,btn){
+  var p=btn.closest('.tabs');if(p)p.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});
+  btn.classList.add('active');renderMaladies(type);
+}
+
+// ── SOL ─────────────────────────────────────────────────────────
+function renderSol(){switchSolTab('analyse',null);}
+function switchSolTab(tab,btn){
+  if(btn){var p=btn.closest('.tabs');if(p)p.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');}
+  var el=document.getElementById('sol-content');
+  if(tab==='analyse'){
+    el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">'
+      +'<div class="card"><div class="card-hdr"><span class="card-title">🔬 Analyseur de sol</span></div><div class="card-body">'
+        +'<div style="font-size:13px;color:var(--txt2);margin-bottom:16px">Entrez les valeurs de votre analyse de sol pour obtenir des recommandations:</div>'
+        +'<div class="form-group" style="margin-bottom:12px"><label class="form-lbl">pH du sol</label>'
+          +'<input type="range" id="sol-ph" min="4" max="9" step="0.1" value="6.5" oninput="updateSolMeter()" style="width:100%">'
+          +'<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3)"><span>4 (Acide)</span><span id="ph-val" style="color:var(--acc);font-weight:700">6.5</span><span>9 (Alcalin)</span></div></div>'
+        +'<div class="form-group" style="margin-bottom:12px"><label class="form-lbl">Azote N (mg/kg)</label>'
+          +'<input type="range" id="sol-n" min="0" max="200" value="80" oninput="updateSolMeter()" style="width:100%">'
+          +'<div style="text-align:right;font-size:11px;color:var(--acc)" id="n-val">80</div></div>'
+        +'<div class="form-group" style="margin-bottom:12px"><label class="form-lbl">Phosphore P (mg/kg)</label>'
+          +'<input type="range" id="sol-p" min="0" max="100" value="40" oninput="updateSolMeter()" style="width:100%">'
+          +'<div style="text-align:right;font-size:11px;color:var(--acc)" id="p-val">40</div></div>'
+        +'<div class="form-group"><label class="form-lbl">Potassium K (mg/kg)</label>'
+          +'<input type="range" id="sol-k" min="0" max="400" value="150" oninput="updateSolMeter()" style="width:100%">'
+          +'<div style="text-align:right;font-size:11px;color:var(--acc)" id="k-val">150</div></div>'
+      +'</div></div>'
+      +'<div class="card"><div class="card-hdr"><span class="card-title">📊 Diagnostic & Recommandations</span></div><div class="card-body" id="sol-diagnostic">Ajustez les sliders pour voir le diagnostic</div></div>'
+    +'</div>';
+    updateSolMeter();
+  }else if(tab==='types'){
+    var types=[
+      {nom:'Sol argileux',emoji:'🟤',caract:'Riche, retient l\'eau, compact',avantages:'Fertile, bonne rétention',inconvenients:'Compact, imperméable, difficile à travailler',amelioration:'Sable, compost, chaux pour pH, drains'},
+      {nom:'Sol sableux',emoji:'🟡',caract:'Léger, drainant, chaud',avantages:'Facile à travailler, se réchauffe vite',inconvenients:'Pauvre, perd l\'eau et les nutriments vite',amelioration:'Compost abondant, fumier, rétention par mulch'},
+      {nom:'Sol limoneux',emoji:'🟫',caract:'Équilibré, texture fine',avantages:'Excellent sol agricole naturellement',inconvenients:'Peut se compacter, battre en croûte',amelioration:'Compost régulier, travail minimal'},
+      {nom:'Sol calcaire',emoji:'⬜',caract:'Calcaire dominant, pH élevé',avantages:'Bien drainé, chaud',inconvenients:'pH > 7.5, carences fréquentes (Fe, Mn, Zn)',amelioration:'Soufre agricole, compost acide, chélates de fer'},
+      {nom:'Sol acide (Latérite)',emoji:'🔴',caract:'pH < 5.5, oxydes de fer',avantages:'Répandu en zone tropicale',inconvenients:'Toxicité aluminium, carences, P bloqué',amelioration:'Chaux agricole, dolomie, compost, phosphates naturels'},
+    ];
+    el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">'
+      +types.map(function(t){
+        return '<div class="card"><div class="card-hdr"><span class="card-title">'+t.emoji+' '+t.nom+'</span></div>'
+          +'<div class="card-body">'
+          +'<div style="font-size:12px;color:var(--txt2);margin-bottom:10px">'+t.caract+'</div>'
+          +'<div class="alert alert-green" style="margin-bottom:6px"><strong>✅</strong> '+t.avantages+'</div>'
+          +'<div class="alert alert-red" style="margin-bottom:6px"><strong>⚠️</strong> '+t.inconvenients+'</div>'
+          +'<div class="alert alert-blue"><strong>🔧 Amélioration:</strong> '+t.amelioration+'</div>'
+          +'</div></div>';
+      }).join('')+'</div>';
+  }else if(tab==='rotation'){
+    el.innerHTML='<div class="card"><div class="card-hdr"><span class="card-title">🔄 Rotation des cultures — Plan 4 ans</span></div>'
+      +'<div class="card-body">'
+      +'<div class="alert alert-gold" style="margin-bottom:16px">🌿 La rotation des cultures est essentielle pour briser les cycles de maladies, améliorer la fertilité et réduire les ravageurs spécifiques.</div>'
+      +'<div class="table-wrap"><table><thead><tr><th>Parcelle</th><th>Année 1</th><th>Année 2</th><th>Année 3</th><th>Année 4</th></tr></thead><tbody>'
+      +'<tr><td>A</td><td>🍅 Solanacées (Tomate, Piment)</td><td>🥬 Feuilles (Laitue, Épinard)</td><td>🫘 Légumineuses (Haricot, Soja)</td><td>🥕 Racines (Carotte, Oignon)</td></tr>'
+      +'<tr><td>B</td><td>🥕 Racines</td><td>🍅 Solanacées</td><td>🥬 Feuilles</td><td>🫘 Légumineuses</td></tr>'
+      +'<tr><td>C</td><td>🫘 Légumineuses</td><td>🥕 Racines</td><td>🍅 Solanacées</td><td>🥬 Feuilles</td></tr>'
+      +'<tr><td>D</td><td>🥬 Feuilles</td><td>🫘 Légumineuses</td><td>🥕 Racines</td><td>🍅 Solanacées</td></tr>'
+      +'</tbody></table></div>'
+      +'<div class="alert alert-green" style="margin-top:12px"><strong>💡 Règle d\'or:</strong> Ne jamais planter la même famille botanique au même endroit 2 années consécutives. Les légumineuses (Année 3 dans cet exemple) enrichissent le sol en azote pour les cultures suivantes.</div>'
+      +'</div></div>';
+  }else{
+    el.innerHTML='<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
+      +[
+        {nom:'Chaulage (pH acide)',prod:'Chaux agricole (CaCO3) ou Dolomie',dose:'1-4 t/ha selon pH initial',effet:'Relève pH, apporte calcium, active microbiote',moment:'2-3 mois avant plantation'},
+        {nom:'Acidification (pH alcalin)',prod:'Soufre agricole, tourbe acide, sulfate de fer',dose:'200-500 kg/ha soufre',effet:'Abaisse pH, libère fer et manganèse bloqués',moment:'Plusieurs mois avant plantation'},
+        {nom:'Apport Matière Organique',prod:'Compost mûr, fumier décomposé, pailles enfouies',dose:'20-40 t/ha',effet:'Améliore structure, CEC, activité biologique',moment:'2-4 semaines avant plantation'},
+        {nom:'Engrais vert enfouissement',prod:'Mucuna, Crotalaria, Tithonia',dose:'Semis en inter-saison',effet:'Azote + matière organique + anti-nématodes',moment:'Enfouir avant floraison'},
+      ].map(function(c){
+        return '<div class="card"><div class="card-hdr"><span class="card-title">⚗️ '+c.nom+'</span></div>'
+          +'<div class="card-body"><div class="table-wrap" style="margin:0"><table><tbody>'
+          +'<tr><td style="color:var(--txt3)">Produit</td><td>'+c.prod+'</td></tr>'
+          +'<tr><td style="color:var(--txt3)">Dose</td><td>'+c.dose+'</td></tr>'
+          +'<tr><td style="color:var(--txt3)">Effet</td><td>'+c.effet+'</td></tr>'
+          +'<tr><td style="color:var(--txt3)">Moment</td><td>'+c.moment+'</td></tr>'
+          +'</tbody></table></div></div></div>';
+      }).join('')+'</div>';
+  }
+}
+
+function updateSolMeter(){
+  var ph=parseFloat(document.getElementById('sol-ph').value)||6.5;
+  var n=parseFloat(document.getElementById('sol-n').value)||80;
+  var p=parseFloat(document.getElementById('sol-p').value)||40;
+  var k=parseFloat(document.getElementById('sol-k').value)||150;
+  document.getElementById('ph-val').textContent=ph;
+  document.getElementById('n-val').textContent=n+' mg/kg';
+  document.getElementById('p-val').textContent=p+' mg/kg';
+  document.getElementById('k-val').textContent=k+' mg/kg';
+  var diag=document.getElementById('sol-diagnostic');
+  if(!diag)return;
+  var notes=[];var recs=[];
+  if(ph<6){notes.push('⚠️ Sol acide (pH '+ph+')');recs.push('Apporter de la chaux: 2-4 t/ha de CaCO3');}
+  else if(ph>7.5){notes.push('⚠️ Sol alcalin (pH '+ph+')');recs.push('Acidifier avec soufre agricole (200-400 kg/ha)');}
+  else{notes.push('✅ pH optimal ('+ph+')');}
+  if(n<60){notes.push('⚠️ Azote faible ('+n+' mg/kg)');recs.push('Apport urée 150 kg/ha ou compost riche en azote');}
+  else if(n>150){notes.push('⚠️ Azote excessif — risque de brûlure');}
+  else{notes.push('✅ Azote correct ('+n+' mg/kg)');}
+  if(p<30){notes.push('⚠️ Phosphore faible');recs.push('DAP 100 kg/ha ou phosphate naturel 300 kg/ha');}
+  else{notes.push('✅ Phosphore correct');}
+  if(k<100){notes.push('⚠️ Potassium faible — qualité des fruits affectée');recs.push('KCl 100 kg/ha ou cendres de bois');}
+  else{notes.push('✅ Potassium correct');}
+  diag.innerHTML=notes.map(function(n2){return '<div class="alert '+(n2.startsWith('✅')?'alert-green':'alert-gold')+'" style="margin-bottom:6px;padding:8px 12px;font-size:12px">'+n2+'</div>';}).join('')
+    +(recs.length?'<div style="margin-top:12px"><div style="font-size:12px;font-weight:700;color:var(--acc);margin-bottom:8px">🌱 Recommandations:</div>'
+      +recs.map(function(r){return '<div style="font-size:12px;padding:6px 10px;background:var(--surf2);border-radius:7px;margin-bottom:4px">▸ '+r+'</div>';}).join('')+'</div>':'');
+}
+
+// ── ENGRAIS ─────────────────────────────────────────────────────
+function renderEngrais(){switchEngraisTab('compost',null);}
+function switchEngraisTab(tab,btn){
+  if(btn){var p=btn.closest('.tabs');if(p)p.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active');});btn.classList.add('active');}
+  var el=document.getElementById('engrais-content');
+  var data={
+    compost:{titre:'♻️ Compostage — Guide complet',recettes:[
+      {nom:'Compost classique (tas)',icone:'♻️',duree:'3-6 mois',
+       ingredients:['Déchets verts frais: 30% (herbes, épluchures)','Déchets bruns secs: 30% (feuilles, paille, carton)','Fumier animal: 20% (vache, chèvre, volaille)','Terre de jardin: 10%','Cendres de bois: 5%','Eau: pour maintenir humidité'],
+       etapes:['Alterner couches vertes et brunes (10-15cm chacune)','Arroser chaque couche si sec','Retourner le tas toutes les 3 semaines','Vérifier: température (50-70°C), humidité (50%), odeur (neutre)','Compost prêt quand brun foncé, odeur de terre, friable'],
+       astuces:'Ne jamais composter: viandes, poissons, agrumes en excès, plantes malades. Hacher les grosses pièces. Couvrir pour retenir la chaleur.'},
+      {nom:'Compost rapide (bokashi)',icone:'⚡',duree:'2-4 semaines',
+       ingredients:['Déchets de cuisine: 80%','Son de blé fermenté (bokashi): 15%','Mélasse (activateur): 5%'],
+       etapes:['Remplir le seau hermétique par couches','Saupoudrer bokashi entre chaque couche','Compresser pour chasser l\'air','Fermer hermétiquement 2-4 semaines','Enfouir dans le sol ou diluer (1:100) pour arrosage'],
+       astuces:'Fermentation anaérobie. Accepte viandes et produits laitiers. Odeur aigre normale (pas putride).'},
+    ]},
+    lisier:{titre:'💧 Purins & Décoctions biologiques',recettes:[
+      {nom:'Purin d\'ortie (croissance)',icone:'🌿',duree:'1-2 semaines',
+       ingredients:['1 kg d\'orties fraîches','10 L d\'eau non traitée','Bac plastique non métallique'],
+       etapes:['Hacher grossièrement les orties','Couvrir d\'eau froide dans bac plastique','Remuer chaque jour','Filtrer quand plus de bulles (7-14 jours)','Conserver à l\'abri de la lumière'],
+       astuces:'Diluer: 1/10 pour arrosage, 1/20 en pulvérisation foliaire. Stimule la croissance et éloigne les pucerons.'},
+      {nom:'Décoction de prêle (antifongique)',icone:'🍃',duree:'1h de cuisson',
+       ingredients:['150g de prêle sèche ou 1kg fraîche','10L d\'eau','Macération 24h puis cuisson 30min'],
+       etapes:['Faire macérer 24h dans eau froide','Porter à ébullition puis mijoter 20min','Refroidir et filtrer','Stocker 1 semaine max'],
+       astuces:'Diluer 1/5 en pulvérisation préventive contre mildiou, rouille, oïdium. Riche en silice.'},
+      {nom:'Purin de consoude (potasse)',icone:'💪',duree:'2-3 semaines',
+       ingredients:['1 kg feuilles consoude','10L eau'],
+       etapes:['Macérer 15-20 jours en remuant','Filtrer et diluer 1/10 pour arrosage'],
+       astuces:'Très riche en potassium. Idéal pour fructification (tomate, poivron, pomme de terre).'},
+    ]},
+    biochar:{titre:'🔥 Biochar — Charbon végétal agricole',recettes:[
+      {nom:'Fabrication biochar simple',icone:'🔥',duree:'2-4 heures',
+       ingredients:['Bois sec (branches, tiges de maïs, coquilles)','Bidon métal 200L','Allumettes','Eau pour extinction'],
+       etapes:['Remplir le bidon de bois dense','Allumer la combustion par le bas en limitant l\'air','Maintenir la pyrolyse sans flamme vive (fumée blanche = bon)','Éteindre avec eau quand le bois est carbonisé et rougeoyant','Laisser refroidir 24h — ne jamais laisser s\'oxyder'],
+       astuces:'Charger le biochar avec du compost ou du lisier avant d\'enfouir. Améliore le sol pendant des siècles. Séquestre le carbone.'},
+    ]},
+    vermi:{titre:'🪱 Lombricompostage — Vers de terre domestiques',recettes:[
+      {nom:'Lombric-bac maison',icone:'🪱',duree:'6-12 semaines (installation)',
+       ingredients:['Bac 40L opaque avec couvercle','1000-2000 lombrics (Eisenia fetida)','Litière: carton, coco fibre','Déchets de cuisine hachés'],
+       etapes:['Préparer litière humide (carton trempé puis essoré)','Introduire les vers','Nourrir progressivement (pas de viande, pas d\'agrumes)','Maintenir humidité 80%, obscurité, 15-25°C','Récolter le lombri-compost à 3 mois'],
+       astuces:'Collecte du thé de vers (liquide drainé) = engrais liquide exceptionnel, diluer 1/10.'},
+    ]},
+    naturels:{titre:'🌿 Engrais verts — Plantes fertilisantes',recettes:[
+      {nom:'Programme engrais verts',icone:'🌿',duree:'2-3 mois',
+       ingredients:['Mucuna pruriens (fabacée tropicale)','Crotalaria juncea','Tithonia diversifolia','Dolichos lab-lab'],
+       etapes:['Semer en inter-saison ou en sous-semis','Laisser croître jusqu\'à pré-floraison (max N fixé)','Faucher et enfouir à la charrue','Attendre 3-4 semaines avant plantation suivante'],
+       astuces:'Mucuna: 80-160 kg N/ha + contrôle du Striga. Tithonia: 4% azote (comparable à l\'urée). Association recommandée avant maïs.'},
+    ]},
+  };
+  var d=data[tab];if(!d)return;
+  el.innerHTML='<div style="margin-bottom:16px"><div style="font-size:18px;font-weight:900;margin-bottom:4px">'+d.titre+'</div></div>'
+    +d.recettes.map(function(r){
+      return '<div class="recipe-card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
+        +'<span style="font-size:28px">'+r.icone+'</span>'
+        +'<div><div style="font-weight:800;font-size:15px">'+r.nom+'</div>'
+        +'<span class="badge badge-green">⏱ '+r.duree+'</span></div></div>'
+        +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">'
+          +'<div><div style="font-size:12px;font-weight:700;color:var(--acc);margin-bottom:8px">🧺 Ingrédients:</div>'
+            +r.ingredients.map(function(i){return '<div style="font-size:12px;padding:4px 0;border-bottom:1px solid var(--bdr);display:flex;gap:6px"><span style="color:var(--acc)">▸</span>'+i+'</div>';}).join('')+'</div>'
+          +'<div><div style="font-size:12px;font-weight:700;color:var(--acc);margin-bottom:8px">📋 Étapes:</div>'
+            +'<div class="recipe-steps">'
+            +r.etapes.map(function(e,i){return '<div class="recipe-step"><div class="step-num">'+(i+1)+'</div><div style="font-size:12px;color:var(--txt2)">'+e+'</div></div>';}).join('')+'</div></div>'
+        +'</div>'
+        +'<div class="alert alert-gold" style="margin-top:10px"><strong>💡 Astuce pro:</strong> '+r.astuces+'</div>'
+      +'</div>';
+    }).join('');
+}
+
+// ── TUTORIELS ───────────────────────────────────────────────────
+var TUTORIELS_AGRO=[
+  {emoji:'🌱',titre:'Semis et repiquage réussi',tag:'Débutant',desc:'Toutes les techniques pour un bon départ: substrat, profondeur, arrosage, lumière.',url:'https://www.fao.org/3/y5831f/y5831f.pdf'},
+  {emoji:'💧',titre:'Irrigation économique',tag:'Pratique',desc:'Goutte à goutte, aspersion, submersion: choisir et installer le bon système.',url:'#'},
+  {emoji:'🔬',titre:'Analyse et santé du sol',tag:'Intermédiaire',desc:'Comprendre les analyses, corriger le pH, enrichir la vie microbienne.',url:'https://www.fao.org/3/bc784f/bc784f.pdf'},
+  {emoji:'🦠',titre:'Lutte biologique intégrée',tag:'Avancé',desc:'Identifier et combattre les ravageurs sans chimie: prédateurs naturels, plantes répulsives.',url:'#'},
+  {emoji:'💧',titre:'Guide hydroponique complet',tag:'Innovation',desc:'De l\'installation à la récolte: systèmes NFT, DWC, substrat.',url:'#'},
+  {emoji:'🐟',titre:'Aquaponique pour débutants',tag:'Innovation',desc:'Construire un système aquaponique rentable en zone tropicale.',url:'#'},
+  {emoji:'♻️',titre:'Compostage et fertilisation bio',tag:'Écologique',desc:'Transformer vos déchets en or noir: compost, bokashi, lombricompost.',url:'#'},
+  {emoji:'🌾',titre:'Production de semences paysannes',tag:'Autonomie',desc:'Sélectionner, conserver et reproduire ses propres semences.',url:'https://www.fao.org/3/i3421f/i3421f.pdf'},
+  {emoji:'📅',titre:'Planification agricole annuelle',tag:'Gestion',desc:'Établir un plan de culture rentable, rotation, associations, calendrier.',url:'#'},
+  {emoji:'💰',titre:'Agribusiness et commercialisation',tag:'Business',desc:'Fixer ses prix, trouver des débouchés, transformer ses produits.',url:'#'},
+  {emoji:'🔥',titre:'Biochar et terra preta',tag:'Innovation',desc:'Produire et utiliser le charbon végétal pour améliorer le sol.',url:'#'},
+  {emoji:'🌿',titre:'Agriculture de conservation',tag:'Écologique',desc:'Zéro labour, couverture permanente, rotations: méthodes durables.',url:'#'},
+];
+
+function renderTutoriels(){
+  var grid=document.getElementById('tutoriels-grid');
+  grid.innerHTML=TUTORIELS_AGRO.map(function(t){
+    return '<div class="tuto-card" onclick="ouvrirTuto(\''+t.url+'\',\''+t.titre+'\')"><div class="tuto-banner" style="background:rgba(34,197,94,.05)">'+t.emoji+'</div>'
+      +'<div class="tuto-body"><span class="tuto-tag">'+t.tag+'</span>'
+      +'<div class="tuto-title">'+t.titre+'</div>'
+      +'<div class="tuto-desc">'+t.desc+'</div>'
+      +'<div style="display:flex;gap:6px;margin-top:10px">'
+        +'<button class="btn btn-primary btn-sm">▶ Consulter</button>'
+        +(t.url!=='#'?'<button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();window.open(\''+t.url+'\',\'_blank\')">📄 PDF</button>':'')
+      +'</div></div></div>';
+  }).join('');
+}
+
+function ouvrirTuto(url,titre){
+  if(url&&url!=='#')window.open(url,'_blank');
+  else toast('📚 '+titre+' — Document en cours d\'intégration');
+}
+
+// ── SECRETS & ASTUCES ───────────────────────────────────────────
+function renderSecrets(){
+  var secrets=[
+    {cat:'🌱 Germination',icone:'⚡',titre:'Pré-trempage accelerateur',
+     contenu:'Faites tremper vos graines 8-24h dans de l\'eau tiède (30°C) avant de semer. Résultat: germination 2x plus rapide et uniforme. Pour les graines à coque dure (haricot, courge), égratignerez légèrement la surface au papier de verre.'},
+    {cat:'💧 Irrigation',icone:'💡',titre:'L\'eau de riz = engrais gratuit',
+     contenu:'L\'eau de rinçage du riz contient amidon, vitamines B, minéraux. Utilisez-la pour arroser vos légumes, particulièrement les feuilles. Résultat: croissance accélérée, plants plus vigoureux. Gratuit et disponible quotidiennement.'},
+    {cat:'🦠 Protection',icone:'🛡',titre:'Bicarbonate contre champignons',
+     contenu:'1 cuillère à soupe de bicarbonate de soude + 1L eau + quelques gouttes de savon liquide = fongicide naturel très efficace. Pulvériser préventivement 1x/semaine sur tomates, courges, roses. Modifie le pH de surface des feuilles, défavorable aux champignons.'},
+    {cat:'🌿 Fertilisation',icone:'🔥',titre:'Les cendres de bois = or en poudre',
+     contenu:'Riches en potassium (5-15%), calcium, phosphore. Épandez 1-2 poignées par m² autour des tomates, haricots, arbres fruitiers. Relève aussi légèrement le pH. Attention: pas d\'excès (pH monte trop). Idéal sur sol acide.'},
+    {cat:'🐛 Répulsion',icone:'🌿',titre:'Les associations magiques',
+     contenu:'Tomate + Basilic = repousse les pucerons, améliore le goût. Carotte + Oignon = désoriente les mouches respectives. Maïs + Haricot + Courge (3 Sœurs Aztèques) = triple rendement sans engrais. Œillet d\'Inde partout = nématodes réduits de 60%.'},
+    {cat:'💧 Conservation eau',icone:'💧',titre:'Mulching économise 70% d\'eau',
+     contenu:'Couvrez le sol avec paille, herbes sèches, feuilles mortes, carton (5-10cm). Résultats: eau conservée (moins d\'arrosage), mauvaises herbes supprimées, sol protégé de la chaleur, vers de terre favorisés. Coût: quasi nul avec résidus de cultures.'},
+    {cat:'🌾 Rendement',icone:'📈',titre:'La taille des gourmands x2 tomates',
+     contenu:'Sur tomates indéterminées (à rame), supprimez tous les gourmands (pousses axillaires). Le plant concentre son énergie sur les fruits existants plutôt que de multiplier les branches. Résultat: fruits plus gros, maturité plus rapide, moins de maladies (aération).'},
+    {cat:'🔬 Sol vivant',icone:'🐛',titre:'Les vers de terre = meilleur tracteur',
+     contenu:'Un sol avec 1 million de vers/ha génère 30t/ha de déjections annuelles. Pour les attirer: ne jamais labourer profond, laisser des résidus en surface, composter. Les vers aèrent naturellement, améliorent la structure, libèrent les nutriments.'},
+    {cat:'🌡 Température',icone:'🌡',titre:'Effet tunnel = +8°C gratuit',
+     contenu:'Un simple tunnel plastique translucide augmente la température de 5-10°C. Permet la production en saison froide ou sèche. Récupérez des bouteilles plastiques coupées pour protéger les jeunes plants des coups de froid nocturnes.'},
+    {cat:'♻️ Récupération',icone:'♻️',titre:'Eau de cuisson des légumes',
+     contenu:'L\'eau de cuisson des légumes (non salée), des pâtes, des pommes de terre est riche en amidon et nutriments. Laissez refroidir et utilisez pour arroser. Gratuit, écologique et vos plants adorent.'},
+  ];
+  var el=document.getElementById('secrets-content');
+  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px">'
+    +secrets.map(function(s){
+      return '<div class="card" style="border-left:4px solid var(--acc)">'
+        +'<div class="card-hdr">'
+          +'<div><div style="font-size:10px;color:var(--acc);font-weight:700;text-transform:uppercase;letter-spacing:.5px">'+s.cat+'</div>'
+          +'<div style="font-weight:800;font-size:14px;margin-top:3px">'+s.icone+' '+s.titre+'</div></div>'
+        +'</div>'
+        +'<div class="card-body"><div style="font-size:13px;color:var(--txt2);line-height:1.7">'+s.contenu+'</div></div>'
+      +'</div>';
+    }).join('')+'</div>';
+}
+
+// ── PLANS TECHNIQUES ─────────────────────────────────────────────
+function renderPlans(){
+  var plans=[
+    {titre:'Plan d\'une serre maraîchère 100m²',emoji:'🏗',
+     dims:'10m × 10m × 3m (gouttière)',materiaux:['Profilés acier galvanisé 40×40mm','Film PE 200 microns (anti-UV)','Filet insect-proof 50 mesh','Portes aluminium (2×) 1×2m','Ventilateurs de brassage (4×)','Gouttières drainage'],
+     schema:'[Façade N] ←10m→ [Façade S]\n[Façade O]↕10m[Façade E]\nAllées: 0.8m × 2 | Planches: 1.2m × 6'},
+    {titre:'Système goutte à goutte 500m²',emoji:'💧',
+     dims:'Débit: 1.6-2.2L/h par goutteur',materiaux:['Pompe 0.5cv (500L/h)','Filtre Y 130 microns','Vanne principale + 4 secteurs','Tuyau PE 32mm primaire (100m)','Tuyau PE 16mm secondaire (400m)','Goutteurs auto-compensants (500 pièces)'],
+     schema:'[Pompe]→[Filtre]→[Vanne]→[T32]→[T16]→[Goutteurs]\nPression: 1-1.5 bar. Intervalle: 30-50cm'},
+    {titre:'Pépinière professionnelle 50m²',emoji:'🌱',
+     dims:'Table de semis: 5m × 1.2m × 0.8m (hauteur)',materiaux:['Tables métal galvanisé (4 tables)','Plaques alvéolées 100/128/200 cellules','Terreau semences stérile','Système brumisation fine (5 buses)','Voile de forçage P17','Thermomètre sol'],
+     schema:'[Entrée Ombrage 50%]→[Zone semis]→[Zone germination]→[Zone acclimatation]\nOrientation est-ouest pour ensoleillement optimal'},
+    {titre:'Bassin de stockage eau 50m³',emoji:'💦',
+     dims:'5m × 5m × 2m de profondeur',materiaux:['Excavation 55m³','Géomembrane HDPE 1mm (100m²)','Grillage protection (36m)','Pompe immergée 2cv','Flotteur automatique','Filtre à sable'],
+     schema:'Pente fond: 2% vers pompe\nDébordement: trop-plein avec évacuation\nCouverture filet pour éviter évaporation et algues'},
+    {titre:'Compostière communautaire 4 box',emoji:'♻️',
+     dims:'4 cases de 1.5m × 1.5m × 1.2m',materiaux:['Planches bois traité 5cm','Poteaux métal cornière 40×40mm','Grillage avant amovible','Thermomètre de compost','Fourche et retourneur'],
+     schema:'[Box 1 Remplissage]→[Box 2 Maturation]→[Box 3 Affinage]→[Box 4 Prêt]\nCapacité: 2.7m³ par box = 8t/an de compost fini'},
+    {titre:'Installation solaire pour pompage',emoji:'☀️',
+     dims:'Puissance: 500W-1kW selon besoin',materiaux:['Panneau solaire 250W × 2-4','Contrôleur MPPT 30A','Batterie 100Ah × 2 (optionnel)','Onduleur DC/AC ou pompe DC','Câblage section adaptée','Protection IP65'],
+     schema:'[Panneau]→[Contrôleur]→[Batterie (opt)]→[Pompe]\nÉnergie/jour (5h soleil): 1.25-2.5kWh\nPompage possible même nuit avec batteries'},
+  ];
+  var el=document.getElementById('plans-content');
+  el.innerHTML='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px">'
+    +plans.map(function(p){
+      return '<div class="card">'
+        +'<div class="card-hdr"><span class="card-title">'+p.emoji+' '+p.titre+'</span></div>'
+        +'<div class="card-body">'
+          +'<div class="alert alert-blue" style="margin-bottom:12px;font-family:monospace;font-size:11px;white-space:pre">'+p.schema+'</div>'
+          +'<div style="font-size:11px;font-weight:700;color:var(--acc);margin-bottom:6px">📐 Dimensions: '+p.dims+'</div>'
+          +'<div style="font-size:11px;font-weight:700;color:var(--txt2);margin-bottom:6px">🧺 Matériaux:</div>'
+          +p.materiaux.map(function(m){return '<div style="font-size:12px;padding:3px 0;border-bottom:1px solid var(--bdr);display:flex;gap:6px"><span style="color:var(--acc)">▸</span>'+m+'</div>';}).join('')
+          +'<button class="btn btn-primary btn-sm" style="margin-top:10px;width:100%" onclick="toast(\'📐 Plan CAD détaillé disponible — contactez jeanpaulbognon3@gmail.com\')">📐 Télécharger plan complet</button>'
+        +'</div>'
+      +'</div>';
+    }).join('')+'</div>';
+}
+
+// ── ASSISTANT IA ─────────────────────────────────────────────────
+var QUICK_QA=[
+  'Mon plant de tomate jaunit — pourquoi ?',
+  'Comment fabriquer un engrais naturel rapide ?',
+  'Quand semer les oignons au Bénin ?',
+  'Comment traiter le mildiou sans produit chimique ?',
+  'Quelle est la dose d\'urée pour 1 hectare de maïs ?',
+  'Comment installer un système goutte à goutte simple ?',
+  'Les secrets pour doubler le rendement en maraîchage ?',
+  'Comment préparer un purin d\'ortie efficace ?',
+];
+var IA_REPONSES_AGRO={
+  'jaunit|jaune': '🍃 Jaunissement des plants — causes possibles:\n• Carence en Azote (N): jaunissement des vieilles feuilles en premier → Apporter urée 100g/10L ou compost\n• Carence en Fer (chlorose): jaunissement des jeunes feuilles, nervures vertes → Sol trop calcaire, apporter chélate de fer\n• Surhydratation: sol gorgé d\'eau → Améliorer le drainage\n• Mildiou: taches jaune-brun + feutrage blanc sous feuilles → Bouillie bordelaise 1%\n• Nématodes: jaunissement + nodules sur racines → Rotation + tagètes\n\n💡 Solution rapide: arrosage avec purin d\'ortie dilué 1/10',
+  'engrais.*naturel|naturel.*engrais': '♻️ Engrais naturels rapides à fabriquer:\n\n🔥 Le plus rapide (48h): Purin d\'ortie\n→ 1kg orties + 10L eau = macérer 48h, diluer 1/10\n\n⚡ En 2 semaines: Fumier liquide\n→ 1 bouse de vache + 10L eau = agiter, filtrer, diluer 1/5\n\n🌿 En 30 minutes: Thé de compost\n→ 1 poignée compost + 5L eau = agiter 10min, filtrer, arroser direct\n\n🏆 Le plus efficace: Cendres de bois\n→ 2 poignées/m² enfoui = potassium immédiat',
+  'semer|semis|oignon|tomate|piment': '📅 Calendrier de semis pour le Bénin (zone tropicale soudanienne):\n\n🌰 SAISON SÈCHE (Oct-Fév) — Semis irrigués:\n→ Oignon, Tomate, Piment, Laitue, Carotte, Chou\n\n🌧 DÉBUT PLUIES (Mar-Mai):\n→ Maïs, Haricot, Arachide, Concombre, Courge\n\n☔ PLEINE SAISON (Jun-Sep):\n→ Riz, Sorgho, Mil, Soja, Niébé, Manioc\n\n💡 Astuce: Pour tomates et piments, faire la pépinière 6 semaines avant le repiquage en saison sèche (Nov-Déc pour récolte Feb-Mar)',
+  'mildiou|maladie|champignon|fungicide': '🍄 Traitement du mildiou — URGENCE:\n\n🆘 Si attaque en cours:\n1. Éliminer les parties atteintes immédiatement\n2. Pulvériser BOUILLIE BORDELAISE 1% (tous les plants)\n3. Retraiter après chaque pluie\n\n🌿 Alternatives bio:\n• Décoction de prêle (1kg/10L, diluer 1/5)\n• Bicarbonate + savon (1cs/L) — hebdomadaire\n• Huile de neem 2% en prévention\n\n⚗️ Si grave — chimique:\n• Mancozèbe 2g/L\n• Métalaxyl (Ridomil)\n• Chlorothalonil\n\n⚠️ Prévention: Aération des plants, arrosage au pied (pas sur feuilles), espacement 50cm minimum',
+  'urée|dose|maïs|céréale|NPK': '⚗️ Fertilisation maïs — Doses recommandées:\n\n📊 Programme complet à l\'hectare:\n\n1️⃣ Pré-semis (labour):\n→ Compost 10t/ha OU Fumier 5t/ha\n→ NPK 14-23-14: 150 kg/ha\n\n2️⃣ À la levée (J21):\n→ Urée 50 kg/ha en top-dressing (bande)\n\n3️⃣ Montaison (J45):\n→ Urée 100 kg/ha — stade le plus critique!\n\n📐 Pour 1/4 d\'hectare:\n→ NPK: 37.5 kg · Urée levée: 12.5 kg · Urée montaison: 25 kg\n\n💡 Toujours apporter l\'urée au pied, jamais sur les feuilles (brûlures). Après la pluie ou l\'arrosage.',
+  'goutte|irrigation|arrosage': '💧 Système goutte à goutte simple — montage:\n\n🛠 Matériel pour 100m²:\n→ Pompe 0.3cv (300L/h) OU gravité (cuve haute)\n→ Filtre Y 120 microns (indispensable!)\n→ Tuyau PE 20mm principal\n→ Tube goutteur 16mm + goutteurs 2L/h\n→ Régulateur pression 1bar\n\n📋 Montage:\n1. Cuve/pompe → Filtre → Vanne générale\n2. Tuyau 20mm le long des rangées\n3. Piquer les tubes 16mm tous les 60-80cm\n4. Goutteur tous les 30-40cm sur les plantes\n\n💡 Économie eau: 50-70% vs arrosage manuel. Amortissement en 1 saison.',
+  'rendement|doubler|production|productivité': '📈 Doubler son rendement — 7 leviers:\n\n1️⃣ QUALITÉ DES SEMENCES\nVariétés améliorées certifiées = +30-50% rendement vs semences locales\n\n2️⃣ DENSITÉ OPTIMALE\nRespectez les espacements recommandés (ni trop dense, ni trop clairsemé)\n\n3️⃣ FERTILISATION RAISONNÉE\nAnalyse sol → apporter ce qui manque précisément\n\n4️⃣ IRRIGATION MAÎTRISÉE\nGouttière = eau au bon endroit, bon moment. Jamais de stress hydrique\n\n5️⃣ PROTECTION PHYTOSANITAIRE\nInspection hebdomadaire, traitement préventif\n\n6️⃣ MULCHING\nCouverture sol = moins mauvaises herbes, eau conservée, sol vivant\n\n7️⃣ RÉCOLTE AU BON STADE\nRécolter trop tôt ou trop tard = perte qualité et quantité',
+  'purin.*ortie|ortie': '🌿 Recette purin d\'ortie:\n\n📦 Ingrédients:\n→ 1 kg orties FRAÎCHES (feuilles et tiges)\n→ 10 L eau de pluie ou non chlorée\n→ 1 bac en plastique (jamais métal)\n\n📋 Préparation:\n1. Hacher grossièrement les orties\n2. Immerger dans l\'eau\n3. Remuer chaque jour avec bâton bois\n4. Attendre 7-14 jours (plus de bulles = prêt)\n5. Filtrer et stocker à l\'abri de la lumière\n\n🎯 Utilisations:\n• Croissance: diluer 1/10 → arrosage hebdo\n• Prévention pucerons: diluer 1/20 → pulvérisation\n• Stimulant sol: 1/10 sur sol avant plantation\n\n⚠️ Odeur forte normale. Ne pas utiliser pur (brûlure).',
+};
+
+function renderAssistant(){
+  var qEl=document.getElementById('quick-agro');
+  qEl.innerHTML=QUICK_QA.map(function(q){
+    return '<button class="btn btn-secondary" style="text-align:left;font-size:12px;padding:8px 12px;width:100%;line-height:1.4" data-q="'+q+'" onclick="poserQuestionAgro(this.dataset.q)">'+q+'</button>';
+  }).join('');
+}
+
+function poserQuestionAgro(q){document.getElementById('ia-inp').value=q;envoyerIA();}
+
+function envoyerIA(){
+  var inp=document.getElementById('ia-inp');
+  var q=(inp.value||'').trim();if(!q)return;
+  inp.value='';
+  var msgs=document.getElementById('ia-msgs');
+  var uDiv=document.createElement('div');uDiv.className='ia-msg-user';uDiv.textContent=q;msgs.appendChild(uDiv);
+  var typing=document.createElement('div');typing.className='ia-msg-bot';
+  typing.innerHTML='<div class="ia-typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(typing);msgs.scrollTop=msgs.scrollHeight;
+
+  var ql=q.toLowerCase();var rep=null;
+  for(var pat in IA_REPONSES_AGRO){
+    if(new RegExp(pat).test(ql)){rep=IA_REPONSES_AGRO[pat];break;}
+  }
+  if(!rep){
+    // Réponse contextuelle sur les données de l'utilisateur
+    var nb=DB.cultures.length;
+    var malades=DB.cultures.filter(function(c){return c.sante==='malade'||c.sante==='surveillance';}).length;
+    if(ql.includes('culture')||ql.includes('parcelle')||ql.includes('plante')){
+      rep='🌿 Vos cultures actuelles:\n\n'+
+        (nb?DB.cultures.map(function(c){return '• '+cultEmoji(c.nom)+' '+c.nom+' ('+c.type+') — Stade: '+c.stade+(c.sante!=='sain'?' ⚠️ '+c.sante:'');}).join('\n'):'Aucune culture enregistrée. Ajoutez votre première parcelle!')+
+        (malades?'\n\n⚠️ '+malades+' culture(s) nécessite(nt) attention.':'');
+    }else{
+      rep='🤖 Je n\'ai pas de réponse précise pour "'+q+'".\n\nMais voici quelques sujets où je peux vous aider:\n• Diagnostic maladie (décrivez les symptômes)\n• Calcul de doses d\'engrais\n• Calendrier de semis par culture\n• Fabrication d\'engrais bio\n• Techniques d\'irrigation\n• Traitements bio vs chimique\n\nReformullez avec plus de détails!';
+    }
+  }
+  setTimeout(function(){
+    typing.remove();
+    var bDiv=document.createElement('div');bDiv.className='ia-msg-bot';bDiv.style.whiteSpace='pre-line';bDiv.textContent=rep;
+    msgs.appendChild(bDiv);msgs.scrollTop=msgs.scrollHeight;
+  },900);
+}
+
+// ── BUDGET ───────────────────────────────────────────────────────
+function renderBudget(){
+  var surf=DB.cultures.reduce(function(s,c){return s+Number(c.surface||0);},0);
+  document.getElementById('budget-stats').innerHTML=
+    mkStat('📐',fmtNum(surf)+' m²','Surface totale','var(--acc)')+
+    mkStat('🌿',DB.cultures.length,'Cultures','var(--acc2)')+
+    mkStat('♻️','Bio','Mode dominant','var(--acc3)');
+
+  document.getElementById('budget-calc').innerHTML=
+    '<div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--txt2)">Entrez les données de votre parcelle:</div>'
+    +'<div class="form-group" style="margin-bottom:10px"><label class="form-lbl">Culture</label>'
+      +'<select id="b-culture" class="form-inp"><option>Tomate</option><option>Maïs</option><option>Oignon</option>'
+      +'<option>Piment</option><option>Laitue</option><option>Haricot</option></select></div>'
+    +'<div class="form-group" style="margin-bottom:10px"><label class="form-lbl">Surface (m²)</label>'
+      +'<input type="number" id="b-surf" class="form-inp" placeholder="500" oninput="calcBudgetAgro()"></div>'
+    +'<div class="form-group" style="margin-bottom:10px"><label class="form-lbl">Prix de vente estimé (F/kg)</label>'
+      +'<input type="number" id="b-prix" class="form-inp" placeholder="400" oninput="calcBudgetAgro()"></div>'
+    +'<div id="b-result"></div>';
+
+  document.getElementById('budget-analyse').innerHTML='<div class="table-wrap" style="margin:0"><table><thead><tr>'
+    +'<th>Culture</th><th>Rend. moy.</th><th>Coût/ha</th><th>Revenu/ha</th></tr></thead><tbody>'
+    +[['🍅 Tomate','40t','300k F','1.2M F'],['🌽 Maïs','3.5t','180k F','420k F'],
+     ['🧅 Oignon','25t','200k F','750k F'],['🌶️ Piment','15t','250k F','900k F'],
+     ['🥬 Laitue','20t','120k F','480k F'],['🥜 Arachide','2t','150k F','500k F'],
+    ].map(function(r){return '<tr><td>'+r[0]+'</td><td style="color:var(--acc)">'+r[1]+'</td><td>'+r[2]+'</td><td style="font-weight:700;color:var(--acc)">'+r[3]+'</td></tr>';}).join('')
+    +'</tbody></table></div>'
+    +'<div class="alert alert-gold" style="margin-top:10px;font-size:12px"><strong>💡 Note:</strong> Rendements moyens en conditions tropicales avec irrigation. L\'hydroponique peut multiplier ces chiffres par 2-3.</div>';
+}
+
+var RENDEMENTS={'Tomate':40,'Maïs':3.5,'Oignon':25,'Piment':15,'Laitue':20,'Haricot':8};
+var COUTS={'Tomate':30000,'Maïs':18000,'Oignon':20000,'Piment':25000,'Laitue':12000,'Haricot':15000};
+function calcBudgetAgro(){
+  var cult=(document.getElementById('b-culture')||{}).value;
+  var surf=parseFloat((document.getElementById('b-surf')||{}).value)||0;
+  var prix=parseFloat((document.getElementById('b-prix')||{}).value)||0;
+  if(!surf||!prix){document.getElementById('b-result').innerHTML='';return;}
+  var rend=(RENDEMENTS[cult]||5)*surf/10000;
+  var cout=(COUTS[cult]||20000)*surf/10000;
+  var rev=rend*1000*prix;
+  var marge=rev-cout;
+  document.getElementById('b-result').innerHTML=
+    '<div class="alert alert-green" style="margin-top:10px"><strong>📊 Estimations pour '+surf+'m² de '+cult+':</strong><br>'
+    +'• Production estimée: <strong>'+fmtNum(Math.round(rend*100)/100)+' t</strong><br>'
+    +'• Coût de production: <strong>'+fmtNum(Math.round(cout))+' F</strong><br>'
+    +'• Revenu brut estimé: <strong style="color:var(--acc)">'+fmtNum(Math.round(rev))+' F</strong><br>'
+    +'• Marge nette estimée: <strong style="color:'+(marge>0?'var(--acc)':'var(--red)')+'">'+fmtNum(Math.round(marge))+' F</strong>'
+    +(marge>0?'<br>🏆 Rentable — ROI: '+Math.round(marge/cout*100)+'%':'<br>⚠️ Déficitaire — augmentez le prix ou réduisez les coûts')
+    +'</div>';
+}
+
+// ── MÉTÉO ────────────────────────────────────────────────────────
+function renderMeteo(){
+  var mois=new Date().getMonth();
+  var saisons=[
+    {nom:'Saison sèche',mois:[10,11,0,1,2],icon:'☀️',temp:'28-38°C',hum:'15-40%',vent:'Harmattan fort',conseil:'Irrigation quotidienne indispensable. Mulching épais. Éviter semis en plein soleil.'},
+    {nom:'Début saison pluvieuse',mois:[3,4],icon:'🌤',temp:'26-34°C',hum:'50-70%',vent:'Variable',conseil:'Période idéale pour semis maïs, haricot. Préparez les champs maintenant. Traitez préventif mildiou.'},
+    {nom:'Pleine saison pluvieuse',mois:[5,6,7,8],icon:'🌧',temp:'24-30°C',hum:'75-95%',vent:'Faible',conseil:'Surveillance maladies fongiques intensive. Drainage indispensable. Récoltes protéger de la pluie.'},
+    {nom:'Fin saison pluvieuse',mois:[9],icon:'🌦',temp:'26-32°C',hum:'60-80%',vent:'Variable',conseil:'Semis oignon, tomate, piment. Dernier traitement fongique. Préparer stockage récoltes.'},
+  ];
+  var saisonActuelle=saisons.find(function(s){return s.mois.includes(mois);})||saisons[3];
+
+  document.getElementById('meteo-content').innerHTML=
+    '<div class="card" style="margin-bottom:16px">'
+      +'<div class="card-hdr"><span class="card-title">'+saisonActuelle.icon+' '+saisonActuelle.nom+' — '+['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'][mois]+'</span></div>'
+      +'<div class="card-body"><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:14px">'
+        +'<div style="text-align:center"><div style="font-size:28px;font-weight:900;color:var(--acc2)">'+saisonActuelle.temp+'</div><div style="font-size:11px;color:var(--txt3)">Température</div></div>'
+        +'<div style="text-align:center"><div style="font-size:28px;font-weight:900;color:var(--acc3)">'+saisonActuelle.hum+'</div><div style="font-size:11px;color:var(--txt3)">Humidité</div></div>'
+        +'<div style="text-align:center"><div style="font-size:28px;font-weight:900;color:var(--acc)">'+saisonActuelle.vent+'</div><div style="font-size:11px;color:var(--txt3)">Vent</div></div>'
+      +'</div>'
+      +'<div class="alert alert-green">💡 <strong>Conseil agro du moment:</strong> '+saisonActuelle.conseil+'</div>'
+    +'</div></div>'
+    +'<div class="card"><div class="card-hdr"><span class="card-title">🌡 Températures optimales par culture</span></div>'
+      +'<div class="card-body"><div class="table-wrap" style="margin:0"><table><thead><tr>'
+        +'<th>Culture</th><th>Min</th><th>Optimale</th><th>Max</th><th>Risque saison actuelle</th></tr></thead><tbody>'
+        +[['🍅 Tomate','10°C','20-25°C','35°C','⚠️ Stress thermique >32°C'],
+          ['🌽 Maïs','10°C','25-30°C','40°C','✅ OK actuellement'],
+          ['🥬 Laitue','5°C','15-20°C','27°C','🔴 Stress si >28°C'],
+          ['🧅 Oignon','5°C','15-25°C','35°C','✅ OK en saison sèche'],
+          ['🌶️ Piment','15°C','22-28°C','35°C','✅ Idéal actuellement'],
+          ['🍚 Riz','16°C','25-35°C','40°C','✅ Saison pluvieuse idéale'],
+        ].map(function(r){return '<tr>'+r.map(function(c,i){return '<td '+(i===4?'style="font-size:11px"':'')+'>'+c+'</td>';}).join('')+'</tr>';}).join('')
+        +'</tbody></table></div></div></div>';
+}
+
+// ── INIT ─────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',function(){renderDashboard();});
+</script>
+</body>
+</html>
